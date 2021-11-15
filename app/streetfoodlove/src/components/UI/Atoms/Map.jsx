@@ -1,8 +1,26 @@
 import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 export default function Map(props) {
-  <MapContainer center={position} zoom={13} scrollWheelZoom={true}>
+  const position = [51.505, -0.09]
 
-  </MapContainer>
+  return (
+    <div>
+      
+    </div>
+    // <MapContainer center={position} zoom={13} scrollWheelZoom={true}>
+    //   <TileLayer
+    //     attribution="© OpenStreetMap contributors"
+    //     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    //   />
+    //   <Marker position={position}>
+    //     <Popup>
+    //       Testing
+    //     </Popup>
+    //   </Marker>
+    // </MapContainer>
+
+  )
+
+
 }
