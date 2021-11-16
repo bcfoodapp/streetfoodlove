@@ -2,7 +2,7 @@ import React from "react";
 // import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 export default function Map(props) {
-  const position = [51.505, -0.09]
+  const position = [51.505, -0.09];
 
   return (
     <div>
@@ -20,7 +20,7 @@ export default function Map(props) {
     //   </Marker>
     // </MapContainer>
 
-  )
+  );
 
 
 }
