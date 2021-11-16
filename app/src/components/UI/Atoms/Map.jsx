@@ -6,7 +6,7 @@ export default function Map(props) {
 
   return (
     <div>
-      
+      <p>Map</p>
     </div>
     // <MapContainer center={position} zoom={13} scrollWheelZoom={true}>
     //   <TileLayer
