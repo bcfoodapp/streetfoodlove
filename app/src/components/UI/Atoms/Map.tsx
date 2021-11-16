@@ -1,26 +1,22 @@
-import React from "react";
-// import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React from 'react';
+import {MapContainer, TileLayer, Marker, Popup} from 'react-leaflet';
+import {LatLngExpression} from 'leaflet';
 
-export default function Map(props) {
-  const position = [51.505, -0.09];
+export default function Map(): React.ReactElement {
+  const position: LatLngExpression = [51.505, -0.09];
 
   return (
-    <div>
-      <p>Map</p>
-    </div>
-    // <MapContainer center={position} zoom={13} scrollWheelZoom={true}>
-    //   <TileLayer
-    //     attribution="© OpenStreetMap contributors"
-    //     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    //   />
-    //   <Marker position={position}>
-    //     <Popup>
-    //       Testing
-    //     </Popup>
-    //   </Marker>
-    // </MapContainer>
-
+    <MapContainer center={position} zoom={13} style={{height: '400px', width: '600px'}}>
+      <TileLayer
+        attribution="© OpenStreetMap contributors"
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        detectRetina={true}
+      />
+      <Marker position={position}>
+        <Popup>
+          Testing
+        </Popup>
+      </Marker>
+    </MapContainer>
   );
-
-
 }
