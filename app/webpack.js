@@ -6,11 +6,15 @@ module.exports = {
         compress: true,
         port: 3000,
     },
-    entry: __dirname + '/src/index.js',
+    entry: __dirname + '/src/index.tsx',
     module: {
         rules: [
             {
-                test: /\.(js|jsx)/,
+                test: /\.tsx?$/,
+                use: ['ts-loader'],
+            },
+            {
+                test: /\.js$/,
                 use: {
                     loader: 'babel-loader',
                 },
@@ -31,7 +35,7 @@ module.exports = {
     },
     devtool: 'eval',
     resolve: {
-        extensions: ['.js', '.jsx', '.css'],
+        extensions: ['.js', '.ts', '.tsx', '.css'],
     },
     target: 'web',
     output: {
