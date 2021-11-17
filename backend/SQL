@@ -15,7 +15,7 @@ DROP SCHEMA IF EXISTS `mydb` ;
 -- -----------------------------------------------------
 -- Schema mydb
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8mb4 ;
 USE `mydb` ;
 
 -- -----------------------------------------------------
