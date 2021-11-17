@@ -29,7 +29,7 @@ module.exports = {
     },
     devtool: 'eval',
     resolve: {
-        extensions: ['.js', '.ts', '.tsx', '.css'],
+        extensions: ['.js', '.ts', '.tsx', '.css', '.jsx'],
     },
     target: 'web',
     output: {
