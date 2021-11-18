@@ -1,9 +1,8 @@
 package main
 
 import (
-	"database/sql/driver"
+	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -47,7 +46,7 @@ func (d *Database) AddTestData() error {
 	}
 
 	vendor0 := &Vendor{
-		ID:              UUID(uuid.MustParse("e72ac985-3d7e-47eb-9f0c-f8e52621a708")),
+		ID:              uuid.MustParse("e72ac985-3d7e-47eb-9f0c-f8e52621a708"),
 		BusinessAddress: "address0",
 		Name:            "vendor0",
 		Phone:           "123-123-1234",
@@ -58,7 +57,7 @@ func (d *Database) AddTestData() error {
 	}
 
 	vendor1 := &Vendor{
-		ID:              UUID(uuid.MustParse("b924349d-442f-4fff-984e-ab0ec36f4590")),
+		ID:              uuid.MustParse("b924349d-442f-4fff-984e-ab0ec36f4590"),
 		BusinessAddress: "address1",
 		Name:            "vendor1",
 		Phone:           "321-321-4321",
@@ -67,18 +66,8 @@ func (d *Database) AddTestData() error {
 	return d.VendorCreate(vendor1)
 }
 
-type UUID uuid.UUID
-
-func (u UUID) Value() (driver.Value, error) {
-	return u[:], nil
-}
-
-func (u *UUID) Scan(src interface{}) error {
-	return (*uuid.UUID)(u).Scan(src)
-}
-
 type Vendor struct {
-	ID              UUID
+	ID              uuid.UUID
 	BusinessAddress string
 	Name            string
 	Phone           string
@@ -102,7 +91,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 	return err
 }
 
-func (d *Database) Vendor(id UUID) (*Vendor, error) {
+func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	const command = `
 		SELECT * FROM Vendor WHERE ID=?;
 	`

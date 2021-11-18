@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"net/http"
+	"time"
 )
 
 func main() {
@@ -13,8 +17,25 @@ func main() {
 	if err := database.AddTestData(); err != nil {
 		panic(err)
 	}
-	backend := Backend{database}
-	defer backend.Close()
+
+	api := API{&Backend{database}}
+	defer api.Close()
+
+	router := gin.Default()
+	api.AddRoutes(router)
+
+	server := http.Server{
+		Addr:         ":8080",
+		Handler:      router,
+		ReadTimeout:  time.Second * 10,
+		WriteTimeout: time.Second * 10,
+	}
+	defer server.Close()
+
+	fmt.Println("serving at localhost:8080")
+	if err := server.ListenAndServe(); err != nil {
+		panic(err)
+	}
 }
 
 func getDatabase() *Database {
