@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -22,6 +23,10 @@ func main() {
 	defer api.Close()
 
 	router := gin.Default()
+
+	corsOptions := cors.DefaultConfig()
+	corsOptions.AllowOrigins = []string{"http://localhost:3000"}
+	router.Use(cors.New(corsOptions))
 	api.AddRoutes(router)
 
 	server := http.Server{
