@@ -82,8 +82,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			Phone
 	   ) VALUES (
 			:ID,
-	    	:BusinessAddress,
 			:Name,
+	    	:BusinessAddress,
 			:Phone
 	   );
 	`
