@@ -2,6 +2,7 @@ package uuid
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"github.com/google/uuid"
 )
 
@@ -27,4 +28,8 @@ func (u UUID) Value() (driver.Value, error) {
 
 func (u *UUID) Scan(src interface{}) error {
 	return (*uuid.UUID)(u).Scan(src)
+}
+
+func (u *UUID) MarshalJSON() ([]byte, error) {
+	return json.Marshal((*uuid.UUID)(u).String())
 }
