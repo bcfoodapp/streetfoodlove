@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+// API is the backend interface.
+// API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 type API struct {
 	*Backend
 }
@@ -14,6 +16,7 @@ func (a *API) Close() error {
 	return a.Backend.Close()
 }
 
+// AddRoutes adds all API routes.
 func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/vendors/:id", a.Vendor)
 }

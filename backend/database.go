@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// Database abstraction layer
 type Database struct {
 	db *sqlx.DB
 }
@@ -19,18 +20,26 @@ func (d *Database) Close() error {
 	return d.db.Close()
 }
 
+// SetupTables creates necessary tables if they do not exist.
 func (d *Database) SetupTables() error {
-	const command = `
-	CREATE TABLE IF NOT EXISTS Vendor (
-		ID BINARY(16) NOT NULL,
-		Name VARCHAR(100) NOT NULL,
-		BusinessAddress VARCHAR(500) NULL,
-		Phone VARCHAR(50) NULL,
-		PRIMARY KEY (ID)
-	);
-	`
-	_, err := d.db.Exec(command)
-	return err
+	commands := [...]string{
+		`
+		CREATE TABLE IF NOT EXISTS Vendor (
+			ID BINARY(16) NOT NULL,
+			Name VARCHAR(100) NOT NULL,
+			BusinessAddress VARCHAR(500) NULL,
+			Phone VARCHAR(50) NULL,
+			PRIMARY KEY (ID)
+		);
+		`,
+	}
+	for _, command := range commands {
+		_, err := d.db.Exec(command)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // AddTestData adds two vendors. This is only used for functionality testing.

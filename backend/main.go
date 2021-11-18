@@ -38,6 +38,7 @@ func main() {
 	}
 }
 
+// getDatabase creates database and returns the database connection.
 func getDatabase() *Database {
 	config := mysql.Config{
 		User:                 "root",

@@ -2,6 +2,7 @@ package main
 
 import "github.com/bcfoodapp/streetfoodlove/uuid"
 
+// Backend handles the application logic.
 type Backend struct {
 	*Database
 }
