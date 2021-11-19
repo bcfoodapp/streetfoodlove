@@ -15,7 +15,12 @@ export function Vendor(): React.ReactElement {
       <p>{(query.error as any).error}</p>
     </>;
   } else if (query.isSuccess) {
-    content = <pre>{JSON.stringify(query.data, null, 2)}</pre>
+    content = <>
+      <p>ID: {query.data.ID}</p>
+      <p>BusinessAddress: {query.data.BusinessAddress}</p>
+      <p>Name: {query.data.Name}</p>
+      <p>Phone: {query.data.Phone}</p>
+    </>;
   }
 
   return <>
