@@ -2,27 +2,24 @@ import React from "react";
 import classes from "./button.module.css"
 import { Button } from 'semantic-ui-react'
 
-export default function Buttons(props) {
+export default function Buttons(props): React.ReactElement {
 
   let name = ''
 
-  if (props.enter) name = classes.Submit;
+  if (props.enter) name = classes.Enter;
+  else if (props.submit) name = classes.Submit;
   else if (props.login) name = classes.Login;
   else if (props.signup) name = classes.Signup
   else if (props.apply) name = classes.Apply
   else if (props.getstarted) name = classes.getStarted
   else if (props.logout) name = classes.Logout
   else throw new Error('Invalid Prop')
-  console.log(name);
 
   return (
     <div>
-      <span>Colin</span>
        <Button floated="right" className={classes.Button + ' ' + name}>
-         <span>Testing</span>
+         <span>{props.children}</span>
        </Button>
     </div>
-    // <Grid.Column floated={right}>
-    // </Grid.Column>
   )
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import {MapContainer, TileLayer, Marker, Popup} from "react-leaflet";
 import {LatLngExpression} from 'leaflet';
+import PopupInfo from './PopupInfo/PopupInfo';
 
 export default function Map(): React.ReactElement {
   const position: LatLngExpression = [51.505, -0.09];
@@ -14,7 +15,7 @@ export default function Map(): React.ReactElement {
       />
       <Marker position={position}>
         <Popup>
-          Testing
+          <PopupInfo />
         </Popup>
       </Marker>
     </MapContainer>

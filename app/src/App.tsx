@@ -7,7 +7,7 @@ function App(): React.ReactElement {
     <div className="App">
       <Map />
       <div>
-        <Buttons login/>
+        <Buttons enter>Enter</Buttons>
       </div>
     </div>
   );
