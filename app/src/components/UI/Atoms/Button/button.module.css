@@ -1,0 +1,20 @@
+.Button {
+  color: black;
+  cursor: pointer;
+}
+
+.Submit,
+.Login,
+.Logout,
+.SignUp,
+.Apply,
+.Enter,
+.getStarted {
+  font-family: 'Bahnschrift', sans-serif !important;
+  font-size: 10px;
+}
+
+.Enter {
+  background-color: green;
+}
+
