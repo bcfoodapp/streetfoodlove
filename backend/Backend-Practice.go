@@ -18,7 +18,7 @@ func headers(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func main() {
+func practice() {
 	http.HandleFunc("/Hello", StreetFoodLove)
 	http.HandleFunc("/headers", headers)
 	http.ListenAndServe(":8090", nil)
