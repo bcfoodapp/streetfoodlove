@@ -28,7 +28,7 @@ module.exports = {
       }
     ],
   },
-  devtool: 'eval',
+  devtool: 'inline-source-map',
   resolve: {
     extensions: ['.js', '.ts', '.tsx', '.css'],
   },
