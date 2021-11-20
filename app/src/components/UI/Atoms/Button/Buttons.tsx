@@ -17,13 +17,14 @@ export default function Buttons(props): React.ReactElement {
   else if (props.apply) name = classes.Apply
   else if (props.getstarted) name = classes.getStarted
   else if (props.logout) name = classes.Logout
+  else if (props.cancel) name = classes.Cancel
   else throw new Error('Invalid Prop')
 
   return (
-    <div>
-       <Button floated="right" className={classes.Button + ' ' + name}>
-         <span>{props.children}</span>
-       </Button>
-    </div>
+    <React.Fragment>
+      <Button className={classes.Button + ' ' + name}>
+        <span>{props.children}</span>
+      </Button>
+    </React.Fragment>
   )
 }
