@@ -29,6 +29,11 @@ func (d *Database) SetupTables() error {
 			Name VARCHAR(100) NOT NULL,
 			BusinessAddress VARCHAR(500) NULL,
 			Phone VARCHAR(50) NULL,
+			Website VARCHAR(500) NULL,
+			BusinessHours VARCHAR(500) NOT NULL,
+			BusinessLogo BINARY(16) NOT NULL,
+			Latitude FLOAT NOT NULL,
+			Longitude FLOAT NOT NULL,
 			PRIMARY KEY (ID)
 		);
 		`,
@@ -46,7 +51,7 @@ func (d *Database) SetupTables() error {
 func (d *Database) AddTestData() error {
 	// Check that Vendors table is empty
 	count := 0
-	if err := d.db.QueryRowx("SELECT COUNT(*) FROM Vendor;").Scan(&count); err != nil {
+	if err := d.db.QueryRows("SELECT COUNT(*) FROM Vendor;").Scan(&count); err != nil {
 		return err
 	}
 
@@ -59,6 +64,11 @@ func (d *Database) AddTestData() error {
 		BusinessAddress: "address0",
 		Name:            "vendor0",
 		Phone:           "123-123-1234",
+	    Website:         "www.vendor0.com",
+	    BusinessHours:   "Mon-Sun 8:00AM-5:00PM",
+        BusinessLogo:    "image0_url",
+        Latitude:        "47.608013",
+        Longitude:       "-122.335167"
 	}
 
 	if err := d.VendorCreate(vendor0); err != nil {
@@ -70,6 +80,11 @@ func (d *Database) AddTestData() error {
 		BusinessAddress: "address1",
 		Name:            "vendor1",
 		Phone:           "321-321-4321",
+		Website:         "www.vendor1.com",
+        BusinessHours:   "Mon-Thur 6:00AM-2:00PM",
+        BusinessLogo:    "Image1_url",
+        Latitude:        "47.982567",
+        Longitude:       "-122.193375"
 	}
 
 	return d.VendorCreate(vendor1)
@@ -80,6 +95,11 @@ type Vendor struct {
 	BusinessAddress string
 	Name            string
 	Phone           string
+	Website         string
+    BusinessHours   string
+    BusinessLogo    string
+    Latitude        string
+    Longitude       string
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -88,12 +108,22 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			ID,
 			Name,
 			BusinessAddress,
-			Phone
+			Phone,
+			Website,
+            BusinessHours,
+            BusinessLogo,
+            Latitude,
+            Longitude
 	   ) VALUES (
 			:ID,
 			:Name,
 	    	:BusinessAddress,
-			:Phone
+			:Phone,
+			:Website,
+            :BusinessHours,
+            :BusinessLogo,
+            :Latitude,
+            :Longitude
 	   );
 	`
 	_, err := d.db.NamedExec(command, &vendor)
