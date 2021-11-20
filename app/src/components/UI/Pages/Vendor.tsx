@@ -1,6 +1,9 @@
 import React from 'react';
 import {useParams} from 'react-router-dom';
 import {useGetVendorQuery} from '../../../api';
+import { Form, TextArea, Container } from 'semantic-ui-react'
+import Buttons from '../Atoms/Button/Buttons';
+import './vendor.css'
 
 export function Vendor(): React.ReactElement {
   const params = useParams();
@@ -25,5 +28,16 @@ export function Vendor(): React.ReactElement {
 
   return <>
     {content}
+    <Container className="textBox">
+      <Container>
+        <Form>
+          <TextArea placeholder='Write Review here...' style={{minHeight: 60, minWidth: 500}}/>
+        </Form>
+      </Container>
+      <Container>
+        <a href="#" className="cancel">Cancel</a>
+        <Buttons submit>Submit</Buttons>
+      </Container>
+    </Container>
   </>;
 }
