@@ -21,10 +21,10 @@ export default function Buttons(props): React.ReactElement {
   else throw new Error('Invalid Prop')
 
   return (
-    <React.Fragment>
+    <>
       <Button className={classes.Button + ' ' + name}>
         <span>{props.children}</span>
       </Button>
-    </React.Fragment>
+    </>
   )
 }

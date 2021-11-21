@@ -1,0 +1,17 @@
+.wrapper {
+  border: 2px solid black;
+  display: inline-block;
+  margin-left: 50px;
+  position: relative;
+  height: 200px;
+  width: 200px;
+}
+
+.header {
+  text-align: center;
+  margin-top: -2px;
+}
+
+.description {
+  text-align: center;
+}
