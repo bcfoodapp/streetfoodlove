@@ -28,3 +28,19 @@
   margin-left: 10px;
 }
 
+.Login {
+  background-color: orange;
+  color: black;
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem;
+  margin-left: 10px;
+}
+
+.Signup {
+  background-color: darkkhaki;
+  color: orange;
+  border-radius: 4px;
+  padding: 0.40rem 0.75rem;
+  margin-left: 10px;
+}
+

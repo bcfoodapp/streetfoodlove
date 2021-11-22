@@ -1,0 +1,24 @@
+
+.wrapContainer {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.header {
+  margin-top: -25px;
+  margin-right: 100px;
+  display: inline-block;
+  padding-right: 50px;
+}
+
+.buttonWrap {
+  display: inline-block;
+  padding-left: 500px;
+}
+
+.searchBox {
+  padding-left: 350px;
+} 
+

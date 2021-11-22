@@ -5,6 +5,7 @@ import { Form, TextArea, Container } from 'semantic-ui-react'
 import Buttons from '../Atoms/Button/Buttons';
 import './vendor.css'
 import VendorDetailCards from '../Atoms/VendorDetailCards/VendorDetailCards';
+import HeaderBar from '../Molecules/HeaderBar/HeaderBar';
 
 export function Vendor(): React.ReactElement {
   const params = useParams();
@@ -38,6 +39,7 @@ export function Vendor(): React.ReactElement {
 
   return <>
     {/* {content} */}
+    <HeaderBar />
     <Container id="card-wrapper" style={{marginLeft: 600, marginTop: 200}}>
       <VendorDetailCards heading="about-us" style={{marginRight: 50}}>Name: {query.data?.Name}</VendorDetailCards>
       <VendorDetailCards heading="contact">{query.data?.Phone}</VendorDetailCards>
