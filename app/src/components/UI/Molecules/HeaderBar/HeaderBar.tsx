@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 export default function HeaderBar():React.ReactElement {
   return (
-    <Menu as="div" className={styles.wrapContainer}>
+    <Menu as="div" className={styles.wrapContainer} fluid widths={3}>
       <Menu.Item as="a" className={styles.header} position="left">
         <Header as="h1">StreetFoodLove</Header>
       </Menu.Item>
@@ -15,9 +15,9 @@ export default function HeaderBar():React.ReactElement {
         <SearchBox />
       </Menu.Item>
       <Menu.Item position="right">
-        <Buttons signup>Sign Up</Buttons>
+        <Buttons signup color="white">Sign Up</Buttons>
         <Link to="/login"> 
-          <Buttons login>Login</Buttons>
+          <Buttons login color="orange">Login</Buttons>
         </Link>
       </Menu.Item>
     </Menu>

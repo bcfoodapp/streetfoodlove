@@ -21,26 +21,26 @@
 }
 
 .Enter, .Submit {
-  background-color: green !important;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  margin-left: 10px;
+  /* background-color: green !important; */
+  color: white !important;
+  border-radius: 4px !important;
+  margin-left: 10px !important;
 }
 
 .Login {
-  background-color: orange;
-  color: black;
-  border-radius: 4px;
-  padding: 0.25rem 0.75rem;
-  margin-left: 10px;
+  /* background-color: orange !important; */
+  color: black !important;
+  border-radius: 4px !important;
+  border: 2px solid black !important;
+  /* padding: 0.25rem 0.75rem !important; */
+  margin-left: 15px !important;
 }
 
 .Signup {
-  background-color: darkkhaki;
-  color: orange;
-  border-radius: 4px;
-  padding: 0.40rem 0.75rem;
-  margin-left: 10px;
+  /* background-color: white !important; */
+  color: black !important;
+  border-radius: 4px !important;
+  border: 2px solid black !important;
+  margin-left: 10px !important;
 }
 

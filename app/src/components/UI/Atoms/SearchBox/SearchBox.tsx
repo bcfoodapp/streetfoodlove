@@ -8,7 +8,7 @@ export const SearchBox:React.FC = () => {
   return (
     <Container className={styles.searchBox}>
       <Input
-        icon={<Buttons enter>Enter</Buttons>}
+        icon={<Buttons enter color="green">Enter</Buttons>}
         placeholder="Se..."
         focus
       />

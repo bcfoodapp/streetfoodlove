@@ -23,7 +23,7 @@ export default function Buttons(props): React.ReactElement {
 
   return (
     <>
-      <Button className={classes.Button + ' ' + name}>
+      <Button className={classes.Button + ' ' + name} color={props.color}>
         <span>{props.children}</span>
       </Button>
     </>

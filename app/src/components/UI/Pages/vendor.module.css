@@ -1,10 +1,7 @@
-.cancel {
-  text-decoration: none;
-}
 
-.CardWrapper {
-  margin-left: 600px;
-  margin-top: 200px;
+.wrapper {
+  padding-left: 150px;
+  margin-top: 200px !important;
 }
 
 .textArea {
@@ -12,8 +9,8 @@
   margin-top: 100px;
 }
 
-.secondRowContainer {
-  margin-top: 30px;
+.buttons {
+  margin-top: 20px !important;
 }
 
 .reviews {
