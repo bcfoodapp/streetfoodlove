@@ -1,5 +1,6 @@
 import React from "react";
 import { Icon } from "semantic-ui-react";
+import "semantic-ui-css"
 
 export const ReviewLabel = () => {
   return (

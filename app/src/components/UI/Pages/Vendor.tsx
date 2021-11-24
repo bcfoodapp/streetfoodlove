@@ -6,6 +6,7 @@ import Buttons from '../Atoms/Button/Buttons';
 import styles from './vendor.module.css'
 import VendorDetailCards from '../Atoms/VendorDetailCards/VendorDetailCards';
 import HeaderBar from '../Molecules/HeaderBar/HeaderBar';
+import { Review } from '../Organisms/Review/Review';
 
 export function Vendor(): React.ReactElement {
   const params = useParams();
@@ -21,7 +22,6 @@ export function Vendor(): React.ReactElement {
   }
 
   return <>
-    {/* {content} */}
     <HeaderBar />
     <Container className={styles.CardWrapper}>
       <VendorDetailCards heading="about-us">Name: {query.data?.Name}</VendorDetailCards>
@@ -31,7 +31,6 @@ export function Vendor(): React.ReactElement {
         <VendorDetailCards heading="map">Map Image</VendorDetailCards>
       </Container>
     </Container>
-
     <Container className={styles.textArea}>
       <Form onSubmit={handleSubmit}>
         <TextArea 
@@ -45,6 +44,9 @@ export function Vendor(): React.ReactElement {
         <Buttons submit>Submit</Buttons>
       </Container>
       </Form>
+    </Container>
+    <Container className={styles.reviews}>
+      <Review />
     </Container>
   </>;
 }
