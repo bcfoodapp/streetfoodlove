@@ -9,7 +9,7 @@ import { EnumType } from "typescript";
 export const ReviewLabel = (props) => {
   return (
     <>
-      <Icon size="big" name="circle" color={props.color}/>
+      <Icon size="huge" name="circle" color={props.color}/>
     </>
   )
 }

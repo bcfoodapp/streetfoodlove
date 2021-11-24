@@ -1,0 +1,13 @@
+* {
+  box-sizing: border-box;
+  /* display: inline-block; */
+}
+
+.stars {
+  position: relative;
+}
+
+.h2 {
+  margin-left: 62px;
+  /* padding-left: 30px; */
+}
