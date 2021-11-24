@@ -1,14 +1,16 @@
 import React from "react";
-import { Container, Input, Icon } from "semantic-ui-react";
+import { Container, Input } from "semantic-ui-react";
+import styles from './searchbox.module.css'
+import Buttons from "../Button/Buttons";
 
-export const SearchBox = (props) => {
+export const SearchBox:React.FC = () => {
 
   return (
-    <Container>
+    <Container className={styles.searchBox}>
       <Input
-        icon="search"
+        icon={<Buttons enter>Enter</Buttons>}
         placeholder="Se..."
-        size={"huge"}
+        focus
       />
     </Container>
   )

@@ -20,7 +20,7 @@ export default function VendorDetailCards(props): React.ReactElement {
     <Container className={styles.wrapper}>
       {headingContent}
       <Container className={styles.description}>
-        {props.children}
+        <span>{props.children}</span>
       </Container>
     </Container>    
     </>

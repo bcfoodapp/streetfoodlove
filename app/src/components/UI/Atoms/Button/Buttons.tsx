@@ -6,6 +6,7 @@ import { Button } from 'semantic-ui-react'
  * This file assigns the respective classes and styling classes to all the different buttons on this app.  
  */
 
+
 export default function Buttons(props): React.ReactElement {
 
   let name = ''

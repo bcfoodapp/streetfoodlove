@@ -3,20 +3,23 @@ import { Button, Container, Header, Segment, Menu, Item } from "semantic-ui-reac
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from './headerbar.module.css'
+import { Link } from 'react-router-dom';
 
-export default function HeaderBar(props):React.ReactElement {
+export default function HeaderBar():React.ReactElement {
   return (
-    <Container className={styles.wrapContainer}>
-      <Container className={styles.header}>
+    <Menu as="div" className={styles.wrapContainer}>
+      <Menu.Item as="a" className={styles.header} position="left">
         <Header as="h1">StreetFoodLove</Header>
-      </Container>
-      <Container className={styles.searchBox}>
+      </Menu.Item>
+      <Menu.Item as="a">
         <SearchBox />
-      </Container>
-      <Container className={styles.buttonWrap}>
+      </Menu.Item>
+      <Menu.Item position="right">
         <Buttons signup>Sign Up</Buttons>
-        <Buttons login>Login</Buttons>
-      </Container>
-    </Container>
+        <Link to="/login"> 
+          <Buttons login>Login</Buttons>
+        </Link>
+      </Menu.Item>
+    </Menu>
   )
 }
