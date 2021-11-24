@@ -21,7 +21,7 @@
 }
 
 .Enter, .Submit {
-  background-color: green;
+  background-color: green !important;
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
