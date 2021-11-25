@@ -1,6 +1,5 @@
 * {
   box-sizing: border-box;
-  /* display: inline-block; */
 }
 
 .stars {
@@ -9,5 +8,8 @@
 
 .h2 {
   margin-left: 62px;
-  /* padding-left: 30px; */
+}
+
+.wrap.ui.container {
+  padding-right: -400px !important;
 }

@@ -11,7 +11,7 @@
 .Enter,
 .Cancel,
 .getStarted {
-  font-family: 'Bahnschrift', sans-serif !important;
+  font-family: "Bahnschrift", sans-serif !important;
   font-size: 16px;
 }
 
@@ -20,7 +20,8 @@
   padding: 0.25rem 0.75rem;
 }
 
-.Enter, .Submit {
+.Enter,
+.Submit {
   color: white !important;
   border-radius: 4px !important;
   margin-left: 10px !important;
@@ -30,7 +31,6 @@
   color: black !important;
   border-radius: 4px !important;
   border: 2px solid black !important;
-  margin-left: 15px !important;
 }
 
 .Signup {
@@ -38,5 +38,5 @@
   border-radius: 4px !important;
   border: 2px solid black !important;
   margin-left: 10px !important;
+  margin-right: 15px !important;
 }
-
