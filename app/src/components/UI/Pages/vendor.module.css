@@ -1,6 +1,7 @@
 .wrapper {
   padding-left: 150px;
   margin-top: 200px !important;
+  padding-bottom: 50px;
 }
 
 .textArea {
@@ -8,16 +9,7 @@
   margin-top: 100px;
 }
 
-.buttons {
-  margin-top: 20px !important;
-}
-
 .reviews {
   margin-left: 300px;
   padding-bottom: 200px;
-}
-
-.starrating {
-  position: relative;
-  right: 480px;
 }

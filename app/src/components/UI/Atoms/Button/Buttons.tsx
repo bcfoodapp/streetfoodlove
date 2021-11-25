@@ -17,11 +17,16 @@ export default function Buttons(props): React.ReactElement {
   else if (props.getstarted) name = classes.getStarted;
   else if (props.logout) name = classes.Logout;
   else if (props.cancel) name = classes.Cancel;
+  else if (props.writeReview) name = classes.writeReview;
   else throw new Error("Invalid Prop");
 
   return (
     <>
-      <Button className={classes.Button + " " + name} color={props.color}>
+      <Button
+        className={classes.Button + " " + name}
+        color={props.color}
+        onClick={props.clicked}
+      >
         <span>{props.children}</span>
       </Button>
     </>

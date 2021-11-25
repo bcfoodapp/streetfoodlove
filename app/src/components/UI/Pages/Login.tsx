@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Form, Checkbox } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
-import styles from "./login.module.css"
+import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
 
 export default function Login(): React.ReactElement {
@@ -10,7 +10,7 @@ export default function Login(): React.ReactElement {
     <>
       <HeaderBar />
       <Container className={styles.wrapper}>
-        <Grid centered relaxed={"very"}> 
+        <Grid centered relaxed={"very"}>
           <Grid.Column className={styles.test}>
             <Grid.Row centered>
               <h1 className={styles.header}>Login</h1>
@@ -19,20 +19,22 @@ export default function Login(): React.ReactElement {
               <Form>
                 <Form.Field>
                   <label>First Name</label>
-                  <Form.Input placeholder="First Name" width={7}/>
+                  <Form.Input placeholder="First Name" width={7} />
                 </Form.Field>
                 <Form.Field>
                   <label>Last Name</label>
-                  <Form.Input placeholder="Last Name" width={7}/>
+                  <Form.Input placeholder="Last Name" width={7} />
                 </Form.Field>
                 <Form.Field>
                   <Checkbox label="I agree to the Terms and Conditions" />
                 </Form.Field>
                 <Container>
-                  <Buttons login color="green">Login</Buttons>
+                  <Buttons login color="green">
+                    Login
+                  </Buttons>
                 </Container>
               </Form>
-            </Grid.Row>          
+            </Grid.Row>
           </Grid.Column>
         </Grid>
       </Container>

@@ -7,20 +7,20 @@ import styles from "./vendor.module.css";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Review } from "../Organisms/Review/Review";
-import { StarRating } from "../Atoms/StarRating/StarRating";
+import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 
 export function Vendor(): React.ReactElement {
   const params = useParams();
   const query = useGetVendorQuery(params.ID as string);
-  const [textAreaInput, setTextAreaInput] = useState("");
+  const [openReviewForm, setOpenReviewForm] = useState(false);
 
-  const handleChange = (e) => {
-    setTextAreaInput(e.target.value);
+  const openReviewHandler = () => {
+    setOpenReviewForm(true);
   };
 
-  const handleSubmit = () => {
-    setTextAreaInput("");
-  };
+  const cancelReviewHandler = () => {
+    setOpenReviewForm(false)
+  }
 
   return (
     <>
@@ -51,29 +51,15 @@ export function Vendor(): React.ReactElement {
           </Grid.Row>
         </Grid>
       </Container>
-      <Container className={styles.textArea}>
-        <h2>Write A Review!</h2>
-        <Container>
-          <h4>Select a Rating</h4>
-          <Container className={styles.starrating}>
-            <StarRating />
-          </Container>
+      {openReviewForm ? (
+        <ReviewForm cancelFormHandler={cancelReviewHandler}/>
+      ) : (
+        <Container className={styles.textArea}>
+          <Buttons color="orange" writeReview clicked={openReviewHandler}>
+            Write Review
+          </Buttons>
         </Container>
-        <Form onSubmit={handleSubmit}>
-          <TextArea
-            placeholder="Write Review here..."
-            style={{ minHeight: 60, maxWidth: 700 }}
-            value={textAreaInput}
-            onChange={handleChange}
-          />
-          <Container className={styles.buttons}>
-            <Buttons cancel>Cancel</Buttons>
-            <Buttons submit color="green">
-              Submit
-            </Buttons>
-          </Container>
-        </Form>
-      </Container>
+      )}
       <Container className={styles.reviews}>
         <Review />
       </Container>
