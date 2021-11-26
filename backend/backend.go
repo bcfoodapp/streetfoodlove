@@ -14,3 +14,7 @@ func (b *Backend) Close() error {
 func (b *Backend) Vendor(id uuid.UUID) (*Vendor, error) {
 	return b.Database.Vendor(id)
 }
+
+func (b *Backend) User(id uuid.UUID) (*User, error) {
+	return b.Database.User(id)
+}
