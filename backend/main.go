@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"net/http"
-	"time"
 )
 
 func main() {
@@ -16,6 +17,14 @@ func main() {
 		panic(err)
 	}
 	if err := database.AddTestData(); err != nil {
+		panic(err)
+	}
+
+	if err := database.AddUserData(); err != nil {
+		panic(err)
+	}
+
+	if err := database.AddReviewData(); err != nil {
 		panic(err)
 	}
 
