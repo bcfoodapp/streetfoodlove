@@ -36,7 +36,6 @@ func (d *Database) SetupTables() error {
 			Longitude FLOAT NOT NULL,
 			PRIMARY KEY (ID)
 		);
-
 		`,
 		`
 		CREATE TABLE IF NOT EXISTS User (
