@@ -12,7 +12,7 @@ export const SearchBox: React.FC = () => {
             Enter
           </Buttons>
         }
-        placeholder="Se..."
+        placeholder="Search..."
         focus
       />
     </Container>

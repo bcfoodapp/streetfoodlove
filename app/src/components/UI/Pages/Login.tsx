@@ -5,6 +5,10 @@ import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
 
+/**
+ * Displays the Login element in the login page
+ */
+
 export default function Login(): React.ReactElement {
   return (
     <>
