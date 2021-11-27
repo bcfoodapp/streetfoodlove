@@ -31,6 +31,11 @@ export interface Review {
   DatePosted: string;
 }
 
+export interface Credentials {
+  Username: string;
+  Password: string;
+}
+
 const encode = encodeURIComponent;
 
 export const apiSlice = createApi({
@@ -53,6 +58,13 @@ export const apiSlice = createApi({
         body: review,
       }),
     }),
+    newToken: builder.mutation<undefined, Credentials>({
+      query: (credentials) => ({
+        url: '/token',
+        method: 'POST',
+        body: credentials,
+      }),
+    })
   }),
 });
 
@@ -61,4 +73,5 @@ export const {
   useUserQuery,
   useReviewsQuery,
   useSubmitReviewMutation,
+  useNewTokenMutation,
 } = apiSlice;
