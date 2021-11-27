@@ -14,7 +14,7 @@ import (
 // API is the backend interface.
 // API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 type API struct {
-	*Backend
+	Backend *Backend
 }
 
 func (a *API) Close() error {
@@ -30,6 +30,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/vendors/:id", a.Vendor)
 	router.GET("/users/:id", a.User)
+	router.GET("/reviews", a.ReviewsByVendorID)
 	router.PUT("/reviews/:id", a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 	router.POST("/token", a.TokenPost)
@@ -119,6 +120,22 @@ func (a *API) User(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+func (a *API) ReviewsByVendorID(c *gin.Context) {
+	vendorID, err := uuid.Parse(c.Query("vendorID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	reviews, err := a.Backend.ReviewsByVendorID(vendorID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, reviews)
+}
+
 func (a *API) ReviewPut(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -166,7 +183,7 @@ func (a *API) TokenPost(c *gin.Context) {
 		return
 	}
 
-	userID, err := a.Database.UserIDByCredentials(credentials)
+	userID, err := a.Backend.Database.UserIDByCredentials(credentials)
 	if err != nil {
 		c.Error(err)
 		return
