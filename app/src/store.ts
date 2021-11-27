@@ -20,7 +20,7 @@ export const rootSlice = createSlice({
 
 export const {setToken} = rootSlice.actions;
 
-export default configureStore({
+export const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     root: rootSlice.reducer,
@@ -28,3 +28,5 @@ export default configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware).concat(errorHandler),
 });
+
+export type RootState = ReturnType<typeof store.getState>;

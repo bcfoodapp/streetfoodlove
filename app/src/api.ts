@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import {RootState} from './store';
 
 export interface Vendor {
   ID: string;
@@ -41,7 +42,16 @@ export type Token = string;
 const encode = encodeURIComponent;
 
 export const apiSlice = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8080" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://localhost:8080",
+    prepareHeaders: (headers, {getState}) => {
+      const token = (getState() as RootState).root.token;
+      if (token !== null) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    }
+  }),
   tagTypes: ['Review'],
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
