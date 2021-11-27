@@ -136,7 +136,7 @@ func (d *Database) AddTestData() error {
 			LastName:   "Tan",
 			SignUpDate: time.Now(),
 			UserType:   0,
-			Photo:      "image-1url",
+			Photo:      uuid.MustParse("3959ac2f-756e-4632-9678-912130384248"),
 		}
 
 		if err := d.UserCreate(user0, "password"); err != nil {
@@ -207,7 +207,7 @@ type User struct {
 	LastName   string
 	SignUpDate time.Time
 	UserType   int
-	Photo      string
+	Photo      uuid.UUID
 }
 
 func (d *Database) UserCreate(user *User, password string) error {
