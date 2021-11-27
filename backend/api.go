@@ -137,7 +137,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.ReviewCreate(review); err != nil {
+	if err := a.Backend.ReviewPut(c.MustGet(userIDKey).(uuid.UUID), review); err != nil {
 		c.Error(err)
 		return
 	}
