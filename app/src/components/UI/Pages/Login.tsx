@@ -5,6 +5,8 @@ import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
 import {Credentials, useNewTokenMutation} from '../../../api';
+import {useDispatch} from 'react-redux';
+import {setToken} from '../../../store';
 
 /**
  * Displays the Login element in the login page
@@ -13,10 +15,12 @@ import {Credentials, useNewTokenMutation} from '../../../api';
 export default function Login(): React.ReactElement {
   const [credentials, setCredentials] = useState<Credentials>({Password: '', Username: ''});
   const [newToken, {isError, error}] = useNewTokenMutation();
+  const dispatch = useDispatch();
 
   const onSubmit = async () => {
     try {
-      await newToken(credentials);
+      const token = await newToken(credentials).unwrap();
+      dispatch(setToken(token));
     } catch(e) {}
   }
 

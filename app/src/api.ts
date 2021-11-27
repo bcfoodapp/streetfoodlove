@@ -36,6 +36,8 @@ export interface Credentials {
   Password: string;
 }
 
+export type Token = string;
+
 const encode = encodeURIComponent;
 
 export const apiSlice = createApi({
@@ -58,7 +60,7 @@ export const apiSlice = createApi({
         body: review,
       }),
     }),
-    newToken: builder.mutation<undefined, Credentials>({
+    newToken: builder.mutation<Token, Credentials>({
       query: (credentials) => ({
         url: '/token',
         method: 'POST',

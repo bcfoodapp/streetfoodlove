@@ -22,8 +22,8 @@ export const Review = (props: {review: ReviewObj}) => {
           </Grid.Column>
           <Grid.Column width={10}>
             <Grid.Row>
-              {/* TODO there is no subject on reviews */}
-              <h2 className={styles.h2}>hello</h2>
+              {/* TODO there is no subject field on reviews */}
+              {/*<h2 className={styles.h2}>hello</h2>*/}
             </Grid.Row>
             <Grid.Row>
               <Container className={styles.stars}>
