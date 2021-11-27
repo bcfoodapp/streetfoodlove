@@ -4,7 +4,7 @@ import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
-import {Credentials} from '../../../api';
+import {Credentials, useNewTokenMutation} from '../../../api';
 
 /**
  * Displays the Login element in the login page
@@ -12,6 +12,14 @@ import {Credentials} from '../../../api';
 
 export default function Login(): React.ReactElement {
   const [credentials, setCredentials] = useState<Credentials>({Password: '', Username: ''});
+  const [newToken, {isError, error}] = useNewTokenMutation();
+
+  const onSubmit = async () => {
+    try {
+      await newToken(credentials);
+    } catch(e) {}
+  }
+
   return (
     <>
       <HeaderBar />
@@ -22,7 +30,7 @@ export default function Login(): React.ReactElement {
               <h1 className={styles.header}>Login</h1>
             </Grid.Row>
             <Grid.Row>
-              <Form onSubmit={() => {}}>
+              <Form onSubmit={onSubmit}>
                 <Form.Field>
                   <Form.Input
                     placeholder="Username"
@@ -49,6 +57,8 @@ export default function Login(): React.ReactElement {
                     Login
                   </Buttons>
                 </Container>
+                {/* Temporary error output */}
+                <pre>{isError ? JSON.stringify(error) : ''}</pre>
               </Form>
             </Grid.Row>
           </Grid.Column>

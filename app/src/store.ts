@@ -1,9 +1,9 @@
-import {configureStore, isRejectedWithValue, Middleware, MiddlewareAPI} from '@reduxjs/toolkit';
+import {configureStore, isRejectedWithValue, Middleware} from '@reduxjs/toolkit';
 import { apiSlice } from "./api";
 
 const errorHandler: Middleware = () => (next) => (action) => {
   if (isRejectedWithValue(action)) {
-    throw `api error: status ${action.payload.originalStatus}, data: "${action.payload.data}", error: "${action.payload.error}"`;
+    console.error(`api error: ${JSON.stringify(action.payload)}`);
   }
   return next(action);
 }

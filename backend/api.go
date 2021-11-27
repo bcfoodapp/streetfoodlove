@@ -40,7 +40,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 func errorHandler(c *gin.Context) {
 	c.Next()
 	for _, err := range c.Errors {
-		c.String(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, err.Error())
 	}
 }
 
