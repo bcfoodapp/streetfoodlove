@@ -325,7 +325,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
 	const command = `
 		SELECT *
 		FROM Reviews
-		Where VendorID=?
+		WHERE VendorID=?
 	`
 	rows, err := d.db.Queryx(command, vendorID)
 	if err != nil {
