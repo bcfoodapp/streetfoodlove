@@ -1,6 +1,9 @@
 package main
 
 import (
+	"crypto/sha256"
+	"crypto/subtle"
+	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -41,7 +44,7 @@ func (d *Database) SetupTables() error {
 		CREATE TABLE IF NOT EXISTS User (
 			ID BINARY(16) NOT NULL,
 			Email VARCHAR(100) NULL,
-			Username VARCHAR(100) NULL,
+			Username VARCHAR(100) UNIQUE NULL,
 			FirstName VARCHAR(100) NULL,
 			LastName VARCHAR(100) NULL,
 			SignUpDate DATETIME NULL,
@@ -245,11 +248,12 @@ func (d *Database) UserCreate(user *User, password string) error {
 			:Photo
 		)
 	`
+
 	userWithPassword := &struct {
 		*User
-		LoginPassword string
+		LoginPassword [sha256.Size]byte
 	}{
-		user, password,
+		user, sha256.Sum256([]byte(password)),
 	}
 	_, err := d.db.NamedExec(command, userWithPassword)
 	return err
@@ -264,6 +268,33 @@ func (d *Database) User(id uuid.UUID) (*User, error) {
 	user := &User{}
 	err := row.StructScan(user)
 	return user, err
+}
+
+type Credentials struct {
+	Username string
+	Password string
+}
+
+func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, error) {
+	const command = `
+		SELECT ID, LoginPassword FROM User WHERE Username=?;
+	`
+	row := d.db.QueryRowx(command, &credentials.Password)
+
+	userID := uuid.UUID{}
+	passwordHash := [sha256.Size]byte{}
+	err := row.Scan(&userID, &passwordHash)
+	if err != nil {
+		return [16]byte{}, err
+	}
+
+	givenPasswordHash := sha256.Sum256([]byte(credentials.Password))
+
+	if subtle.ConstantTimeCompare(givenPasswordHash[:], passwordHash[:]) != 1 {
+		return uuid.UUID{}, fmt.Errorf("password does not match")
+	}
+
+	return userID, nil
 }
 
 type Review struct {

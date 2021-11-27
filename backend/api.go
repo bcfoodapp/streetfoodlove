@@ -101,7 +101,6 @@ func (a *API) Vendor(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, vendor)
-	return
 }
 
 func (a *API) User(c *gin.Context) {
@@ -118,7 +117,6 @@ func (a *API) User(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
-	return
 }
 
 func (a *API) ReviewPut(c *gin.Context) {
@@ -159,16 +157,23 @@ func (a *API) Review(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, review)
-	return
 }
 
 func (a *API) TokenPost(c *gin.Context) {
-	// Match user password with given password
-	id := uuid.MustParse("18a0f9ad-acbb-48a2-9f90-45cbcb156c5a")
+	credentials := &Credentials{}
+	if err := c.ShouldBindJSON(credentials); err != nil {
+		c.Error(err)
+		return
+	}
 
-	// If matched
+	userID, err := a.Database.UserIDByCredentials(credentials)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
 	claims := TokenClaims{
-		UserID: id,
+		UserID: userID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: (time.Now().Add(time.Minute * 10)).Unix(),
 		},
