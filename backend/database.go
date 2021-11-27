@@ -26,6 +26,7 @@ func (d *Database) Close() error {
 
 // SetupTables creates necessary tables if they do not exist.
 func (d *Database) SetupTables() error {
+	// TODO maybe we should change all ID fields to string type for readability
 	commands := [...]string{
 		`
 		CREATE TABLE IF NOT EXISTS Vendor (
