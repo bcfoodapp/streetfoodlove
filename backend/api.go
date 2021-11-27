@@ -25,6 +25,7 @@ func (a *API) Close() error {
 func (a *API) AddRoutes(router *gin.Engine) {
 	corsOptions := cors.DefaultConfig()
 	corsOptions.AllowOrigins = []string{"http://localhost:3000"}
+	corsOptions.AddAllowHeaders("Authorization")
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
 

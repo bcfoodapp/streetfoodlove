@@ -12,8 +12,8 @@ export const rootSlice = createSlice({
   name: 'root',
   initialState: {token: null as string | null},
   reducers: {
-    setToken: (state, {payload: {token}}) => {
-      state.token = token
+    setToken: (state, {payload}) => {
+      state.token = payload;
     }
   },
 });
