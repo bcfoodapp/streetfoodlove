@@ -62,6 +62,7 @@ export const apiSlice = createApi({
     }),
     reviews: builder.query<Review[], string>({
       query: (vendorID) => `/reviews?vendorID=${encode(vendorID)}`,
+      providesTags: ['Review'],
     }),
     submitReview: builder.mutation<undefined, Review>({
       query: (review) => ({
@@ -69,6 +70,7 @@ export const apiSlice = createApi({
         method: 'PUT',
         body: review,
       }),
+      invalidatesTags: ['Review'],
     }),
     newToken: builder.mutation<Token, Credentials>({
       query: (credentials) => ({
