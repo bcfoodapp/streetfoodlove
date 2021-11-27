@@ -33,3 +33,7 @@ func (u *UUID) Scan(src interface{}) error {
 func (u *UUID) MarshalJSON() ([]byte, error) {
 	return json.Marshal((*uuid.UUID)(u).String())
 }
+
+func (u *UUID) UnmarshalJSON(b []byte) error {
+	return json.Unmarshal(b, (*uuid.UUID)(u))
+}
