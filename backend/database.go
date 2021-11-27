@@ -125,34 +125,32 @@ func (d *Database) AddTestData() error {
 
 	if userCount < 0 {
 		user0 := &User{
-			ID:            uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4"),
-			Email:         "seventan2516@gmail.com",
-			Username:      "Selina2516",
-			FirstName:     "Selina",
-			LastName:      "Tan",
-			SignUpDate:    "2021-11-23 11:45",
-			LoginPassword: "JINSIWDW234",
-			UserType:      0,
-			Photo:         "image-1url",
+			ID:         uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4"),
+			Email:      "seventan2516@gmail.com",
+			Username:   "Selina2516",
+			FirstName:  "Selina",
+			LastName:   "Tan",
+			SignUpDate: "2021-11-23 11:45",
+			UserType:   0,
+			Photo:      "image-1url",
 		}
 
-		if err := d.UserCreate(user0); err != nil {
+		if err := d.UserCreate(user0, "JINSIWDW234"); err != nil {
 			return err
 		}
 
 		user1 := &User{
-			ID:            uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
-			Email:         "jonney2313@hotmail.com",
-			Username:      "Jonney2313",
-			FirstName:     "Jonney",
-			LastName:      "William",
-			SignUpDate:    "2021-11-25 16:25",
-			LoginPassword: "738djsuw*dwd",
-			UserType:      0,
-			Photo:         "image-5url",
+			ID:         uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Email:      "jonney2313@hotmail.com",
+			Username:   "Jonney2313",
+			FirstName:  "Jonney",
+			LastName:   "William",
+			SignUpDate: "2021-11-25 16:25",
+			UserType:   0,
+			Photo:      "image-5url",
 		}
 
-		if err := d.UserCreate(user1); err != nil {
+		if err := d.UserCreate(user1, "738djsuw*dwd"); err != nil {
 			return err
 		}
 	}
@@ -197,7 +195,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:Longitude
 	   );
 	`
-	_, err := d.db.NamedExec(command, &vendor)
+	_, err := d.db.NamedExec(command, vendor)
 	return err
 }
 
@@ -213,18 +211,17 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 }
 
 type User struct {
-	ID            uuid.UUID
-	Email         string
-	Username      string
-	FirstName     string
-	LastName      string
-	SignUpDate    string
-	LoginPassword string
-	UserType      int
-	Photo         string
+	ID         uuid.UUID
+	Email      string
+	Username   string
+	FirstName  string
+	LastName   string
+	SignUpDate string
+	UserType   int
+	Photo      string
 }
 
-func (d *Database) UserCreate(user *User) error {
+func (d *Database) UserCreate(user *User, password string) error {
 	const command = `
 		INSERT INTO User (
 			ID,
@@ -248,7 +245,13 @@ func (d *Database) UserCreate(user *User) error {
 			:Photo
 		)
 	`
-	_, err := d.db.NamedExec(command, &user)
+	userWithPassword := &struct {
+		*User
+		LoginPassword string
+	}{
+		user, password,
+	}
+	_, err := d.db.NamedExec(command, userWithPassword)
 	return err
 }
 
@@ -287,7 +290,7 @@ func (d *Database) ReviewCreate(review *Review) error {
 			:DatePosted
 		)
 	`
-	_, err := d.db.NamedExec(command, &review)
+	_, err := d.db.NamedExec(command, review)
 	return err
 }
 
