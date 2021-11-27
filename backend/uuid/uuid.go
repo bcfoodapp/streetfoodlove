@@ -30,10 +30,14 @@ func (u *UUID) Scan(src interface{}) error {
 	return (*uuid.UUID)(u).Scan(src)
 }
 
-func (u *UUID) MarshalJSON() ([]byte, error) {
-	return json.Marshal((*uuid.UUID)(u).String())
+func (u UUID) MarshalJSON() ([]byte, error) {
+	return json.Marshal((uuid.UUID)(u).String())
 }
 
 func (u *UUID) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, (*uuid.UUID)(u))
+	s := ""
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+	return (*uuid.UUID)(u).UnmarshalText([]byte(s))
 }
