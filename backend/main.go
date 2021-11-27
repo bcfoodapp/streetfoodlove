@@ -20,14 +20,6 @@ func main() {
 		panic(err)
 	}
 
-	if err := database.AddUserData(); err != nil {
-		panic(err)
-	}
-
-	if err := database.AddReviewData(); err != nil {
-		panic(err)
-	}
-
 	api := API{&Backend{database}}
 	defer api.Close()
 
