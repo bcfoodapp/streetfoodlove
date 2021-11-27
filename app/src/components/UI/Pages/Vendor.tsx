@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useGetVendorQuery } from "../../../api";
+import {useGetReviewsQuery, useGetVendorQuery} from '../../../api';
 import { Container, Grid } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./vendor.module.css";
@@ -11,12 +11,11 @@ import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
- * @returns 
  */
-
 export function Vendor(): React.ReactElement {
-  const params = useParams();
-  const query = useGetVendorQuery(params.ID as string);
+  const vendorID = useParams().ID as string;
+  const getVendorQuery = useGetVendorQuery(vendorID);
+  const getReviewsQuery = useGetReviewsQuery(vendorID);
   const [openReviewForm, setOpenReviewForm] = useState(false);
   const [completedFormData, setCompletedFormData] = useState({});
 
@@ -40,19 +39,19 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
-                Name: {query.data?.Name}
+                Name: {getVendorQuery.data?.Name}
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
               <VendorDetailCards heading="contact">
-                {query.data?.Phone}
+                {getVendorQuery.data?.Phone}
               </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="address">
-                {query.data?.BusinessAddress}
+                {getVendorQuery.data?.BusinessAddress}
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
@@ -71,7 +70,7 @@ export function Vendor(): React.ReactElement {
         </Container>
       )}
       <Container className={styles.reviews}>
-        <Review />
+        {getReviewsQuery.data?.map((review, i) => <Review review={review} key={i} />)}
       </Container>
     </>
   );

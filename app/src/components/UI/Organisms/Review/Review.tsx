@@ -3,12 +3,13 @@ import { Container, Grid } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
 import styles from "./review.module.css";
+import {Review as ReviewObj} from '../../../../api';
 
 /**
  * Displays a review card that contains the information from a completed review of a vendor
  */
 
-export const Review = () => {
+export const Review = (props: {review: ReviewObj}) => {
 
   const [starRating, setStarRating] = useState(null)
 
@@ -21,6 +22,7 @@ export const Review = () => {
           </Grid.Column>
           <Grid.Column width={10}>
             <Grid.Row>
+              {/* TODO there is no subject on reviews */}
               <h2 className={styles.h2}>hello</h2>
             </Grid.Row>
             <Grid.Row>
@@ -29,7 +31,7 @@ export const Review = () => {
               </Container>
             </Grid.Row>
             <Grid.Row>
-              <pre>This is the best place that I've ever eaten!</pre>
+              <pre>{props.review.Text}</pre>
             </Grid.Row>
           </Grid.Column>
         </Grid.Row>

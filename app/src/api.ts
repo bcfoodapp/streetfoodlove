@@ -43,8 +43,8 @@ export const apiSlice = createApi({
     getUser: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
     }),
-    getReview: builder.query<Review, string>({
-      query: (id) => `/reviews/${encode(id)}`,
+    getReviews: builder.query<Review[], string>({
+      query: (vendorID) => `/reviews?vendorID=${encode(vendorID)}`,
     }),
     putReview: builder.mutation<undefined, Review>({
       query: (review) => ({
@@ -59,6 +59,6 @@ export const apiSlice = createApi({
 export const {
   useGetVendorQuery,
   useGetUserQuery,
-  useGetReviewQuery,
+  useGetReviewsQuery,
   usePutReviewMutation,
 } = apiSlice;
