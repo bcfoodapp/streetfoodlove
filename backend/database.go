@@ -38,7 +38,7 @@ func (d *Database) SetupTables() error {
 			Latitude FLOAT NOT NULL,
 			Longitude FLOAT NOT NULL,
 			PRIMARY KEY (ID)
-		);
+		)
 		`,
 		`
 		CREATE TABLE IF NOT EXISTS User (
@@ -52,7 +52,7 @@ func (d *Database) SetupTables() error {
 			UserType TINYINT NULL,
 			Photo BINARY(16),
 			PRIMARY KEY (ID)
-		);
+		)
 		`,
 		`
 		CREATE TABLE IF NOT EXISTS Reviews (
@@ -66,7 +66,7 @@ func (d *Database) SetupTables() error {
 			ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY (UserID) REFERENCES User(ID)
 			ON DELETE CASCADE ON UPDATE CASCADE
-		);
+		)
 		`,
 	}
 
@@ -126,7 +126,7 @@ func (d *Database) AddTestData() error {
 		return err
 	}
 
-	if userCount < 0 {
+	if userCount < 1 {
 		user0 := &User{
 			ID:         uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4"),
 			Email:      "test@example.com",
@@ -181,7 +181,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:BusinessLogo,
 			:Latitude,
 			:Longitude
-	   );
+	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
 	return err
@@ -233,11 +233,12 @@ func (d *Database) UserCreate(user *User, password string) error {
 			:Photo
 		)
 	`
+	hash := sha256.Sum256([]byte(password))
 	userWithPassword := &struct {
 		*User
-		LoginPassword [sha256.Size]byte
+		LoginPassword []byte
 	}{
-		user, sha256.Sum256([]byte(password)),
+		user, hash[:],
 	}
 	_, err := d.db.NamedExec(command, userWithPassword)
 	return err
@@ -245,7 +246,7 @@ func (d *Database) UserCreate(user *User, password string) error {
 
 func (d *Database) User(id uuid.UUID) (*User, error) {
 	const command = `
-		SELECT * FROM User WHERE ID=?;
+		SELECT * FROM User WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
@@ -261,12 +262,12 @@ type Credentials struct {
 
 func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, error) {
 	const command = `
-		SELECT ID, LoginPassword FROM User WHERE Username=?;
+		SELECT ID, LoginPassword FROM User WHERE Username=?
 	`
 	row := d.db.QueryRowx(command, &credentials.Username)
 
 	userID := uuid.UUID{}
-	passwordHash := [sha256.Size]byte{}
+	var passwordHash []byte
 	err := row.Scan(&userID, &passwordHash)
 	if err != nil {
 		return [16]byte{}, err
@@ -274,7 +275,7 @@ func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, err
 
 	givenPasswordHash := sha256.Sum256([]byte(credentials.Password))
 
-	if subtle.ConstantTimeCompare(givenPasswordHash[:], passwordHash[:]) != 1 {
+	if subtle.ConstantTimeCompare(givenPasswordHash[:], passwordHash) != 1 {
 		return uuid.UUID{}, fmt.Errorf("password does not match")
 	}
 
@@ -311,11 +312,35 @@ func (d *Database) ReviewCreate(review *Review) error {
 
 func (d *Database) Review(id uuid.UUID) (*Review, error) {
 	const command = `
-		SELECT * FROM Reviews WHERE ID=?;
+		SELECT * FROM Reviews WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
 	review := &Review{}
 	err := row.StructScan(review)
 	return review, err
+}
+
+func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
+	const command = `
+		SELECT *
+		FROM Reviews
+		WHERE VendorID=?
+	`
+	rows, err := d.db.Queryx(command, vendorID)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*Review
+
+	for rows.Next() {
+		review := &Review{}
+		if err := rows.StructScan(review); err != nil {
+			return nil, err
+		}
+		result = append(result, review)
+	}
+
+	return result, rows.Err()
 }
