@@ -248,7 +248,6 @@ func (d *Database) UserCreate(user *User, password string) error {
 			:Photo
 		)
 	`
-
 	userWithPassword := &struct {
 		*User
 		LoginPassword [sha256.Size]byte
