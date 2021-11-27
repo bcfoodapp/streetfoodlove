@@ -7,7 +7,7 @@ import (
 
 // Backend handles the application logic.
 type Backend struct {
-	*Database
+	Database *Database
 }
 
 func (b *Backend) Close() error {
@@ -34,4 +34,8 @@ func (b *Backend) ReviewPut(userID uuid.UUID, review *Review) error {
 	}
 
 	return b.Database.ReviewCreate(review)
+}
+
+func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
+	return b.Database.ReviewsByVendorID(vendorID)
 }
