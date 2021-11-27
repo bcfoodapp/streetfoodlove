@@ -24,7 +24,7 @@ export default function HeaderBar(): React.ReactElement {
         <SearchBox />
       </Menu.Item>
       <Menu.Item position="right">
-        {/* TODO need feedback for logged in status by hiding these buttons */}
+        {/* TODO need indication for logged in status by hiding these buttons */}
         <Buttons signup color="white">
           Sign Up
         </Buttons>

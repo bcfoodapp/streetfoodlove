@@ -1,5 +1,6 @@
 import {configureStore, createSlice, isRejectedWithValue, Middleware, MiddlewareAPI} from '@reduxjs/toolkit';
 import { apiSlice } from "./api";
+import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
 
 const apiErrorHandler: Middleware = (api: MiddlewareAPI<typeof store.dispatch, RootState>) =>
   (next) => (action) => {
@@ -38,3 +39,6 @@ export const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export const useAppDispatch = () => useDispatch<typeof store.dispatch>();

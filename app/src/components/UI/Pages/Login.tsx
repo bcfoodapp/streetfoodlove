@@ -5,8 +5,7 @@ import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
 import {Credentials, useNewTokenMutation} from '../../../api';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState, setToken} from '../../../store';
+import {setToken, useAppDispatch, useAppSelector} from '../../../store';
 import {useNavigate} from 'react-router-dom';
 
 /**
@@ -16,9 +15,9 @@ import {useNavigate} from 'react-router-dom';
 export default function Login(): React.ReactElement {
   const [credentials, setCredentials] = useState<Credentials>({Password: '', Username: ''});
   const [newToken] = useNewTokenMutation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const error = useSelector<RootState, RootState['root']['error']>(state => state.root.error);
+  const error = useAppSelector(state => state.root.error);
 
   const onSubmit = async () => {
     try {
