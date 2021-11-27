@@ -1,0 +1,11 @@
+* {
+  box-sizing: border-box;
+}
+
+.stars {
+  position: relative;
+}
+
+.h2 {
+  margin-left: 62px;
+}

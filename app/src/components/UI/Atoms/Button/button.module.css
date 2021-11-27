@@ -10,8 +10,9 @@
 .Apply,
 .Enter,
 .Cancel,
-.getStarted {
-  font-family: 'Bahnschrift', sans-serif !important;
+.getStarted,
+.writeReview {
+  font-family: "Bahnschrift", sans-serif !important;
   font-size: 16px;
 }
 
@@ -20,11 +21,23 @@
   padding: 0.25rem 0.75rem;
 }
 
-.Enter, .Submit {
-  background-color: green;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  margin-left: 10px;
+.Enter,
+.Submit {
+  color: white !important;
+  border-radius: 4px !important;
+  margin-left: 10px !important;
 }
 
+.Login {
+  color: black !important;
+  border-radius: 4px !important;
+  border: 2px solid black !important;
+}
+
+.Signup {
+  color: black !important;
+  border-radius: 4px !important;
+  border: 2px solid black !important;
+  margin-left: 10px !important;
+  margin-right: 15px !important;
+}

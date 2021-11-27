@@ -1,0 +1,28 @@
+.wrapper {
+  position: relative;
+  background-color: antiquewhite;
+  border: 1px solid black;
+  margin-left: 300px;
+  margin-top: 220px;
+  width: 500px !important;
+}
+
+.ui.center.container {
+  display: inline-block !important;
+}
+
+.fields {
+  margin-top: 20px;
+  display: inline-block !important;
+}
+
+.test {
+  position: absolute;
+  left: 30%;
+  padding-bottom: 30px !important;
+  padding-top: 20px !important;
+}
+
+.header {
+  padding-bottom: 20px;
+}
