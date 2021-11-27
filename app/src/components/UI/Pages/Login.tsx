@@ -7,6 +7,7 @@ import { Grid } from "semantic-ui-react";
 import {Credentials, useNewTokenMutation} from '../../../api';
 import {useDispatch} from 'react-redux';
 import {setToken} from '../../../store';
+import {useNavigate} from 'react-router-dom';
 
 /**
  * Displays the Login element in the login page
@@ -16,11 +17,13 @@ export default function Login(): React.ReactElement {
   const [credentials, setCredentials] = useState<Credentials>({Password: '', Username: ''});
   const [newToken, {isError, error}] = useNewTokenMutation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onSubmit = async () => {
     try {
       const token = await newToken(credentials).unwrap();
       dispatch(setToken(token));
+      navigate(-1);
     } catch(e) {}
   }
 
