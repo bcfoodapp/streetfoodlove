@@ -7,6 +7,7 @@ import (
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 // Database abstraction layer
@@ -133,7 +134,7 @@ func (d *Database) AddTestData() error {
 			Username:   "test",
 			FirstName:  "Selina",
 			LastName:   "Tan",
-			SignUpDate: "2021-11-23 11:45",
+			SignUpDate: time.Now(),
 			UserType:   0,
 			Photo:      "image-1url",
 		}
@@ -204,7 +205,7 @@ type User struct {
 	Username   string
 	FirstName  string
 	LastName   string
-	SignUpDate string
+	SignUpDate time.Time
 	UserType   int
 	Photo      string
 }
@@ -287,7 +288,7 @@ type Review struct {
 	Text       string
 	VendorID   uuid.UUID
 	UserID     uuid.UUID
-	DatePosted string
+	DatePosted time.Time
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -326,6 +327,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
 		SELECT *
 		FROM Reviews
 		WHERE VendorID=?
+		ORDER BY DatePosted DESC
 	`
 	rows, err := d.db.Queryx(command, vendorID)
 	if err != nil {

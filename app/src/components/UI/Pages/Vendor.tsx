@@ -34,7 +34,6 @@ export function Vendor(): React.ReactElement {
       ID: uuidv4(),
       VendorID: vendorID,
       UserID: '02c353e2-e0f5-4730-89c7-b0a0610232e4',
-      DatePosted: '2021-12-01 12:00'
     };
 
     submitReview(review);

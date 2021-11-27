@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
+	"time"
 )
 
 // Backend handles the application logic.
@@ -32,6 +33,8 @@ func (b *Backend) ReviewPut(userID uuid.UUID, review *Review) error {
 	if review.UserID != userID {
 		return fmt.Errorf(unauthorized)
 	}
+
+	review.DatePosted = time.Now()
 
 	return b.Database.ReviewCreate(review)
 }

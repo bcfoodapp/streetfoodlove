@@ -19,7 +19,6 @@ export interface User {
   Username: string;
   FirstName: string;
   LastName: string;
-  SignUpDate: string;
   UserType: number;
   Photo: string;
 }
@@ -29,7 +28,6 @@ export interface Review {
   Text: string;
   VendorID: string;
   UserID: string;
-  DatePosted: string;
 }
 
 export interface Credentials {

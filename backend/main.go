@@ -71,6 +71,7 @@ func getDatabase() *Database {
 		User:                 "root",
 		AllowNativePasswords: true,
 		DBName:               "streetfoodlove",
+		ParseTime:            true,
 	}
 	db, err = sqlx.Connect("mysql", config.FormatDSN())
 	if err != nil {
