@@ -32,14 +32,12 @@ export function Vendor(): React.ReactElement {
   }
 
   const completedReviewHandler = (obj: {Text: string}) => {
-    const review: ReviewType = {
+    submitReview({
       ...obj,
       ID: uuidv4(),
       VendorID: vendorID,
       UserID: '02c353e2-e0f5-4730-89c7-b0a0610232e4',
-    };
-
-    submitReview(review);
+    });
   }
 
   return (

@@ -9,7 +9,7 @@ import {Review as ReviewObj} from '../../../../api';
  * Displays a review card that contains the information from a completed review of a vendor
  */
 
-export const Review = (props: {review: ReviewObj}) => {
+export const Review = ({review}: {review: ReviewObj}) => {
 
   const [starRating, setStarRating] = useState(null)
 
@@ -31,7 +31,7 @@ export const Review = (props: {review: ReviewObj}) => {
               </Container>
             </Grid.Row>
             <Grid.Row>
-              <pre>{props.review.Text}</pre>
+              <pre>{review.Text}</pre>
             </Grid.Row>
           </Grid.Column>
         </Grid.Row>
