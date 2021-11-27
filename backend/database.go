@@ -1,6 +1,9 @@
 package main
 
 import (
+	"crypto/sha256"
+	"crypto/subtle"
+	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -41,7 +44,7 @@ func (d *Database) SetupTables() error {
 		CREATE TABLE IF NOT EXISTS User (
 			ID BINARY(16) NOT NULL,
 			Email VARCHAR(100) NULL,
-			Username VARCHAR(100) NULL,
+			Username VARCHAR(100) UNIQUE NULL,
 			FirstName VARCHAR(100) NULL,
 			LastName VARCHAR(100) NULL,
 			SignUpDate DATETIME NULL,
@@ -126,8 +129,8 @@ func (d *Database) AddTestData() error {
 	if userCount < 0 {
 		user0 := &User{
 			ID:         uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4"),
-			Email:      "seventan2516@gmail.com",
-			Username:   "Selina2516",
+			Email:      "test@example.com",
+			Username:   "test",
 			FirstName:  "Selina",
 			LastName:   "Tan",
 			SignUpDate: "2021-11-23 11:45",
@@ -135,22 +138,7 @@ func (d *Database) AddTestData() error {
 			Photo:      "image-1url",
 		}
 
-		if err := d.UserCreate(user0, "JINSIWDW234"); err != nil {
-			return err
-		}
-
-		user1 := &User{
-			ID:         uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
-			Email:      "jonney2313@hotmail.com",
-			Username:   "Jonney2313",
-			FirstName:  "Jonney",
-			LastName:   "William",
-			SignUpDate: "2021-11-25 16:25",
-			UserType:   0,
-			Photo:      "image-5url",
-		}
-
-		if err := d.UserCreate(user1, "738djsuw*dwd"); err != nil {
+		if err := d.UserCreate(user0, "password"); err != nil {
 			return err
 		}
 	}
@@ -247,9 +235,9 @@ func (d *Database) UserCreate(user *User, password string) error {
 	`
 	userWithPassword := &struct {
 		*User
-		LoginPassword string
+		LoginPassword [sha256.Size]byte
 	}{
-		user, password,
+		user, sha256.Sum256([]byte(password)),
 	}
 	_, err := d.db.NamedExec(command, userWithPassword)
 	return err
@@ -264,6 +252,33 @@ func (d *Database) User(id uuid.UUID) (*User, error) {
 	user := &User{}
 	err := row.StructScan(user)
 	return user, err
+}
+
+type Credentials struct {
+	Username string
+	Password string
+}
+
+func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, error) {
+	const command = `
+		SELECT ID, LoginPassword FROM User WHERE Username=?;
+	`
+	row := d.db.QueryRowx(command, &credentials.Username)
+
+	userID := uuid.UUID{}
+	passwordHash := [sha256.Size]byte{}
+	err := row.Scan(&userID, &passwordHash)
+	if err != nil {
+		return [16]byte{}, err
+	}
+
+	givenPasswordHash := sha256.Sum256([]byte(credentials.Password))
+
+	if subtle.ConstantTimeCompare(givenPasswordHash[:], passwordHash[:]) != 1 {
+		return uuid.UUID{}, fmt.Errorf("password does not match")
+	}
+
+	return userID, nil
 }
 
 type Review struct {
