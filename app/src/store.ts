@@ -3,7 +3,7 @@ import { apiSlice } from "./api";
 
 const errorHandler: Middleware = () => (next) => (action) => {
   if (isRejectedWithValue(action)) {
-    throw action.payload.error;
+    throw `api error: status ${action.payload.originalStatus}, data: "${action.payload.data}", error: "${action.payload.error}"`;
   }
   return next(action);
 }

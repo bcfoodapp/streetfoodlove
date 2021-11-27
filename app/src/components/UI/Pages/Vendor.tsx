@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import {useGetReviewsQuery, useGetVendorQuery} from '../../../api';
+import {useGetReviewsQuery, useGetVendorQuery, usePutReviewMutation, Review as ReviewType} from '../../../api';
 import { Container, Grid } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./vendor.module.css";
@@ -8,6 +8,7 @@ import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
+import {v4 as uuidv4} from 'uuid';
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -16,8 +17,8 @@ export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
   const getVendorQuery = useGetVendorQuery(vendorID);
   const getReviewsQuery = useGetReviewsQuery(vendorID);
+  const [addReview] = usePutReviewMutation();
   const [openReviewForm, setOpenReviewForm] = useState(false);
-  const [completedFormData, setCompletedFormData] = useState({});
 
   const openReviewHandler = () => {
     setOpenReviewForm(true);
@@ -27,8 +28,16 @@ export function Vendor(): React.ReactElement {
     setOpenReviewForm(false)
   }
 
-  const completedReviewHandler = (obj) => {
-    setCompletedFormData(obj)
+  const completedReviewHandler = (obj: {Text: string}) => {
+    const review: ReviewType = {
+      ...obj,
+      ID: uuidv4(),
+      VendorID: vendorID,
+      UserID: '02c353e2-e0f5-4730-89c7-b0a0610232e4',
+      DatePosted: '2021-12-01 12:00'
+    };
+
+    addReview(review);
   }
 
   return (

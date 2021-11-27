@@ -31,7 +31,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/vendors/:id", a.Vendor)
 	router.GET("/users/:id", a.User)
 	router.GET("/reviews", a.ReviewsByVendorID)
-	router.PUT("/reviews/:id", a.ReviewPut)
+	router.PUT("/reviews/:id", Auth, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 	router.POST("/token", a.TokenPost)
 }
@@ -60,7 +60,7 @@ func Auth(c *gin.Context) {
 	headerValue := c.GetHeader("Authorization")
 	const bearer = "Bearer "
 	if !strings.HasPrefix(headerValue, bearer) {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("bearer not found"))
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("token not in bearer field"))
 		return
 	}
 
