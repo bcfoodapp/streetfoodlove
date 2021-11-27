@@ -37,16 +37,16 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8080" }),
   tagTypes: ['Review'],
   endpoints: (builder) => ({
-    getVendor: builder.query<Vendor, string>({
+    vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
     }),
-    getUser: builder.query<User, string>({
+    user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
     }),
-    getReviews: builder.query<Review[], string>({
+    reviews: builder.query<Review[], string>({
       query: (vendorID) => `/reviews?vendorID=${encode(vendorID)}`,
     }),
-    putReview: builder.mutation<undefined, Review>({
+    submitReview: builder.mutation<undefined, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
         method: 'PUT',
@@ -57,8 +57,8 @@ export const apiSlice = createApi({
 });
 
 export const {
-  useGetVendorQuery,
-  useGetUserQuery,
-  useGetReviewsQuery,
-  usePutReviewMutation,
+  useVendorQuery,
+  useUserQuery,
+  useReviewsQuery,
+  useSubmitReviewMutation,
 } = apiSlice;

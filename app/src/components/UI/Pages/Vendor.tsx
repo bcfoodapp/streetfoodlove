@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import {useGetReviewsQuery, useGetVendorQuery, usePutReviewMutation, Review as ReviewType} from '../../../api';
+import {useReviewsQuery, useVendorQuery, useSubmitReviewMutation, Review as ReviewType} from '../../../api';
 import { Container, Grid } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./vendor.module.css";
@@ -15,9 +15,9 @@ import {v4 as uuidv4} from 'uuid';
  */
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
-  const getVendorQuery = useGetVendorQuery(vendorID);
-  const getReviewsQuery = useGetReviewsQuery(vendorID);
-  const [addReview] = usePutReviewMutation();
+  const vendorQuery = useVendorQuery(vendorID);
+  const reviewsQuery = useReviewsQuery(vendorID);
+  const [submitReview] = useSubmitReviewMutation();
   const [openReviewForm, setOpenReviewForm] = useState(false);
 
   const openReviewHandler = () => {
@@ -37,7 +37,7 @@ export function Vendor(): React.ReactElement {
       DatePosted: '2021-12-01 12:00'
     };
 
-    addReview(review);
+    submitReview(review);
   }
 
   return (
@@ -48,19 +48,19 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
-                Name: {getVendorQuery.data?.Name}
+                Name: {vendorQuery.data?.Name}
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
               <VendorDetailCards heading="contact">
-                {getVendorQuery.data?.Phone}
+                {vendorQuery.data?.Phone}
               </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="address">
-                {getVendorQuery.data?.BusinessAddress}
+                {vendorQuery.data?.BusinessAddress}
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
@@ -79,7 +79,7 @@ export function Vendor(): React.ReactElement {
         </Container>
       )}
       <Container className={styles.reviews}>
-        {getReviewsQuery.data?.map((review, i) => <Review review={review} key={i} />)}
+        {reviewsQuery.data?.map((review, i) => <Review review={review} key={i} />)}
       </Container>
     </>
   );
