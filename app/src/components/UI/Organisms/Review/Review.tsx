@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Container, Grid } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
@@ -8,6 +9,9 @@ import styles from "./review.module.css";
  */
 
 export const Review = () => {
+
+  const [starRating, setStarRating] = useState(null)
+
   return (
     <Container className={styles.wrap}>
       <Grid divided celled columns={4}>
