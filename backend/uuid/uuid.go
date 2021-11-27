@@ -41,7 +41,3 @@ func (u *UUID) UnmarshalJSON(b []byte) error {
 	}
 	return (*uuid.UUID)(u).UnmarshalText([]byte(s))
 }
-
-func (u *UUID) UnmarshalJSON(b []byte) error {
-	return json.Unmarshal(b, (*uuid.UUID)(u))
-}

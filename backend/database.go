@@ -263,7 +263,7 @@ func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, err
 	const command = `
 		SELECT ID, LoginPassword FROM User WHERE Username=?;
 	`
-	row := d.db.QueryRowx(command, &credentials.Password)
+	row := d.db.QueryRowx(command, &credentials.Username)
 
 	userID := uuid.UUID{}
 	passwordHash := [sha256.Size]byte{}
