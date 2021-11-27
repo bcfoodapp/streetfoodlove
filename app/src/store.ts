@@ -1,24 +1,32 @@
-import {configureStore, createSlice, isRejectedWithValue, Middleware} from '@reduxjs/toolkit';
+import {configureStore, createSlice, isRejectedWithValue, Middleware, MiddlewareAPI} from '@reduxjs/toolkit';
 import { apiSlice } from "./api";
 
-const errorHandler: Middleware = () => (next) => (action) => {
+const apiErrorHandler: Middleware = (api: MiddlewareAPI<typeof store.dispatch, RootState>) =>
+  (next) => (action) => {
   if (isRejectedWithValue(action)) {
-    console.error(`api error: ${JSON.stringify(action.payload)}`);
+    api.dispatch(setError(`api error: ${JSON.stringify(action.payload)}`));
   }
   return next(action);
 }
 
 export const rootSlice = createSlice({
   name: 'root',
-  initialState: {token: null as string | null},
+  initialState: {
+    error: null as Error | null,
+    token: null as string | null,
+  },
   reducers: {
+    setError: (state, {payload}) => {
+      console.error(payload);
+      state.error = payload;
+    },
     setToken: (state, {payload}) => {
       state.token = payload;
     }
   },
 });
 
-export const {setToken} = rootSlice.actions;
+export const {setError, setToken} = rootSlice.actions;
 
 export const store = configureStore({
   reducer: {
@@ -26,7 +34,7 @@ export const store = configureStore({
     root: rootSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware).concat(errorHandler),
+    getDefaultMiddleware().concat(apiSlice.middleware).concat(apiErrorHandler),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

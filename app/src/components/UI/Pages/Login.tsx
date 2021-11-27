@@ -5,8 +5,8 @@ import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
 import {Credentials, useNewTokenMutation} from '../../../api';
-import {useDispatch} from 'react-redux';
-import {setToken} from '../../../store';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState, setToken} from '../../../store';
 import {useNavigate} from 'react-router-dom';
 
 /**
@@ -15,9 +15,10 @@ import {useNavigate} from 'react-router-dom';
 
 export default function Login(): React.ReactElement {
   const [credentials, setCredentials] = useState<Credentials>({Password: '', Username: ''});
-  const [newToken, {isError, error}] = useNewTokenMutation();
+  const [newToken] = useNewTokenMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const error = useSelector<RootState, RootState['root']['error']>(state => state.root.error);
 
   const onSubmit = async () => {
     try {
@@ -65,7 +66,7 @@ export default function Login(): React.ReactElement {
                   </Buttons>
                 </Container>
                 {/* Temporary error output */}
-                <pre>{isError ? JSON.stringify(error) : ''}</pre>
+                <pre>{error ? error.toString() : ''}</pre>
               </Form>
             </Grid.Row>
           </Grid.Column>
