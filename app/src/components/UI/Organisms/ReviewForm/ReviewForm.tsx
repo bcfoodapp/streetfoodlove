@@ -10,14 +10,12 @@ import styles from "./reviewForm.module.css";
 
 export const ReviewForm = (props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
-  let submissionData = []
 
   const handleChange = (e) => {
     setTextAreaInput(e.target.value);
   };
 
   const handleSubmit = () => {
-    // submissionData.push(textAreaInput)
     setTextAreaInput("");
   };
 

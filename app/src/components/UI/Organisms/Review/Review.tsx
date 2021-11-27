@@ -12,7 +12,7 @@ export const Review = () => {
     <Container className={styles.wrap}>
       <Grid divided celled columns={4}>
         <Grid.Row>
-          <Grid.Column width={3}>
+          <Grid.Column width={1}>
             <ReviewLabel />
           </Grid.Column>
           <Grid.Column width={10}>

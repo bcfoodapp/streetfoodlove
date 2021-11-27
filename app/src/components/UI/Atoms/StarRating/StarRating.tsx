@@ -1,6 +1,10 @@
 import { Container } from "semantic-ui-react";
 import styles from "./starRating.module.css";
 
+/**
+ * This element represents the star rating that appears in the review form
+ */
+
 export const StarRating = () => {
   return (
     <Container className={styles.rate}>

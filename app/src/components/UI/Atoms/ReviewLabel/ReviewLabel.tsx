@@ -1,15 +1,16 @@
-import React from "react";
-import { Icon } from "semantic-ui-react";
-import { EnumType } from "typescript";
+import { Container, Icon } from "semantic-ui-react";
+import styles from './reviewlabel.module.css'
 
-// interface ReviewLabelProps {
-//   color: string
-// }
+/**
+ * Displays the little color circle at the left of each displayed review that shows satisfaction
+ * @param props color -> from vendor page
+ */
 
 export const ReviewLabel = (props) => {
+
   return (
-    <>
-      <Icon size="huge" name="circle" color={props.color} />
-    </>
+    <Container className={styles.container}>
+      <Icon size="big" name="circle" color={props.color} className={styles.wrapper}/>
+    </Container>
   );
 };

@@ -2,6 +2,10 @@ import React from "react";
 import { Container } from "semantic-ui-react";
 import styles from "./vendorcard.module.css";
 
+/**
+ * This shows the square info cards about that particular vendor
+ */
+
 export default function VendorDetailCards(props): React.ReactElement {
   let headingContent;
 
