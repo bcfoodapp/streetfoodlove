@@ -65,7 +65,7 @@ export function Vendor(): React.ReactElement {
         <ReviewForm cancelFormHandler={cancelReviewHandler} finishedFormHandler={completedReviewHandler}/>
       ) : (
         <Container className={styles.textArea}>
-          <Buttons color="orange" writeReview clicked={openReviewHandler}>
+          <Buttons color={"orange"} writeReview clicked={openReviewHandler}>
             Write Review
           </Buttons>
         </Container>

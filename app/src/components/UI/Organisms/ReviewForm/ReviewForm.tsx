@@ -38,7 +38,7 @@ export const ReviewForm = (props) => {
       </Container>
         <Container className={styles.buttons}>
           <Buttons cancel clicked={props.cancelFormHandler}>Cancel</Buttons>
-          <Buttons submit color="green">
+          <Buttons submit color={"green"}>
             Submit
           </Buttons>
         </Container>

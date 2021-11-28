@@ -1,12 +1,28 @@
 import React from "react";
 import classes from "./button.module.css";
-import { Button } from "semantic-ui-react";
+import { Button, ButtonProps } from "semantic-ui-react";
 
 /**
  * This file assigns the respective classes and styling classes to all the different buttons on this app.
  */
 
-export default function Buttons(props): React.ReactElement {
+interface ButtonsProps {
+  enter?: boolean;
+  submit?: boolean;
+  login?: boolean
+  signup?: boolean
+  apply?: boolean
+  getstarted?: boolean
+  logout?: boolean
+  cancel?: boolean
+  writeReview?: boolean
+  color?: ButtonProps['color']
+  clicked?: () => void
+  children: React.ReactNode
+
+}
+
+export default function Buttons(props: ButtonsProps):React.ReactElement {
   let name = "";
 
   if (props.enter) name = classes.Enter;

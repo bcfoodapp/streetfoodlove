@@ -10,6 +10,11 @@ import { Grid } from "semantic-ui-react";
  */
 
 export default function Login(): React.ReactElement {
+
+  const loginHandler = () => {
+
+  }
+
   return (
     <>
       <HeaderBar />
@@ -33,7 +38,7 @@ export default function Login(): React.ReactElement {
                   <Checkbox label="I agree to the Terms and Conditions" />
                 </Form.Field>
                 <Container>
-                  <Buttons login color="green">
+                  <Buttons login color={"green"} clicked={loginHandler}>
                     Login
                   </Buttons>
                 </Container>

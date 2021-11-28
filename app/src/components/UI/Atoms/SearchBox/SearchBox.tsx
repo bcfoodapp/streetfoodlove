@@ -8,11 +8,16 @@ import Buttons from "../Button/Buttons";
  */
 
 export const SearchBox: React.FC = () => {
+
+  const searchEnterHandler = () => {
+
+  }
+
   return (
     <Container className={styles.searchBox}>
       <Input
         icon={
-          <Buttons enter color="green">
+          <Buttons enter color={"green"} clicked={searchEnterHandler}>
             Enter
           </Buttons>
         }

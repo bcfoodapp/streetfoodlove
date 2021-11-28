@@ -24,11 +24,11 @@ export default function HeaderBar(): React.ReactElement {
         <SearchBox />
       </Menu.Item>
       <Menu.Item position="right">
-        <Buttons signup color="white">
+        <Buttons signup>
           Sign Up
         </Buttons>
         <Link to="/login">
-          <Buttons login color="orange">
+          <Buttons login color={"orange"}>
             Login
           </Buttons>
         </Link>

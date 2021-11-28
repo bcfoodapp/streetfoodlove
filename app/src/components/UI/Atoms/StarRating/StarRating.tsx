@@ -7,10 +7,9 @@ import styles from "./starRating.module.css";
 
 export const StarRating = () => {
 
-  //defaultvalue is string, eg "3"
   const trackStarCount = (e) => {
     if (e.target.value === '5') {
-
+      
     } else if (e.target.value === '4') {
 
     } else if (e.target.value === '3') {

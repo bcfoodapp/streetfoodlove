@@ -3,6 +3,7 @@ import { Container, Grid } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
 import styles from "./review.module.css";
+import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 
 /**
  * Displays a review card that contains the information from a completed review of a vendor
@@ -25,7 +26,8 @@ export const Review = () => {
             </Grid.Row>
             <Grid.Row>
               <Container className={styles.stars}>
-                <StarRating />
+                {/* <StarRating /> */}
+                <FinalStarRating />
               </Container>
             </Grid.Row>
             <Grid.Row>
