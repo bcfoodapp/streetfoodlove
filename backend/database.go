@@ -7,6 +7,7 @@ import (
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 // Database abstraction layer
@@ -25,6 +26,7 @@ func (d *Database) Close() error {
 
 // SetupTables creates necessary tables if they do not exist.
 func (d *Database) SetupTables() error {
+	// TODO maybe we should change all ID fields to string type for readability
 	commands := [...]string{
 		`
 		CREATE TABLE IF NOT EXISTS Vendor (
@@ -133,9 +135,9 @@ func (d *Database) AddTestData() error {
 			Username:   "test",
 			FirstName:  "Selina",
 			LastName:   "Tan",
-			SignUpDate: "2021-11-23 11:45",
+			SignUpDate: time.Now(),
 			UserType:   0,
-			Photo:      "image-1url",
+			Photo:      uuid.MustParse("3959ac2f-756e-4632-9678-912130384248"),
 		}
 
 		if err := d.UserCreate(user0, "password"); err != nil {
@@ -204,9 +206,9 @@ type User struct {
 	Username   string
 	FirstName  string
 	LastName   string
-	SignUpDate string
+	SignUpDate time.Time
 	UserType   int
-	Photo      string
+	Photo      uuid.UUID
 }
 
 func (d *Database) UserCreate(user *User, password string) error {
@@ -287,7 +289,7 @@ type Review struct {
 	Text       string
 	VendorID   uuid.UUID
 	UserID     uuid.UUID
-	DatePosted string
+	DatePosted time.Time
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -326,6 +328,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
 		SELECT *
 		FROM Reviews
 		WHERE VendorID=?
+		ORDER BY DatePosted DESC
 	`
 	rows, err := d.db.Queryx(command, vendorID)
 	if err != nil {

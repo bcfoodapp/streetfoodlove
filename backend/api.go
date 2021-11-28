@@ -25,13 +25,14 @@ func (a *API) Close() error {
 func (a *API) AddRoutes(router *gin.Engine) {
 	corsOptions := cors.DefaultConfig()
 	corsOptions.AllowOrigins = []string{"http://localhost:3000"}
+	corsOptions.AddAllowHeaders("Authorization")
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
 
 	router.GET("/vendors/:id", a.Vendor)
 	router.GET("/users/:id", a.User)
 	router.GET("/reviews", a.ReviewsByVendorID)
-	router.PUT("/reviews/:id", a.ReviewPut)
+	router.PUT("/reviews/:id", Auth, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 	router.POST("/token", a.TokenPost)
 }
@@ -40,7 +41,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 func errorHandler(c *gin.Context) {
 	c.Next()
 	for _, err := range c.Errors {
-		c.String(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, err.Error())
 	}
 }
 
@@ -60,7 +61,7 @@ func Auth(c *gin.Context) {
 	headerValue := c.GetHeader("Authorization")
 	const bearer = "Bearer "
 	if !strings.HasPrefix(headerValue, bearer) {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("bearer not found"))
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("token not in bearer field"))
 		return
 	}
 

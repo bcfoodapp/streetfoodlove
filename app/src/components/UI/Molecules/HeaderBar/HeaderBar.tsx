@@ -16,14 +16,15 @@ export default function HeaderBar(): React.ReactElement {
   return (
     <Menu as="div" className={styles.wrapContainer} fluid widths={3}>
         <Menu.Item as="a" className={styles.header} position="left">
-      <Link to="/"> 
+      <Link to="/">
           <Header as="h1">StreetFoodLove</Header>
       </Link>
-        </Menu.Item>      
+        </Menu.Item>
       <Menu.Item as="a">
         <SearchBox />
       </Menu.Item>
       <Menu.Item position="right">
+        {/* TODO need indication for logged in status by hiding these buttons */}
         <Buttons signup color="white">
           Sign Up
         </Buttons>
