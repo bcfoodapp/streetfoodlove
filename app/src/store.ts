@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import { configureStore } from "@reduxjs/toolkit";
-import { apiSlice } from "./api";
-=======
 import {configureStore, createSlice, isRejectedWithValue, Middleware, MiddlewareAPI} from '@reduxjs/toolkit';
 import { apiSlice } from "./api";
 import {TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
->>>>>>> main
 
 const apiErrorHandler: Middleware = (api: MiddlewareAPI<typeof store.dispatch, RootState>) =>
   (next) => (action) => {
@@ -40,11 +35,7 @@ export const store = configureStore({
     root: rootSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-<<<<<<< HEAD
-    getDefaultMiddleware().concat(apiSlice.middleware),
-=======
     getDefaultMiddleware().concat(apiSlice.middleware).concat(apiErrorHandler),
->>>>>>> main
 });
 
 export type RootState = ReturnType<typeof store.getState>;
