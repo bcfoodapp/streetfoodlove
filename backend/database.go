@@ -1,9 +1,13 @@
 package main
 
 import (
+	"crypto/sha256"
+	"crypto/subtle"
+	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 // Database abstraction layer
@@ -22,6 +26,7 @@ func (d *Database) Close() error {
 
 // SetupTables creates necessary tables if they do not exist.
 func (d *Database) SetupTables() error {
+	// TODO maybe we should change all ID fields to string type for readability
 	commands := [...]string{
 		`
 		CREATE TABLE IF NOT EXISTS Vendor (
@@ -35,13 +40,13 @@ func (d *Database) SetupTables() error {
 			Latitude FLOAT NOT NULL,
 			Longitude FLOAT NOT NULL,
 			PRIMARY KEY (ID)
-		);
+		)
 		`,
 		`
 		CREATE TABLE IF NOT EXISTS User (
 			ID BINARY(16) NOT NULL,
 			Email VARCHAR(100) NULL,
-			Username VARCHAR(100) NULL,
+			Username VARCHAR(100) UNIQUE NULL,
 			FirstName VARCHAR(100) NULL,
 			LastName VARCHAR(100) NULL,
 			SignUpDate DATETIME NULL,
@@ -49,7 +54,7 @@ func (d *Database) SetupTables() error {
 			UserType TINYINT NULL,
 			Photo BINARY(16),
 			PRIMARY KEY (ID)
-		);
+		)
 		`,
 		`
 		CREATE TABLE IF NOT EXISTS Reviews (
@@ -63,7 +68,7 @@ func (d *Database) SetupTables() error {
 			ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY (UserID) REFERENCES User(ID)
 			ON DELETE CASCADE ON UPDATE CASCADE
-		);
+		)
 		`,
 	}
 
@@ -123,34 +128,19 @@ func (d *Database) AddTestData() error {
 		return err
 	}
 
-	if userCount < 0 {
+	if userCount < 1 {
 		user0 := &User{
 			ID:         uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4"),
-			Email:      "seventan2516@gmail.com",
-			Username:   "Selina2516",
+			Email:      "test@example.com",
+			Username:   "test",
 			FirstName:  "Selina",
 			LastName:   "Tan",
-			SignUpDate: "2021-11-23 11:45",
+			SignUpDate: time.Now(),
 			UserType:   0,
-			Photo:      "image-1url",
+			Photo:      uuid.MustParse("3959ac2f-756e-4632-9678-912130384248"),
 		}
 
-		if err := d.UserCreate(user0, "JINSIWDW234"); err != nil {
-			return err
-		}
-
-		user1 := &User{
-			ID:         uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
-			Email:      "jonney2313@hotmail.com",
-			Username:   "Jonney2313",
-			FirstName:  "Jonney",
-			LastName:   "William",
-			SignUpDate: "2021-11-25 16:25",
-			UserType:   0,
-			Photo:      "image-5url",
-		}
-
-		if err := d.UserCreate(user1, "738djsuw*dwd"); err != nil {
+		if err := d.UserCreate(user0, "password"); err != nil {
 			return err
 		}
 	}
@@ -193,7 +183,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:BusinessLogo,
 			:Latitude,
 			:Longitude
-	   );
+	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
 	return err
@@ -216,9 +206,9 @@ type User struct {
 	Username   string
 	FirstName  string
 	LastName   string
-	SignUpDate string
+	SignUpDate time.Time
 	UserType   int
-	Photo      string
+	Photo      uuid.UUID
 }
 
 func (d *Database) UserCreate(user *User, password string) error {
@@ -245,11 +235,12 @@ func (d *Database) UserCreate(user *User, password string) error {
 			:Photo
 		)
 	`
+	hash := sha256.Sum256([]byte(password))
 	userWithPassword := &struct {
 		*User
-		LoginPassword string
+		LoginPassword []byte
 	}{
-		user, password,
+		user, hash[:],
 	}
 	_, err := d.db.NamedExec(command, userWithPassword)
 	return err
@@ -257,7 +248,7 @@ func (d *Database) UserCreate(user *User, password string) error {
 
 func (d *Database) User(id uuid.UUID) (*User, error) {
 	const command = `
-		SELECT * FROM User WHERE ID=?;
+		SELECT * FROM User WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
@@ -266,12 +257,39 @@ func (d *Database) User(id uuid.UUID) (*User, error) {
 	return user, err
 }
 
+type Credentials struct {
+	Username string
+	Password string
+}
+
+func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, error) {
+	const command = `
+		SELECT ID, LoginPassword FROM User WHERE Username=?
+	`
+	row := d.db.QueryRowx(command, &credentials.Username)
+
+	userID := uuid.UUID{}
+	var passwordHash []byte
+	err := row.Scan(&userID, &passwordHash)
+	if err != nil {
+		return [16]byte{}, err
+	}
+
+	givenPasswordHash := sha256.Sum256([]byte(credentials.Password))
+
+	if subtle.ConstantTimeCompare(givenPasswordHash[:], passwordHash) != 1 {
+		return uuid.UUID{}, fmt.Errorf("password does not match")
+	}
+
+	return userID, nil
+}
+
 type Review struct {
 	ID         uuid.UUID
 	Text       string
 	VendorID   uuid.UUID
 	UserID     uuid.UUID
-	DatePosted string
+	DatePosted time.Time
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -296,11 +314,36 @@ func (d *Database) ReviewCreate(review *Review) error {
 
 func (d *Database) Review(id uuid.UUID) (*Review, error) {
 	const command = `
-		SELECT * FROM Reviews WHERE ID=?;
+		SELECT * FROM Reviews WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
 	review := &Review{}
 	err := row.StructScan(review)
 	return review, err
+}
+
+func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
+	const command = `
+		SELECT *
+		FROM Reviews
+		WHERE VendorID=?
+		ORDER BY DatePosted DESC
+	`
+	rows, err := d.db.Queryx(command, vendorID)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []*Review
+
+	for rows.Next() {
+		review := &Review{}
+		if err := rows.StructScan(review); err != nil {
+			return nil, err
+		}
+		result = append(result, review)
+	}
+
+	return result, rows.Err()
 }

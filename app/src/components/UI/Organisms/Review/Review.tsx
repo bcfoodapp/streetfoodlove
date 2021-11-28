@@ -4,12 +4,13 @@ import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
 import styles from "./review.module.css";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
+import {Review as ReviewObj} from '../../../../api';
 
 /**
  * Displays a review card that contains the information from a completed review of a vendor
  */
 
-export const Review = () => {
+export const Review = ({review}: {review: ReviewObj}) => {
 
   const [starRating, setStarRating] = useState(null)
 
@@ -22,16 +23,16 @@ export const Review = () => {
           </Grid.Column>
           <Grid.Column width={10}>
             <Grid.Row>
-              <h2 className={styles.h2}>hello</h2>
+              {/* TODO there is no subject field on reviews */}
+              {/*<h2 className={styles.h2}>hello</h2>*/}
             </Grid.Row>
             <Grid.Row>
               <Container className={styles.stars}>
-                {/* <StarRating /> */}
-                <FinalStarRating />
+                <StarRating />
               </Container>
             </Grid.Row>
             <Grid.Row>
-              <pre>This is the best place that I've ever eaten!</pre>
+              <pre>{review.Text}</pre>
             </Grid.Row>
           </Grid.Column>
         </Grid.Row>

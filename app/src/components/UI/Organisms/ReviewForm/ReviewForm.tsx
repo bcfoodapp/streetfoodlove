@@ -5,10 +5,15 @@ import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./reviewForm.module.css";
 
 /**
- * Renders a review form template that includes fields to be filled out 
+ * Renders a review form template that includes fields to be filled out
  */
 
-export const ReviewForm = (props) => {
+interface Props {
+  finishedFormHandler: (review: {Text: string}) => void;
+  cancelFormHandler: () => void;
+}
+
+export const ReviewForm = (props: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
 
   const handleChange = (e) => {
@@ -16,7 +21,10 @@ export const ReviewForm = (props) => {
   };
 
   const handleSubmit = () => {
-    setTextAreaInput("");
+    const review = {
+      Text: textAreaInput,
+    };
+    props.finishedFormHandler(review);
   };
 
   return (
@@ -38,8 +46,8 @@ export const ReviewForm = (props) => {
       </Container>
         <Container className={styles.buttons}>
           <Buttons cancel clicked={props.cancelFormHandler}>Cancel</Buttons>
-          <Buttons submit color={"green"}>
-            Submit
+          <Buttons submit color="green">
+            Submit Review
           </Buttons>
         </Container>
       </Form>
