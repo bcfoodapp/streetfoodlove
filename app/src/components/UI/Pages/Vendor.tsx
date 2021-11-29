@@ -40,6 +40,8 @@ export function Vendor(): React.ReactElement {
     });
   }
 
+  console.log(reviewsQuery.data);
+
   return (
     <>
       <HeaderBar />
