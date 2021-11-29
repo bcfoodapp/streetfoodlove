@@ -16,7 +16,7 @@ import {RootState} from '../../../store';
  * Displays the vendor page of a vendor, including listed reviews and add review button
  */
 export function Vendor(): React.ReactElement {
-  const [completedFormData, setCompletedFormData] = useState({});
+  // const [completedFormData, setCompletedFormData] = useState({});
   const vendorID = useParams().ID as string;
   const vendorQuery = useVendorQuery(vendorID);
   const reviewsQuery = useReviewsQuery(vendorID);
@@ -28,11 +28,13 @@ export function Vendor(): React.ReactElement {
     setOpenReviewForm(true);
   };
 
-  const cancelReviewHandler = () => {
+  const cancelReviewHandler = () => { //if nothing has been written and user clicks cancel
     setOpenReviewForm(false)
   }
 
   const completedReviewHandler = (obj: {Text: string}) => {
+    setOpenReviewForm(false)
+    // console.log(obj);
     submitReview({
       ...obj,
       ID: uuidv4(),

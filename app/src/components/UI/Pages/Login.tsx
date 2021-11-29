@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Container, Form, Checkbox } from "semantic-ui-react";
+import { Container, Form } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";

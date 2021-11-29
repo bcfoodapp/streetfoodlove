@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Container, Form, TextArea } from "semantic-ui-react";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
 import Buttons from "../../Atoms/Button/Buttons";
@@ -24,7 +24,8 @@ export const ReviewForm = (props: Props) => {
     const review = {
       Text: textAreaInput,
     };
-    props.finishedFormHandler(review);
+    props.finishedFormHandler(review);  
+    console.log('object');
   };
 
   return (
@@ -36,14 +37,14 @@ export const ReviewForm = (props: Props) => {
         </Container>
       </Container>
       <Form onSubmit={handleSubmit}>
-      <Container>
-        <TextArea
-          placeholder="Write Review here..."
-          style={{ minHeight: 60, maxWidth: 700 }}
-          value={textAreaInput}
-          onChange={handleChange}
-        />
-      </Container>
+        <Container>
+          <TextArea
+            placeholder="Write Review here..."
+            style={{ minHeight: 60, maxWidth: 700 }}
+            value={textAreaInput}
+            onChange={handleChange}
+          />
+        </Container>
         <Container className={styles.buttons}>
           <Buttons cancel clicked={props.cancelFormHandler}>Cancel</Buttons>
           <Buttons submit color="green">
