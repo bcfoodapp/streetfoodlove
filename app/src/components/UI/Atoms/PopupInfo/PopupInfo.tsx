@@ -11,7 +11,7 @@ export default function PopupInfo(): React.ReactElement {
       <div className={styles.header}>
         <div className={styles.vendorName}>
           <div>
-            <span>McDonalds</span>
+            <span className={styles.title}>McDonalds</span>
           </div>
           <div className={styles.firstImage}>
             <img

@@ -42,6 +42,7 @@ export default function Buttons(props: ButtonsProps):React.ReactElement {
         className={classes.Button + " " + name}
         color={props.color}
         onClick={props.clicked}
+        // size={"small"}
       >
         <span>{props.children}</span>
       </Button>
