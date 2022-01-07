@@ -10,7 +10,7 @@ export default function Map(): React.ReactElement {
     <MapContainer
       center={position}
       zoom={13}
-      style={{ height: "100vh", width: "100vw", marginLeft: -310, marginTop: -11 }}
+      style={{ height: "100vh", width: "140vw", marginLeft: -310, marginTop: -11 }}
     >
       <TileLayer
         attribution="© OpenStreetMap contributors"

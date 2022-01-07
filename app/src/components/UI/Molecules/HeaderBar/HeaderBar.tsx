@@ -15,12 +15,12 @@ import { Link } from "react-router-dom";
 export default function HeaderBar(): React.ReactElement {
   return (
     <Menu as="div" className={styles.wrapContainer} fluid widths={3}>
-        <Menu.Item as="a" className={styles.header} position="left">
+        <Menu.Item className={styles.header} position="left">
       <Link to="/">
           <Header as="h1">StreetFoodLove</Header>
       </Link>
         </Menu.Item>
-      <Menu.Item as="a">
+      <Menu.Item>
         <SearchBox />
       </Menu.Item>
       <Menu.Item position="right">

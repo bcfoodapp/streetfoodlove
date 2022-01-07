@@ -25,7 +25,6 @@ export const ReviewForm = (props: Props) => {
       Text: textAreaInput,
     };
     props.finishedFormHandler(review);  
-    console.log('object');
   };
 
   return (
