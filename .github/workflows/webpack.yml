@@ -35,8 +35,9 @@ jobs:
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token: ${{ secrets.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 }}
         node-version: ${{ matrix.node-version }}
+        path: streetfoodlove/app/
 
     - name: Build
       run: |
