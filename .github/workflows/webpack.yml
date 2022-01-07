@@ -15,15 +15,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        # Make sure the actual branch is checked out when running on pull requests
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
         ref: ${{ github.head_ref }}
+        # Make sure the value of GITHUB_TOKEN will not be persisted in repo's config
+        persist-credentials: false
 
     - name: Prettify code
-      uses: creyD/prettier_action@v4.1.1
+      uses: creyD/prettier_action@v4.1
       with:
-        # This part is also where you can pass other options, for example:
-        prettier_options: --write .
+        dry: True
+        github_token: ${{ secrets.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 }}
 
   build:
     runs-on: ubuntu-latest
