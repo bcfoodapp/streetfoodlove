@@ -1,6 +1,7 @@
 name: NodeJS with Webpack
 
 on:
+  permissions: write-all
   push:
     branches:
     - '*'
