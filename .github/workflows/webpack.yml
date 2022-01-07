@@ -21,7 +21,7 @@ jobs:
         persist-credentials: false
 
     - name: Prettify code
-      uses: creyD/prettier_action@v4.1
+      uses: creyD/prettier_action@v4.1.1
       with:
         dry: True
         github_token: ${{ secrets.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 }}
