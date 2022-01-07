@@ -1,4 +1,4 @@
-import { Container } from "semantic-ui-react"
+import { Container } from "semantic-ui-react";
 
 export const FinalStarRating = () => {
   return (
@@ -24,5 +24,5 @@ export const FinalStarRating = () => {
         1 star
       </label>
     </Container>
-  )  
-}
+  );
+};
