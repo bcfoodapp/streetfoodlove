@@ -9,20 +9,9 @@ on:
     - main
 
 jobs:
-  prettier:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Prettify code
-      uses: creyD/prettier_action@v4.1.1
-      with:
-        dry: True
-        prettier_options: --check
-        working-directory: app
-
-  build:
-    runs-on: ubuntu-latest
+  webpack:
+    name: Webpack
+    runs-on: ubuntu-20.04
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -30,8 +19,48 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '17.1'
+        cache: 'npm'
+        cache-dependency-path: app/package-lock.json
     - name: Build
       run: |
         npm install
         npm run build
       working-directory: app
+  prettier:
+    name: Prettier
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '17.1'
+        cache: 'npm'
+        cache-dependency-path: app/package-lock.json
+    - name: Prettier
+      run: npx prettier --check .
+      working-directory: app
+  build:
+    name: Compile server
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17'
+      - name: Compile server
+        run: go build .
+        working-directory: backend
+  golint:
+    name: Lint Go
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          working-directory: backend
