@@ -9,7 +9,7 @@ import styles from "./reviewForm.module.css";
  */
 
 interface Props {
-  finishedFormHandler: (review: {Text: string}) => void;
+  finishedFormHandler: (review: { Text: string }) => void;
   cancelFormHandler: () => void;
 }
 
@@ -45,7 +45,9 @@ export const ReviewForm = (props: Props) => {
           />
         </Container>
         <Container className={styles.buttons}>
-          <Buttons cancel clicked={props.cancelFormHandler}>Cancel</Buttons>
+          <Buttons cancel clicked={props.cancelFormHandler}>
+            Cancel
+          </Buttons>
           <Buttons submit color="green">
             Submit Review
           </Buttons>
