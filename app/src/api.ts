@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { RootState } from "./store";
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 
 export interface Vendor {
   ID: string;
@@ -30,10 +30,10 @@ export interface Review {
   Text: string;
   VendorID: string;
   UserID: string;
-  Stars: 1 | 2 | 3 | 4 | 5,
+  Stars: 1 | 2 | 3 | 4 | 5;
 }
 
-type RawReview = Review & {DatePosted: string};
+type RawReview = Review & { DatePosted: string };
 
 export interface Credentials {
   Username: string;
@@ -65,13 +65,12 @@ export const apiSlice = createApi({
     }),
     reviews: builder.query<Review[], string>({
       query: (vendorID) => `/reviews?vendorID=${encode(vendorID)}`,
-      transformResponse: (response) => (
+      transformResponse: (response) =>
         (response as RawReview[]).map((review) => ({
           ...review,
           PostDate: DateTime.fromISO(review.DatePosted),
-        }))
-      ),
-      providesTags: ['Review'],
+        })),
+      providesTags: ["Review"],
     }),
     submitReview: builder.mutation<undefined, Review>({
       query: (review) => ({
