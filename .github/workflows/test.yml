@@ -10,18 +10,12 @@ on:
     - main
 
 jobs:
-  frontend:
-    name: Frontend
+  webpack:
+    name: Webpack
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Prettify code
-      uses: creyD/prettier_action@v4.1.1
-      with:
-        dry: True
-        prettier_options: --check
-        working-directory: app
     - name: Setup Node
       uses: actions/setup-node@v2
       with:
@@ -33,8 +27,20 @@ jobs:
         npm install
         npm run build
       working-directory: app
-  backend:
-    name: Backend
+  prettier:
+    name: Prettier
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Prettify code
+      uses: creyD/prettier_action@v4.1.1
+      with:
+        dry: True
+        prettier_options: --check
+        working-directory: app
+  build:
+    name: Compile server
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -46,6 +52,10 @@ jobs:
       - name: Compile server
         run: go build .
         working-directory: backend
+  golint:
+    name: Lint Go
+    runs-on: ubuntu-20.04
+    steps:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
