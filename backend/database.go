@@ -210,6 +210,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var result []*Review
 
