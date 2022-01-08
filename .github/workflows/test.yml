@@ -38,7 +38,7 @@ jobs:
       with:
         dry: True
         prettier_options: --check
-        working-directory: app
+        working_directory: app/
   build:
     name: Compile server
     runs-on: ubuntu-20.04
