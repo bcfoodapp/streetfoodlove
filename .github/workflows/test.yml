@@ -33,12 +33,15 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Prettify code
-      uses: creyD/prettier_action@v4.1.1
+    - name: Setup Node
+      uses: actions/setup-node@v2
       with:
-        dry: True
-        prettier_options: --check **/*.js
-        working_directory: '${{ github.workspace }}/app'
+        node-version: '17.1'
+        cache: 'npm'
+        cache-dependency-path: app/package-lock.json
+    - name: Prettier
+      run: npx prettier --check .
+      working-directory: app
   build:
     name: Compile server
     runs-on: ubuntu-20.04
