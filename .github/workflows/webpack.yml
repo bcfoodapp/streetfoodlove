@@ -1,47 +1,38 @@
-name: NodeJS with Webpack
+name: Test
 
 on:
   push:
     branches:
     - '*'
+    - ci
   pull_request:
-    branches: [ main ]
+    branches:
+    - main
 
 jobs:
   prettier:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-        ref: ${{ github.head_ref }}
-        # Make sure the value of GITHUB_TOKEN will not be persisted in repo's config
-        persist-credentials: false
-
     - name: Prettify code
       uses: creyD/prettier_action@v4.1.1
       with:
         dry: True
-        github_token: ${{ secrets.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 }}
+        prettier_options: --check
+        working-directory: app
 
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup Node
+      uses: actions/setup-node@v2
       with:
-        repo-token: ${{ secrets.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 }}
-        node-version: ${{ matrix.node-version }}
-        path: app
-
+        node-version: '17.1'
     - name: Build
       run: |
         npm install
-        npx webpack
-
-      working-directory: ./app
+        npm run build
+      working-directory: app
