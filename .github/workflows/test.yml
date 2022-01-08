@@ -26,7 +26,7 @@ jobs:
       run: |
         npm install
         npm run build
-      working-directory: ./app
+      working-directory: app
   prettier:
     name: Prettier
     runs-on: ubuntu-20.04
@@ -38,7 +38,7 @@ jobs:
       with:
         dry: True
         prettier_options: --check
-        working-directory: ./app
+        working-directory: app
   build:
     name: Compile server
     runs-on: ubuntu-20.04
@@ -51,7 +51,7 @@ jobs:
           go-version: '1.17'
       - name: Compile server
         run: go build .
-        working-directory: ./backend
+        working-directory: backend
   golint:
     name: Lint Go
     runs-on: ubuntu-20.04
@@ -59,4 +59,4 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          working-directory: ./backend
+          working-directory: backend
