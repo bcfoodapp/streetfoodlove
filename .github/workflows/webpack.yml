@@ -44,4 +44,4 @@ jobs:
         npm install
         npx webpack
 
-      working-directory: ../app
+      working-directory: ./app
