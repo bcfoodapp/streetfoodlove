@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import {RootState} from './store';
-import {DateTime} from 'luxon';
+import { RootState } from "./store";
+import { DateTime } from 'luxon';
 
 export interface Vendor {
   ID: string;
@@ -47,15 +47,15 @@ const encode = encodeURIComponent;
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080",
-    prepareHeaders: (headers, {getState}) => {
+    prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).root.token;
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
       return headers;
-    }
+    },
   }),
-  tagTypes: ['Review'],
+  tagTypes: ["Review"],
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
@@ -76,18 +76,18 @@ export const apiSlice = createApi({
     submitReview: builder.mutation<undefined, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
-        method: 'PUT',
+        method: "PUT",
         body: review,
       }),
-      invalidatesTags: ['Review'],
+      invalidatesTags: ["Review"],
     }),
     newToken: builder.mutation<Token, Credentials>({
       query: (credentials) => ({
-        url: '/token',
-        method: 'POST',
+        url: "/token",
+        method: "POST",
         body: credentials,
       }),
-    })
+    }),
   }),
 });
 
