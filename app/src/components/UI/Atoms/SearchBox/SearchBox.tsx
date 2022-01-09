@@ -8,10 +8,7 @@ import Buttons from "../Button/Buttons";
  */
 
 export const SearchBox: React.FC = () => {
-
-  const searchEnterHandler = () => {
-
-  }
+  const searchEnterHandler = () => {};
 
   return (
     <Container className={styles.searchBox}>

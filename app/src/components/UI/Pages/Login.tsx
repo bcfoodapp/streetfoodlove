@@ -67,7 +67,19 @@ export default function Login(): React.ReactElement {
                 {/*  <Checkbox label="I agree to the Terms and Conditions" />*/}
                 {/*</Form.Field>*/}
                 <Container>
-                  <Buttons login color="green">
+                  <Buttons
+                    login
+                    color="green"
+                    clicked={() =>
+                      localStorage.setItem(
+                        "user",
+                        JSON.stringify({
+                          username: credentials.Username,
+                          password: credentials.Password,
+                        })
+                      )
+                    }
+                  >
                     Login
                   </Buttons>
                 </Container>

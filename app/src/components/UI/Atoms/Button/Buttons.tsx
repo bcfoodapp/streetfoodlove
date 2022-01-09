@@ -9,20 +9,19 @@ import { Button, ButtonProps } from "semantic-ui-react";
 interface ButtonsProps {
   enter?: boolean;
   submit?: boolean;
-  login?: boolean
-  signup?: boolean
-  apply?: boolean
-  getstarted?: boolean
-  logout?: boolean
-  cancel?: boolean
-  writeReview?: boolean
-  color?: ButtonProps['color']
-  clicked?: () => void
-  children: React.ReactNode
-
+  login?: boolean;
+  signup?: boolean;
+  apply?: boolean;
+  getstarted?: boolean;
+  logout?: boolean;
+  cancel?: boolean;
+  writeReview?: boolean;
+  color?: ButtonProps["color"];
+  clicked?: () => void;
+  children: React.ReactNode;
 }
 
-export default function Buttons(props: ButtonsProps):React.ReactElement {
+export default function Buttons(props: ButtonsProps): React.ReactElement {
   let name = "";
 
   if (props.enter) name = classes.Enter;
