@@ -23,11 +23,9 @@ export default function Login(): React.ReactElement {
   const error = useAppSelector((state) => state.root.error);
 
   const onSubmit = async () => {
-    try {
-      const token = await newToken(credentials).unwrap();
-      dispatch(setToken(token));
-      navigate(-1);
-    } catch (e) {}
+    const token = await newToken(credentials).unwrap();
+    dispatch(setToken(token));
+    navigate(-1);
   };
 
   return (
