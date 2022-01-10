@@ -23,17 +23,26 @@ export default function Login(): React.ReactElement {
   const error = useAppSelector((state) => state.root.error);
 
   useEffect(() => {
-    if (localStorage.getItem("user")) {
-      let token = localStorage.getItem("authToken")
-      dispatch(setToken(token))
+    async function generateNewToken() {
+      try {
+        if (localStorage.getItem("user")) {
+          let obj = JSON.parse(localStorage.getItem("user")!);
+          const token = await newToken({
+            Password: obj.password,
+            Username: obj.username,
+          }).unwrap();
+          dispatch(setToken(token));
+        }
+      } catch (error) {}
     }
-  }, [])
+
+    generateNewToken();
+  }, []);
 
   const onSubmit = async () => {
     try {
       const token = await newToken(credentials).unwrap();
       dispatch(setToken(token));
-      localStorage.setItem("authToken", token);
       navigate("/");
     } catch (e) {}
   };
@@ -46,7 +55,7 @@ export default function Login(): React.ReactElement {
         password: credentials.Password,
       })
     );
-  }
+  };
 
   return (
     <>
@@ -85,11 +94,7 @@ export default function Login(): React.ReactElement {
                 {/*  <Checkbox label="I agree to the Terms and Conditions" />*/}
                 {/*</Form.Field>*/}
                 <Container>
-                  <Buttons
-                    login
-                    color="green"
-                    clicked={storeCredentials}
-                  >
+                  <Buttons login color="green" clicked={storeCredentials}>
                     Login
                   </Buttons>
                 </Container>
