@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Form, Checkbox } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
@@ -22,13 +22,31 @@ export default function Login(): React.ReactElement {
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.root.error);
 
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      let token = localStorage.getItem("authToken")
+      dispatch(setToken(token))
+    }
+  }, [])
+
   const onSubmit = async () => {
     try {
       const token = await newToken(credentials).unwrap();
       dispatch(setToken(token));
-      navigate(-1);
+      localStorage.setItem("authToken", token);
+      navigate("/");
     } catch (e) {}
   };
+
+  const storeCredentials = () => {
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        username: credentials.Username,
+        password: credentials.Password,
+      })
+    );
+  }
 
   return (
     <>
@@ -70,15 +88,7 @@ export default function Login(): React.ReactElement {
                   <Buttons
                     login
                     color="green"
-                    clicked={() =>
-                      localStorage.setItem(
-                        "user",
-                        JSON.stringify({
-                          username: credentials.Username,
-                          password: credentials.Password,
-                        })
-                      )
-                    }
+                    clicked={storeCredentials}
                   >
                     Login
                   </Buttons>
