@@ -77,17 +77,22 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 }
 
 type User struct {
-	ID         uuid.UUID
+	ID       uuid.UUID
+	Username string
+	UserType int
+	Photo    uuid.UUID
+}
+
+// UserProtected contains User fields plus fields that are password-protected.
+type UserProtected struct {
+	*User
 	Email      string
-	Username   string
 	FirstName  string
 	LastName   string
 	SignUpDate time.Time
-	UserType   int
-	Photo      uuid.UUID
 }
 
-func (d *Database) UserCreate(user *User, password string) error {
+func (d *Database) UserCreate(user *UserProtected, password string) error {
 	const command = `
 		INSERT INTO User (
 			ID,
@@ -113,7 +118,7 @@ func (d *Database) UserCreate(user *User, password string) error {
 	`
 	hash := sha256.Sum256([]byte(password))
 	userWithPassword := &struct {
-		*User
+		*UserProtected
 		LoginPassword []byte
 	}{
 		user, hash[:],
@@ -122,13 +127,13 @@ func (d *Database) UserCreate(user *User, password string) error {
 	return err
 }
 
-func (d *Database) User(id uuid.UUID) (*User, error) {
+func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
 	const command = `
 		SELECT * FROM User WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
-	user := &User{}
+	user := &UserProtected{}
 	err := row.StructScan(user)
 	return user, err
 }

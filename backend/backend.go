@@ -7,6 +7,9 @@ import (
 )
 
 // Backend handles the application logic.
+// Any method that contains "userID uuid.UUID" as the first parameter means it is
+// password-protected. This means that method should first check if that user has access rights
+// before executing the command.
 type Backend struct {
 	Database *Database
 }
@@ -22,6 +25,18 @@ func (b *Backend) Vendor(id uuid.UUID) (*Vendor, error) {
 }
 
 func (b *Backend) User(id uuid.UUID) (*User, error) {
+	userProtected, err := b.Database.User(id)
+	if err != nil {
+		return nil, err
+	}
+	return userProtected.User, nil
+}
+
+func (b *Backend) UserProtected(userID uuid.UUID, id uuid.UUID) (*UserProtected, error) {
+	if userID != id {
+		return nil, fmt.Errorf(unauthorized)
+	}
+
 	return b.Database.User(id)
 }
 
