@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { RootState } from "./store";
+import { RootState, setToken } from "./store";
 import { DateTime } from "luxon";
 
 export interface Vendor {
@@ -53,17 +53,35 @@ export type Token = string;
 
 const encode = encodeURIComponent;
 
+const baseQuery = fetchBaseQuery({
+  baseUrl: "http://localhost:8080",
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).root.token;
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
+
 export const apiSlice = createApi({
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8080",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).root.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
+  baseQuery: async (args, api, extraOptions) => {
+    const credentials = getCredentials();
+    if (credentials !== null) {
+      let response = await baseQuery(
+        { url: "/token", method: "POST", body: credentials },
+        api,
+        extraOptions
+      );
+      if (response.error) {
+        return response;
       }
-      return headers;
-    },
-  }),
+
+      api.dispatch({ type: "root/setToken", payload: response.data });
+    }
+
+    return baseQuery(args, api, extraOptions);
+  },
   tagTypes: ["Review", "LoggedInUser"],
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
@@ -121,15 +139,40 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
-    newToken: builder.mutation<Token, Credentials>({
-      query: (credentials) => ({
-        url: "/token",
-        method: "POST",
-        body: credentials,
-      }),
+    setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
+      queryFn: async (args, api, extraOptions) => {
+        let response = await baseQuery(
+          { url: "/token", method: "POST", body: args },
+          api,
+          extraOptions
+        );
+        if (response.error) {
+          return response;
+        }
+
+        api.dispatch({ type: "root/setToken", payload: response.data });
+
+        setCredentialsState(args);
+
+        return { data: undefined };
+      },
     }),
   }),
 });
+
+function setCredentialsState(credentials: Credentials) {
+  console.info("set localStorage");
+  localStorage.setItem("user", JSON.stringify(credentials));
+}
+
+function getCredentials(): Credentials | null {
+  const entry = localStorage.getItem("user");
+  if (entry === null) {
+    return null;
+  }
+
+  return JSON.parse(entry);
+}
 
 export const {
   useVendorQuery,
@@ -140,5 +183,5 @@ export const {
   useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
-  useNewTokenMutation,
+  useSetCredentialsAndGetTokenMutation,
 } = apiSlice;

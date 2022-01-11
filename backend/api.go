@@ -273,7 +273,7 @@ func (a *API) TokenPost(c *gin.Context) {
 	claims := TokenClaims{
 		UserID: userID,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: (time.Now().Add(time.Minute * 10)).Unix(),
+			ExpiresAt: (time.Now().Add(time.Minute*10 + time.Second*5)).Unix(),
 		},
 	}
 
