@@ -22,6 +22,7 @@ import { DateTime } from "luxon";
  * Displays the vendor page of a vendor, including listed reviews and add review button
  */
 export function Vendor(): React.ReactElement {
+  // const [completedFormData, setCompletedFormData] = useState({});
   const vendorID = useParams().ID as string;
   const vendorQuery = useVendorQuery(vendorID);
   const reviewsQuery = useReviewsQuery(vendorID);
@@ -49,6 +50,8 @@ export function Vendor(): React.ReactElement {
       Stars: 5,
     });
   };
+
+  console.log(reviewsQuery.data);
 
   return (
     <>
