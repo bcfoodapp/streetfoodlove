@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -36,6 +37,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/reviews/:id", Auth, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 	router.POST("/token", a.TokenPost)
+	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 }
 
 // errorHandler writes any errors to response
@@ -203,4 +205,35 @@ func (a *API) TokenPost(c *gin.Context) {
 		panic(err)
 	}
 	c.JSON(http.StatusOK, tokenStr)
+}
+
+func (a *API) MapView(c *gin.Context) {
+	northWestLat, err := strconv.Atoi(c.Param("northWestLat"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	northWestLng, err := strconv.Atoi(c.Param("northWestLng"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	southEastLat, err := strconv.Atoi(c.Param("southEastLat"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	southEastLng, err := strconv.Atoi(c.Param("southEastLng"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	_ = northWestLat
+	_ = northWestLng
+	_ = southEastLat
+	_ = southEastLng
 }
