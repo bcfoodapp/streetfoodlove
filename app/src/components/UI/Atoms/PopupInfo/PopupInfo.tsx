@@ -11,7 +11,7 @@ export default function PopupInfo(): React.ReactElement {
       <div className={styles.header}>
         <div className={styles.vendorName}>
           <div>
-            <span>McDonalds</span>
+            <span className={styles.title}>Laz's Tacos</span>
           </div>
           <div className={styles.firstImage}>
             <img
@@ -22,7 +22,7 @@ export default function PopupInfo(): React.ReactElement {
         </div>
         <div className={styles.secondImage}>
           <img
-            src="https://saferchemicals.org/wp-content/uploads/2021/01/McDonalds-sign-scaled.jpeg"
+            src="https://s3-media0.fl.yelpcdn.com/bphoto/L96pd4xrj0l_AvDeO8I0JQ/348s.jpg"
             alt="cannot be displayed"
           />
         </div>
