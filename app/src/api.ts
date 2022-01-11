@@ -14,11 +14,16 @@ export interface Vendor {
   Longitude: number;
 }
 
+export enum UserType {
+  Customer,
+  Vendor,
+}
+
 export interface User {
   ID: string;
   Username: string;
   Photo: string;
-  UserType: "customer" | "vendor";
+  UserType: UserType;
 }
 
 // Contains user fields that are password-protected.
@@ -78,11 +83,14 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["LoggedInUser"],
     }),
-    createUser: builder.mutation<undefined, UserProtected>({
-      query: (user) => ({
-        url: `/users/${encode(user.ID)}/protected`,
+    createUser: builder.mutation<
+      undefined,
+      UserProtected & { Password: string }
+    >({
+      query: (payload) => ({
+        url: `/users/${encode(payload.ID)}/protected`,
         method: "PUT",
-        body: user,
+        body: payload,
       }),
       invalidatesTags: ["LoggedInUser"],
     }),
