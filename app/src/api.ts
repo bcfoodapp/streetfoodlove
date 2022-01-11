@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { RootState } from "./store";
+import { RootState, setToken } from "./store";
 import { DateTime } from "luxon";
 
 export interface Vendor {
@@ -53,18 +53,34 @@ export type Token = string;
 
 const encode = encodeURIComponent;
 
+const baseQuery = fetchBaseQuery({
+  baseUrl: "http://localhost:8080",
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).root.token;
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
+
 export const apiSlice = createApi({
   baseQuery: async (args, api, extraOptions) => {
-    return fetchBaseQuery({
-      baseUrl: "http://localhost:8080",
-      prepareHeaders: (headers, { getState }) => {
-        const token = (getState() as RootState).root.token;
-        if (token) {
-          headers.set("Authorization", `Bearer ${token}`);
-        }
-        return headers;
-      },
-    })(args, api, extraOptions);
+    const credentials = getCredentials();
+    if (credentials !== null) {
+      let response = await baseQuery(
+        { url: "/token", method: "POST", body: credentials },
+        api,
+        extraOptions
+      );
+      if (response.error) {
+        return response;
+      }
+
+      api.dispatch({ type: "root/setToken", payload: response.data });
+    }
+
+    return baseQuery(args, api, extraOptions);
   },
   tagTypes: ["Review", "LoggedInUser"],
   endpoints: (builder) => ({
@@ -124,16 +140,17 @@ export const apiSlice = createApi({
       invalidatesTags: ["Review"],
     }),
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
-      queryFn: async (args, api) => {
-        let response = await fetch("http://localhost:8080/token", {
-          method: "POST",
-          body: JSON.stringify(args),
-        });
-        if (!response.ok) {
-          return { error: await response.json() };
+      queryFn: async (args, api, extraOptions) => {
+        let response = await baseQuery(
+          { url: "/token", method: "POST", body: args },
+          api,
+          extraOptions
+        );
+        if (response.error) {
+          return response;
         }
 
-        api.dispatch({ type: "root/setToken", payload: await response.json() });
+        api.dispatch({ type: "root/setToken", payload: response.data });
 
         setCredentialsState(args);
 
