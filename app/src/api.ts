@@ -49,10 +49,18 @@ export interface Credentials {
   Password: string;
 }
 
+export interface GeoRectangle {
+  northWestLat: number;
+  northWestLng: number;
+  southEastLat: number;
+  southEastLng: number;
+}
+
 export type Token = string;
 
 const encode = encodeURIComponent;
 
+// API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080",
@@ -94,6 +102,7 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["LoggedInUser"],
     }),
+    // Changes password for given user.
     updatePassword: builder.mutation<
       undefined,
       { userID: string; password: string }
@@ -121,11 +130,18 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
+    // Returns a token which can be used to make requests to password-protected resources.
     newToken: builder.mutation<Token, Credentials>({
       query: (credentials) => ({
         url: "/token",
         method: "POST",
         body: credentials,
+      }),
+    }),
+    // Returns list of vendor IDs inside given rectangle.
+    mapViewVendors: builder.query<string[], GeoRectangle>({
+      query: (rectangle) => ({
+        url: `/map/view/${rectangle.northWestLat}/${rectangle.northWestLng}/${rectangle.southEastLat}/${rectangle.southEastLng}`,
       }),
     }),
   }),
