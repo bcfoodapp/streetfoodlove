@@ -33,6 +33,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/vendors/:id", a.Vendor)
 	router.GET("/users/:id", a.User)
 	router.GET("/users/:id/protected", a.UserProtected)
+	router.POST("/users/:id/protected", a.UserProtectedPost)
 	router.GET("/reviews", a.ReviewsByVendorID)
 	router.PUT("/reviews/:id", Auth, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
@@ -141,6 +142,61 @@ func (a *API) UserProtected(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+func (a *API) UserProtectedPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	user := &UserProtected{}
+	if err := c.ShouldBindJSON(user); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != user.ID {
+		c.Error(fmt.Errorf("ids do not match"))
+		return
+	}
+
+	/*
+		if err := a.Backend.UserProtectedUpdate(getTokenFromContext(c), user); err != nil {
+			c.Error(err)
+			return
+		}
+	*/
+}
+
+func (a *API) UserProtectedPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	userWithPassword := &struct {
+		*UserProtected
+		Password string
+	}{}
+	if err := c.ShouldBindJSON(userWithPassword); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != userWithPassword.ID {
+		c.Error(fmt.Errorf("ids do not match"))
+		return
+	}
+
+	/*
+		if err := a.Backend.UserProtectedCreate(userWithPassword.UserProtected, userWithPassword.Password); err != nil {
+			c.Error(err)
+			return
+		}
+	*/
 }
 
 func (a *API) ReviewsByVendorID(c *gin.Context) {
