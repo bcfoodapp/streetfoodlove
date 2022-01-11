@@ -40,11 +40,8 @@ export default function Login(): React.ReactElement {
   // }, []);
 
   const onSubmit = async () => {
-    try {
-      const token = await getToken(credentials).unwrap();
-      dispatch(setToken(token));
-      navigate("/");
-    } catch (e) {}
+    await getToken(credentials);
+    navigate("/");
   };
 
   const storeCredentials = () => {

@@ -133,7 +133,9 @@ export const apiSlice = createApi({
           return { error: await response.json() };
         }
 
-        return { data: await response.json() };
+        api.dispatch({ type: "root/setToken", payload: await response.json() });
+
+        return { data: undefined };
       },
     }),
   }),
