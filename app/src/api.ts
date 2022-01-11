@@ -123,8 +123,8 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
-    getTokenAndSetState: builder.mutation<undefined, Credentials>({
-      queryFn: async (args, api, extraOptions) => {
+    setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
+      queryFn: async (args, api) => {
         let response = await fetch("http://localhost:8080/token", {
           method: "POST",
           body: JSON.stringify(args),
@@ -135,11 +135,27 @@ export const apiSlice = createApi({
 
         api.dispatch({ type: "root/setToken", payload: await response.json() });
 
+        setCredentialsState(args);
+
         return { data: undefined };
       },
     }),
   }),
 });
+
+function setCredentialsState(credentials: Credentials) {
+  console.info("set localStorage");
+  localStorage.setItem("user", JSON.stringify(credentials));
+}
+
+function getCredentials(): Credentials | null {
+  const entry = localStorage.getItem("user");
+  if (entry === null) {
+    return null;
+  }
+
+  return JSON.parse(entry);
+}
 
 export const {
   useVendorQuery,
@@ -150,5 +166,5 @@ export const {
   useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
-  useGetTokenAndSetStateMutation,
+  useSetCredentialsAndGetTokenMutation,
 } = apiSlice;

@@ -4,7 +4,10 @@ import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
-import { Credentials, useGetTokenAndSetStateMutation } from "../../../api";
+import {
+  Credentials,
+  useSetCredentialsAndGetTokenMutation,
+} from "../../../api";
 import { setToken, useAppDispatch, useAppSelector } from "../../../store";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +20,7 @@ export default function Login(): React.ReactElement {
     Password: "",
     Username: "",
   });
-  const [getToken] = useGetTokenAndSetStateMutation();
+  const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.root.error);
@@ -40,7 +43,7 @@ export default function Login(): React.ReactElement {
   // }, []);
 
   const onSubmit = async () => {
-    await getToken(credentials);
+    await setCredentialsMutation(credentials);
     navigate("/");
   };
 
