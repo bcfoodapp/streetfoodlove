@@ -16,12 +16,16 @@ export interface Vendor {
 
 export interface User {
   ID: string;
-  Email: string;
   Username: string;
+  Photo: string;
+  UserType: "customer" | "vendor";
+}
+
+// Contains user fields that are password-protected.
+export interface UserProtected extends User {
+  Email: string;
   FirstName: string;
   LastName: string;
-  UserType: number;
-  Photo: string;
 }
 
 export interface Review {
@@ -55,13 +59,42 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Review"],
+  tagTypes: ["Review", "LoggedInUser"],
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
     }),
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
+    }),
+    userProtected: builder.query<UserProtected, string>({
+      query: (id) => `/users/${encode(id)}/protected`,
+    }),
+    updateUser: builder.mutation<undefined, UserProtected>({
+      query: (user) => ({
+        url: `/users/${encode(user.ID)}/protected`,
+        method: "POST",
+        body: user,
+      }),
+      invalidatesTags: ["LoggedInUser"],
+    }),
+    createUser: builder.mutation<undefined, UserProtected>({
+      query: (user) => ({
+        url: `/users/${encode(user.ID)}/protected`,
+        method: "PUT",
+        body: user,
+      }),
+      invalidatesTags: ["LoggedInUser"],
+    }),
+    updatePassword: builder.mutation<
+      undefined,
+      { userID: string; password: string }
+    >({
+      query: ({ userID, password }) => ({
+        url: `/users/${encode(userID)}/password`,
+        method: "POST",
+        body: password,
+      }),
     }),
     reviews: builder.query<Review[], string>({
       query: (vendorID) => `/reviews?vendorID=${encode(vendorID)}`,
@@ -93,6 +126,10 @@ export const apiSlice = createApi({
 export const {
   useVendorQuery,
   useUserQuery,
+  useUserProtectedQuery,
+  useUpdateUserMutation,
+  useCreateUserMutation,
+  useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
   useNewTokenMutation,
