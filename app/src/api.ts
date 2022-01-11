@@ -54,16 +54,18 @@ export type Token = string;
 const encode = encodeURIComponent;
 
 export const apiSlice = createApi({
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8080",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).root.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: async (args, api, extraOptions) => {
+    return fetchBaseQuery({
+      baseUrl: "http://localhost:8080",
+      prepareHeaders: (headers, { getState }) => {
+        const token = (getState() as RootState).root.token;
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
+        return headers;
+      },
+    })(args, api, extraOptions);
+  },
   tagTypes: ["Review", "LoggedInUser"],
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
