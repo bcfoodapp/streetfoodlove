@@ -123,12 +123,18 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
-    newToken: builder.mutation<Token, Credentials>({
-      query: (credentials) => ({
-        url: "/token",
-        method: "POST",
-        body: credentials,
-      }),
+    getTokenAndSetState: builder.mutation<undefined, Credentials>({
+      queryFn: async (args, api, extraOptions) => {
+        let response = await fetch("http://localhost:8080/token", {
+          method: "POST",
+          body: JSON.stringify(args),
+        });
+        if (!response.ok) {
+          return { error: await response.json() };
+        }
+
+        return { data: await response.json() };
+      },
     }),
   }),
 });
@@ -142,5 +148,5 @@ export const {
   useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
-  useNewTokenMutation,
+  useGetTokenAndSetStateMutation,
 } = apiSlice;
