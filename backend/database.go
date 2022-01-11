@@ -76,10 +76,17 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	return vendor, err
 }
 
+type UserType int
+
+const (
+	UserTypeCustomer UserType = iota
+	UserTypeVendor
+)
+
 type User struct {
 	ID       uuid.UUID
 	Username string
-	UserType int
+	UserType UserType
 	Photo    uuid.UUID
 }
 

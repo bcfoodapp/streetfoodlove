@@ -34,6 +34,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/users/:id", a.User)
 	router.GET("/users/:id/protected", a.UserProtected)
 	router.POST("/users/:id/protected", a.UserProtectedPost)
+	router.PUT("/users/:id/protected", a.UserProtectedPut)
 	router.GET("/reviews", a.ReviewsByVendorID)
 	router.PUT("/reviews/:id", Auth, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
@@ -162,6 +163,7 @@ func (a *API) UserProtectedPost(c *gin.Context) {
 		return
 	}
 
+	// TODO Implement backend
 	/*
 		if err := a.Backend.UserProtectedUpdate(getTokenFromContext(c), user); err != nil {
 			c.Error(err)
