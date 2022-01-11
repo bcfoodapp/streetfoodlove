@@ -33,6 +33,9 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/vendors/:id", a.Vendor)
 	router.GET("/users/:id", a.User)
+	router.GET("/users/:id/protected", a.UserProtected)
+	router.POST("/users/:id/protected", a.UserProtectedPost)
+	router.PUT("/users/:id/protected", a.UserProtectedPut)
 	router.GET("/reviews", a.ReviewsByVendorID)
 	router.PUT("/reviews/:id", Auth, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
@@ -92,6 +95,10 @@ func Auth(c *gin.Context) {
 	c.Set(userIDKey, claims.UserID)
 }
 
+func getTokenFromContext(c *gin.Context) uuid.UUID {
+	return c.MustGet(userIDKey).(uuid.UUID)
+}
+
 func (a *API) Vendor(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -122,6 +129,78 @@ func (a *API) User(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+func (a *API) UserProtected(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	user, err := a.Backend.UserProtected(getTokenFromContext(c), id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+func (a *API) UserProtectedPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	user := &UserProtected{}
+	if err := c.ShouldBindJSON(user); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != user.ID {
+		c.Error(fmt.Errorf("ids do not match"))
+		return
+	}
+
+	// TODO Implement backend
+	/*
+		if err := a.Backend.UserProtectedUpdate(getTokenFromContext(c), user); err != nil {
+			c.Error(err)
+			return
+		}
+	*/
+}
+
+func (a *API) UserProtectedPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	userWithPassword := &struct {
+		*UserProtected
+		Password string
+	}{}
+	if err := c.ShouldBindJSON(userWithPassword); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != userWithPassword.ID {
+		c.Error(fmt.Errorf("ids do not match"))
+		return
+	}
+
+	/*
+		if err := a.Backend.UserProtectedCreate(userWithPassword.UserProtected, userWithPassword.Password); err != nil {
+			c.Error(err)
+			return
+		}
+	*/
 }
 
 func (a *API) ReviewsByVendorID(c *gin.Context) {
@@ -158,7 +237,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.ReviewPut(c.MustGet(userIDKey).(uuid.UUID), review); err != nil {
+	if err := a.Backend.ReviewPut(getTokenFromContext(c), review); err != nil {
 		c.Error(err)
 		return
 	}

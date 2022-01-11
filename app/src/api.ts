@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { RootState } from "./store";
+import { DateTime } from "luxon";
 
 export interface Vendor {
   ID: string;
@@ -9,26 +10,39 @@ export interface Vendor {
   BusinessHours: string;
   Phone: string;
   BusinessLogo: string;
-  Latitude: string;
-  Longitude: string;
+  Latitude: number;
+  Longitude: number;
+}
+
+export enum UserType {
+  Customer,
+  Vendor,
 }
 
 export interface User {
   ID: string;
-  Email: string;
   Username: string;
+  Photo: string;
+  UserType: UserType;
+}
+
+// Contains user fields that are password-protected.
+export interface UserProtected extends User {
+  Email: string;
   FirstName: string;
   LastName: string;
-  UserType: number;
-  Photo: string;
 }
 
 export interface Review {
   ID: string;
+  DatePosted: DateTime;
   Text: string;
   VendorID: string;
   UserID: string;
+  Stars: 1 | 2 | 3 | 4 | 5;
 }
+
+type RawReview = Review & { DatePosted: string };
 
 export interface Credentials {
   Username: string;
@@ -50,7 +64,7 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Review"],
+  tagTypes: ["Review", "LoggedInUser"],
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
@@ -58,8 +72,45 @@ export const apiSlice = createApi({
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
     }),
+    userProtected: builder.query<UserProtected, string>({
+      query: (id) => `/users/${encode(id)}/protected`,
+    }),
+    updateUser: builder.mutation<undefined, UserProtected>({
+      query: (user) => ({
+        url: `/users/${encode(user.ID)}/protected`,
+        method: "POST",
+        body: user,
+      }),
+      invalidatesTags: ["LoggedInUser"],
+    }),
+    createUser: builder.mutation<
+      undefined,
+      UserProtected & { Password: string }
+    >({
+      query: (payload) => ({
+        url: `/users/${encode(payload.ID)}/protected`,
+        method: "PUT",
+        body: payload,
+      }),
+      invalidatesTags: ["LoggedInUser"],
+    }),
+    updatePassword: builder.mutation<
+      undefined,
+      { userID: string; password: string }
+    >({
+      query: ({ userID, password }) => ({
+        url: `/users/${encode(userID)}/password`,
+        method: "POST",
+        body: password,
+      }),
+    }),
     reviews: builder.query<Review[], string>({
       query: (vendorID) => `/reviews?vendorID=${encode(vendorID)}`,
+      transformResponse: (response) =>
+        (response as RawReview[]).map((review) => ({
+          ...review,
+          PostDate: DateTime.fromISO(review.DatePosted),
+        })),
       providesTags: ["Review"],
     }),
     submitReview: builder.mutation<undefined, Review>({
@@ -83,6 +134,10 @@ export const apiSlice = createApi({
 export const {
   useVendorQuery,
   useUserQuery,
+  useUserProtectedQuery,
+  useUpdateUserMutation,
+  useCreateUserMutation,
+  useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
   useNewTokenMutation,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Form, Checkbox } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
@@ -22,12 +22,39 @@ export default function Login(): React.ReactElement {
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.root.error);
 
+  useEffect(() => {
+    async function generateNewToken() {
+      try {
+        if (localStorage.getItem("user")) {
+          let obj = JSON.parse(localStorage.getItem("user")!);
+          const token = await newToken({
+            Password: obj.password,
+            Username: obj.username,
+          }).unwrap();
+          dispatch(setToken(token));
+        }
+      } catch (error) {}
+    }
+
+    generateNewToken();
+  }, []);
+
   const onSubmit = async () => {
     try {
       const token = await newToken(credentials).unwrap();
       dispatch(setToken(token));
-      navigate(-1);
+      navigate("/");
     } catch (e) {}
+  };
+
+  const storeCredentials = () => {
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        username: credentials.Username,
+        password: credentials.Password,
+      })
+    );
   };
 
   return (
@@ -67,7 +94,7 @@ export default function Login(): React.ReactElement {
                 {/*  <Checkbox label="I agree to the Terms and Conditions" />*/}
                 {/*</Form.Field>*/}
                 <Container>
-                  <Buttons login color="green">
+                  <Buttons login color="green" clicked={storeCredentials}>
                     Login
                   </Buttons>
                 </Container>
