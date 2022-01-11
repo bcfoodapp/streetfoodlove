@@ -315,4 +315,6 @@ func (a *API) MapView(c *gin.Context) {
 	_ = northWestLng
 	_ = southEastLat
 	_ = southEastLng
+
+	// TODO
 }
