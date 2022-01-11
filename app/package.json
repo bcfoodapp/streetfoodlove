@@ -19,6 +19,7 @@
     "@types/react-leaflet": "^2.8.2",
     "@types/react-router-dom": "^5.3.2",
     "@types/semantic-ui": "^2.2.7",
+    "@types/uuid": "^8.3.4",
     "babel-loader": "^8.2.3",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.5.0",

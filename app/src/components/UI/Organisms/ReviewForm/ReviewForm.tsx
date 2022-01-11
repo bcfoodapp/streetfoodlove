@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Container, Form, TextArea } from "semantic-ui-react";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
 import Buttons from "../../Atoms/Button/Buttons";
@@ -16,7 +16,7 @@ interface Props {
 export const ReviewForm = (props: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaInput(e.target.value);
   };
 
