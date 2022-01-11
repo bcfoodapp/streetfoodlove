@@ -79,7 +79,9 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 type UserType int
 
 const (
+	// nolint: deadcode
 	UserTypeCustomer UserType = iota
+	// nolint: deadcode
 	UserTypeVendor
 )
 
