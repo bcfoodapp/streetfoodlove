@@ -22,9 +22,7 @@ export default function HeaderBar(): React.ReactElement {
       </Menu.Item>
       <Menu.Item position="right">
         {/* TODO need indication for logged in status by hiding these buttons */}
-        <Buttons signup color="white">
-          Sign Up
-        </Buttons>
+        <Buttons signup>Sign Up</Buttons>
         <Link to="/login">
           <Buttons login color="orange">
             Login

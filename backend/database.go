@@ -32,8 +32,8 @@ type Vendor struct {
 	BusinessHours   string
 	Phone           string
 	BusinessLogo    string
-	Latitude        string
-	Longitude       string
+	Latitude        float32
+	Longitude       float32
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
