@@ -9,8 +9,8 @@ export interface Vendor {
   BusinessHours: string;
   Phone: string;
   BusinessLogo: string;
-  Latitude: string;
-  Longitude: string;
+  Latitude: number;
+  Longitude: number;
 }
 
 export interface User {
