@@ -1,12 +1,12 @@
 import React from "react";
 
 export class ErrorBoundary extends React.Component<{}, { error: string }> {
-  constructor(props) {
+  constructor(props: {}) {
     super(props);
     this.state = { error: "" };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error) {
     return { error: error.toString() };
   }
 

@@ -1,19 +1,10 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-  mode: "development",
-  devServer: {
-    compress: true,
-    port: 3000,
-    historyApiFallback: true,
-  },
-  entry: __dirname + "/src/index.tsx",
+  entry: __dirname + "/../src/index.tsx",
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        use: ["ts-loader"],
-      },
       {
         test: /\.css$/,
         use: [
@@ -28,7 +19,6 @@ module.exports = {
       },
     ],
   },
-  devtool: "inline-source-map",
   resolve: {
     extensions: [".js", ".ts", ".tsx", ".css"],
   },
@@ -37,5 +27,10 @@ module.exports = {
     filename: "[name].[contenthash].js",
     publicPath: "/",
   },
-  plugins: [new HtmlWebpackPlugin({ template: "./public/index.html" })],
+  plugins: [
+    new HtmlWebpackPlugin({ template: "./public/index.html" }),
+    new CopyPlugin({
+      patterns: [{ from: "public", to: "public" }],
+    }),
+  ],
 };
