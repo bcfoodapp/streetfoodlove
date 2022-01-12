@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { RootState, setToken } from "./store";
+import { RootState } from "./store";
 import { DateTime } from "luxon";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Vendor {
   ID: string;
@@ -49,14 +50,34 @@ export interface Credentials {
   Password: string;
 }
 
-export type Token = string;
+export const tokenSlice = createSlice({
+  name: "token",
+  initialState: {
+    token: null as string | null,
+    // Unix timestamp when the token was created.
+    tokenTime: 0,
+  },
+  reducers: {
+    setTokenAndTime: (
+      state,
+      {
+        payload: { token, time },
+      }: PayloadAction<{ token: string; time: number }>
+    ) => {
+      state.token = token;
+      state.tokenTime = time;
+    },
+  },
+});
+
+const { setTokenAndTime } = tokenSlice.actions;
 
 const encode = encodeURIComponent;
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8080",
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).root.token;
+    const token = (getState() as RootState).token.token;
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -66,18 +87,30 @@ const baseQuery = fetchBaseQuery({
 
 export const apiSlice = createApi({
   baseQuery: async (args, api, extraOptions) => {
-    const credentials = getCredentials();
-    if (credentials !== null) {
-      let response = await baseQuery(
-        { url: "/token", method: "POST", body: credentials },
-        api,
-        extraOptions
-      );
-      if (response.error) {
-        return response;
-      }
+    // Renew token if it expired (10 minute expiration time)
+    if (
+      args &&
+      (api.getState() as RootState).token.tokenTime <=
+        DateTime.now().minus({ minutes: 10 }).toSeconds()
+    ) {
+      const credentials = getCredentials();
+      if (credentials !== null) {
+        let response = await baseQuery(
+          { url: "/token", method: "POST", body: credentials },
+          api,
+          extraOptions
+        );
+        if (response.error) {
+          return response;
+        }
 
-      api.dispatch({ type: "root/setToken", payload: response.data });
+        api.dispatch(
+          setTokenAndTime({
+            token: response.data as string,
+            time: DateTime.now().toSeconds(),
+          })
+        );
+      }
     }
 
     return baseQuery(args, api, extraOptions);
@@ -150,7 +183,12 @@ export const apiSlice = createApi({
           return response;
         }
 
-        api.dispatch({ type: "root/setToken", payload: response.data });
+        api.dispatch(
+          setTokenAndTime({
+            token: response.data as string,
+            time: DateTime.now().toSeconds(),
+          })
+        );
 
         setCredentialsState(args);
 
