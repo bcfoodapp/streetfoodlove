@@ -1,4 +1,4 @@
-import { Container, Icon } from "semantic-ui-react";
+import { Container, Icon, SemanticCOLORS } from "semantic-ui-react";
 import styles from "./reviewlabel.module.css";
 
 /**
@@ -6,7 +6,11 @@ import styles from "./reviewlabel.module.css";
  * @param props color -> from vendor page
  */
 
-export const ReviewLabel = (props) => {
+interface Props {
+  color?: SemanticCOLORS;
+}
+
+export const ReviewLabel = (props: Props) => {
   return (
     <Container className={styles.container}>
       <Icon

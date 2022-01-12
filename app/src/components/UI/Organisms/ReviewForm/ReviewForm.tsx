@@ -16,7 +16,7 @@ interface Props {
 export const ReviewForm = (props: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaInput(e.target.value);
   };
 

@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Form, Checkbox } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
-import { Credentials, useNewTokenMutation } from "../../../api";
+import {
+  Credentials,
+  useSetCredentialsAndGetTokenMutation,
+} from "../../../api";
 import { setToken, useAppDispatch, useAppSelector } from "../../../store";
 import { useNavigate } from "react-router-dom";
 
@@ -17,17 +20,13 @@ export default function Login(): React.ReactElement {
     Password: "",
     Username: "",
   });
-  const [newToken] = useNewTokenMutation();
-  const dispatch = useAppDispatch();
+  const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.root.error);
 
   const onSubmit = async () => {
-    try {
-      const token = await newToken(credentials).unwrap();
-      dispatch(setToken(token));
-      navigate(-1);
-    } catch (e) {}
+    await setCredentialsMutation(credentials);
+    navigate("/");
   };
 
   return (

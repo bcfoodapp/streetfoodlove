@@ -6,7 +6,13 @@ import styles from "./vendorcard.module.css";
  * This shows the square info cards about that particular vendor
  */
 
-export default function VendorDetailCards(props): React.ReactElement {
+interface Props {
+  heading: "about-us" | "contact" | "address" | "map";
+}
+
+export default function VendorDetailCards(
+  props: React.PropsWithChildren<Props>
+): React.ReactElement {
   let headingContent;
 
   if (props.heading === "about-us") {

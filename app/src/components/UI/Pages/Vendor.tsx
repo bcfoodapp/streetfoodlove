@@ -16,11 +16,13 @@ import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
+import { DateTime } from "luxon";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
  */
 export function Vendor(): React.ReactElement {
+  // const [completedFormData, setCompletedFormData] = useState({});
   const vendorID = useParams().ID as string;
   const vendorQuery = useVendorQuery(vendorID);
   const reviewsQuery = useReviewsQuery(vendorID);
@@ -42,8 +44,10 @@ export function Vendor(): React.ReactElement {
     submitReview({
       ...obj,
       ID: uuidv4(),
+      DatePosted: DateTime.now(),
       VendorID: vendorID,
       UserID: "02c353e2-e0f5-4730-89c7-b0a0610232e4",
+      Stars: 5,
     });
   };
 

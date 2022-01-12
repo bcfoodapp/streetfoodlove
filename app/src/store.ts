@@ -4,6 +4,7 @@ import {
   isRejectedWithValue,
   Middleware,
   MiddlewareAPI,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import { apiSlice } from "./api";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
@@ -21,15 +22,15 @@ const apiErrorHandler: Middleware =
 export const rootSlice = createSlice({
   name: "root",
   initialState: {
-    error: null as Error | null,
+    error: null as string | null,
     token: null as string | null,
   },
   reducers: {
-    setError: (state, { payload }) => {
+    setError: (state, { payload }: PayloadAction<string>) => {
       console.error(payload);
       state.error = payload;
     },
-    setToken: (state, { payload }) => {
+    setToken: (state, { payload }: PayloadAction<string>) => {
       state.token = payload;
     },
   },
@@ -44,6 +45,7 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware).concat(apiErrorHandler),
+  devTools: true,
 });
 
 export type RootState = ReturnType<typeof store.getState>;
