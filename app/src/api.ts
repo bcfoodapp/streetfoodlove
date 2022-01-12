@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { RootState, setToken } from "./store";
+import { RootState } from "./store";
 import { DateTime } from "luxon";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Vendor {
   ID: string;
@@ -49,14 +50,26 @@ export interface Credentials {
   Password: string;
 }
 
-export type Token = string;
+export const tokenSlice = createSlice({
+  name: "token",
+  initialState: {
+    token: null as string | null,
+  },
+  reducers: {
+    setToken: (state, { payload }: PayloadAction<string>) => {
+      state.token = payload;
+    },
+  },
+});
+
+const { setToken } = tokenSlice.actions;
 
 const encode = encodeURIComponent;
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8080",
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).root.token;
+    const token = (getState() as RootState).token.token;
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -77,7 +90,7 @@ export const apiSlice = createApi({
         return response;
       }
 
-      api.dispatch({ type: "root/setToken", payload: response.data });
+      api.dispatch(setToken(response.data as string));
     }
 
     return baseQuery(args, api, extraOptions);
@@ -150,7 +163,7 @@ export const apiSlice = createApi({
           return response;
         }
 
-        api.dispatch({ type: "root/setToken", payload: response.data });
+        api.dispatch(setToken(response.data as string));
 
         setCredentialsState(args);
 

@@ -6,7 +6,7 @@ import {
   MiddlewareAPI,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { apiSlice } from "./api";
+import { apiSlice, tokenSlice } from "./api";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 const apiErrorHandler: Middleware =
@@ -23,28 +23,32 @@ export const rootSlice = createSlice({
   name: "root",
   initialState: {
     error: null as string | null,
-    token: null as string | null,
   },
   reducers: {
     setError: (state, { payload }: PayloadAction<string>) => {
       console.error(payload);
       state.error = payload;
     },
-    setToken: (state, { payload }: PayloadAction<string>) => {
-      state.token = payload;
-    },
   },
 });
 
-export const { setError, setToken } = rootSlice.actions;
+export const { setError } = rootSlice.actions;
 
 export const store = configureStore({
   reducer: {
-    [apiSlice.reducerPath]: apiSlice.reducer,
     root: rootSlice.reducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
+    [tokenSlice.name]: tokenSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware).concat(apiErrorHandler),
+    getDefaultMiddleware({
+      serializableCheck: {
+        // DateTimes in API responses cannot be serialized. Non-serializability is traded off for ease of use.
+        ignoredActions: ["api/executeQuery/fulfilled"],
+      },
+    })
+      .concat(apiSlice.middleware)
+      .concat(apiErrorHandler),
   devTools: true,
 });
 
