@@ -42,10 +42,8 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        // DateTimes in API responses cannot be serialized. Non-serializability is traded off for ease of use.
-        ignoredActions: ["api/executeQuery/fulfilled"],
-      },
+      // Non-serializable DateTimes are allowed in API schemas only.
+      serializableCheck: false,
     })
       .concat(apiSlice.middleware)
       .concat(apiErrorHandler),
