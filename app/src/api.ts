@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
-import { RootState, setToken } from "./store";
+import { RootState } from "./store";
 import { DateTime } from "luxon";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Vendor {
   ID: string;
@@ -49,14 +50,41 @@ export interface Credentials {
   Password: string;
 }
 
-export type Token = string;
+export interface GeoRectangle {
+  northWestLat: number;
+  northWestLng: number;
+  southEastLat: number;
+  southEastLng: number;
+}
+
+export const tokenSlice = createSlice({
+  name: "token",
+  initialState: {
+    token: null as string | null,
+    // Unix timestamp when the token was created.
+    tokenTime: 0,
+  },
+  reducers: {
+    setTokenAndTime: (
+      state,
+      {
+        payload: { token, time },
+      }: PayloadAction<{ token: string; time: number }>
+    ) => {
+      state.token = token;
+      state.tokenTime = time;
+    },
+  },
+});
+
+const { setTokenAndTime } = tokenSlice.actions;
 
 const encode = encodeURIComponent;
 
 const baseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8080",
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).root.token;
+    const token = (getState() as RootState).token.token;
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -64,20 +92,33 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+// API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 export const apiSlice = createApi({
   baseQuery: async (args, api, extraOptions) => {
-    const credentials = getCredentials();
-    if (credentials !== null) {
-      let response = await baseQuery(
-        { url: "/token", method: "POST", body: credentials },
-        api,
-        extraOptions
-      );
-      if (response.error) {
-        return response;
-      }
+    // Renew token if it expired (10 minute expiration time)
+    if (
+      args &&
+      (api.getState() as RootState).token.tokenTime <=
+        DateTime.now().minus({ minutes: 10 }).toSeconds()
+    ) {
+      const credentials = getCredentials();
+      if (credentials !== null) {
+        const response = await baseQuery(
+          { url: "/token", method: "POST", body: credentials },
+          api,
+          extraOptions
+        );
+        if (response.error) {
+          return response;
+        }
 
-      api.dispatch({ type: "root/setToken", payload: response.data });
+        api.dispatch(
+          setTokenAndTime({
+            token: response.data as string,
+            time: DateTime.now().toSeconds(),
+          })
+        );
+      }
     }
 
     return baseQuery(args, api, extraOptions);
@@ -86,6 +127,25 @@ export const apiSlice = createApi({
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
+    }),
+    // Gets all vendors that match the given IDs
+    vendorsMultiple: builder.query<Vendor[], string[]>({
+      queryFn: async (args, api, extraOptions) => {
+        const vendors = [] as Vendor[];
+        for (const id of args) {
+          const response = await baseQuery(
+            `/vendors/${encode(id)}`,
+            api,
+            extraOptions
+          );
+          if (response.error) {
+            return response;
+          }
+
+          vendors.push(response.data as Vendor);
+        }
+        return { data: vendors };
+      },
     }),
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
@@ -112,6 +172,7 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["LoggedInUser"],
     }),
+    // Changes password for given user.
     updatePassword: builder.mutation<
       undefined,
       { userID: string; password: string }
@@ -141,7 +202,7 @@ export const apiSlice = createApi({
     }),
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
-        let response = await baseQuery(
+        const response = await baseQuery(
           { url: "/token", method: "POST", body: args },
           api,
           extraOptions
@@ -150,12 +211,23 @@ export const apiSlice = createApi({
           return response;
         }
 
-        api.dispatch({ type: "root/setToken", payload: response.data });
+        api.dispatch(
+          setTokenAndTime({
+            token: response.data as string,
+            time: DateTime.now().toSeconds(),
+          })
+        );
 
         setCredentialsState(args);
 
         return { data: undefined };
       },
+    }),
+    // Returns list of vendor IDs inside given rectangle.
+    mapViewVendors: builder.query<string[], GeoRectangle>({
+      query: (rectangle) => ({
+        url: `/map/view/${rectangle.northWestLat}/${rectangle.northWestLng}/${rectangle.southEastLat}/${rectangle.southEastLng}`,
+      }),
     }),
   }),
 });
@@ -176,6 +248,7 @@ function getCredentials(): Credentials | null {
 
 export const {
   useVendorQuery,
+  useVendorsMultipleQuery,
   useUserQuery,
   useUserProtectedQuery,
   useUpdateUserMutation,
@@ -184,4 +257,5 @@ export const {
   useReviewsQuery,
   useSubmitReviewMutation,
   useSetCredentialsAndGetTokenMutation,
+  useMapViewVendorsQuery,
 } = apiSlice;
