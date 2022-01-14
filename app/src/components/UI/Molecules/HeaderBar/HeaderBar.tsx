@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
  */
 
 interface Props {
-  signUp?: boolean,
+  signUp?: boolean;
 }
 
 export default function HeaderBar(props: Props): React.ReactElement {
