@@ -36,7 +36,6 @@ function MapContent(): React.ReactElement {
   }
 
   const vendors = useVendorsMultipleQuery(vendorIDs);
-  console.log(vendors.data);
 
   return (
     <>
