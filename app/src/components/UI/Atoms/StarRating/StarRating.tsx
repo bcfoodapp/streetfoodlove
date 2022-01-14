@@ -1,5 +1,6 @@
 import { Container } from "semantic-ui-react";
 import styles from "./starRating.module.css";
+import { MouseEvent } from "react";
 
 /**
  * This element represents the star rating that appears in the review form
@@ -7,11 +8,12 @@ import styles from "./starRating.module.css";
 
 export const StarRating = () => {
   //defaultvalue is string, eg "3"
-  const trackStarCount = (e) => {
-    if (e.target.value === "5") {
-    } else if (e.target.value === "4") {
-    } else if (e.target.value === "3") {
-    } else if (e.target.value === "2") {
+  const trackStarCount = (e: MouseEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    if (target.value === "5") {
+    } else if (target.value === "4") {
+    } else if (target.value === "3") {
+    } else if (target.value === "2") {
     } else {
     }
   };

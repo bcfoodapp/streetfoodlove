@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { RootState } from "./store";
 import { DateTime } from "luxon";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Vendor {
   ID: string;
@@ -56,22 +57,72 @@ export interface GeoRectangle {
   southEastLng: number;
 }
 
-export type Token = string;
+export const tokenSlice = createSlice({
+  name: "token",
+  initialState: {
+    token: null as string | null,
+    // Unix timestamp when the token was created.
+    tokenTime: 0,
+  },
+  reducers: {
+    setTokenAndTime: (
+      state,
+      {
+        payload: { token, time },
+      }: PayloadAction<{ token: string; time: number }>
+    ) => {
+      state.token = token;
+      state.tokenTime = time;
+    },
+  },
+});
+
+const { setTokenAndTime } = tokenSlice.actions;
 
 const encode = encodeURIComponent;
 
+const baseQuery = fetchBaseQuery({
+  baseUrl: "http://localhost:8080",
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).token.token;
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
+
 // API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 export const apiSlice = createApi({
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8080",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).root.token;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
+  baseQuery: async (args, api, extraOptions) => {
+    // Renew token if it expired (10 minute expiration time)
+    if (
+      args &&
+      (api.getState() as RootState).token.tokenTime <=
+        DateTime.now().minus({ minutes: 10 }).toSeconds()
+    ) {
+      const credentials = getCredentials();
+      if (credentials !== null) {
+        let response = await baseQuery(
+          { url: "/token", method: "POST", body: credentials },
+          api,
+          extraOptions
+        );
+        if (response.error) {
+          return response;
+        }
+
+        api.dispatch(
+          setTokenAndTime({
+            token: response.data as string,
+            time: DateTime.now().toSeconds(),
+          })
+        );
       }
-      return headers;
-    },
-  }),
+    }
+
+    return baseQuery(args, api, extraOptions);
+  },
   tagTypes: ["Review", "LoggedInUser"],
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
@@ -130,13 +181,28 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
-    // Returns a token which can be used to make requests to password-protected resources.
-    newToken: builder.mutation<Token, Credentials>({
-      query: (credentials) => ({
-        url: "/token",
-        method: "POST",
-        body: credentials,
-      }),
+    setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
+      queryFn: async (args, api, extraOptions) => {
+        let response = await baseQuery(
+          { url: "/token", method: "POST", body: args },
+          api,
+          extraOptions
+        );
+        if (response.error) {
+          return response;
+        }
+
+        api.dispatch(
+          setTokenAndTime({
+            token: response.data as string,
+            time: DateTime.now().toSeconds(),
+          })
+        );
+
+        setCredentialsState(args);
+
+        return { data: undefined };
+      },
     }),
     // Returns list of vendor IDs inside given rectangle.
     mapViewVendors: builder.query<string[], GeoRectangle>({
@@ -147,6 +213,20 @@ export const apiSlice = createApi({
   }),
 });
 
+function setCredentialsState(credentials: Credentials) {
+  console.info("set localStorage");
+  localStorage.setItem("user", JSON.stringify(credentials));
+}
+
+function getCredentials(): Credentials | null {
+  const entry = localStorage.getItem("user");
+  if (entry === null) {
+    return null;
+  }
+
+  return JSON.parse(entry);
+}
+
 export const {
   useVendorQuery,
   useUserQuery,
@@ -156,5 +236,5 @@ export const {
   useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
-  useNewTokenMutation,
+  useSetCredentialsAndGetTokenMutation,
 } = apiSlice;
