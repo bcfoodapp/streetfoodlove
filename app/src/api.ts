@@ -50,13 +50,6 @@ export interface Credentials {
   Password: string;
 }
 
-export interface GeoRectangle {
-  northWestLat: number;
-  northWestLng: number;
-  southEastLat: number;
-  southEastLng: number;
-}
-
 export const tokenSlice = createSlice({
   name: "token",
   initialState: {
@@ -92,7 +85,6 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 export const apiSlice = createApi({
   baseQuery: async (args, api, extraOptions) => {
     // Renew token if it expired (10 minute expiration time)
@@ -103,7 +95,7 @@ export const apiSlice = createApi({
     ) {
       const credentials = getCredentials();
       if (credentials !== null) {
-        const response = await baseQuery(
+        let response = await baseQuery(
           { url: "/token", method: "POST", body: credentials },
           api,
           extraOptions
@@ -127,25 +119,6 @@ export const apiSlice = createApi({
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
-    }),
-    // Gets all vendors that match the given IDs
-    vendorsMultiple: builder.query<Vendor[], string[]>({
-      queryFn: async (args, api, extraOptions) => {
-        const vendors = [] as Vendor[];
-        for (const id of args) {
-          const response = await baseQuery(
-            `/vendors/${encode(id)}`,
-            api,
-            extraOptions
-          );
-          if (response.error) {
-            return response;
-          }
-
-          vendors.push(response.data as Vendor);
-        }
-        return { data: vendors };
-      },
     }),
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
@@ -172,7 +145,6 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["LoggedInUser"],
     }),
-    // Changes password for given user.
     updatePassword: builder.mutation<
       undefined,
       { userID: string; password: string }
@@ -202,7 +174,7 @@ export const apiSlice = createApi({
     }),
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
-        const response = await baseQuery(
+        let response = await baseQuery(
           { url: "/token", method: "POST", body: args },
           api,
           extraOptions
@@ -223,12 +195,6 @@ export const apiSlice = createApi({
         return { data: undefined };
       },
     }),
-    // Returns list of vendor IDs inside given rectangle.
-    mapViewVendors: builder.query<string[], GeoRectangle>({
-      query: (rectangle) => ({
-        url: `/map/view/${rectangle.northWestLat}/${rectangle.northWestLng}/${rectangle.southEastLat}/${rectangle.southEastLng}`,
-      }),
-    }),
   }),
 });
 
@@ -248,7 +214,6 @@ function getCredentials(): Credentials | null {
 
 export const {
   useVendorQuery,
-  useVendorsMultipleQuery,
   useUserQuery,
   useUserProtectedQuery,
   useUpdateUserMutation,
@@ -257,5 +222,4 @@ export const {
   useReviewsQuery,
   useSubmitReviewMutation,
   useSetCredentialsAndGetTokenMutation,
-  useMapViewVendorsQuery,
 } = apiSlice;

@@ -5,7 +5,6 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import Login from "./components/UI/Pages/Login";
 import { ErrorBoundary } from "./components/UI/Organisms/ErrorBoundary";
-import { LandingPage } from "./components/UI/Pages/LandingPage";
 
 function App(): React.ReactElement {
   return (
@@ -13,7 +12,7 @@ function App(): React.ReactElement {
       <Provider store={store}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<p>index</p>} />
             <Route path="/vendors/:ID" element={<Vendor />} />
             <Route path="*" element={<p>Page not found</p>} />
             <Route path="/login" element={<Login />} />
