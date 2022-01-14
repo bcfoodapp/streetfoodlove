@@ -287,34 +287,41 @@ func (a *API) TokenPost(c *gin.Context) {
 }
 
 func (a *API) MapView(c *gin.Context) {
-	northWestLat, err := strconv.Atoi(c.Param("northWestLat"))
+	northWestLat, err := strconv.ParseFloat(c.Param("northWestLat"), 64)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	northWestLng, err := strconv.Atoi(c.Param("northWestLng"))
+	northWestLng, err := strconv.ParseFloat(c.Param("northWestLng"), 64)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	southEastLat, err := strconv.Atoi(c.Param("southEastLat"))
+	southEastLat, err := strconv.ParseFloat(c.Param("southEastLat"), 64)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	southEastLng, err := strconv.Atoi(c.Param("southEastLng"))
+	southEastLng, err := strconv.ParseFloat(c.Param("southEastLng"), 64)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	_ = northWestLat
-	_ = northWestLng
-	_ = southEastLat
-	_ = southEastLng
+	bounds := CoordinateBounds{
+		NorthWestLat: northWestLat,
+		NorthWestLng: northWestLng,
+		SouthEastLat: southEastLat,
+		SouthEastLng: southEastLng,
+	}
+	vendors, err := a.Backend.VendorsByCoordinateBounds(&bounds)
+	if err != nil {
+		c.Error(err)
+		return
+	}
 
-	// TODO
+	c.JSON(http.StatusOK, vendors)
 }

@@ -32,8 +32,8 @@ type Vendor struct {
 	BusinessHours   string
 	Phone           string
 	BusinessLogo    string
-	Latitude        float32
-	Longitude       float32
+	Latitude        float64
+	Longitude       float64
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -74,6 +74,39 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	vendor := &Vendor{}
 	err := row.StructScan(vendor)
 	return vendor, err
+}
+
+type CoordinateBounds struct {
+	NorthWestLat float64
+	NorthWestLng float64
+	SouthEastLat float64
+	SouthEastLng float64
+}
+
+func (d *Database) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]Vendor, error) {
+	const command = `
+		SELECT *
+		FROM Vendor
+		WHERE Latitude BETWEEN :SouthEastLat AND :NorthWestLat
+			AND Longitude BETWEEN :NorthWestLng AND :SouthEastLng
+	`
+
+	rows, err := d.db.Queryx(command, bounds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Vendor, 0)
+
+	for rows.Next() {
+		result = append(result, Vendor{})
+		if err := rows.StructScan(result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
 }
 
 type UserType int
@@ -213,7 +246,7 @@ func (d *Database) Review(id uuid.UUID) (*Review, error) {
 	return review, err
 }
 
-func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
+func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 	const command = `
 		SELECT *
 		FROM Reviews
@@ -226,14 +259,13 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
 	}
 	defer rows.Close()
 
-	var result []*Review
+	result := make([]Review, 0)
 
 	for rows.Next() {
-		review := &Review{}
-		if err := rows.StructScan(review); err != nil {
+		result = append(result, Review{})
+		if err := rows.StructScan(result[len(result)-1]); err != nil {
 			return nil, err
 		}
-		result = append(result, review)
 	}
 
 	return result, rows.Err()
