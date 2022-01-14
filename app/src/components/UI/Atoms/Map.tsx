@@ -8,7 +8,7 @@ import {
   useMap,
 } from "react-leaflet";
 import PopupInfo from "./PopupInfo/PopupInfo";
-import { useMapViewVendorsQuery } from "../../../api";
+import { useMapViewVendorsQuery, useVendorsMultipleQuery } from "../../../api";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({
@@ -29,7 +29,14 @@ function MapContent(): React.ReactElement {
       });
     },
   });
-  const vendorIDs = useMapViewVendorsQuery(bounds);
+  const vendorIDsQuery = useMapViewVendorsQuery(bounds);
+  let vendorIDs = [] as string[];
+  if (vendorIDsQuery.data) {
+    vendorIDs = vendorIDsQuery.data;
+  }
+
+  const vendors = useVendorsMultipleQuery(vendorIDs);
+  console.log(vendors.data);
 
   return (
     <>
@@ -38,13 +45,18 @@ function MapContent(): React.ReactElement {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         detectRetina={true}
       />
-      {/*{vendors.map((vendor) => (*/}
-      {/*  <Marker position={[vendor.Latitude, vendor.Longitude]}>*/}
-      {/*    <Popup>*/}
-      {/*      <PopupInfo vendor={vendor} />*/}
-      {/*    </Popup>*/}
-      {/*  </Marker>*/}
-      {/*))}*/}
+      {vendors.data
+        ? vendors.data.map((vendor) => (
+            <Marker
+              position={[vendor.Latitude, vendor.Longitude]}
+              key={vendor.ID}
+            >
+              <Popup>
+                <PopupInfo vendor={vendor} />
+              </Popup>
+            </Marker>
+          ))
+        : null}
     </>
   );
 }

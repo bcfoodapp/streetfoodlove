@@ -103,7 +103,7 @@ export const apiSlice = createApi({
     ) {
       const credentials = getCredentials();
       if (credentials !== null) {
-        let response = await baseQuery(
+        const response = await baseQuery(
           { url: "/token", method: "POST", body: credentials },
           api,
           extraOptions
@@ -127,6 +127,25 @@ export const apiSlice = createApi({
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
+    }),
+    // Gets all vendors that match the given IDs
+    vendorsMultiple: builder.query<Vendor[], string[]>({
+      queryFn: async (args, api, extraOptions) => {
+        const vendors = [] as Vendor[];
+        for (const id of args) {
+          const response = await baseQuery(
+            `/vendors/${encode(id)}`,
+            api,
+            extraOptions
+          );
+          if (response.error) {
+            return response;
+          }
+
+          vendors.push(response.data as Vendor);
+        }
+        return { data: vendors };
+      },
     }),
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
@@ -183,7 +202,7 @@ export const apiSlice = createApi({
     }),
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
-        let response = await baseQuery(
+        const response = await baseQuery(
           { url: "/token", method: "POST", body: args },
           api,
           extraOptions
@@ -229,6 +248,7 @@ function getCredentials(): Credentials | null {
 
 export const {
   useVendorQuery,
+  useVendorsMultipleQuery,
   useUserQuery,
   useUserProtectedQuery,
   useUpdateUserMutation,
