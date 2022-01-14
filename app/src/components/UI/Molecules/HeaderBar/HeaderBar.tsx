@@ -9,7 +9,11 @@ import { Link } from "react-router-dom";
  * Returns the headerbar element
  */
 
-export default function HeaderBar(): React.ReactElement {
+interface Props {
+  signUp?: boolean,
+}
+
+export default function HeaderBar(props: Props): React.ReactElement {
   return (
     <Menu as="div" className={styles.wrapContainer} fluid widths={3}>
       <Menu.Item as="a" className={styles.header} position="left">
@@ -22,7 +26,7 @@ export default function HeaderBar(): React.ReactElement {
       </Menu.Item>
       <Menu.Item position="right">
         {/* TODO need indication for logged in status by hiding these buttons */}
-        <Buttons signup>Sign Up</Buttons>
+        {props.signUp ? <Buttons signup>Sign Up</Buttons> : null}
         <Link to="/login">
           <Buttons login color="orange">
             Login

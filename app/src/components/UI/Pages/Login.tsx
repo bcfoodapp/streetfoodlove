@@ -26,16 +26,16 @@ export default function Login(): React.ReactElement {
 
   useEffect(() => {
     async function generateNewToken() {
-      try {
-        if (localStorage.getItem("user")) {
-          let obj = JSON.parse(localStorage.getItem("user")!);
-          const token = await newToken({
-            Password: obj.password,
-            Username: obj.username,
-          }).unwrap();
-          dispatch(setToken(token));
-        }
-      } catch (error) {}
+      // try {
+      //   if (localStorage.getItem("user")) {
+      //     let obj = JSON.parse(localStorage.getItem("user")!);
+      //     const token = await newToken({
+      //       Password: obj.password,
+      //       Username: obj.username,
+      //     }).unwrap();
+      //     dispatch(setToken(token));
+      //   }
+      // } catch (error) {}
     }
 
     generateNewToken();
