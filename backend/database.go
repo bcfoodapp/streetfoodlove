@@ -84,6 +84,7 @@ type CoordinateBounds struct {
 }
 
 func (d *Database) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]Vendor, error) {
+	// What if NW longitude is positive and SE longitude is negative?
 	const command = `
 		SELECT *
 		FROM Vendor
