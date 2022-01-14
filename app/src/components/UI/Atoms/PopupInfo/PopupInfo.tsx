@@ -1,17 +1,21 @@
 import React from "react";
 import styles from "./popupInfo.module.css";
+import { Vendor } from "../../../../api";
+
+interface Props {
+  vendor: Vendor;
+}
 
 /**
  * This component is for storing the vendor information in the popups that appear on the map
  */
-
-export default function PopupInfo(): React.ReactElement {
+export default function PopupInfo({ vendor }: Props): React.ReactElement {
   return (
     <div>
       <div className={styles.header}>
         <div className={styles.vendorName}>
           <div>
-            <span className={styles.title}>Laz's Tacos</span>
+            <span className={styles.title}>{vendor.Name}</span>
           </div>
           <div className={styles.firstImage}>
             <img
