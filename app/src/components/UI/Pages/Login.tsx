@@ -8,7 +8,7 @@ import {
   Credentials,
   useSetCredentialsAndGetTokenMutation,
 } from "../../../api";
-import { setToken, useAppDispatch, useAppSelector } from "../../../store";
+import { useAppSelector } from "../../../store";
 import { useNavigate } from "react-router-dom";
 
 /**

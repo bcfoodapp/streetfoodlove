@@ -6,6 +6,7 @@ import { store } from "./store";
 import Login from "./components/UI/Pages/Login";
 import { ErrorBoundary } from "./components/UI/Organisms/ErrorBoundary";
 import Signup from "./components/UI/Pages/Signup";
+import { LandingPage } from "./components/UI/Pages/LandingPage";
 
 function App(): React.ReactElement {
   return (
@@ -13,7 +14,7 @@ function App(): React.ReactElement {
       <Provider store={store}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<p>index</p>} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/vendors/:ID" element={<Vendor />} />
             <Route path="*" element={<p>Page not found</p>} />
             <Route path="/login" element={<Login />} />

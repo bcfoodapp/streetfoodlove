@@ -6,7 +6,7 @@ import {
   MiddlewareAPI,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { apiSlice } from "./api";
+import { apiSlice, tokenSlice } from "./api";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 const apiErrorHandler: Middleware =
@@ -23,28 +23,30 @@ export const rootSlice = createSlice({
   name: "root",
   initialState: {
     error: null as string | null,
-    token: null as string | null,
   },
   reducers: {
     setError: (state, { payload }: PayloadAction<string>) => {
       console.error(payload);
       state.error = payload;
     },
-    setToken: (state, { payload }: PayloadAction<string>) => {
-      state.token = payload;
-    },
   },
 });
 
-export const { setError, setToken } = rootSlice.actions;
+export const { setError } = rootSlice.actions;
 
 export const store = configureStore({
   reducer: {
-    [apiSlice.reducerPath]: apiSlice.reducer,
     root: rootSlice.reducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
+    [tokenSlice.name]: tokenSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware).concat(apiErrorHandler),
+    getDefaultMiddleware({
+      // Non-serializable DateTimes are allowed in API schemas only.
+      serializableCheck: false,
+    })
+      .concat(apiSlice.middleware)
+      .concat(apiErrorHandler),
   devTools: true,
 });
 
