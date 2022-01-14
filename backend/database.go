@@ -91,7 +91,7 @@ func (d *Database) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]Vendor
 			AND Longitude BETWEEN :NorthWestLng AND :SouthEastLng
 	`
 
-	rows, err := d.db.Queryx(command, bounds)
+	rows, err := d.db.NamedQuery(command, bounds)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (d *Database) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]Vendor
 
 	for rows.Next() {
 		result = append(result, Vendor{})
-		if err := rows.StructScan(result[len(result)-1]); err != nil {
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
 			return nil, err
 		}
 	}
@@ -263,7 +263,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 
 	for rows.Next() {
 		result = append(result, Review{})
-		if err := rows.StructScan(result[len(result)-1]); err != nil {
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
 			return nil, err
 		}
 	}

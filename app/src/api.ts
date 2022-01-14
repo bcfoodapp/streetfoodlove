@@ -237,4 +237,5 @@ export const {
   useReviewsQuery,
   useSubmitReviewMutation,
   useSetCredentialsAndGetTokenMutation,
+  useMapViewVendorsQuery,
 } = apiSlice;

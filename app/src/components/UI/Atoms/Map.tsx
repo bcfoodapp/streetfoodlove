@@ -1,36 +1,55 @@
-import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { LatLngExpression } from "leaflet";
+import React, { useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+  useMap,
+} from "react-leaflet";
 import PopupInfo from "./PopupInfo/PopupInfo";
-import { Vendor } from "../../../api";
+import { useMapViewVendorsQuery } from "../../../api";
+
+function MapContent(): React.ReactElement {
+  const [bounds, setBounds] = useState({
+    northWestLat: 0,
+    northWestLng: 0,
+    southEastLat: 0,
+    southEastLng: 0,
+  });
+  const map = useMap();
+  useMapEvents({
+    moveend: () => {
+      const bounds = map.getBounds();
+      setBounds({
+        northWestLat: bounds.getNorthWest().lat,
+        northWestLng: bounds.getNorthWest().lng,
+        southEastLat: bounds.getSouthEast().lat,
+        southEastLng: bounds.getSouthEast().lng,
+      });
+    },
+  });
+  const vendorIDs = useMapViewVendorsQuery(bounds);
+
+  return (
+    <>
+      <TileLayer
+        attribution="© OpenStreetMap contributors"
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        detectRetina={true}
+      />
+      {/*{vendors.map((vendor) => (*/}
+      {/*  <Marker position={[vendor.Latitude, vendor.Longitude]}>*/}
+      {/*    <Popup>*/}
+      {/*      <PopupInfo vendor={vendor} />*/}
+      {/*    </Popup>*/}
+      {/*  </Marker>*/}
+      {/*))}*/}
+    </>
+  );
+}
 
 export default function Map(): React.ReactElement {
-  // Test data
-  const vendors: Vendor[] = [
-    {
-      ID: "1",
-      Name: "1",
-      BusinessAddress: "",
-      Website: "",
-      BusinessHours: "",
-      Phone: "",
-      BusinessLogo: "",
-      Latitude: 47.585423,
-      Longitude: -122.142773,
-    },
-    {
-      ID: "2",
-      Name: "2",
-      BusinessAddress: "",
-      Website: "",
-      BusinessHours: "",
-      Phone: "",
-      BusinessLogo: "",
-      Latitude: 47.57591,
-      Longitude: -122.139772,
-    },
-  ];
-
   return (
     <MapContainer
       center={[47.584401, -122.14819]}
@@ -42,18 +61,7 @@ export default function Map(): React.ReactElement {
         marginTop: -11,
       }}
     >
-      <TileLayer
-        attribution="© OpenStreetMap contributors"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        detectRetina={true}
-      />
-      {vendors.map((vendor) => (
-        <Marker position={[vendor.Latitude, vendor.Longitude]}>
-          <Popup>
-            <PopupInfo vendor={vendor} />
-          </Popup>
-        </Marker>
-      ))}
+      <MapContent />
     </MapContainer>
   );
 }
