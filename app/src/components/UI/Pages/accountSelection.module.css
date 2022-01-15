@@ -1,0 +1,33 @@
+.wrapper {
+  width: 100% !important;
+}
+
+.selectBox {
+  border: 2px solid black;
+  width: 25% !important;
+  padding: 100px;
+  margin-top: 200px;
+}
+
+.customerBox,
+.vendorBox {
+  border: 2px solid black;
+  padding: 1.25rem 1.45rem;
+  position: relative;
+}
+
+.vendorBox {
+  margin-top: 20px !important;
+}
+
+.wrapper > h2 {
+  margin-left: 42% !important;
+  font-size: 30px;
+}
+
+.icon {
+  position: absolute;
+  right: 25px;
+  bottom: 25px;
+  cursor: pointer;
+}
