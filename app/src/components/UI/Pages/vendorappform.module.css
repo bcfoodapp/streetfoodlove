@@ -27,6 +27,7 @@
   border: none !important;
 }
 
-.checkBox, .phoneInput {
+.checkBox,
+.phoneInput {
   margin-top: 10px !important;
 }

@@ -2,49 +2,51 @@ import React from "react";
 import { Form, Container, Button } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
-import { Dropdown } from 'semantic-ui-react'
-import styles from './vendorappform.module.css'
+import { Dropdown } from "semantic-ui-react";
+import styles from "./vendorappform.module.css";
 
 export default function VendorAppForm(): React.ReactElement {
   const storeUserInfo = () => {};
 
-  const timeOptionsFromValues = [ //options for business hours starting from...
-    '8:30 AM',
-    '9:00 AM',
-    '9:30 AM',
-    '10:00 AM',
-    '10:30 AM',
-    '11:00 AM',
-    '11:30 AM',
-    '12:00 AM',    
-  ]
+  const timeOptionsFromValues = [
+    //options for business hours starting from...
+    "8:30 AM",
+    "9:00 AM",
+    "9:30 AM",
+    "10:00 AM",
+    "10:30 AM",
+    "11:00 AM",
+    "11:30 AM",
+    "12:00 AM",
+  ];
 
-  const timeOptionsToValues = [ //options for business hours starting to..
-    '8:30 PM',
-    '9:00 PM',
-    '9:30 PM',
-    '10:00 PM',
-    '10:30 PM',
-    '11:00 PM',
-    '11:30 PM',
-    '12:00 PM',
-  ]
+  const timeOptionsToValues = [
+    //options for business hours starting to..
+    "8:30 PM",
+    "9:00 PM",
+    "9:30 PM",
+    "10:00 PM",
+    "10:30 PM",
+    "11:00 PM",
+    "11:30 PM",
+    "12:00 PM",
+  ];
 
   const startTimeOptions = timeOptionsFromValues.map((element, key) => {
     return {
       key: timeOptionsFromValues[key],
       text: element,
-      value: element
-    }
-  })
+      value: element,
+    };
+  });
 
   const endTimeOptions = timeOptionsToValues.map((element, key) => {
     return {
       key: timeOptionsToValues[key],
       text: element,
-      value: element
-    }
-  })
+      value: element,
+    };
+  });
 
   return (
     <Container className={styles.signUpWrapper}>
