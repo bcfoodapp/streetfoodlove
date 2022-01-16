@@ -20,5 +20,5 @@
   - Open your browser and go to http://localhost:8080/. If it says "404 page not found", it's working.
 2. Go to the `app` folder, and install dependencies with `npm i`
 3. Do `npm start` and wait for it to compile
-4. With the backend server still running, go to http://localhost:3000/
+4. With the backend server still running, go to http://localhost:3000/streetfoodlove/
   - Press ctrl-c to stop the server and npm
