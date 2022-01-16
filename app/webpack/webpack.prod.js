@@ -14,7 +14,7 @@ module.exports = merge(common, {
           loader: "babel-loader",
           options: {
             presets: [
-              "@babel/react",
+              ["@babel/react", { runtime: "automatic" }],
               "@babel/preset-typescript",
               ["@babel/preset-env", { targets: "last 2 years" }],
             ],
