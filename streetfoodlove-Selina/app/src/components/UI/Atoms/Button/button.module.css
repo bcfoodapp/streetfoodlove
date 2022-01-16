@@ -1,0 +1,30 @@
+.Button {
+  color: black;
+  cursor: pointer;
+}
+
+.Submit,
+.Login,
+.Logout,
+.SignUp,
+.Apply,
+.Enter,
+.Cancel,
+.getStarted {
+  font-family: 'Bahnschrift', sans-serif !important;
+  font-size: 16px;
+}
+
+.Cancel {
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem;
+}
+
+.Enter, .Submit {
+  background-color: green;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
