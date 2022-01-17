@@ -7,7 +7,7 @@ import { MouseEvent, useState } from "react";
  */
 
 export const StarRating = () => {
-  const [starRating, setStarRating] = useState(null)
+  const [starRating, setStarRating] = useState(null);
 
   //defaultvalue is string, eg "3"
   const trackStarCount = (e: MouseEvent<HTMLInputElement>) => {

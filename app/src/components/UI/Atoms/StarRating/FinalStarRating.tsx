@@ -1,16 +1,15 @@
 import { Container } from "semantic-ui-react";
 import styles from "./finalStarRating.module.css";
 
-
 // stars will be the number of stars given that is retrieved from backend
 interface Props {
-  stars: number
+  stars: number;
 }
 
 export const FinalStarRating = (props: Props) => {
   const stylesTest = {
-    color: '#c59b08'
-  }
+    color: "#c59b08",
+  };
 
   return (
     <Container className={styles.rate}>
