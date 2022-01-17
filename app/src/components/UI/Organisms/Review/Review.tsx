@@ -1,16 +1,15 @@
-import { useState } from "react";
 import { Container, Grid } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
-import { StarRating } from "../../Atoms/StarRating/StarRating";
 import styles from "./review.module.css";
 import { Review as ReviewObj } from "../../../../api";
+import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 
 /**
  * Displays a review card that contains the information from a completed review of a vendor
  */
 
 export const Review = ({ review }: { review: ReviewObj }) => {
-  const [starRating, setStarRating] = useState(null);
+  console.log("stars: " + review.Stars);
 
   return (
     <Container className={styles.wrap}>
@@ -26,7 +25,7 @@ export const Review = ({ review }: { review: ReviewObj }) => {
             </Grid.Row>
             <Grid.Row>
               <Container className={styles.stars}>
-                <StarRating />
+                <FinalStarRating stars={review.Stars}/>
               </Container>
             </Grid.Row>
             <Grid.Row>
