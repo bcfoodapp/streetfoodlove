@@ -1,5 +1,5 @@
 //nolint: bodyclose
-package main
+package backend
 
 import (
 	"fmt"

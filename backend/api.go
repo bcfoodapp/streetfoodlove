@@ -1,5 +1,5 @@
 //nolint:errcheck
-package main
+package backend
 
 import (
 	"fmt"
@@ -144,7 +144,6 @@ func (a *API) UserProtected(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user)
 }
-
 func (a *API) UserProtectedPost(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -201,20 +200,20 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	*/
 }
 
-func (a *API) ReviewsByVendorID(c *gin.Context) {
-	vendorID, err := uuid.Parse(c.Query("vendorID"))
-	if err != nil {
-		c.Error(err)
-		return
-	}
+ffunc (a *API) ReviewsByVendorID(c *gin.Context) {
+vendorID, err := uuid.Parse(c.Query("vendorID"))
+if err != nil {
+c.Error(err)
+return
+}
 
-	reviews, err := a.Backend.ReviewsByVendorID(vendorID)
-	if err != nil {
-		c.Error(err)
-		return
-	}
+reviews, err := a.Backend.ReviewsByVendorID(vendorID)
+if err != nil {
+c.Error(err)
+return
+}
 
-	c.JSON(http.StatusOK, reviews)
+c.JSON(http.StatusOK, reviews)
 }
 
 func (a *API) ReviewPut(c *gin.Context) {

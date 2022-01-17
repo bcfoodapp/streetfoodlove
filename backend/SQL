@@ -10,104 +10,102 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema mydb
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `mydb` ;
+-- -----------------------------------------------------
+-- Schema streetfoodlove
+-- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema streetfoodlove
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
-USE `mydb` ;
+CREATE SCHEMA IF NOT EXISTS `streetfoodlove` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
+USE `streetfoodlove` ;
 
+-- Table `streetfoodlove`.`vendor`
 -- -----------------------------------------------------
--- Table `mydb`.`User`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`User` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`User` (
-  `UserID` BINARY(16) NOT NULL,
-  `Username` VARCHAR(100) NOT NULL,
-  `UsersEMail` VARCHAR(100) NOT NULL,
-  `SignUpDate` DATETIME NOT NULL,
-  `LoginPassword` BINARY(32) NOT NULL,
-  `UserType` TINYINT NOT NULL,
-  `Photo` BINARY(16) NOT NULL,
-  `FirstName` VARCHAR(100) NOT NULL,
-  `LastName` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`UserID`),
-  UNIQUE INDEX `Photo_UNIQUE` (`Photo` ASC) VISIBLE,
-  UNIQUE INDEX `Login_Password_UNIQUE` (`LoginPassword` ASC) VISIBLE,
-  UNIQUE INDEX `Username_UNIQUE` (`Username` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `mydb`.`Vendor`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`Vendor` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`Vendor` (
-  `VendorID` BINARY(16) NOT NULL,
-  `BusinessName` VARCHAR(100) NOT NULL,
-  `VendorAddress` VARCHAR(500) NULL,
-  `Website` VARCHAR(500) NULL,
+CREATE TABLE IF NOT EXISTS `streetfoodlove`.`vendor` (
+  `ID` CHAR(36) NOT NULL,
+  `Name` VARCHAR(100) NOT NULL,
+  `BusinessAddress` VARCHAR(500) NULL DEFAULT NULL,
+  `Website` VARCHAR(500) NULL DEFAULT NULL,
   `BusinessHours` VARCHAR(500) NOT NULL,
-  `Phone` VARCHAR(50) NULL,
-  `BusinessLogo` BINARY(16) NOT NULL,
+  `Phone` VARCHAR(50) NULL DEFAULT NULL,
+  `BusinessLogo` CHAR(36) NOT NULL,
   `Latitude` FLOAT NOT NULL,
   `Longitude` FLOAT NOT NULL,
-  PRIMARY KEY (`VendorID`))
-ENGINE = InnoDB;
+  PRIMARY KEY (`ID`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Review`
+-- Table `streetfoodlove`.`user`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`Review` ;
-
-CREATE TABLE IF NOT EXISTS `mydb`.`Review` (
-  `ReviewID` BINARY(16) NOT NULL,
-  `DatePosted` DATETIME NOT NULL,
-  `Text` VARCHAR(500) NOT NULL,
-  `VendorVendorID` BINARY(16) NOT NULL,
-  `UserUserID` BINARY(16) NOT NULL,
-  PRIMARY KEY (`ReviewID`),
-  INDEX `fk_Review_Vendor1_idx` (`VendorVendorID` ASC) VISIBLE,
-  INDEX `fk_Review_User1_idx` (`UserUserID` ASC) VISIBLE,
-  CONSTRAINT `fk_Review_Vendor1`
-    FOREIGN KEY (`VendorVendorID`)
-    REFERENCES `mydb`.`Vendor` (`VendorID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Review_User1`
-    FOREIGN KEY (`UserUserID`)
-    REFERENCES `mydb`.`User` (`UserID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
+CREATE TABLE IF NOT EXISTS `streetfoodlove`.`user` (
+  `ID` CHAR(36) NOT NULL,
+  `Email` VARCHAR(100) NULL DEFAULT NULL,
+  `Username` VARCHAR(100) NULL DEFAULT NULL,
+  `FirstName` VARCHAR(100) NULL DEFAULT NULL,
+  `LastName` VARCHAR(100) NULL DEFAULT NULL,
+  `SignUpDate` DATETIME NULL DEFAULT NULL,
+  `LoginPassword` CHAR(36) NULL DEFAULT NULL,
+  `UserType` TINYINT NULL DEFAULT NULL,
+  `Photo` CHAR(36) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE INDEX `Username` (`Username` ASC) VISIBLE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
 
 -- -----------------------------------------------------
--- Table `mydb`.`Photo`
+-- Table `streetfoodlove`.`reviews`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`Photo` ;
+CREATE TABLE IF NOT EXISTS `streetfoodlove`.`reviews` (
+  `ID` CHAR(36) NOT NULL,
+  `Text` TEXT NULL DEFAULT NULL,
+  `VendorID` CHAR(36) NOT NULL,
+  `UserID` CHAR(36) NOT NULL,
+  `DatePosted` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  INDEX `VendorID` (`VendorID` ASC) VISIBLE,
+  INDEX `UserID` (`UserID` ASC) VISIBLE,
+  CONSTRAINT `reviews_ibfk_1`
+    FOREIGN KEY (`VendorID`)
+    REFERENCES `streetfoodlove`.`vendor` (`ID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `reviews_ibfk_2`
+    FOREIGN KEY (`UserID`)
+    REFERENCES `streetfoodlove`.`user` (`ID`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `streetfoodlove`.`Photo`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `streetfoodlove`.`Photo` ;
 
 CREATE TABLE IF NOT EXISTS `mydb`.`Photo` (
-  `PhotoID` BINARY(16) NOT NULL,
+  `PhotoID` CHAR(36) NOT NULL,
   `DatePosted` DATETIME NOT NULL,
   `Text` VARCHAR(500) NOT NULL,
-  `LinkID` BINARY(16) NOT NULL,
+  `LinkID` CHAR(36) NOT NULL,
   PRIMARY KEY (`PhotoID`),
   UNIQUE INDEX `LinkID_UNIQUE` (`LinkID` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Guide`
+-- Table `streetfoodlove`.`Guide`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`Guide` ;
+DROP TABLE IF EXISTS `streetfoodlove`.`Guide` ;
 
 CREATE TABLE IF NOT EXISTS `mydb`.`Guide` (
-  `GuideID` BINARY(16) NOT NULL,
+  `GuideID` CHAR(36) NOT NULL,
   `Guide` VARCHAR(5000) NOT NULL,
   `DatePosted` DATETIME NOT NULL,
   `ArticleAuthor` VARCHAR(500) NOT NULL,
@@ -116,11 +114,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`Link`
+-- Table `streetfoodlove`.`Link`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `mydb`.`Link` ;
+DROP TABLE IF EXISTS `streetfoodlove`.`Link` ;
 
-CREATE TABLE IF NOT EXISTS `mydb`.`Link` (
+CREATE TABLE IF NOT EXISTS `streetfoodlove`.`Link` (
   `Link_ID` CHAR NOT NULL,
   `Title` VARCHAR(45) NULL,
   `url` VARCHAR(255) NULL,

@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"crypto/sha256"
@@ -32,8 +32,8 @@ type Vendor struct {
 	BusinessHours   string
 	Phone           string
 	BusinessLogo    string
-	Latitude        float32
-	Longitude       float32
+	Latitude        string
+	Longitude       string
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -76,32 +76,18 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	return vendor, err
 }
 
-type UserType int
-
-const (
-	// nolint: deadcode
-	UserTypeCustomer UserType = iota
-	// nolint: deadcode
-	UserTypeVendor
-)
-
 type User struct {
-	ID       uuid.UUID
-	Username string
-	UserType UserType
-	Photo    uuid.UUID
-}
-
-// UserProtected contains User fields plus fields that are password-protected.
-type UserProtected struct {
-	*User
+	ID         uuid.UUID
 	Email      string
+	Username   string
 	FirstName  string
 	LastName   string
 	SignUpDate time.Time
+	UserType   int
+	Photo      uuid.UUID
 }
 
-func (d *Database) UserCreate(user *UserProtected, password string) error {
+func (d *Database) UserCreate(user *User, password string) error {
 	const command = `
 		INSERT INTO User (
 			ID,
@@ -127,7 +113,7 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 	`
 	hash := sha256.Sum256([]byte(password))
 	userWithPassword := &struct {
-		*UserProtected
+		*User
 		LoginPassword []byte
 	}{
 		user, hash[:],
@@ -136,13 +122,13 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 	return err
 }
 
-func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
+func (d *Database) User(id uuid.UUID) (*User, error) {
 	const command = `
 		SELECT * FROM User WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
-	user := &UserProtected{}
+	user := &User{}
 	err := row.StructScan(user)
 	return user, err
 }
