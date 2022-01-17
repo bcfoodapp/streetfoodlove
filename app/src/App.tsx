@@ -8,12 +8,13 @@ import { ErrorBoundary } from "./components/UI/Organisms/ErrorBoundary";
 import Signup from "./components/UI/Pages/Signup";
 import { LandingPage } from "./components/UI/Pages/LandingPage";
 import AccountSelection from "./components/UI/Pages/AccountSelection";
+import VendorAppForm from "./components/UI/Pages/VendorAppForm";
 
 function App(): React.ReactElement {
   return (
     <ErrorBoundary>
       <Provider store={store}>
-        <BrowserRouter>
+        <BrowserRouter basename="/streetfoodlove">
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/vendors/:ID" element={<Vendor />} />
@@ -21,6 +22,7 @@ function App(): React.ReactElement {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/account-selection" element={<AccountSelection />} />
+            <Route path="/vendor-signup" element={<VendorAppForm />} />
           </Routes>
         </BrowserRouter>
       </Provider>
