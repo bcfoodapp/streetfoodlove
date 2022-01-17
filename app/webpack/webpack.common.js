@@ -30,7 +30,10 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({ template: "./public/index.html" }),
     new CopyPlugin({
-      patterns: [{ from: "public", to: "public" }],
+      patterns: [
+        { from: "public", to: "public" },
+        { from: "public/404.html", to: "404.html" },
+      ],
     }),
   ],
 };

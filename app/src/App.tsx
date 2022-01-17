@@ -14,7 +14,7 @@ function App(): React.ReactElement {
   return (
     <ErrorBoundary>
       <Provider store={store}>
-        <BrowserRouter>
+        <BrowserRouter basename="/streetfoodlove">
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/vendors/:ID" element={<Vendor />} />
