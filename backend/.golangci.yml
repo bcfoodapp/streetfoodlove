@@ -1,6 +1,0 @@
-linters:
-  enable:
-    - bodyclose
-    - gofmt
-    - rowserrcheck
-    - sqlclosecheck
