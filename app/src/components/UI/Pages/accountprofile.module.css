@@ -10,7 +10,6 @@
 .profileActions {
   margin-top: 30px !important;
   padding: 10px !important;
-  /* background-color: lightgray; */
   width: 80% !important;
   border: 2px solid grey;
 }
@@ -23,6 +22,19 @@
 
 .saveBtn {
   position: absolute;
-  right: 220px;
+  right: 40%;
   top: 90%;
+  width: 20% !important;
+}
+
+.editIcon {
+  position: absolute;
+  height: 60px !important;
+  width: 60px !important;
+}
+
+.editBtn {
+  position: absolute;
+  left: 270px;
+  top: 1.5%;
 }
