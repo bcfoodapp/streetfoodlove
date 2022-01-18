@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -39,6 +40,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/reviews/:id", Auth, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 	router.POST("/token", a.TokenPost)
+	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 
 	router.GET("/Photos", a.Photo)
 	router.POST("/Photos", a.postPhotos)
@@ -314,7 +316,6 @@ func (a *API) Review(c *gin.Context) {
 	c.JSON(http.StatusOK, review)
 }
 
-
 func (a *API) TokenPost(c *gin.Context) {
 	credentials := &Credentials{}
 	if err := c.ShouldBindJSON(credentials); err != nil {
@@ -342,12 +343,51 @@ func (a *API) TokenPost(c *gin.Context) {
 	c.JSON(http.StatusOK, tokenStr)
 }
 
+func (a *API) MapView(c *gin.Context) {
+	northWestLat, err := strconv.ParseFloat(c.Param("northWestLat"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	northWestLng, err := strconv.ParseFloat(c.Param("northWestLng"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	southEastLat, err := strconv.ParseFloat(c.Param("southEastLat"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	southEastLng, err := strconv.ParseFloat(c.Param("southEastLng"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	bounds := CoordinateBounds{
+		NorthWestLat: northWestLat,
+		NorthWestLng: northWestLng,
+		SouthEastLat: southEastLat,
+		SouthEastLng: southEastLng,
+	}
+	vendors, err := a.Backend.VendorsByCoordinateBounds(&bounds)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, vendors)
+}
 
 var photos = []Photo{}
 
 var guides = []Guide{}
 
-var links = []Link {}
+var links = []Link{}
 
 func (a *API) postPhotos(c *gin.Context) {
 	var newPhoto Photo
@@ -359,7 +399,6 @@ func (a *API) postPhotos(c *gin.Context) {
 	c.JSON(http.StatusCreated, newPhoto)
 }
 
-
 func (a *API) postGuides(c *gin.Context) {
 	var newGuide Guide
 	if err := c.BindJSON(&newGuide); err != nil {
@@ -370,7 +409,7 @@ func (a *API) postGuides(c *gin.Context) {
 	c.JSON(http.StatusCreated, newGuide)
 }
 
-func(a *API) postLinks(c *gin.Context) {
+func (a *API) postLinks(c *gin.Context) {
 	var newLink Link
 	if err := c.BindJSON(&newLink); err != nil {
 		return
@@ -379,4 +418,3 @@ func(a *API) postLinks(c *gin.Context) {
 	links = append(links, newLink)
 	c.JSON(http.StatusCreated, newLink)
 }
-

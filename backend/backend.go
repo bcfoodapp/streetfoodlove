@@ -40,7 +40,6 @@ func (b *Backend) UserProtected(userID uuid.UUID, id uuid.UUID) (*UserProtected,
 	return b.Database.User(id)
 }
 
-
 func (b *Backend) Review(id uuid.UUID) (*Review, error) {
 	return b.Database.Review(id)
 }
@@ -55,8 +54,21 @@ func (b *Backend) ReviewPut(userID uuid.UUID, review *Review) error {
 	return b.Database.ReviewCreate(review)
 }
 
-func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
+func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 	return b.Database.ReviewsByVendorID(vendorID)
+}
+
+func (b *Backend) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]uuid.UUID, error) {
+	vendors, err := b.Database.VendorsByCoordinateBounds(bounds)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]uuid.UUID, 0)
+	for _, vendor := range vendors {
+		result = append(result, vendor.ID)
+	}
+	return result, nil
 }
 
 func (b *Backend) Photo(id uuid.UUID) (*Photo, error) {
