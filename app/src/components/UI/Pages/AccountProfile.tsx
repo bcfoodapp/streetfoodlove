@@ -1,7 +1,7 @@
 import React from "react";
-import { Container, Header } from "semantic-ui-react";
+import { Container} from "semantic-ui-react";
 import styles from './accountprofile.module.css'
-import { Image, Form, Tab } from 'semantic-ui-react'
+import { Tab } from 'semantic-ui-react'
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import FormGroup from "../Molecules/Form Group/FormGroup";
 
@@ -16,6 +16,7 @@ const AccountProfile: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
       <HeaderBar />
+      <h2>Profile</h2>
       <Container className={styles.profileActions}>
         <Tab menu={{ fluid: true, vertical: true, tabular: true }} panes={panes}/>
       </Container>

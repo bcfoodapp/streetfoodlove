@@ -1,28 +1,22 @@
 .wrapper {
   width: 100% !important;
-  /* width: 100% !important;
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: space-between !important; */
+}
+
+.wrapper > h2 {
+  font-size: 40px;
+  margin-left: 45%;
 }
 
 .profileActions {
-  margin-top: 100px !important;
+  margin-top: 30px !important;
   padding: 10px !important;
-  background-color: lightgray;
+  /* background-color: lightgray; */
   width: 80% !important;
-}
-
-.fields {
-  padding-left: 400px !important;
-  width: 50% !important;
-}
-
-.fields > h2 {
-  font-size: 40px;
+  border: 2px solid grey;
 }
 
 .pane {
-  height: 700px !important;
+  height: 800px !important;
   width: 200% !important;
+  border: 2px solid grey;
 }
