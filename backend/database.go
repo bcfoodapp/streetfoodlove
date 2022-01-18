@@ -349,7 +349,7 @@ func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
 type Link struct {
 	LinkID uuid.UUID
 	Title  string
-	url    string
+	URL    string
 }
 
 func (d *Database) LinkCreate(link *Link) error {
