@@ -36,7 +36,9 @@ const AccountProfile: React.FC = () => {
           panes={panes}
         />
         <Container className={styles.saveBtn}>
-          <Buttons save color="green">Save</Buttons>
+          <Buttons save color="green">
+            Save
+          </Buttons>
         </Container>
       </Container>
     </Container>
