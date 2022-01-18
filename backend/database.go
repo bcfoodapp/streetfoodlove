@@ -288,8 +288,8 @@ func (d *Database) PhotoCreate(photo *Photo) error {
 			LinkID
 		) VALUES (
 			:PhotoID,
-			:DatePosted
-			:Text
+			:DatePosted,
+			:Text,
 			:LinkID
 		)
 	`
@@ -347,9 +347,9 @@ func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
 }
 
 type Link struct {
-	Link_ID uuid.UUID
-	Title   string
-	url     string
+	LinkID uuid.UUID
+	Title  string
+	url    string
 }
 
 func (d *Database) LinkCreate(link *Link) error {
