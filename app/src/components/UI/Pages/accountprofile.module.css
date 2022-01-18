@@ -1,0 +1,28 @@
+.wrapper {
+  width: 100% !important;
+}
+
+.wrapper > h2 {
+  font-size: 40px;
+  margin-left: 45%;
+}
+
+.profileActions {
+  margin-top: 30px !important;
+  padding: 10px !important;
+  /* background-color: lightgray; */
+  width: 80% !important;
+  border: 2px solid grey;
+}
+
+.pane {
+  height: 800px !important;
+  width: 200% !important;
+  border: 2px solid grey;
+}
+
+.saveBtn {
+  position: absolute;
+  right: 220px;
+  top: 90%;
+}

@@ -9,6 +9,7 @@ import Signup from "./components/UI/Pages/Signup";
 import { LandingPage } from "./components/UI/Pages/LandingPage";
 import AccountSelection from "./components/UI/Pages/AccountSelection";
 import VendorAppForm from "./components/UI/Pages/VendorAppForm";
+import AccountProfile from "./components/UI/Pages/AccountProfile";
 
 function App(): React.ReactElement {
   return (
@@ -23,6 +24,7 @@ function App(): React.ReactElement {
             <Route path="/signup" element={<Signup />} />
             <Route path="/account-selection" element={<AccountSelection />} />
             <Route path="/vendor-signup" element={<VendorAppForm />} />
+            <Route path="/account-profile" element={<AccountProfile />} />
           </Routes>
         </BrowserRouter>
       </Provider>

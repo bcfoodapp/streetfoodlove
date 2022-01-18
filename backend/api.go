@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -39,6 +40,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/reviews/:id", Auth, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 	router.POST("/token", a.TokenPost)
+	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 }
 
 // errorHandler writes any errors to response
@@ -282,4 +284,44 @@ func (a *API) TokenPost(c *gin.Context) {
 		panic(err)
 	}
 	c.JSON(http.StatusOK, tokenStr)
+}
+
+func (a *API) MapView(c *gin.Context) {
+	northWestLat, err := strconv.ParseFloat(c.Param("northWestLat"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	northWestLng, err := strconv.ParseFloat(c.Param("northWestLng"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	southEastLat, err := strconv.ParseFloat(c.Param("southEastLat"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	southEastLng, err := strconv.ParseFloat(c.Param("southEastLng"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	bounds := CoordinateBounds{
+		NorthWestLat: northWestLat,
+		NorthWestLng: northWestLng,
+		SouthEastLat: southEastLat,
+		SouthEastLng: southEastLng,
+	}
+	vendors, err := a.Backend.VendorsByCoordinateBounds(&bounds)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, vendors)
 }
