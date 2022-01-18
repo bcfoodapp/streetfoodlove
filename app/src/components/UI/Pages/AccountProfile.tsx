@@ -1,5 +1,5 @@
-import React from "react";
-import { Container } from "semantic-ui-react";
+import React, { useState } from "react";
+import { Container, Icon } from "semantic-ui-react";
 import styles from "./accountprofile.module.css";
 import { Tab } from "semantic-ui-react";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
@@ -7,12 +7,20 @@ import FormGroup from "../Molecules/Form Group/FormGroup";
 import Buttons from "../Atoms/Button/Buttons";
 
 const AccountProfile: React.FC = () => {
+  const [disabledForm, setDisabledForm] = useState<boolean>(true);
+
   const panes = [
     {
       menuItem: "Account Settings",
       render: () => (
         <Tab.Pane className={styles.pane}>
-          <FormGroup />
+          <h2>Personal Credentials</h2>
+          <Container className={styles.editBtn}>
+            <Buttons edit clicked={() => setDisabledForm(false)} color="blue">
+              Edit
+            </Buttons>
+          </Container>
+          <FormGroup disabled={disabledForm} />
         </Tab.Pane>
       ),
     },
@@ -36,7 +44,7 @@ const AccountProfile: React.FC = () => {
           panes={panes}
         />
         <Container className={styles.saveBtn}>
-          <Buttons save color="green">
+          <Buttons save color="green" clicked={() => setDisabledForm(true)}>
             Save
           </Buttons>
         </Container>
