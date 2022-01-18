@@ -4,6 +4,7 @@ import styles from "./accountprofile.module.css";
 import { Tab } from "semantic-ui-react";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import FormGroup from "../Molecules/Form Group/FormGroup";
+import Buttons from "../Atoms/Button/Buttons";
 
 const AccountProfile: React.FC = () => {
   const panes = [
@@ -34,6 +35,9 @@ const AccountProfile: React.FC = () => {
           menu={{ fluid: true, vertical: true, tabular: true }}
           panes={panes}
         />
+        <Container className={styles.saveBtn}>
+          <Buttons save color="green">Save</Buttons>
+        </Container>
       </Container>
     </Container>
   );

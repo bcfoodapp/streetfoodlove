@@ -15,6 +15,7 @@ interface ButtonsProps {
   getstarted?: boolean;
   logout?: boolean;
   cancel?: boolean;
+  save?: boolean;
   writeReview?: boolean;
   color?: ButtonProps["color"];
   clicked?: () => void;
@@ -33,6 +34,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
   else if (props.logout) name = classes.Logout;
   else if (props.cancel) name = classes.Cancel;
   else if (props.writeReview) name = classes.writeReview;
+  else if (props.save) name = classes.save;
   else throw new Error("Invalid Prop");
 
   return (

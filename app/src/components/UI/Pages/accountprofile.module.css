@@ -20,3 +20,9 @@
   width: 200% !important;
   border: 2px solid grey;
 }
+
+.saveBtn {
+  position: absolute;
+  right: 220px;
+  top: 90%;
+}
