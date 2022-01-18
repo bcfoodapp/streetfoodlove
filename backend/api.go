@@ -39,6 +39,15 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/reviews/:id", Auth, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 	router.POST("/token", a.TokenPost)
+
+	router.GET("/Photos", a.Photo)
+	router.POST("/Photos", a.postPhotos)
+
+	router.GET("/Guides", a.Guide)
+	router.POST("/Guides", a.postGuides)
+
+	router.GET("/Links", a.Link)
+	router.POST("/Links", a.postLinks)
 }
 
 // errorHandler writes any errors to response
@@ -111,6 +120,54 @@ func (a *API) Vendor(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, vendor)
+}
+
+func (a *API) Photo(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	photo, err := a.Backend.Photo(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, photo)
+}
+
+func (a *API) Guide(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	guide, err := a.Backend.Guide(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, guide)
+}
+
+func (a *API) Link(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	link, err := a.Backend.Link(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, link)
 }
 
 func (a *API) User(c *gin.Context) {
@@ -257,6 +314,7 @@ func (a *API) Review(c *gin.Context) {
 	c.JSON(http.StatusOK, review)
 }
 
+
 func (a *API) TokenPost(c *gin.Context) {
 	credentials := &Credentials{}
 	if err := c.ShouldBindJSON(credentials); err != nil {
@@ -283,3 +341,42 @@ func (a *API) TokenPost(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, tokenStr)
 }
+
+
+var photos = []Photo{}
+
+var guides = []Guide{}
+
+var links = []Link {}
+
+func (a *API) postPhotos(c *gin.Context) {
+	var newPhoto Photo
+	if err := c.BindJSON(&newPhoto); err != nil {
+		return
+	}
+
+	photos = append(photos, newPhoto)
+	c.JSON(http.StatusCreated, newPhoto)
+}
+
+
+func (a *API) postGuides(c *gin.Context) {
+	var newGuide Guide
+	if err := c.BindJSON(&newGuide); err != nil {
+		return
+	}
+
+	guides = append(guides, newGuide)
+	c.JSON(http.StatusCreated, newGuide)
+}
+
+func(a *API) postLinks(c *gin.Context) {
+	var newLink Link
+	if err := c.BindJSON(&newLink); err != nil {
+		return
+	}
+
+	links = append(links, newLink)
+	c.JSON(http.StatusCreated, newLink)
+}
+

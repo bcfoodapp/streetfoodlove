@@ -40,6 +40,7 @@ func (b *Backend) UserProtected(userID uuid.UUID, id uuid.UUID) (*UserProtected,
 	return b.Database.User(id)
 }
 
+
 func (b *Backend) Review(id uuid.UUID) (*Review, error) {
 	return b.Database.Review(id)
 }
@@ -56,4 +57,16 @@ func (b *Backend) ReviewPut(userID uuid.UUID, review *Review) error {
 
 func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]*Review, error) {
 	return b.Database.ReviewsByVendorID(vendorID)
+}
+
+func (b *Backend) Photo(id uuid.UUID) (*Photo, error) {
+	return b.Database.Photo(id)
+}
+
+func (b *Backend) Guide(id uuid.UUID) (*Guide, error) {
+	return b.Database.Guide(id)
+}
+
+func (b *Backend) Link(id uuid.UUID) (*Link, error) {
+	return b.Database.Link(id)
 }
