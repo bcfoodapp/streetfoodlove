@@ -1,0 +1,11 @@
+.wrapper {
+  width: 100% !important;
+}
+
+.content {
+  margin-top: 5%;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+}
