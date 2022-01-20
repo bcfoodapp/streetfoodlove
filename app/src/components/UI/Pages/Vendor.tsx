@@ -40,17 +40,14 @@ export function Vendor(): React.ReactElement {
     setOpenReviewForm(false);
   };
 
-  const completedReviewHandler = (obj: {
-    text: string;
-    starRating: StarRatingInteger;
-  }) => {
+  const completedReviewHandler = ({text, starRating}: {text: string, starRating: StarRatingInteger}) => {
     submitReview({
       ID: uuidv4(),
-      Text: obj.text,
+      Text: text,
       DatePosted: DateTime.now(),
       VendorID: vendorID,
       UserID: "02c353e2-e0f5-4730-89c7-b0a0610232e4",
-      StarRating: obj.starRating,
+      StarRating: starRating,
     });
   };
 
