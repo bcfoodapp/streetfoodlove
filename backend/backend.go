@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"time"
 )
@@ -11,7 +12,7 @@ import (
 // password-protected. This means that method should first check if that user has access rights
 // before executing the command.
 type Backend struct {
-	Database *Database
+	Database *database.Database
 }
 
 func (b *Backend) Close() error {
@@ -20,11 +21,11 @@ func (b *Backend) Close() error {
 
 const unauthorized = "unauthorized"
 
-func (b *Backend) Vendor(id uuid.UUID) (*Vendor, error) {
+func (b *Backend) Vendor(id uuid.UUID) (*database.Vendor, error) {
 	return b.Database.Vendor(id)
 }
 
-func (b *Backend) User(id uuid.UUID) (*User, error) {
+func (b *Backend) User(id uuid.UUID) (*database.User, error) {
 	userProtected, err := b.Database.User(id)
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func (b *Backend) User(id uuid.UUID) (*User, error) {
 	return userProtected.User, nil
 }
 
-func (b *Backend) UserProtected(userID uuid.UUID, id uuid.UUID) (*UserProtected, error) {
+func (b *Backend) UserProtected(userID uuid.UUID, id uuid.UUID) (*database.UserProtected, error) {
 	if userID != id {
 		return nil, fmt.Errorf(unauthorized)
 	}
@@ -40,11 +41,11 @@ func (b *Backend) UserProtected(userID uuid.UUID, id uuid.UUID) (*UserProtected,
 	return b.Database.User(id)
 }
 
-func (b *Backend) Review(id uuid.UUID) (*Review, error) {
+func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {
 	return b.Database.Review(id)
 }
 
-func (b *Backend) ReviewPut(userID uuid.UUID, review *Review) error {
+func (b *Backend) ReviewPut(userID uuid.UUID, review *database.Review) error {
 	if review.UserID != userID {
 		return fmt.Errorf(unauthorized)
 	}
@@ -54,11 +55,11 @@ func (b *Backend) ReviewPut(userID uuid.UUID, review *Review) error {
 	return b.Database.ReviewCreate(review)
 }
 
-func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
+func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]database.Review, error) {
 	return b.Database.ReviewsByVendorID(vendorID)
 }
 
-func (b *Backend) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]uuid.UUID, error) {
+func (b *Backend) VendorsByCoordinateBounds(bounds *database.CoordinateBounds) ([]uuid.UUID, error) {
 	vendors, err := b.Database.VendorsByCoordinateBounds(bounds)
 	if err != nil {
 		return nil, err
@@ -69,4 +70,16 @@ func (b *Backend) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]uuid.UU
 		result = append(result, vendor.ID)
 	}
 	return result, nil
+}
+
+func (b *Backend) Photo(id uuid.UUID) (*database.Photo, error) {
+	return b.Database.Photo(id)
+}
+
+func (b *Backend) Guide(id uuid.UUID) (*database.Guide, error) {
+	return b.Database.Guide(id)
+}
+
+func (b *Backend) Link(id uuid.UUID) (*database.Link, error) {
+	return b.Database.Link(id)
 }

@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -41,6 +42,15 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/reviews/:id", a.Review)
 	router.POST("/token", a.TokenPost)
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
+
+	router.GET("/photos/:id", a.Photo)
+	router.POST("/photos/:id", a.PhotoPost)
+
+	router.GET("/guides/:id", a.Guide)
+	router.POST("/guides/:id", a.GuidePost)
+
+	router.GET("/links/:id", a.Link)
+	router.POST("/links/:id", a.LinkPost)
 }
 
 // errorHandler writes any errors to response
@@ -154,7 +164,7 @@ func (a *API) UserProtectedPost(c *gin.Context) {
 		return
 	}
 
-	user := &UserProtected{}
+	user := &database.UserProtected{}
 	if err := c.ShouldBindJSON(user); err != nil {
 		c.Error(err)
 		return
@@ -182,7 +192,7 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 
 	userWithPassword := &struct {
-		*UserProtected
+		*database.UserProtected
 		Password string
 	}{}
 	if err := c.ShouldBindJSON(userWithPassword); err != nil {
@@ -226,7 +236,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	review := &Review{}
+	review := &database.Review{}
 	if err := c.ShouldBindJSON(review); err != nil {
 		c.Error(err)
 		return
@@ -260,7 +270,7 @@ func (a *API) Review(c *gin.Context) {
 }
 
 func (a *API) TokenPost(c *gin.Context) {
-	credentials := &Credentials{}
+	credentials := &database.Credentials{}
 	if err := c.ShouldBindJSON(credentials); err != nil {
 		c.Error(err)
 		return
@@ -311,7 +321,7 @@ func (a *API) MapView(c *gin.Context) {
 		return
 	}
 
-	bounds := CoordinateBounds{
+	bounds := database.CoordinateBounds{
 		NorthWestLat: northWestLat,
 		NorthWestLng: northWestLng,
 		SouthEastLat: southEastLat,
@@ -324,4 +334,82 @@ func (a *API) MapView(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, vendors)
+}
+
+func (a *API) Photo(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	photo, err := a.Backend.Photo(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, photo)
+}
+
+func (a *API) PhotoPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	_ = id
+	// TODO
+}
+
+func (a *API) Guide(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	guide, err := a.Backend.Guide(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, guide)
+}
+
+func (a *API) GuidePost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	_ = id
+	// TODO
+}
+
+func (a *API) Link(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	link, err := a.Backend.Link(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, link)
+}
+
+func (a *API) LinkPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	_ = id
+	// TODO
 }
