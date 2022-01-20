@@ -40,7 +40,13 @@ export function Vendor(): React.ReactElement {
     setOpenReviewForm(false);
   };
 
-  const completedReviewHandler = ({text, starRating}: {text: string, starRating: StarRatingInteger}) => {
+  const completedReviewHandler = ({
+    text,
+    starRating,
+  }: {
+    text: string;
+    starRating: StarRatingInteger;
+  }) => {
     submitReview({
       ID: uuidv4(),
       Text: text,

@@ -3,15 +3,14 @@ import styles from "./starRating.module.css";
 import { ChangeEvent } from "react";
 import { StarRatingInteger } from "../../../../api";
 
-/**
- * This element represents the star rating that appears in the review form
- */
-
 interface Props {
   starRating: StarRatingInteger | null;
   setStarRating: (rating: StarRatingInteger) => void;
 }
 
+/**
+ * This element represents the star rating that appears in the review form
+ */
 export const StarRating = ({ starRating, setStarRating }: Props) => {
   const trackStarCount = (e: ChangeEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
@@ -38,7 +37,7 @@ export const StarRating = ({ starRating, setStarRating }: Props) => {
         name="rate"
         value="5"
         onChange={trackStarCount}
-        checked={starRating !== null && starRating >= 5}
+        checked={starRating !== null && starRating === 5}
       />
       <label htmlFor="star5" title="text">
         5 stars
@@ -49,7 +48,7 @@ export const StarRating = ({ starRating, setStarRating }: Props) => {
         name="rate"
         value="4"
         onChange={trackStarCount}
-        checked={starRating !== null && starRating >= 4}
+        checked={starRating !== null && starRating === 4}
       />
       <label htmlFor="star4" title="text">
         4 stars
@@ -60,7 +59,7 @@ export const StarRating = ({ starRating, setStarRating }: Props) => {
         name="rate"
         value="3"
         onChange={trackStarCount}
-        checked={starRating !== null && starRating >= 3}
+        checked={starRating !== null && starRating === 3}
       />
       <label htmlFor="star3" title="text">
         3 stars
@@ -71,7 +70,7 @@ export const StarRating = ({ starRating, setStarRating }: Props) => {
         name="rate"
         value="2"
         onChange={trackStarCount}
-        checked={starRating !== null && starRating >= 2}
+        checked={starRating !== null && starRating === 2}
       />
       <label htmlFor="star2" title="text">
         2 stars
@@ -82,7 +81,7 @@ export const StarRating = ({ starRating, setStarRating }: Props) => {
         name="rate"
         value="1"
         onChange={trackStarCount}
-        checked={starRating !== null && starRating >= 1}
+        checked={starRating !== null && starRating === 1}
       />
       <label htmlFor="star1" title="text">
         1 star
