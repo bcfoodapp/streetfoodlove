@@ -2,7 +2,7 @@ import React from "react";
 import { Container } from "semantic-ui-react";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import YourAccountOption from "../Molecules/YourAccount/YourAccountOption";
-import styles from './youracctuser.module.css'
+import styles from "./youracctuser.module.css";
 
 const YourAccountUser: React.FC = () => {
   return (
@@ -15,7 +15,7 @@ const YourAccountUser: React.FC = () => {
         {/* <YourAccountOption header="Search History" iconName="history" /> */}
       </Container>
     </Container>
-  )
-}
+  );
+};
 
-export default YourAccountUser
+export default YourAccountUser;

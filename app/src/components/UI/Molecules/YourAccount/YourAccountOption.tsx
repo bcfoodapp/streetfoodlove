@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Container, Icon, Header } from "semantic-ui-react";
-import styles from './youracctbox.module.css'
+import styles from "./youracctbox.module.css";
 
 const YourAccountOption: FC<{ header: string; iconName: string }> = ({
   header,
@@ -8,7 +8,9 @@ const YourAccountOption: FC<{ header: string; iconName: string }> = ({
 }) => {
   return (
     <Container className={styles.wrapper}>
-      <Header as={"h1"} className={styles.header}>{header}</Header>
+      <Header as={"h1"} className={styles.header}>
+        {header}
+      </Header>
       <Container className={styles.iconWrap}>
         {iconName! === "favorite" ? (
           <Icon name={"favorite"} size="large" />
