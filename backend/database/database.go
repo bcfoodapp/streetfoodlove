@@ -228,7 +228,7 @@ func (d *Database) ReviewCreate(review *Review) error {
 			VendorID,
 			UserID,
 			DatePosted,
-		    StarRating
+			StarRating
 		) VALUES (
 			:ID,
 			:Text,
