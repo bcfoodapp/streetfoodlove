@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -163,7 +164,7 @@ func (a *API) UserProtectedPost(c *gin.Context) {
 		return
 	}
 
-	user := &UserProtected{}
+	user := &database.UserProtected{}
 	if err := c.ShouldBindJSON(user); err != nil {
 		c.Error(err)
 		return
@@ -191,7 +192,7 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 
 	userWithPassword := &struct {
-		*UserProtected
+		*database.UserProtected
 		Password string
 	}{}
 	if err := c.ShouldBindJSON(userWithPassword); err != nil {
@@ -235,7 +236,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	review := &Review{}
+	review := &database.Review{}
 	if err := c.ShouldBindJSON(review); err != nil {
 		c.Error(err)
 		return
@@ -269,7 +270,7 @@ func (a *API) Review(c *gin.Context) {
 }
 
 func (a *API) TokenPost(c *gin.Context) {
-	credentials := &Credentials{}
+	credentials := &database.Credentials{}
 	if err := c.ShouldBindJSON(credentials); err != nil {
 		c.Error(err)
 		return
@@ -320,7 +321,7 @@ func (a *API) MapView(c *gin.Context) {
 		return
 	}
 
-	bounds := CoordinateBounds{
+	bounds := database.CoordinateBounds{
 		NorthWestLat: northWestLat,
 		NorthWestLng: northWestLng,
 		SouthEastLat: southEastLat,

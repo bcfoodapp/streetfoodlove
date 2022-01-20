@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	database2 "github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -20,7 +21,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	database := NewDatabase(db)
+	database := database2.NewDatabase(db)
 
 	api := API{&Backend{database}}
 	defer api.Close()
