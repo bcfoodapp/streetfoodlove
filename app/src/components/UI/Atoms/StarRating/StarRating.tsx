@@ -1,23 +1,31 @@
 import { Container } from "semantic-ui-react";
 import styles from "./starRating.module.css";
-import { MouseEvent, useState } from "react";
+import { ChangeEvent } from "react";
+import { StarRatingInteger } from "../../../../api";
+
+interface Props {
+  starRating: StarRatingInteger | null;
+  setStarRating: (rating: StarRatingInteger) => void;
+}
 
 /**
  * This element represents the star rating that appears in the review form
  */
-
-export const StarRating = () => {
-  const [starRating, setStarRating] = useState(null);
-
-  //defaultvalue is string, eg "3"
-  const trackStarCount = (e: MouseEvent<HTMLInputElement>) => {
+export const StarRating = ({ starRating, setStarRating }: Props) => {
+  const trackStarCount = (e: ChangeEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
     if (target.value === "5") {
-      // setStarRating(5)
+      setStarRating(5);
     } else if (target.value === "4") {
+      setStarRating(4);
     } else if (target.value === "3") {
+      setStarRating(3);
     } else if (target.value === "2") {
+      setStarRating(2);
+    } else if (target.value === "1") {
+      setStarRating(1);
     } else {
+      throw new Error("unexpected value");
     }
   };
 
@@ -28,7 +36,8 @@ export const StarRating = () => {
         id="star5"
         name="rate"
         value="5"
-        onClick={trackStarCount}
+        onChange={trackStarCount}
+        checked={starRating !== null && starRating === 5}
       />
       <label htmlFor="star5" title="text">
         5 stars
@@ -38,7 +47,8 @@ export const StarRating = () => {
         id="star4"
         name="rate"
         value="4"
-        onClick={trackStarCount}
+        onChange={trackStarCount}
+        checked={starRating !== null && starRating === 4}
       />
       <label htmlFor="star4" title="text">
         4 stars
@@ -48,7 +58,8 @@ export const StarRating = () => {
         id="star3"
         name="rate"
         value="3"
-        onClick={trackStarCount}
+        onChange={trackStarCount}
+        checked={starRating !== null && starRating === 3}
       />
       <label htmlFor="star3" title="text">
         3 stars
@@ -58,7 +69,8 @@ export const StarRating = () => {
         id="star2"
         name="rate"
         value="2"
-        onClick={trackStarCount}
+        onChange={trackStarCount}
+        checked={starRating !== null && starRating === 2}
       />
       <label htmlFor="star2" title="text">
         2 stars
@@ -68,7 +80,8 @@ export const StarRating = () => {
         id="star1"
         name="rate"
         value="1"
-        onClick={trackStarCount}
+        onChange={trackStarCount}
+        checked={starRating !== null && starRating === 1}
       />
       <label htmlFor="star1" title="text">
         1 star

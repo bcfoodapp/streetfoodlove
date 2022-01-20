@@ -34,13 +34,15 @@ export interface UserProtected extends User {
   LastName: string;
 }
 
+export type StarRatingInteger = 1 | 2 | 3 | 4 | 5;
+
 export interface Review {
   ID: string;
   DatePosted: DateTime;
   Text: string;
   VendorID: string;
   UserID: string;
-  Stars: 1 | 2 | 3 | 4 | 5;
+  StarRating: StarRatingInteger;
 }
 
 type RawReview = Review & { DatePosted: string };

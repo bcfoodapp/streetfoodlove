@@ -12,7 +12,7 @@
 .Cancel,
 .getStarted,
 .Save,
-.writeReview {
+.writeReview .Edit {
   font-family: "Bahnschrift", sans-serif !important;
   font-size: 16px;
 }
@@ -24,7 +24,8 @@
 
 .Enter,
 .Submit,
-.Save {
+.Save,
+.Edit {
   color: white !important;
   border-radius: 4px !important;
   margin-left: 10px !important;

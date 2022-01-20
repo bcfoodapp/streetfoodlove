@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"crypto/sha256"
@@ -270,4 +270,112 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 	}
 
 	return result, rows.Err()
+}
+
+type Photo struct {
+	ID         uuid.UUID
+	DatePosted string
+	Text       string
+	LinkID     string
+}
+
+func (d *Database) PhotoCreate(photo *Photo) error {
+	const command = `
+		INSERT INTO Photos (
+			ID,
+			DatePosted,
+			Text,
+			LinkID
+		) VALUES (
+			:ID,
+			:DatePosted,
+			:Text,
+			:LinkID
+		)
+	`
+	_, err := d.db.NamedExec(command, photo)
+	return err
+}
+
+func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
+	const command = `
+		SELECT * FROM Photos WHERE ID=?
+	`
+	row := d.db.QueryRowx(command, &id)
+
+	photo := &Photo{}
+	err := row.StructScan(photo)
+
+	return photo, err
+}
+
+type Guide struct {
+	ID            uuid.UUID
+	Guide         string
+	DatePosted    string
+	ArticleAuthor string
+}
+
+func (d *Database) GuideCreate(guide *Guide) error {
+	const command = `
+		INSERT INTO Guides (
+			ID,
+			Guide,
+			DatePosted,
+			ArticalAuthor
+		) VALUES (
+			:ID,
+			:Guide,
+			:DatePosted,
+			:ArticleAuthor
+		)
+	`
+	_, err := d.db.NamedExec(command, guide)
+	return err
+}
+
+func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
+	const command = `
+		SELECT * FROM Guides WHERE ID=?
+	`
+	row := d.db.QueryRowx(command, &id)
+
+	guide := &Guide{}
+	err := row.StructScan(guide)
+
+	return guide, err
+}
+
+type Link struct {
+	ID    uuid.UUID
+	Title string
+	URL   string
+}
+
+func (d *Database) LinkCreate(link *Link) error {
+	const command = `
+		INSERT INTO Links (
+			ID,
+			Title,
+			url
+		) VALUES (
+			:ID,
+			:Title,
+			:URL
+		)
+	`
+	_, err := d.db.NamedExec(command, link)
+	return err
+}
+
+func (d *Database) Link(id uuid.UUID) (*Link, error) {
+	const command = `
+		SELECT * FROM Links WHERE ID=?
+	`
+	row := d.db.QueryRowx(command, &id)
+
+	link := &Link{}
+	err := row.StructScan(link)
+
+	return link, err
 }

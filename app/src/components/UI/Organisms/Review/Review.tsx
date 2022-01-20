@@ -9,8 +9,6 @@ import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
  */
 
 export const Review = ({ review }: { review: ReviewObj }) => {
-  console.log("stars: " + review.Stars);
-
   return (
     <Container className={styles.wrap}>
       <Grid divided celled columns={4}>
@@ -25,7 +23,7 @@ export const Review = ({ review }: { review: ReviewObj }) => {
             </Grid.Row>
             <Grid.Row>
               <Container className={styles.stars}>
-                <FinalStarRating stars={review.Stars} />
+                <FinalStarRating stars={review.StarRating} />
               </Container>
             </Grid.Row>
             <Grid.Row>
