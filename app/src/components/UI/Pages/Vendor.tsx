@@ -13,7 +13,7 @@ import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
-import { v4 as uuid } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { DateTime } from "luxon";
@@ -48,7 +48,7 @@ export function Vendor(): React.ReactElement {
     starRating: StarRatingInteger;
   }) => {
     submitReview({
-      ID: uuid(),
+      ID: uuidv4(),
       Text: text,
       DatePosted: DateTime.now(),
       VendorID: vendorID,
