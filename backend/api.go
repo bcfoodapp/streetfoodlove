@@ -175,13 +175,10 @@ func (a *API) UserProtectedPost(c *gin.Context) {
 		return
 	}
 
-	// TODO Implement backend
-	/*
-		if err := a.Backend.UserProtectedUpdate(getTokenFromContext(c), user); err != nil {
-			c.Error(err)
-			return
-		}
-	*/
+	if err := a.Backend.UserProtectedUpdate(getTokenFromContext(c), user); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) UserProtectedPut(c *gin.Context) {
@@ -205,12 +202,10 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 		return
 	}
 
-	/*
-		if err := a.Backend.UserProtectedCreate(userWithPassword.UserProtected, userWithPassword.Password); err != nil {
-			c.Error(err)
-			return
-		}
-	*/
+	if err := a.Backend.UserProtectedCreate(userWithPassword.UserProtected, userWithPassword.Password); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) ReviewsByVendorID(c *gin.Context) {
