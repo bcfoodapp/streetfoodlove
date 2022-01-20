@@ -11,8 +11,7 @@ const YourAccountUser: React.FC = () => {
       <Container className={styles.content}>
         <YourAccountOption header="Your Favorites" iconName="favorite" />
         <YourAccountOption header="Search History" iconName="history" />
-        <YourAccountOption header="Search History" iconName="history" />
-        {/* <YourAccountOption header="Search History" iconName="history" /> */}
+        <YourAccountOption header="Notifications" iconName="bell" />
       </Container>
     </Container>
   );

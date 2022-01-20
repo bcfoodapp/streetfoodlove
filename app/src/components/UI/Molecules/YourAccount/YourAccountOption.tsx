@@ -12,10 +12,12 @@ const YourAccountOption: FC<{ header: string; iconName: string }> = ({
         {header}
       </Header>
       <Container className={styles.iconWrap}>
-        {iconName! === "favorite" ? (
+        {iconName === "favorite" ? (
           <Icon name={"favorite"} size="large" />
-        ) : iconName! === "history" ? (
+        ) : iconName === "history" ? (
           <Icon name={"history"} size="large" />
+        ) : iconName === "bell" ? (
+          <Icon name={"bell"} size="large" />
         ) : null}
       </Container>
     </Container>
