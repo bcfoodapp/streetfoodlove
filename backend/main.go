@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -20,10 +21,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	database := NewDatabase(db)
 
-	api := API{&Backend{database}}
-	defer api.Close()
+	api := API{&Backend{database.NewDatabase(db)}}
+	defer func() {
+		if err := api.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	router := gin.Default()
 	api.AddRoutes(router)
@@ -34,7 +38,11 @@ func main() {
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}
-	defer server.Close()
+	defer func() {
+		if err := server.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	fmt.Println("serving at localhost:8080")
 	if err := server.ListenAndServe(); err != nil {

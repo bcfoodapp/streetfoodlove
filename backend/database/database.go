@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"crypto/sha256"
@@ -279,7 +279,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 }
 
 type Photo struct {
-	PhotoID    uuid.UUID
+	ID         uuid.UUID
 	DatePosted string
 	Text       string
 	LinkID     string
@@ -288,12 +288,12 @@ type Photo struct {
 func (d *Database) PhotoCreate(photo *Photo) error {
 	const command = `
 		INSERT INTO Photos (
-			PhotoID,
+			ID,
 			DatePosted,
 			Text,
 			LinkID
 		) VALUES (
-			:PhotoID,
+			:ID,
 			:DatePosted,
 			:Text,
 			:LinkID
@@ -305,7 +305,7 @@ func (d *Database) PhotoCreate(photo *Photo) error {
 
 func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
 	const command = `
-		SELECT * FROM Photos WHERE PhotoID=?
+		SELECT * FROM Photos WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
@@ -316,7 +316,7 @@ func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
 }
 
 type Guide struct {
-	GuideId       uuid.UUID
+	ID            uuid.UUID
 	Guide         string
 	DatePosted    string
 	ArticleAuthor string
@@ -325,12 +325,12 @@ type Guide struct {
 func (d *Database) GuideCreate(guide *Guide) error {
 	const command = `
 		INSERT INTO Guides (
-			GuideID,
+			ID,
 			Guide,
 			DatePosted,
 			ArticalAuthor
 		) VALUES (
-			:GuideID,
+			:ID,
 			:Guide,
 			:DatePosted,
 			:ArticleAuthor
@@ -342,7 +342,7 @@ func (d *Database) GuideCreate(guide *Guide) error {
 
 func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
 	const command = `
-		SELECT * FROM Guides WHERE GuideID=?
+		SELECT * FROM Guides WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
@@ -353,21 +353,21 @@ func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
 }
 
 type Link struct {
-	LinkID uuid.UUID
-	Title  string
-	URL    string
+	ID    uuid.UUID
+	Title string
+	URL   string
 }
 
 func (d *Database) LinkCreate(link *Link) error {
 	const command = `
 		INSERT INTO Links (
-			Link_ID,
+			ID,
 			Title,
 			url
 		) VALUES (
-			:Link_ID,
+			:ID,
 			:Title,
-			:url
+			:URL
 		)
 	`
 	_, err := d.db.NamedExec(command, link)
@@ -376,7 +376,7 @@ func (d *Database) LinkCreate(link *Link) error {
 
 func (d *Database) Link(id uuid.UUID) (*Link, error) {
 	const command = `
-		SELECT * FROM Links WHERE Link_ID=?
+		SELECT * FROM Links WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
