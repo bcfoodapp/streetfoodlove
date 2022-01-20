@@ -19,7 +19,11 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		defer db.Close()
+		defer func() {
+			if err := db.Close(); err != nil {
+				panic(err)
+			}
+		}()
 
 		commands := [...]string{
 			"DROP DATABASE IF EXISTS streetfoodlove",

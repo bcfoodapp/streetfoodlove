@@ -24,7 +24,11 @@ func main() {
 	database := database2.NewDatabase(db)
 
 	api := API{&Backend{database}}
-	defer api.Close()
+	defer func() {
+		if err := api.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	router := gin.Default()
 	api.AddRoutes(router)
@@ -35,7 +39,11 @@ func main() {
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 10,
 	}
-	defer server.Close()
+	defer func() {
+		if err := server.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	fmt.Println("serving at localhost:8080")
 	if err := server.ListenAndServe(); err != nil {
