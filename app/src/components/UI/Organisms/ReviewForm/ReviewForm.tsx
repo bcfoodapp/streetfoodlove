@@ -3,28 +3,40 @@ import { Container, Form, TextArea } from "semantic-ui-react";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./reviewForm.module.css";
+import { StarRatingInteger } from "../../../../api";
 
 /**
  * Renders a review form template that includes fields to be filled out
  */
 
 interface Props {
-  finishedFormHandler: (review: { Text: string }) => void;
+  finishedFormHandler: (review: {
+    text: string;
+    starRating: StarRatingInteger;
+  }) => void;
   cancelFormHandler: () => void;
 }
 
 export const ReviewForm = (props: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
+  const [starRating, setStarRating] = useState(
+    null as StarRatingInteger | null
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaInput(e.target.value);
   };
 
   const handleSubmit = () => {
-    const review = {
-      Text: textAreaInput,
-    };
-    props.finishedFormHandler(review);
+    // TODO make sure user selects a rating
+    if (starRating === null) {
+      throw new Error("starRating is null");
+    }
+
+    props.finishedFormHandler({
+      text: textAreaInput,
+      starRating,
+    });
   };
 
   return (
@@ -32,7 +44,7 @@ export const ReviewForm = (props: Props) => {
       <Container>
         <h4>Select a Rating</h4>
         <Container className={styles.starrating}>
-          <StarRating />
+          <StarRating starRating={starRating} setStarRating={setStarRating} />
         </Container>
       </Container>
       <Form onSubmit={handleSubmit}>
