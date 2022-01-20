@@ -1,18 +1,18 @@
 import { Container } from "semantic-ui-react";
 import styles from "./starRating.module.css";
-import {ChangeEvent} from 'react';
-import {StarRatingInteger} from "../../../../api";
+import { ChangeEvent } from "react";
+import { StarRatingInteger } from "../../../../api";
 
 /**
  * This element represents the star rating that appears in the review form
  */
 
 interface Props {
-  starRating: StarRatingInteger | null,
-  setStarRating: (rating: StarRatingInteger) => void,
+  starRating: StarRatingInteger | null;
+  setStarRating: (rating: StarRatingInteger) => void;
 }
 
-export const StarRating = ({starRating, setStarRating}: Props) => {
+export const StarRating = ({ starRating, setStarRating }: Props) => {
   const trackStarCount = (e: ChangeEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
     if (target.value === "5") {
