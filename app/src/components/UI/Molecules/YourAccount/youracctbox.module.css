@@ -1,0 +1,21 @@
+.wrapper {
+  border: 2px solid grey;
+  box-shadow: 5px 10px 15px black;
+  height: 250px !important;
+  width: 25% !important;
+  padding: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.wrapper:hover {
+  box-shadow: 1px 5px 8px black;
+}
+
+.iconWrap {
+  padding-left: 40% !important;
+}
+
+.header {
+  padding-left: 10% !important;
+}

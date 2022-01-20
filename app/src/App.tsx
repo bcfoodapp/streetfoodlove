@@ -10,6 +10,7 @@ import { LandingPage } from "./components/UI/Pages/LandingPage";
 import AccountSelection from "./components/UI/Pages/AccountSelection";
 import VendorAppForm from "./components/UI/Pages/VendorAppForm";
 import AccountProfile from "./components/UI/Pages/AccountProfile";
+import YourAccountUser from "./components/UI/Pages/YourAccountUser";
 
 function App(): React.ReactElement {
   return (
@@ -25,6 +26,7 @@ function App(): React.ReactElement {
             <Route path="/account-selection" element={<AccountSelection />} />
             <Route path="/vendor-signup" element={<VendorAppForm />} />
             <Route path="/account-profile" element={<AccountProfile />} />
+            <Route path="/your-acct-user" element={<YourAccountUser />} />
           </Routes>
         </BrowserRouter>
       </Provider>
