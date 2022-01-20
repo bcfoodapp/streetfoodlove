@@ -109,6 +109,8 @@ func getTokenFromContext(c *gin.Context) uuid.UUID {
 	return c.MustGet(userIDKey).(uuid.UUID)
 }
 
+var idsDoNotMatch = fmt.Errorf("ids do not match")
+
 func (a *API) Vendor(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -171,7 +173,7 @@ func (a *API) UserProtectedPost(c *gin.Context) {
 	}
 
 	if id != user.ID {
-		c.Error(fmt.Errorf("ids do not match"))
+		c.Error(idsDoNotMatch)
 		return
 	}
 
@@ -198,7 +200,7 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 
 	if id != userWithPassword.ID {
-		c.Error(fmt.Errorf("ids do not match"))
+		c.Error(idsDoNotMatch)
 		return
 	}
 
@@ -238,7 +240,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 	}
 
 	if id != review.ID {
-		c.Error(fmt.Errorf("ids do not match"))
+		c.Error(idsDoNotMatch)
 		return
 	}
 
