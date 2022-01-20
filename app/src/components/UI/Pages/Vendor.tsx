@@ -4,8 +4,8 @@ import {
   useReviewsQuery,
   useVendorQuery,
   useSubmitReviewMutation,
-  Review as ReviewType,
-} from "../../../api";
+  Review as ReviewType, StarRatingInteger,
+} from '../../../api';
 import { Container, Grid } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./vendor.module.css";
@@ -40,14 +40,14 @@ export function Vendor(): React.ReactElement {
     setOpenReviewForm(false);
   };
 
-  const completedReviewHandler = (obj: { Text: string }) => {
+  const completedReviewHandler = (obj: { text: string, starRating: StarRatingInteger }) => {
     submitReview({
-      ...obj,
       ID: uuidv4(),
+      Text: obj.text,
       DatePosted: DateTime.now(),
       VendorID: vendorID,
       UserID: "02c353e2-e0f5-4730-89c7-b0a0610232e4",
-      Stars: 5,
+      StarRating: obj.starRating,
     });
   };
 
