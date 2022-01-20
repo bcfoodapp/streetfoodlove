@@ -105,6 +105,32 @@ func SetupTables(db *sqlx.DB) error {
 			ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
+		`
+		CREATE TABLE Photos (
+			ID BINARY(16) NOT NULL,
+			DatePosted DATETIME NOT NULL,
+			Text VARCHAR(500) NOT NULL,
+			LinkID BINARY(16) NOT NULL,
+			PRIMARY KEY (ID)
+		)
+		`,
+		`
+		CREATE TABLE Guide (
+			ID BINARY(16) NOT NULL,
+			Guide VARCHAR(5000) NOT NULL,
+			DatePosted DATETIME NOT NULL,
+			ArticleAuthor VARCHAR(500) NOT NULL,
+			PRIMARY KEY (ID)
+		)
+		`,
+		`
+		CREATE TABLE Link (
+			ID BINARY(16) NOT NULL,
+			Title VARCHAR(45) NOT NULL,
+			URL VARCHAR(255) NULL,
+			PRIMARY KEY (ID)
+		)
+		`,
 	}
 
 	for _, command := range commands {
