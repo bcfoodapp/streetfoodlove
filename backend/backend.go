@@ -52,6 +52,8 @@ func (b *Backend) UserProtectedUpdate(userID uuid.UUID, user *database.UserProte
 }
 
 func (b *Backend) UserProtectedCreate(user *database.UserProtected, password string) error {
+	user.SignUpDate = time.Now()
+
 	return b.Database.UserCreate(user, password)
 }
 
