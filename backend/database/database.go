@@ -285,12 +285,12 @@ func (d *Database) PhotoCreate(photo *Photo) error {
 			ID,
 			DatePosted,
 			Text,
-			ID
+			LinkID
 		) VALUES (
 			:ID,
 			:DatePosted,
 			:Text,
-			:ID
+			:LinkID
 		)
 	`
 	_, err := d.db.NamedExec(command, photo)
