@@ -181,6 +181,23 @@ func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
 	return user, err
 }
 
+func (d *Database) UserUpdate(user *UserProtected) error {
+	const command = `
+		UPDATE User SET
+			Email = :Email,
+			Username = :Username,
+			FirstName = :FirstName,
+			LastName = :LastName,
+			SignUpDate = :SignUpDate,
+			LoginPassword = :LoginPassword,
+			UserType = :UserType,
+			Photo = :Photo
+		WHERE ID = :ID
+	`
+	_, err := d.db.NamedExec(command, &user)
+	return err
+}
+
 type Credentials struct {
 	Username string
 	Password string
@@ -318,11 +335,11 @@ type Guide struct {
 
 func (d *Database) GuideCreate(guide *Guide) error {
 	const command = `
-		INSERT INTO Guides (
+		INSERT INTO Guide (
 			ID,
 			Guide,
 			DatePosted,
-			ArticalAuthor
+			ArticleAuthor
 		) VALUES (
 			:ID,
 			:Guide,
@@ -336,7 +353,7 @@ func (d *Database) GuideCreate(guide *Guide) error {
 
 func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
 	const command = `
-		SELECT * FROM Guides WHERE ID=?
+		SELECT * FROM Guide WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
@@ -354,7 +371,7 @@ type Link struct {
 
 func (d *Database) LinkCreate(link *Link) error {
 	const command = `
-		INSERT INTO Links (
+		INSERT INTO Link (
 			ID,
 			Title,
 			url
@@ -370,7 +387,7 @@ func (d *Database) LinkCreate(link *Link) error {
 
 func (d *Database) Link(id uuid.UUID) (*Link, error) {
 	const command = `
-		SELECT * FROM Links WHERE ID=?
+		SELECT * FROM Link WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
