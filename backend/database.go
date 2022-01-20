@@ -271,3 +271,111 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 
 	return result, rows.Err()
 }
+
+type Photo struct {
+	PhotoID    uuid.UUID
+	DatePosted string
+	Text       string
+	LinkID     string
+}
+
+func (d *Database) PhotoCreate(photo *Photo) error {
+	const command = `
+		INSERT INTO Photos (
+			PhotoID,
+			DatePosted,
+			Text,
+			LinkID
+		) VALUES (
+			:PhotoID,
+			:DatePosted,
+			:Text,
+			:LinkID
+		)
+	`
+	_, err := d.db.NamedExec(command, photo)
+	return err
+}
+
+func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
+	const command = `
+		SELECT * FROM Photos WHERE PhotoID=?
+	`
+	row := d.db.QueryRowx(command, &id)
+
+	photo := &Photo{}
+	err := row.StructScan(photo)
+
+	return photo, err
+}
+
+type Guide struct {
+	GuideId       uuid.UUID
+	Guide         string
+	DatePosted    string
+	ArticleAuthor string
+}
+
+func (d *Database) GuideCreate(guide *Guide) error {
+	const command = `
+		INSERT INTO Guides (
+			GuideID,
+			Guide,
+			DatePosted,
+			ArticalAuthor
+		) VALUES (
+			:GuideID,
+			:Guide,
+			:DatePosted,
+			:ArticleAuthor
+		)
+	`
+	_, err := d.db.NamedExec(command, guide)
+	return err
+}
+
+func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
+	const command = `
+		SELECT * FROM Guides WHERE GuideID=?
+	`
+	row := d.db.QueryRowx(command, &id)
+
+	guide := &Guide{}
+	err := row.StructScan(guide)
+
+	return guide, err
+}
+
+type Link struct {
+	LinkID uuid.UUID
+	Title  string
+	URL    string
+}
+
+func (d *Database) LinkCreate(link *Link) error {
+	const command = `
+		INSERT INTO Links (
+			Link_ID,
+			Title,
+			url
+		) VALUES (
+			:Link_ID,
+			:Title,
+			:url
+		)
+	`
+	_, err := d.db.NamedExec(command, link)
+	return err
+}
+
+func (d *Database) Link(id uuid.UUID) (*Link, error) {
+	const command = `
+		SELECT * FROM Links WHERE Link_ID=?
+	`
+	row := d.db.QueryRowx(command, &id)
+
+	link := &Link{}
+	err := row.StructScan(link)
+
+	return link, err
+}

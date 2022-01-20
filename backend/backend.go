@@ -70,3 +70,15 @@ func (b *Backend) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]uuid.UU
 	}
 	return result, nil
 }
+
+func (b *Backend) Photo(id uuid.UUID) (*Photo, error) {
+	return b.Database.Photo(id)
+}
+
+func (b *Backend) Guide(id uuid.UUID) (*Guide, error) {
+	return b.Database.Guide(id)
+}
+
+func (b *Backend) Link(id uuid.UUID) (*Link, error) {
+	return b.Database.Link(id)
+}
