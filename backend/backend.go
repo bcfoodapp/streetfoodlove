@@ -19,7 +19,9 @@ func (b *Backend) Close() error {
 	return b.Database.Close()
 }
 
-const unauthorized = "unauthorized"
+var unauthorized = fmt.Errorf(
+	"you are unauthorized to perform this action; make sure you are logged into the correct account",
+)
 
 func (b *Backend) Vendor(id uuid.UUID) (*database.Vendor, error) {
 	return b.Database.Vendor(id)
@@ -35,10 +37,24 @@ func (b *Backend) User(id uuid.UUID) (*database.User, error) {
 
 func (b *Backend) UserProtected(userID uuid.UUID, id uuid.UUID) (*database.UserProtected, error) {
 	if userID != id {
-		return nil, fmt.Errorf(unauthorized)
+		return nil, unauthorized
 	}
 
 	return b.Database.User(id)
+}
+
+func (b *Backend) UserProtectedUpdate(userID uuid.UUID, user *database.UserProtected) error {
+	if userID != user.ID {
+		return unauthorized
+	}
+
+	return b.Database.UserUpdate(user)
+}
+
+func (b *Backend) UserProtectedCreate(user *database.UserProtected, password string) error {
+	user.SignUpDate = time.Now()
+
+	return b.Database.UserCreate(user, password)
 }
 
 func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {
@@ -47,7 +63,7 @@ func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {
 
 func (b *Backend) ReviewPut(userID uuid.UUID, review *database.Review) error {
 	if review.UserID != userID {
-		return fmt.Errorf(unauthorized)
+		return unauthorized
 	}
 
 	review.DatePosted = time.Now()

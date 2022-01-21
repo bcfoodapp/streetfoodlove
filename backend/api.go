@@ -109,6 +109,8 @@ func getTokenFromContext(c *gin.Context) uuid.UUID {
 	return c.MustGet(userIDKey).(uuid.UUID)
 }
 
+var idsDoNotMatch = fmt.Errorf("ids do not match")
+
 func (a *API) Vendor(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -171,17 +173,14 @@ func (a *API) UserProtectedPost(c *gin.Context) {
 	}
 
 	if id != user.ID {
-		c.Error(fmt.Errorf("ids do not match"))
+		c.Error(idsDoNotMatch)
 		return
 	}
 
-	// TODO Implement backend
-	/*
-		if err := a.Backend.UserProtectedUpdate(getTokenFromContext(c), user); err != nil {
-			c.Error(err)
-			return
-		}
-	*/
+	if err := a.Backend.UserProtectedUpdate(getTokenFromContext(c), user); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) UserProtectedPut(c *gin.Context) {
@@ -201,16 +200,14 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 
 	if id != userWithPassword.ID {
-		c.Error(fmt.Errorf("ids do not match"))
+		c.Error(idsDoNotMatch)
 		return
 	}
 
-	/*
-		if err := a.Backend.UserProtectedCreate(userWithPassword.UserProtected, userWithPassword.Password); err != nil {
-			c.Error(err)
-			return
-		}
-	*/
+	if err := a.Backend.UserProtectedCreate(userWithPassword.UserProtected, userWithPassword.Password); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) ReviewsByVendorID(c *gin.Context) {
@@ -243,7 +240,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 	}
 
 	if id != review.ID {
-		c.Error(fmt.Errorf("ids do not match"))
+		c.Error(idsDoNotMatch)
 		return
 	}
 

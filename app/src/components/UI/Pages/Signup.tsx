@@ -18,8 +18,23 @@ export default function Signup(): React.ReactElement {
   return (
     <Container className={styles.signUpWrapper}>
       <HeaderBar signUp={false} />
-      <Header as={"h1"} className={styles.header}>Sign Up Form (user account)</Header>
-      <Form className={styles.form}>
+      <h1>Sign Up Form (user account)</h1>
+      <Form
+        className={styles.form}
+        onSubmit={async () => {
+          await createUser({
+            ID: uuid(),
+            Username: username,
+            Photo: uuid(),
+            UserType: UserType.Customer,
+            Email: email,
+            FirstName: firstName,
+            LastName: lastName,
+            Password: password,
+          });
+          alert("created account");
+        }}
+      >
         <Form.Input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -80,28 +95,12 @@ export default function Signup(): React.ReactElement {
           // }}
           required
         />
+        <Container className={styles.btnContainer}>
+          <Buttons color="green" signup>
+            Sign Up
+          </Buttons>
+        </Container>
       </Form>
-      <Container className={styles.btnContainer}>
-        <Buttons
-          clicked={() => {
-            createUser({
-              ID: uuid(),
-              Username: username,
-              Photo: uuid(),
-              UserType: UserType.Customer,
-              Email: email,
-              FirstName: firstName,
-              LastName: lastName,
-              Password: password,
-            });
-            alert("created account");
-          }}
-          color="green"
-          signup
-        >
-          Sign Up
-        </Buttons>
-      </Container>
     </Container>
   );
 }
