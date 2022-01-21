@@ -8,7 +8,6 @@ interface Props {
 }
 
 export const FinalStarRating = ({ starRating = 1 }: Props) => {
-
   const stylesTest = {
     color: "#c59b08",
   };
