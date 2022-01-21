@@ -7,11 +7,7 @@ interface Props {
   starRating: number;
 }
 
-export const FinalStarRating = ({ starRating = 1 }: Props) => {
-  const stylesTest = {
-    color: "#c59b08",
-  };
-
+export const FinalStarRating = ({ starRating }: Props) => {
   //use effect will color in the proper number of stars according to the starRating passed in as a prop.
   useEffect(() => {
     let labels = Array.prototype.slice
@@ -21,7 +17,7 @@ export const FinalStarRating = ({ starRating = 1 }: Props) => {
     for (let i = 0; i < starRating; i++) {
       labels[i].style.color = "#c59b08";
     }
-  }, []);
+  }, [starRating]);
 
   return (
     <Container className={styles.rate}>
@@ -65,18 +61,12 @@ export const FinalStarRating = ({ starRating = 1 }: Props) => {
         />
         2 stars
       </label>
-      <label
-        htmlFor="star1"
-        title="text"
-        style={stylesTest}
-        className="starLabel"
-      >
+      <label htmlFor="star1" title="text" className="starLabel">
         <input
           checked={starRating !== null && starRating === 1}
           type="radio"
           id="star1"
           name="rate"
-          value={"1"}
           disabled
         />
         1 star
