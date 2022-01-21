@@ -23,7 +23,7 @@ export const Review = ({ review }: { review: ReviewObj }) => {
             </Grid.Row>
             <Grid.Row>
               <Container className={styles.stars}>
-                <FinalStarRating stars={review.StarRating} />
+                <FinalStarRating starRating={review.StarRating} />
               </Container>
             </Grid.Row>
             <Grid.Row>
