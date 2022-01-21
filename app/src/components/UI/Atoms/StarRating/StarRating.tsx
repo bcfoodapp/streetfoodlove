@@ -2,6 +2,7 @@ import { Container } from "semantic-ui-react";
 import styles from "./starRating.module.css";
 import { ChangeEvent } from "react";
 import { StarRatingInteger } from "../../../../api";
+import { Rating } from 'semantic-ui-react'
 
 interface Props {
   starRating: StarRatingInteger | null;
@@ -86,6 +87,7 @@ export const StarRating = ({ starRating, setStarRating }: Props) => {
       <label htmlFor="star1" title="text">
         1 star
       </label>
+      {/* <Rating maxRating={5} defaultRating={starRating} icon='star' size='huge'/> */}
     </Container>
   );
 };
