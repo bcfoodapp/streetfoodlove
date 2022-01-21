@@ -19,8 +19,7 @@ export const FinalStarRating = ({ starRating }: Props) => {
           type="radio"
           id="star5"
           name="rate"
-          value="5"
-          disabled
+          readOnly
         />
         5 stars
       </label>
@@ -30,38 +29,37 @@ export const FinalStarRating = ({ starRating }: Props) => {
           type="radio"
           id="star4"
           name="rate"
-          value="4"
-          disabled
+          readOnly
         />
         4 stars
       </label>
-      <label htmlFor="star3" title="text" style={stylesTest}>
+      <label htmlFor="star3" title="text">
         <input
           checked={starRating !== null && starRating === 3}
           type="radio"
           id="star3"
           name="rate"
-          value="3"
+          readOnly
         />
         3 stars
       </label>
-      <label htmlFor="star2" title="text" style={stylesTest}>
+      <label htmlFor="star2" title="text">
         <input
           checked={starRating !== null && starRating === 2}
           type="radio"
           id="star2"
           name="rate"
-          value="2"
+          readOnly
         />
         2 stars
       </label>
-      <label htmlFor="star1" title="text" style={stylesTest}>
+      <label htmlFor="star1" title="text">
         <input
           checked={starRating !== null && starRating === 1}
           type="radio"
           id="star1"
           name="rate"
-          value="1"
+          readOnly
         />
         1 star
       </label>
