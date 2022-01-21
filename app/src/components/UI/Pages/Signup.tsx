@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Container } from "semantic-ui-react";
+import { Form, Container, Header } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./signup.module.css";
@@ -18,7 +18,7 @@ export default function Signup(): React.ReactElement {
   return (
     <Container className={styles.signUpWrapper}>
       <HeaderBar signUp={false} />
-      <h1>Sign Up Form (user account)</h1>
+      <Header as={"h1"} className={styles.header}>Sign Up Form (user account)</Header>
       <Form className={styles.form}>
         <Form.Input
           value={email}
@@ -27,7 +27,7 @@ export default function Signup(): React.ReactElement {
           label="Email address"
           placeholder="Email address"
           required
-          width={5}
+          width={15}
         />
         <Form.Input
           value={firstName}
@@ -38,7 +38,7 @@ export default function Signup(): React.ReactElement {
           placeholder="First name"
           id="form-input-first-name"
           required
-          width={5}
+          width={15}
         />
         <Form.Input
           value={lastName}
@@ -48,7 +48,7 @@ export default function Signup(): React.ReactElement {
           label="Last name"
           placeholder="Last name"
           required
-          width={5}
+          width={15}
         />
         <Form.Input
           value={username}
@@ -58,7 +58,7 @@ export default function Signup(): React.ReactElement {
           label="Username"
           placeholder="Username"
           required
-          width={5}
+          width={15}
         />
 
         <Form.Input
@@ -69,7 +69,7 @@ export default function Signup(): React.ReactElement {
           label="Password"
           placeholder="Password"
           required
-          width={5}
+          width={15}
           type="password"
         />
         <Form.Checkbox
