@@ -231,7 +231,11 @@ type Review struct {
 	VendorID   uuid.UUID
 	UserID     uuid.UUID
 	DatePosted time.Time
+	StarRating StarRating
 }
+
+// StarRating is an integer from 1 to 5.
+type StarRating int
 
 func (d *Database) ReviewCreate(review *Review) error {
 	const command = `
@@ -240,13 +244,15 @@ func (d *Database) ReviewCreate(review *Review) error {
 			Text,
 			VendorID,
 			UserID,
-			DatePosted
+			DatePosted,
+			StarRating
 		) VALUES (
 			:ID,
 			:Text,
 			:VendorID,
 			:UserID,
-			:DatePosted
+			:DatePosted,
+			:StarRating
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
