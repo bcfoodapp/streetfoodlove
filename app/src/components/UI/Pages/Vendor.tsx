@@ -15,8 +15,9 @@ import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../store";
+import { RootState, useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
+import jwtDecode from "jwt-decode";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -31,6 +32,7 @@ export function Vendor(): React.ReactElement {
   const error = useSelector<RootState, RootState["root"]["error"]>(
     (state) => state.root.error
   );
+  const token = useAppSelector((state) => state.token.token);
 
   const openReviewHandler = () => {
     setOpenReviewForm(true);
@@ -47,12 +49,16 @@ export function Vendor(): React.ReactElement {
     text: string;
     starRating: StarRatingInteger;
   }) => {
+    if (token === null) {
+      throw new Error("not logged in");
+    }
+
     submitReview({
       ID: uuid(),
       Text: text,
       DatePosted: DateTime.now(),
       VendorID: vendorID,
-      UserID: "02c353e2-e0f5-4730-89c7-b0a0610232e4",
+      UserID: jwtDecode<{ UserID: string }>(token).UserID,
       StarRating: starRating,
     });
   };
