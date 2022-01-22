@@ -65,13 +65,13 @@ func SetupTables(db *sqlx.DB) error {
 	commands := [...]string{
 		`
 		CREATE TABLE IF NOT EXISTS Vendor (
-			ID BINARY(16) NOT NULL,
+			ID CHAR(36) NOT NULL,
 			Name VARCHAR(100) NOT NULL,
 			BusinessAddress VARCHAR(500) NULL,
 			Website VARCHAR(500) NULL,
 			BusinessHours VARCHAR(500) NOT NULL,
 			Phone VARCHAR(50) NULL,
-			BusinessLogo BINARY(16) NOT NULL,
+			BusinessLogo CHAR(36) NOT NULL,
 			Latitude FLOAT NOT NULL,
 			Longitude FLOAT NOT NULL,
 			PRIMARY KEY (ID)
@@ -79,13 +79,13 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE IF NOT EXISTS User (
-			ID BINARY(16) NOT NULL,
+			ID CHAR(36) NOT NULL,
 			Email VARCHAR(100) NULL,
 			Username VARCHAR(100) UNIQUE NULL,
 			FirstName VARCHAR(100) NULL,
 			LastName VARCHAR(100) NULL,
 			SignUpDate DATETIME NULL,
-			LoginPassword BINARY(32) NULL,
+			LoginPassword CHAR(36) NULL,
 			UserType TINYINT NULL,
 			Photo BINARY(16),
 			PRIMARY KEY (ID)
@@ -93,10 +93,10 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE IF NOT EXISTS Reviews (
-			ID BINARY(16) NOT NULL,
+			ID CHAR(36) NOT NULL,
 			Text text(500) NULL,
-			VendorID BINARY(16) NOT NULL,
-			UserID BINARY(16) NOT NULL,
+			VendorID CHAR(36) NOT NULL,
+			UserID CHAR(36) NOT NULL,
 			DatePosted DATETIME NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
@@ -107,16 +107,16 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE Photos (
-			ID BINARY(16) NOT NULL,
+			ID CHAR(36) NOT NULL,
 			DatePosted DATETIME NOT NULL,
 			Text VARCHAR(500) NOT NULL,
-			LinkID BINARY(16) NOT NULL,
+			LinkID CHAR(36) NOT NULL,
 			PRIMARY KEY (ID)
 		)
 		`,
 		`
 		CREATE TABLE Guide (
-			ID BINARY(16) NOT NULL,
+			ID CHAR(36) NOT NULL,
 			Guide VARCHAR(5000) NOT NULL,
 			DatePosted DATETIME NOT NULL,
 			ArticleAuthor VARCHAR(500) NOT NULL,
@@ -125,7 +125,7 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE Link (
-			ID BINARY(16) NOT NULL,
+			ID CHAR(36) NOT NULL,
 			Title VARCHAR(45) NOT NULL,
 			URL VARCHAR(255) NULL,
 			PRIMARY KEY (ID)
