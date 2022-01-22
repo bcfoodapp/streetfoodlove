@@ -85,9 +85,9 @@ func SetupTables(db *sqlx.DB) error {
 			FirstName VARCHAR(100) NULL,
 			LastName VARCHAR(100) NULL,
 			SignUpDate DATETIME NULL,
-			LoginPassword CHAR(36) NULL,
+			LoginPassword BINARY(32) NULL,
 			UserType TINYINT NULL,
-			Photo BINARY(16),
+			Photo CHAR(36),
 			PRIMARY KEY (ID)
 		)
 		`,
