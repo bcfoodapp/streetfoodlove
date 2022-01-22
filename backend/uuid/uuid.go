@@ -23,7 +23,7 @@ func MustParse(s string) UUID {
 }
 
 func (u UUID) Value() (driver.Value, error) {
-	return u[:], nil
+	return (uuid.UUID)(u).String(), nil
 }
 
 func (u *UUID) Scan(src interface{}) error {
