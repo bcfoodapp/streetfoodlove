@@ -28,11 +28,10 @@ export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
   const { data: vendor } = useVendorQuery(vendorID);
   const reviewsQuery = useReviewsQuery(vendorID);
+  const reviews = reviewsQuery.data;
   const [submitReview] = useSubmitReviewMutation();
   const [openReviewForm, setOpenReviewForm] = useState(false);
-  const error = useSelector<RootState, RootState["root"]["error"]>(
-    (state) => state.root.error
-  );
+  const error = useAppSelector((state) => state.root.error);
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
   useEffect(() => {
@@ -60,14 +59,17 @@ export function Vendor(): React.ReactElement {
       throw new Error("not logged in");
     }
 
+    const userID = jwtDecode<{ UserID: string }>(token).UserID;
     submitReview({
       ID: uuid(),
       Text: text,
       DatePosted: DateTime.now(),
       VendorID: vendorID,
-      UserID: jwtDecode<{ UserID: string }>(token).UserID,
+      UserID: userID,
       StarRating: starRating,
     });
+    // Add current user to users list
+    usersMultipleTrigger([...reviewsQuery.data!.map((r) => r.UserID), userID]);
   };
 
   return (
@@ -114,7 +116,7 @@ export function Vendor(): React.ReactElement {
       {/* Temporary error output */}
       <pre>{error ? error.toString() : ""}</pre>
       <Container className={styles.reviews}>
-        {reviewsQuery.data?.map((review, i) => {
+        {reviews?.map((review, i) => {
           let user = null as User | null;
           if (users && review.UserID in users) {
             user = users[review.UserID];

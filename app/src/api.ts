@@ -126,7 +126,7 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review", "LoggedInUser"],
+  tagTypes: ["Review"],
   endpoints: (builder) => ({
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
@@ -181,7 +181,6 @@ export const apiSlice = createApi({
         method: "POST",
         body: user,
       }),
-      invalidatesTags: ["LoggedInUser"],
     }),
     createUser: builder.mutation<
       undefined,
@@ -192,7 +191,6 @@ export const apiSlice = createApi({
         method: "PUT",
         body: payload,
       }),
-      invalidatesTags: ["LoggedInUser"],
     }),
     // Changes password for given user.
     updatePassword: builder.mutation<
