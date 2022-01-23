@@ -20,7 +20,17 @@ const AccountProfile: React.FC = () => {
               Edit
             </Buttons>
           </Container>
-          <FormGroup disabled={disabledForm} formLabels={['First Name', 'Last Name', 'Email', 'SignUp Date', 'Username', 'Photo']}/>
+          <FormGroup
+            disabled={disabledForm}
+            formLabels={[
+              "First Name",
+              "Last Name",
+              "Email",
+              "SignUp Date",
+              "Username",
+              "Photo",
+            ]}
+          />
         </Tab.Pane>
       ),
     },
@@ -28,14 +38,17 @@ const AccountProfile: React.FC = () => {
       menuItem: "Personal Information",
       render: () => (
         <Tab.Pane className={styles.pane}>
-        <h2>Personal Information</h2>
-        <Container className={styles.editBtn}>
-          <Buttons edit clicked={() => setDisabledForm(false)} color="blue">
-            Edit
-          </Buttons>
-        </Container>
-        <FormGroup disabled={disabledForm} formLabels={['Information 1', 'Information 2']}/>
-      </Tab.Pane>
+          <h2>Personal Information</h2>
+          <Container className={styles.editBtn}>
+            <Buttons edit clicked={() => setDisabledForm(false)} color="blue">
+              Edit
+            </Buttons>
+          </Container>
+          <FormGroup
+            disabled={disabledForm}
+            formLabels={["Information 1", "Information 2"]}
+          />
+        </Tab.Pane>
       ),
     },
     {
