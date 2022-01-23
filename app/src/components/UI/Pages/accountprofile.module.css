@@ -20,12 +20,7 @@
   border: 2px solid grey;
 }
 
-.saveBtn {
-  position: absolute;
-  right: 47%;
-  top: 90%;
-  width: 20% !important;
-}
+
 
 .editIcon {
   position: absolute;
