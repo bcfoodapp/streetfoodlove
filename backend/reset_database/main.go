@@ -147,26 +147,27 @@ func addTestData(db *database.Database) error {
 	users := []database.UserProtected{
 		{
 			User: &database.User{
-				ID:       uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4"),
-				Username: "test",
-				UserType: database.UserTypeCustomer,
-				Photo:    uuid.MustParse("e2f045ce-e378-4971-bc3f-e98ce193fc48"),
+				ID:        uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4"),
+				Username:  "test",
+				UserType:  database.UserTypeCustomer,
+				Photo:     uuid.MustParse("e2f045ce-e378-4971-bc3f-e98ce193fc48"),
+				FirstName: "Selina",
+				LastName:  "Tan",
 			},
 			Email:      "seventan2516@gmail.com",
-			FirstName:  "Selina",
-			LastName:   "Tan",
 			SignUpDate: time.Date(2021, 11, 23, 11, 45, 0, 0, time.UTC),
 		},
 		{
 			User: &database.User{
-				ID:       uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
-				Username: "Jonney2313",
-				UserType: database.UserTypeCustomer,
-				Photo:    uuid.MustParse("d523ac1b-3036-4f4e-a275-3f0a9fd8a733"),
+				ID:        uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+				Username:  "Jonney2313",
+				UserType:  database.UserTypeCustomer,
+				Photo:     uuid.MustParse("d523ac1b-3036-4f4e-a275-3f0a9fd8a733"),
+				FirstName: "Jonney",
+				LastName:  "William",
 			},
-			Email:     "jonney2313@hotmail.com",
-			FirstName: "Jonney",
-			LastName:  "William",
+			Email:      "jonney2313@hotmail.com",
+			SignUpDate: time.Date(2021, 11, 23, 11, 45, 0, 0, time.UTC),
 		},
 	}
 

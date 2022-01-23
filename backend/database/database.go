@@ -120,18 +120,18 @@ const (
 )
 
 type User struct {
-	ID       uuid.UUID
-	Username string
-	UserType UserType
-	Photo    uuid.UUID
+	ID        uuid.UUID
+	Username  string
+	UserType  UserType
+	Photo     uuid.UUID
+	FirstName string
+	LastName  string
 }
 
 // UserProtected contains User fields plus fields that are password-protected.
 type UserProtected struct {
 	*User
 	Email      string
-	FirstName  string
-	LastName   string
 	SignUpDate time.Time
 }
 

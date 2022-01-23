@@ -25,13 +25,14 @@ export interface User {
   Username: string;
   Photo: string;
   UserType: UserType;
+  FirstName: string;
+  LastName: string;
 }
 
 // Contains user fields that are password-protected.
 export interface UserProtected extends User {
   Email: string;
-  FirstName: string;
-  LastName: string;
+  SignUpDate: DateTime;
 }
 
 export type StarRatingInteger = 1 | 2 | 3 | 4 | 5;
