@@ -39,14 +39,10 @@ const AccountProfile: React.FC = () => {
               Edit
             </Buttons>
           </Container>
-          {/* <PersonalInfoFormGroup 
+          <PersonalInfoFormGroup 
             setDisabledForm={setDisabledForm}
             disabled={disabledForm}          
-          /> */}
-          {/* <AccountSettingsFormGroup
-            disabled={disabledForm}
-
-          /> */}
+          />
         </Tab.Pane>
       ),
     },
