@@ -153,6 +153,25 @@ export const apiSlice = createApi({
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
     }),
+    usersMultiple: builder.query<Record<string, User>, string[]>({
+      queryFn: async (args, api, extraOptions) => {
+        const users = {} as Record<string, User>;
+        for (const id of args) {
+          const response = await baseQuery(
+            `/users/${encode(id)}`,
+            api,
+            extraOptions
+          );
+          if (response.error) {
+            return response;
+          }
+
+          const data = response.data as User;
+          users[data.ID] = data;
+        }
+        return { data: users };
+      },
+    }),
     userProtected: builder.query<UserProtected, string>({
       query: (id) => `/users/${encode(id)}/protected`,
     }),
@@ -253,6 +272,7 @@ export const {
   useVendorQuery,
   useVendorsMultipleQuery,
   useUserQuery,
+  useLazyUsersMultipleQuery,
   useUserProtectedQuery,
   useUpdateUserMutation,
   useCreateUserMutation,
