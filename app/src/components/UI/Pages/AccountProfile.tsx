@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { Container, Icon } from "semantic-ui-react";
 import styles from "./accountprofile.module.css";
 import { Tab } from "semantic-ui-react";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import FormGroup from "../Molecules/Form Group/FormGroup";
 import Buttons from "../Atoms/Button/Buttons";
+import { UserProtected, useUserProtectedQuery } from "../../../api";
 
 const AccountProfile: React.FC = () => {
   const [disabledForm, setDisabledForm] = useState<boolean>(true);
+
+  const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    let test = event.target.value as unknown as UserProtected
+  }
 
   const panes = [
     {
@@ -23,13 +28,14 @@ const AccountProfile: React.FC = () => {
           <FormGroup
             disabled={disabledForm}
             formLabels={[
-              "First Name",
-              "Last Name",
-              "Email",
+              "First Name!",
+              "Last Name!",
+              "Email!",
               "SignUp Date",
               "Username",
               "Photo",
             ]}
+            onChange={onChange}
           />
         </Tab.Pane>
       ),
@@ -47,6 +53,7 @@ const AccountProfile: React.FC = () => {
           <FormGroup
             disabled={disabledForm}
             formLabels={["Information 1", "Information 2"]}
+            onChange={onChange}
           />
         </Tab.Pane>
       ),
