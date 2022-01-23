@@ -39,9 +39,9 @@ const AccountProfile: React.FC = () => {
               Edit
             </Buttons>
           </Container>
-          <PersonalInfoFormGroup 
+          <PersonalInfoFormGroup
             setDisabledForm={setDisabledForm}
-            disabled={disabledForm}          
+            disabled={disabledForm}
           />
         </Tab.Pane>
       ),
