@@ -172,7 +172,17 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 
 func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
 	const command = `
-		SELECT * FROM User WHERE ID=?
+		SELECT
+			ID,
+			Email,
+			Username,
+			FirstName,
+			LastName,
+			SignUpDate,
+			UserType,
+			Photo
+		FROM User
+		WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
