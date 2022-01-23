@@ -1,30 +1,23 @@
 import React from "react";
 import { Container, Form, Icon } from "semantic-ui-react";
 
-const FormGroup: React.FC<{ disabled: boolean }> = ({ disabled }) => {
+const FormGroup: React.FC<{ disabled: boolean, formLabels: string[] }> = ({ disabled, formLabels }) => {
+  var tempElement: any;
   return (
     <Container>
       <Form>
-        <Form.Group unstackable widths={2}>
-          <Form.Input
-            label="First name"
-            placeholder="First name"
-            disabled={disabled}
-          />
-          <Form.Input
-            label="Last name"
-            placeholder="Last name"
-            disabled={disabled}
-          />
-        </Form.Group>
-        <Form.Group widths={2}>
-          <Form.Input
-            label="Address"
-            placeholder="Address"
-            disabled={disabled}
-          />
-          <Form.Input label="Phone" placeholder="Phone" disabled={disabled} />
-        </Form.Group>
+            {formLabels.map((element, key) => {
+              if (key % 2 == 0) {
+                tempElement = <Form.Input label={element} placeholder={element} disabled={disabled} key={key} />
+              } else {
+                return (
+                  <Form.Group widths={3}>
+                    {tempElement}
+                    <Form.Input label={element} placeholder={element} disabled={disabled} key={key} />
+                  </Form.Group>
+                )
+              }
+            })}
       </Form>
     </Container>
   );
