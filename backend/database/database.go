@@ -345,7 +345,7 @@ func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
 type Guide struct {
 	ID            uuid.UUID
 	Guide         string
-	DatePosted    string
+	DatePosted    time.Time
 	ArticleAuthor string
 }
 
