@@ -16,7 +16,6 @@ const AccountSettingsFormGroup: React.FC<{
   const [username, setUsername] = useState("");
   const [updateSetting] = useUpdateUserMutation();
 
-
   const handleSubmit = async () => {
     await updateSetting({
       ID: uuid(),
@@ -25,10 +24,9 @@ const AccountSettingsFormGroup: React.FC<{
       Email: email,
       FirstName: firstName,
       LastName: lastName,
-      UserType: UserType.Customer
-
-    })
-    alert("Updated User Settings!")
+      UserType: UserType.Customer,
+    });
+    alert("Updated User Settings!");
   };
   return (
     <Container className={styles.wrapper}>
@@ -48,9 +46,9 @@ const AccountSettingsFormGroup: React.FC<{
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
-          <Form.Input 
-            label="Email" 
-            placeholder="Email" 
+          <Form.Input
+            label="Email"
+            placeholder="Email"
             disabled={disabled}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -58,12 +56,12 @@ const AccountSettingsFormGroup: React.FC<{
         </Form.Group>
         <Form.Group>
           <Form.Input
-              label="Username"
-              placeholder="Username"
-              disabled={disabled}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />          
+            label="Username"
+            placeholder="Username"
+            disabled={disabled}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
         </Form.Group>
         <Container className={styles.saveBtn}>
           <Buttons submit color="green" clicked={() => setDisabledForm(true)}>
