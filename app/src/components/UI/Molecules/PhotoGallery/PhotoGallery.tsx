@@ -9,5 +9,4 @@ const PhotoGallery: React.FC = () => {
   );
 };
 
-
-export default PhotoGallery
+export default PhotoGallery;
