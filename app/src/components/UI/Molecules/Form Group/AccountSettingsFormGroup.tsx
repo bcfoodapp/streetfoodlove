@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { Container, Form, Icon } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
@@ -25,12 +25,14 @@ const AccountSettings: React.FC<{
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
 
-  if (userQuery.isSuccess) {
-    setEmail(user!.Email);
-    setFirstName(user!.FirstName);
-    setLastName(user!.LastName);
-    setUsername(user!.Username);
-  }
+  useEffect(() => {
+    if (userQuery.isSuccess) {
+      setEmail(user!.Email);
+      setFirstName(user!.FirstName);
+      setLastName(user!.LastName);
+      setUsername(user!.Username);
+    }
+  }, [userQuery.isSuccess]);
 
   const [updateSetting] = useUpdateUserMutation();
 
