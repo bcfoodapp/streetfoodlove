@@ -7,6 +7,10 @@
   margin-left: 45%;
 }
 
+.header {
+  margin-left: 10px !important;
+}
+
 .profileActions {
   margin-top: 30px !important;
   padding: 10px !important;

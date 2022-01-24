@@ -6,7 +6,6 @@ import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import AccountSettingsFormGroup from "../Molecules/Form Group/AccountSettingsFormGroup";
 import Buttons from "../Atoms/Button/Buttons";
 import { UserProtected, useUserProtectedQuery } from "../../../api";
-import PersonalInfoFormGroup from "../Molecules/Form Group/PersonalInfoFormGroup";
 
 const AccountProfile: React.FC = () => {
   const [disabledForm, setDisabledForm] = useState<boolean>(true);
@@ -16,7 +15,7 @@ const AccountProfile: React.FC = () => {
       menuItem: "Account Settings",
       render: () => (
         <Tab.Pane className={styles.pane}>
-          <h2>Personal Credentials</h2>
+          <h2 className={styles.header}>Account Settings</h2>
           <Container className={styles.editBtn}>
             <Buttons edit clicked={() => setDisabledForm(false)} color="blue">
               Edit
@@ -28,27 +27,6 @@ const AccountProfile: React.FC = () => {
           />
         </Tab.Pane>
       ),
-    },
-    {
-      menuItem: "Personal Information",
-      render: () => (
-        <Tab.Pane className={styles.pane}>
-          <h2>Personal Information</h2>
-          <Container className={styles.editBtn}>
-            <Buttons edit clicked={() => setDisabledForm(false)} color="blue">
-              Edit
-            </Buttons>
-          </Container>
-          <PersonalInfoFormGroup
-            setDisabledForm={setDisabledForm}
-            disabled={disabledForm}
-          />
-        </Tab.Pane>
-      ),
-    },
-    {
-      menuItem: "Privacy",
-      render: () => <Tab.Pane className={styles.pane}>Tab 3 Content</Tab.Pane>,
     },
   ];
 
