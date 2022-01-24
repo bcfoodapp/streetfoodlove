@@ -25,6 +25,7 @@ jobs:
       run: |
         npm ci
         npm run typescript
+        npm run build
       working-directory: app
   prettier:
     name: Prettier
