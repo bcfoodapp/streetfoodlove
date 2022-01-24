@@ -2,29 +2,49 @@ import React, { ChangeEvent, useState } from "react";
 import { Container, Form, Icon } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
-import { UserProtected, useUpdateUserMutation } from "../../../../api";
-import { v4 as uuid } from "uuid";
+import {
+  useGetTokenQuery,
+  useUpdateUserMutation,
+  useUserProtectedQuery,
+} from "../../../../api";
 import { UserType } from "../../../../api";
+import { useAppSelector } from "../../../../store";
+import jwtDecode from "jwt-decode";
 
-const AccountSettingsFormGroup: React.FC<{
+const AccountSettings: React.FC<{
+  token: string;
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
-}> = ({ disabled, setDisabledForm }) => {
+}> = ({ token, disabled, setDisabledForm }) => {
+  const userID = jwtDecode<{ UserID: string }>(token).UserID;
+  const userQuery = useUserProtectedQuery(userID);
+  const user = userQuery.data;
+
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
+
+  if (userQuery.isSuccess) {
+    setEmail(user!.Email);
+    setFirstName(user!.FirstName);
+    setLastName(user!.LastName);
+    setUsername(user!.Username);
+  }
+
   const [updateSetting] = useUpdateUserMutation();
 
   const handleSubmit = async () => {
+    // user is defined when handleSubmit is called
     await updateSetting({
-      ID: uuid(),
-      Photo: uuid(),
+      ID: userID,
+      Photo: user!.Photo,
       Username: username,
       Email: email,
       FirstName: firstName,
       LastName: lastName,
       UserType: UserType.Customer,
+      SignUpDate: user!.SignUpDate,
     });
     alert("Updated User Settings!");
   };
@@ -64,12 +84,33 @@ const AccountSettingsFormGroup: React.FC<{
           />
         </Form.Group>
         <Container className={styles.saveBtn}>
-          <Buttons submit color="green" clicked={() => setDisabledForm(true)}>
-            Save
-          </Buttons>
+          {userQuery.isSuccess ? (
+            <Buttons submit color="green" clicked={() => setDisabledForm(true)}>
+              Save
+            </Buttons>
+          ) : null}
         </Container>
       </Form>
     </Container>
+  );
+};
+
+const AccountSettingsFormGroup: React.FC<{
+  disabled: boolean;
+  setDisabledForm: (value: boolean) => void;
+}> = ({ disabled, setDisabledForm }) => {
+  useGetTokenQuery();
+  const token = useAppSelector((state) => state.token.token);
+  if (token === null) {
+    return <p>Not logged in</p>;
+  }
+
+  return (
+    <AccountSettings
+      token={token}
+      disabled={disabled}
+      setDisabledForm={setDisabledForm}
+    />
   );
 };
 

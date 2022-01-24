@@ -1,7 +1,12 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import {
+  createApi,
+  fetchBaseQuery,
+  FetchBaseQueryError,
+} from "@reduxjs/toolkit/dist/query/react";
 import { RootState } from "./store";
 import { DateTime } from "luxon";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { BaseQueryApi } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 
 export interface Vendor {
   ID: string;
@@ -95,6 +100,29 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+// Gets token and saves it to localStorage if successful. Returns error if error occurred.
+async function getAndSaveCredentials(
+  credentials: Credentials,
+  api: BaseQueryApi
+): Promise<FetchBaseQueryError | null> {
+  const response = await baseQuery(
+    { url: "/token", method: "POST", body: credentials },
+    api,
+    {}
+  );
+  if (response.error) {
+    return response.error;
+  }
+
+  api.dispatch(
+    setTokenAndTime({
+      token: response.data as string,
+      time: DateTime.now().toSeconds(),
+    })
+  );
+  return null;
+}
+
 // API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 export const apiSlice = createApi({
   baseQuery: async (args, api, extraOptions) => {
@@ -106,21 +134,10 @@ export const apiSlice = createApi({
     ) {
       const credentials = getCredentials();
       if (credentials !== null) {
-        const response = await baseQuery(
-          { url: "/token", method: "POST", body: credentials },
-          api,
-          extraOptions
-        );
-        if (response.error) {
-          return response;
+        const result = await getAndSaveCredentials(credentials, api);
+        if (result) {
+          return { error: result };
         }
-
-        api.dispatch(
-          setTokenAndTime({
-            token: response.data as string,
-            time: DateTime.now().toSeconds(),
-          })
-        );
       }
     }
 
@@ -220,26 +237,28 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
+    // Retrieves token using stored credentials and saves it to state if token state is null.
+    getToken: builder.query<undefined, void>({
+      queryFn: async (arg, api, extraOptions) => {
+        const credentials = getCredentials();
+        if (credentials !== null) {
+          const result = await getAndSaveCredentials(credentials, api);
+          if (result) {
+            return { error: result };
+          }
+        }
+        return { data: undefined };
+      },
+    }),
+    // Retrieves token and stores credentials to localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
-        const response = await baseQuery(
-          { url: "/token", method: "POST", body: args },
-          api,
-          extraOptions
-        );
-        if (response.error) {
-          return response;
+        const result = await getAndSaveCredentials(args, api);
+        if (result) {
+          return { error: result };
         }
 
-        api.dispatch(
-          setTokenAndTime({
-            token: response.data as string,
-            time: DateTime.now().toSeconds(),
-          })
-        );
-
         setCredentialsState(args);
-
         return { data: undefined };
       },
     }),
@@ -277,6 +296,7 @@ export const {
   useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
+  useGetTokenQuery,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
 } = apiSlice;
