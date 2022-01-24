@@ -5,6 +5,7 @@ import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./signup.module.css";
 import { useCreateUserMutation, UserType } from "../../../api";
 import { v4 as uuid } from "uuid";
+import { DateTime } from "luxon";
 
 export default function Signup(): React.ReactElement {
   const [email, setEmail] = useState("");
@@ -31,7 +32,9 @@ export default function Signup(): React.ReactElement {
             FirstName: firstName,
             LastName: lastName,
             Password: password,
+            SignUpDate: DateTime.now(),
           });
+          // TODO need better feedback, and show any errors if they occurred
           alert("created account");
         }}
       >
