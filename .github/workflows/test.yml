@@ -10,7 +10,7 @@ on:
 
 jobs:
   webpack:
-    name: Webpack
+    name: Typescript
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
@@ -24,7 +24,7 @@ jobs:
     - name: Build
       run: |
         npm ci
-        npm run build
+        npm run typescript
       working-directory: app
   prettier:
     name: Prettier

@@ -5,6 +5,7 @@ import styles from "./accountformgroup.module.css";
 import { UserProtected, useUpdateUserMutation } from "../../../../api";
 import { v4 as uuid } from "uuid";
 import { UserType } from "../../../../api";
+import { DateTime } from "luxon";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
@@ -25,6 +26,7 @@ const AccountSettingsFormGroup: React.FC<{
       FirstName: firstName,
       LastName: lastName,
       UserType: UserType.Customer,
+      SignUpDate: DateTime.now(),
     });
     alert("Updated User Settings!");
   };
