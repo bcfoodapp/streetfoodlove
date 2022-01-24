@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Header, Menu } from "semantic-ui-react";
+import { Container, Header, Icon, Menu, Dropdown } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
@@ -12,7 +12,30 @@ import { Link } from "react-router-dom";
 interface Props {
   signUp?: boolean;
   login?: boolean;
+  profile?: boolean;
 }
+
+const ProfileIcon = (
+  <span className={styles.user}>
+    <Icon name="user circle" size="big" /> Hi Colin
+  </span>
+);
+
+const options = [
+  {
+    key: "user",
+    text: (
+      <span>
+        Signed in as <strong>Colin Zhou</strong>
+      </span>
+    ),
+    disabled: true,
+  },
+  { key: "profile", text: "Profile Settings" },
+  { key: "page", text: "Create Vendor Page" },
+  { key: "help", text: "Help" },
+  { key: "sign-out", text: "Sign Out" },
+];
 
 export default function HeaderBar(props: Props): React.ReactElement {
   return (
@@ -27,24 +50,27 @@ export default function HeaderBar(props: Props): React.ReactElement {
       </Menu.Item>
       <Menu.Item position="right">
         {/* TODO need indication for logged in status by hiding these buttons */}
+        {props.profile ? (
+          <Dropdown
+            trigger={ProfileIcon}
+            options={options}
+            disabled={false}
+            simple={true}
+          />
+        ) : null}
         <Container className={styles.buttons}>
           {props.signUp ? (
             <Link to="/signup">
-              <Container className="btnContainer">
-                <Buttons signup>Sign Up</Buttons>
-              </Container>
+              <Buttons signup>Sign Up</Buttons>
             </Link>
           ) : null}
           {props.login ? (
             <Link to="/login">
-              <Container className="btnContainer">
-                <Buttons login color="orange">
-                  Login
-                </Buttons>
-              </Container>
+              <Buttons login color="orange">
+                Login
+              </Buttons>
             </Link>
           ) : null}
-
         </Container>
         {/* <Container>
           <Link to="/login">
