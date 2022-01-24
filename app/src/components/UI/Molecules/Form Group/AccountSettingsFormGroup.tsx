@@ -1,5 +1,5 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { Container, Form, Icon } from "semantic-ui-react";
+import React, { useEffect, useState } from "react";
+import { Container, Form } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
 import {
