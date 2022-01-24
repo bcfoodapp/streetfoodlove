@@ -31,6 +31,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	corsOptions.AddAllowHeaders("Authorization")
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
+	router.Use(gin.CustomRecovery(recovery))
 
 	router.GET("/vendors/:id", a.Vendor)
 	router.GET("/users/:id", a.User)
@@ -53,11 +54,22 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.POST("/links/:id", a.LinkPost)
 }
 
-// errorHandler writes any errors to response
+// errorHandler writes any errors to response.
 func errorHandler(c *gin.Context) {
 	c.Next()
 	for _, err := range c.Errors {
 		c.JSON(http.StatusBadRequest, err.Error())
+	}
+}
+
+// recovery is a gin.RecoveryFunc that writes errors to response.
+func recovery(c *gin.Context, err interface{}) {
+	if e, ok := err.(error); ok {
+		c.AbortWithError(http.StatusInternalServerError, e)
+	} else if s, ok := err.(string); ok {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, s)
+	} else {
+		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 }
 
