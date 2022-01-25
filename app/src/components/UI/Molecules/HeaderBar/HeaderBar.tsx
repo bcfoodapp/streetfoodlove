@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Header, Icon, Menu, Dropdown } from "semantic-ui-react";
+import { Icon, Menu, Dropdown, Button } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
@@ -13,10 +13,11 @@ interface Props {
   signUp?: boolean;
   login?: boolean;
   profile?: boolean;
+  logout?: boolean;
 }
 
 const ProfileIcon = (
-  <span className={styles.user}>
+  <span>
     <Icon name="user circle" size="big" /> Hi Colin
   </span>
 );
@@ -34,31 +35,32 @@ const options = [
   { key: "profile", text: "Profile Settings" },
   { key: "page", text: "Create Vendor Page" },
   { key: "help", text: "Help" },
-  { key: "sign-out", text: "Sign Out" },
+  { key: "sign-out", text: "Log Out" },
 ];
 
 export default function HeaderBar(props: Props): React.ReactElement {
   return (
-    <Menu as="div" className={styles.wrapContainer} fluid widths={3}>
-      <Menu.Item as="a" className={styles.header} position="left">
-        <Link to="/">
-          <Header as="h1">StreetFoodLove</Header>
-        </Link>
+    <Menu size="massive">
+      <Menu.Item>
+        <h2>StreetFoodLove</h2>
       </Menu.Item>
-      <Menu.Item as="a">
-        <SearchBox />
-      </Menu.Item>
-      <Menu.Item position="right">
-        {/* TODO need indication for logged in status by hiding these buttons */}
-        {props.profile ? (
-          <Dropdown
-            trigger={ProfileIcon}
-            options={options}
-            disabled={false}
-            simple={true}
-          />
-        ) : null}
-        <Container className={styles.buttons}>
+      <SearchBox />
+
+      <Menu.Menu position="right">
+        <Dropdown
+          trigger={ProfileIcon}
+          options={options}
+          className={styles.dropdown}
+          onChange={() => window.location.reload()}
+        />
+        <Menu.Item>
+          {props.logout ? (
+            <Link to="/login">
+              <Buttons logout color="orange">
+                Log Out
+              </Buttons>
+            </Link>
+          ) : null}
           {props.signUp ? (
             <Link to="/signup">
               <Buttons signup>Sign Up</Buttons>
@@ -71,15 +73,8 @@ export default function HeaderBar(props: Props): React.ReactElement {
               </Buttons>
             </Link>
           ) : null}
-        </Container>
-        {/* <Container>
-          <Link to="/login">
-            <Buttons login color="orange">
-              Login
-            </Buttons>
-          </Link>          
-        </Container> */}
-      </Menu.Item>
+        </Menu.Item>
+      </Menu.Menu>
     </Menu>
   );
 }

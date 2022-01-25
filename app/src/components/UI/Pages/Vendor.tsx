@@ -74,7 +74,7 @@ export function Vendor(): React.ReactElement {
 
   return (
     <>
-      <HeaderBar />
+      <HeaderBar signUp />
       <Container className={styles.wrapper}>
         <Grid>
           <Grid.Row>

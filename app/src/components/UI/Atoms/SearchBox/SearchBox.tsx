@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Input } from "semantic-ui-react";
+import { Container, Input, Menu } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
 import Buttons from "../Button/Buttons";
 
@@ -11,7 +11,7 @@ export const SearchBox: React.FC = () => {
   const searchEnterHandler = () => {};
 
   return (
-    <Container className={styles.searchBox}>
+    <Menu.Item className={styles.searchBox}>
       <Input
         icon={
           <Buttons enter color={"green"} clicked={searchEnterHandler}>
@@ -21,6 +21,6 @@ export const SearchBox: React.FC = () => {
         placeholder="Search..."
         focus
       />
-    </Container>
+    </Menu.Item>
   );
 };
