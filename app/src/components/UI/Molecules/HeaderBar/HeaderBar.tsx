@@ -50,7 +50,7 @@ export default function HeaderBar(props: Props): React.ReactElement {
       <Menu.Item>
         <h2>StreetFoodLove</h2>
       </Menu.Item>
-        <SearchBox />
+      <SearchBox />
 
       <Menu.Menu position="right">
         <Dropdown
