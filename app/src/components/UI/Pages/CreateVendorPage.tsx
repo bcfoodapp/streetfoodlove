@@ -25,11 +25,7 @@ const CreateVendorPage: React.FC = () => {
       </Header>
       <Form className={styles.form}>
         <Form.Group widths="equal">
-          <Form.Field
-            control={Input}
-            label="Name"
-            placeholder="Name"
-          />
+          <Form.Field control={Input} label="Name" placeholder="Name" />
           <Form.Field
             control={Input}
             label="Business Address"
@@ -59,7 +55,13 @@ const CreateVendorPage: React.FC = () => {
           />
         </Form.Group>
 
-        <Input type="file" label="Business Logo" className={styles.input} size="small" fluid/>
+        <Input
+          type="file"
+          label="Business Logo"
+          className={styles.input}
+          size="small"
+          fluid
+        />
 
         <Form.Field
           control={TextArea}
