@@ -16,6 +16,10 @@ const timeOptions = [
   { key: "10AM", text: "10Am-7PM", value: "hours3" },
 ];
 
+const fileInput = () => {
+  return <Input type="file" className={styles.input} size="small" fluid />;
+};
+
 const CreateVendorPage: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
@@ -55,18 +59,17 @@ const CreateVendorPage: React.FC = () => {
           />
         </Form.Group>
 
-        <Input
-          type="file"
-          label="Business Logo"
-          className={styles.input}
-          size="small"
-          fluid
+        <Form.Field
+          control={fileInput}
+          label="Upload Business Logo"
+          placeholder="Website URL"
+          width={5}
         />
 
         <Form.Field
           control={TextArea}
-          label="Food Truck Description"
-          placeholder="Food Truck Description"
+          label="Vendor Description"
+          placeholder="Vendor Description"
         />
 
         <Buttons create color="green">
