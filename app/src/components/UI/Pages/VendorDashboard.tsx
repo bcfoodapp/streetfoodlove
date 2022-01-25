@@ -1,10 +1,10 @@
-import { Container, Card } from "semantic-ui-react"
+import { Container, Card, Icon } from "semantic-ui-react"
 
 const VendorDashBoard: React.FC = () => {
   return (
     <Container>
       <Card>
-        <Image src='/images/avatar/large/daniel.jpg' wrapped ui={false} />
+        {/* <Image src='/images/avatar/large/daniel.jpg' wrapped ui={false} /> */}
         <Card.Content>
           <Card.Header>Daniel</Card.Header>
           <Card.Meta>Joined in 2016</Card.Meta>
