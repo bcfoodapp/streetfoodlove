@@ -18,7 +18,7 @@ export default function Signup(): React.ReactElement {
 
   return (
     <Container className={styles.signUpWrapper}>
-      <HeaderBar login/>
+      <HeaderBar login />
       <h1>Sign Up Form (user account)</h1>
       <Form
         className={styles.form}

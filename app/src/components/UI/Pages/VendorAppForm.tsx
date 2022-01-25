@@ -50,7 +50,7 @@ export default function VendorAppForm(): React.ReactElement {
 
   return (
     <Container className={styles.signUpWrapper}>
-      <HeaderBar login/>
+      <HeaderBar login />
       <h1>Sign Up Form (Vendor account)</h1>
       <Form className={styles.form}>
         <Form.Input
