@@ -5,7 +5,7 @@ import styles from "./businessGuide.module.css";
 const BusinessGuides: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
-      <HeaderBar logout/>
+      <HeaderBar logout />
       <Header as="h2" className={styles.title}>
         Business Guides
       </Header>

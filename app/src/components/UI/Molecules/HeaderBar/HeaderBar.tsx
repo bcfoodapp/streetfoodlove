@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Icon,
-  Menu,
-  Dropdown,
-  Button,
-} from "semantic-ui-react";
+import { Icon, Menu, Dropdown, Button } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
@@ -61,7 +56,9 @@ export default function HeaderBar(props: Props): React.ReactElement {
         <Menu.Item>
           {props.logout ? (
             <Link to="/login">
-              <Buttons logout color="orange">Log Out</Buttons>
+              <Buttons logout color="orange">
+                Log Out
+              </Buttons>
             </Link>
           ) : null}
           {props.signUp ? (
