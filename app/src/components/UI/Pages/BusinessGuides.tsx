@@ -1,6 +1,28 @@
-import { Container, Header, Card } from "semantic-ui-react";
+import { Container, Header, Card, Dropdown, Icon } from "semantic-ui-react";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./businessGuide.module.css";
+
+const ProfileIcon = (
+  <span className={styles.user}>
+    <Icon name="user circle" size="big" /> Hi Colin
+  </span>
+);
+
+const options = [
+  {
+    key: "user",
+    text: (
+      <span>
+        Signed in as <strong>Colin Zhou</strong>
+      </span>
+    ),
+    disabled: true,
+  },
+  { key: "profile", text: "Profile Settings" },
+  { key: "page", text: "Create Vendor Page" },
+  { key: "help", text: "Help" },
+  { key: "sign-out", text: "Sign Out" },
+];
 
 const BusinessGuides: React.FC = () => {
   return (
@@ -9,6 +31,13 @@ const BusinessGuides: React.FC = () => {
       <Header as="h2" className={styles.title}>
         Business Guides
       </Header>
+
+      <Dropdown
+        trigger={ProfileIcon}
+        options={options}
+        disabled={false}
+        simple={true}
+      />
       <Container className={styles.content}>
         <Container>
           <Header as="h2">Popular!</Header>
