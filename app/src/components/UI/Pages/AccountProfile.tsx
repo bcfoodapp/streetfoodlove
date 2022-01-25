@@ -5,7 +5,6 @@ import { Tab } from "semantic-ui-react";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import AccountSettingsFormGroup from "../Molecules/Form Group/AccountSettingsFormGroup";
 import Buttons from "../Atoms/Button/Buttons";
-import { UserProtected, useUserProtectedQuery } from "../../../api";
 
 const AccountProfile: React.FC = () => {
   const [disabledForm, setDisabledForm] = useState<boolean>(true);
@@ -32,7 +31,7 @@ const AccountProfile: React.FC = () => {
 
   return (
     <Container className={styles.wrapper}>
-      <HeaderBar />
+      <HeaderBar signUp profile />
       <h2>Profile</h2>
       <Container className={styles.profileActions}>
         <Tab
