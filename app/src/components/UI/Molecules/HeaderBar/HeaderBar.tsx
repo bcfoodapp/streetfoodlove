@@ -1,7 +1,5 @@
 import React from "react";
 import {
-  Container,
-  Header,
   Icon,
   Menu,
   Dropdown,
@@ -20,6 +18,7 @@ interface Props {
   signUp?: boolean;
   login?: boolean;
   profile?: boolean;
+  logout?: boolean;
 }
 
 const ProfileIcon = (
@@ -41,7 +40,7 @@ const options = [
   { key: "profile", text: "Profile Settings" },
   { key: "page", text: "Create Vendor Page" },
   { key: "help", text: "Help" },
-  { key: "sign-out", text: "Sign Out" },
+  { key: "sign-out", text: "Log Out" },
 ];
 
 export default function HeaderBar(props: Props): React.ReactElement {
@@ -57,8 +56,14 @@ export default function HeaderBar(props: Props): React.ReactElement {
           trigger={ProfileIcon}
           options={options}
           className={styles.dropdown}
+          onChange={() => window.location.reload()}
         />
         <Menu.Item>
+          {props.logout ? (
+            <Link to="/login">
+              <Buttons logout color="orange">Log Out</Buttons>
+            </Link>
+          ) : null}
           {props.signUp ? (
             <Link to="/signup">
               <Buttons signup>Sign Up</Buttons>
