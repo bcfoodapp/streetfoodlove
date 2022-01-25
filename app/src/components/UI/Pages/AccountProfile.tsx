@@ -1,5 +1,5 @@
-import React, { ChangeEvent, useState } from "react";
-import { Container, Icon } from "semantic-ui-react";
+import React, { useState } from "react";
+import { Container } from "semantic-ui-react";
 import styles from "./accountprofile.module.css";
 import { Tab } from "semantic-ui-react";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
@@ -38,11 +38,6 @@ const AccountProfile: React.FC = () => {
           menu={{ fluid: true, vertical: true, tabular: true }}
           panes={panes}
         />
-        {/* <Container className={styles.saveBtn}>
-          <Buttons save color="green" clicked={() => setDisabledForm(true)}>
-            Save
-          </Buttons>
-        </Container> */}
       </Container>
     </Container>
   );
