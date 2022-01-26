@@ -1,0 +1,23 @@
+.wrapper {
+  width: 100% !important;
+}
+
+.header {
+  margin-left: 42% !important;
+}
+
+.form {
+  background-color: lightgray;
+  padding: 30px;
+  border-radius: 5px;
+  width: 40%;
+  margin-left: 30%;
+}
+
+.input {
+  padding-bottom: 20px !important;
+}
+
+/* .input > .ui.label.label {
+  padding: 0.15em !important;
+} */
