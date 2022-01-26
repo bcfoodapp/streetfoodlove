@@ -14,7 +14,6 @@ const VendorDashBoard: React.FC = () => {
           <Icon name="setting" size="huge" className={styles.icon} />
           <Card.Content className={styles.content}>
             <Card.Header>Customize Vendor Page</Card.Header>
-            <Card.Meta>Updated in 2016</Card.Meta>
             <Card.Description>
               Customize existing vendor pages!
             </Card.Description>
@@ -30,7 +29,6 @@ const VendorDashBoard: React.FC = () => {
           <Icon name="line graph" size="huge" className={styles.icon} />
           <Card.Content className={styles.content}>
             <Card.Header>Trends</Card.Header>
-            <Card.Meta>Updated in 2016</Card.Meta>
             <Card.Description>
               Analyze your business performance!
             </Card.Description>
@@ -46,7 +44,6 @@ const VendorDashBoard: React.FC = () => {
           <Icon name="write" size="huge" className={styles.icon} />
           <Card.Content className={styles.content}>
             <Card.Header>New Reviews!</Card.Header>
-            <Card.Meta>Updated in 2016</Card.Meta>
             <Card.Description>Look at recent reviews!</Card.Description>
           </Card.Content>
           {/* <Card.Content extra>
