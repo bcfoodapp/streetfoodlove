@@ -12,6 +12,7 @@ import VendorAppForm from "./components/UI/Pages/VendorAppForm";
 import AccountProfile from "./components/UI/Pages/AccountProfile";
 import YourAccountUser from "./components/UI/Pages/YourAccountUser";
 import BusinessGuides from "./components/UI/Pages/BusinessGuides";
+import VendorDashBoard from "./components/UI/Pages/VendorDashboard";
 import CreateVendorPage from "./components/UI/Pages/CreateVendorPage";
 
 function App(): React.ReactElement {
@@ -30,6 +31,7 @@ function App(): React.ReactElement {
             <Route path="/account-profile" element={<AccountProfile />} />
             <Route path="/your-acct-user" element={<YourAccountUser />} />
             <Route path="/business-guide" element={<BusinessGuides />} />
+            <Route path="vendor-dashboard" element={<VendorDashBoard />} />
             <Route path="/create-vendor-page" element={<CreateVendorPage />} />
           </Routes>
         </BrowserRouter>
