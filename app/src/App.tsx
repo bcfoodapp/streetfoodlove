@@ -14,6 +14,7 @@ import YourAccountUser from "./components/UI/Pages/YourAccountUser";
 import BusinessGuides from "./components/UI/Pages/BusinessGuides";
 import VendorDashBoard from "./components/UI/Pages/VendorDashboard";
 import CreateVendorPage from "./components/UI/Pages/CreateVendorPage";
+import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/BusinessGuideArticle";
 
 function App(): React.ReactElement {
   return (
@@ -33,6 +34,10 @@ function App(): React.ReactElement {
             <Route path="/business-guide" element={<BusinessGuides />} />
             <Route path="vendor-dashboard" element={<VendorDashBoard />} />
             <Route path="/create-vendor-page" element={<CreateVendorPage />} />
+            <Route
+              path="/business-article"
+              element={<BusinessGuideArticle />}
+            />
           </Routes>
         </BrowserRouter>
       </Provider>
