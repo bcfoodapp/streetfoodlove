@@ -208,18 +208,5 @@ func addTestData(db *database.Database) error {
 		}
 	}
 
-	guide := database.Guide{
-		ID: uuid.MustParse("112ec037-6d63-43c0-8937-0dcc605a5417"),
-		Guide: `According to all known laws of aviation, there is no way a bee should be able to fly.
-Its wings are too small to get its fat little body off the ground.
-The bee, of course, flies anyway because bees don't care what humans think is impossible.`,
-		DatePosted:    time.Date(2022, 1, 24, 22, 20, 0, 0, time.UTC),
-		ArticleAuthor: "Jerry Seinfeld",
-	}
-
-	if err := db.GuideCreate(&guide); err != nil {
-		return err
-	}
-
 	return nil
 }
