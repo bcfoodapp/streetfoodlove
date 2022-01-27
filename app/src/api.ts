@@ -65,6 +65,13 @@ export interface GeoRectangle {
   southEastLng: number;
 }
 
+export interface Guide {
+  ID: string;
+  Guide: string;
+  DatePosted: DateTime;
+  ArticleAuthor: string;
+}
+
 export const tokenSlice = createSlice({
   name: "token",
   initialState: {
@@ -123,6 +130,7 @@ async function getAndSaveCredentials(
   return null;
 }
 
+// This is the API abstraction.
 // API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 export const apiSlice = createApi({
   baseQuery: async (args, api, extraOptions) => {
@@ -166,6 +174,13 @@ export const apiSlice = createApi({
         }
         return { data: vendors };
       },
+    }),
+    createVendor: builder.mutation<undefined, Vendor>({
+      query: (vendor) => ({
+        url: `/vendors/${encode(vendor.ID)}`,
+        method: "PUT",
+        body: vendor,
+      }),
     }),
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
@@ -268,6 +283,11 @@ export const apiSlice = createApi({
         url: `/map/view/${rectangle.northWestLat}/${rectangle.northWestLng}/${rectangle.southEastLat}/${rectangle.southEastLng}`,
       }),
     }),
+    guide: builder.query<Guide, string>({
+      query: (id) => ({
+        url: `/guides/${id}`,
+      }),
+    }),
   }),
 });
 
@@ -288,6 +308,7 @@ function getCredentials(): Credentials | null {
 export const {
   useVendorQuery,
   useVendorsMultipleQuery,
+  useCreateVendorMutation,
   useUserQuery,
   useLazyUsersMultipleQuery,
   useUserProtectedQuery,
@@ -299,4 +320,5 @@ export const {
   useGetTokenQuery,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
+  useGuideQuery,
 } = apiSlice;

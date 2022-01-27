@@ -10,6 +10,12 @@
 .postInfo {
   width: 30% !important;
   position: absolute;
-  top: 11%;
-  left: 33%;
+  top: 10%;
+  left: 53%;
+}
+
+.postDate,
+.author {
+  color: darkblue !important;
+  font-weight: 350 !important;
 }
