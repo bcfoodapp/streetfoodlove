@@ -1,9 +1,14 @@
 import { Container, Header } from "semantic-ui-react";
 import HeaderBar from "../HeaderBar/HeaderBar";
 import styles from "./article.module.css";
-import { useSubmitReviewMutation } from "../../../../api";
+import { useGuideQuery } from "../../../../api";
+import { useParams } from "react-router-dom";
 
 const BusinessGuideArticle: React.FC = () => {
+  const guideID = useParams().ID as string
+  console.log('guideid: ' + guideID);
+
+
   return (
     <Container className={styles.wrapper}>
       <HeaderBar logout />

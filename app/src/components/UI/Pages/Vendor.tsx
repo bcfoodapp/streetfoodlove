@@ -26,6 +26,7 @@ import jwtDecode from "jwt-decode";
  */
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
+  console.log('vendor id: ' + vendorID);
   const { data: vendor } = useVendorQuery(vendorID);
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;
