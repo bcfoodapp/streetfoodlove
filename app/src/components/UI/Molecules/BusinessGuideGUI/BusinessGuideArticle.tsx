@@ -6,8 +6,7 @@ import { useParams } from "react-router-dom";
 
 const BusinessGuideArticle: React.FC = () => {
   const guideID = useParams().ID as string
-  console.log('guideid: ' + guideID);
-
+  const { data: guideInfo } = useGuideQuery(guideID)
 
   return (
     <Container className={styles.wrapper}>
@@ -19,17 +18,18 @@ const BusinessGuideArticle: React.FC = () => {
       <Container className={styles.postInfo}>
         <Container>
           <Header as="h3" className={styles.postDate}>
-            Post date:{" "}
+            Post date:{guideInfo?.DatePosted}
           </Header>
         </Container>
         <Container>
           <Header as="h4" className={styles.author}>
-            Author:{" "}
+            Author:{guideInfo?.ArticleAuthor}
           </Header>
         </Container>
       </Container>
       <Container text>
-        <p>
+        {guideInfo?.Guide}
+        {/* <p>
           Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
           commodo ligula eget dolor. Aenean massa strong. Cum sociis natoque
           penatibus et magnis dis parturient montes, nascetur ridiculus mus.
@@ -58,7 +58,7 @@ const BusinessGuideArticle: React.FC = () => {
           dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla
           ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam
           ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi.
-        </p>
+        </p> */}
       </Container>
     </Container>
   );

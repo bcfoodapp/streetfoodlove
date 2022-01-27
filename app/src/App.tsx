@@ -35,7 +35,7 @@ function App(): React.ReactElement {
             <Route path="vendor-dashboard" element={<VendorDashBoard />} />
             <Route path="/create-vendor-page" element={<CreateVendorPage />} />
             <Route
-              path="/guides/business-guide-article"
+              path="/guides/:ID"
               element={<BusinessGuideArticle />}
             />
           </Routes>
