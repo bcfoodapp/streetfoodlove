@@ -257,15 +257,16 @@ func (d *Database) ReviewCreate(review *Review) error {
 			VendorID,
 			UserID,
 			DatePosted,
-			StarRating
-			
+			StarRating,
+			ReplyTo
 		) VALUES (
 			:ID,
 			:Text,
 			:VendorID,
 			:UserID,
 			:DatePosted,
-			:StarRating
+			:StarRating,
+			:ReplyTo
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
