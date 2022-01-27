@@ -19,6 +19,7 @@ interface ButtonsProps {
   save?: boolean;
   writeReview?: boolean;
   color?: ButtonProps["color"];
+  create?: boolean;
   clicked?: () => void;
   children: React.ReactNode;
 }
@@ -37,6 +38,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
   else if (props.writeReview) name = classes.writeReview;
   else if (props.edit) name = classes.edit;
   else if (props.save) name = classes.save;
+  else if (props.create) name = classes.create;
   else throw new Error("Invalid Prop");
 
   return (

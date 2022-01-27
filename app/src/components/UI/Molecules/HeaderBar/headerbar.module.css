@@ -1,21 +1,4 @@
-.wrapContainer {
-  display: flex;
-  justify-content: space-around;
-  width: 100vw;
-  overflow-x: hidden;
-}
-
-.header {
-  margin-top: -8px;
-  margin-right: -100px;
-  display: inline-block;
-}
-
-.buttonWrap {
-  display: inline-block;
-  padding-left: 500px;
-}
-
-.searchBox {
-  padding-left: 350px;
+.dropdown {
+  margin-right: 20px;
+  margin-top: 20px;
 }
