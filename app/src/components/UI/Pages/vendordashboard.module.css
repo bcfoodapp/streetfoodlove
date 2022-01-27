@@ -1,0 +1,28 @@
+.wrapper {
+  width: 100% !important;
+}
+
+.icon {
+  margin-left: 30% !important;
+}
+
+.card {
+  padding: 10px !important;
+  cursor: pointer;
+  box-shadow: 2px 4px darkcyan !important;
+  border: 2px solid black !important;
+}
+
+.content {
+  margin-top: 10px !important;
+}
+
+.cardGroup {
+  margin-left: 25% !important;
+  margin-top: 10% !important;
+}
+
+.header {
+  margin-left: 42% !important;
+  font-size: 2rem !important;
+}
