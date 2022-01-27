@@ -34,7 +34,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(gin.CustomRecovery(recovery))
 
 	router.GET("/vendors/:id", a.Vendor)
-	router.PUT("/vendors/:id", a.VendorPut)
+	router.PUT("/vendors/:id", Auth, a.VendorPut)
 
 	router.GET("/users/:id", a.User)
 	router.GET("/users/:id/protected", a.UserProtected)
