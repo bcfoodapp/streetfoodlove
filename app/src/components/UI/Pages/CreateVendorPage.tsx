@@ -3,6 +3,7 @@ import {
   Form,
   Header,
   Input,
+  InputOnChangeData,
   Select,
   TextArea,
 } from "semantic-ui-react";
@@ -10,6 +11,7 @@ import Buttons from "../Atoms/Button/Buttons";
 import MessageError from "../Atoms/Message/MessageError";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./createvendorpage.module.css";
+import { useState } from "react";
 
 const timeOptions = [
   { key: "8AM ", text: "8AM-5PM", value: "hours1" },
@@ -22,38 +24,63 @@ const fileInput = () => {
 };
 
 const CreateVendorPage: React.FC = () => {
+  const [input, setInput] = useState({
+    name: "",
+    businessAddress: "",
+    phoneNumber: "",
+    businessHours: "",
+    website: "",
+  });
+
+  const onChange = ({ name, value }: InputOnChangeData) => {
+    setInput((state) => ({ ...state, [name]: value }));
+  };
+
   return (
     <Container className={styles.wrapper}>
       <HeaderBar logout />
       <Header as={"h2"} className={styles.header}>
         Create New Vendor Page
       </Header>
-      <Form className={styles.form}>
+      <Form
+        onSubmit={() => {
+          console.log(input);
+        }}
+        className={styles.form}
+      >
         <Form.Group widths="equal">
-          <Form.Field control={Input} label="Name" placeholder="Name" />
-          <Form.Field
-            control={Input}
+          <Form.Input
+            name="name"
+            onChange={(_, data) => onChange(data)}
+            label="Name"
+            placeholder="Name"
+          />
+          <Form.Input
+            name="businessAddress"
+            onChange={(_, data) => onChange(data)}
             label="Business Address"
             placeholder="Business Address"
           />
         </Form.Group>
         <Form.Group>
-          <Form.Field
-            control={Input}
+          <Form.Input
+            name="phoneNumber"
+            onChange={(_, data) => onChange(data)}
             label="Phone Number"
             placeholder="Phone Number"
           />
           <Form.Field
             control={Select}
             options={timeOptions}
-            label={{
-              children: "Business Hours",
-            }}
+            name="businessHours"
+            onChange={(_, data) => onChange(data)}
+            label="Business Hours"
             placeholder="Business Hours"
             search
           />
-          <Form.Field
-            control={Input}
+          <Form.Input
+            name="website"
+            onChange={(_, data) => onChange(data)}
             label="Website URL"
             placeholder="Website URL"
             width={8}
@@ -63,7 +90,6 @@ const CreateVendorPage: React.FC = () => {
         <Form.Field
           control={fileInput}
           label="Upload Business Logo"
-          placeholder="Website URL"
           width={5}
         />
 
