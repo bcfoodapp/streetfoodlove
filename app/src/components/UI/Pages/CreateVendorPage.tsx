@@ -25,7 +25,6 @@ const CreateVendorPage: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
       <HeaderBar logout />
-      <MessageError />
       <Header as={"h2"} className={styles.header}>
         Create New Vendor Page
       </Header>
