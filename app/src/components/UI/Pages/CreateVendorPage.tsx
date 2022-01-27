@@ -7,6 +7,7 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
+import MessageError from "../Atoms/Message/MessageError";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./createvendorpage.module.css";
 
