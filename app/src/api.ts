@@ -102,6 +102,7 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+// This is the API abstraction.
 // API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 export const apiSlice = createApi({
   baseQuery: async (args, api, extraOptions) => {
@@ -156,6 +157,13 @@ export const apiSlice = createApi({
         }
         return { data: vendors };
       },
+    }),
+    createVendor: builder.mutation<undefined, Vendor>({
+      query: (vendor) => ({
+        url: `/vendors/${encode(vendor.ID)}`,
+        method: "PUT",
+        body: vendor,
+      }),
     }),
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
@@ -281,6 +289,7 @@ function getCredentials(): Credentials | null {
 export const {
   useVendorQuery,
   useVendorsMultipleQuery,
+  useCreateVendorMutation,
   useUserQuery,
   useLazyUsersMultipleQuery,
   useUserProtectedQuery,

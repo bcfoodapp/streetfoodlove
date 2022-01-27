@@ -34,14 +34,19 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(gin.CustomRecovery(recovery))
 
 	router.GET("/vendors/:id", a.Vendor)
+	router.PUT("/vendors/:id", GetToken, a.VendorPut)
+
 	router.GET("/users/:id", a.User)
 	router.GET("/users/:id/protected", GetToken, a.UserProtected)
 	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
 	router.PUT("/users/:id/protected", GetToken, a.UserProtectedPut)
+
 	router.GET("/reviews", a.ReviewsByVendorID)
 	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
+
 	router.POST("/token", a.TokenPost)
+
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 
 	router.GET("/photos/:id", a.Photo)
@@ -137,6 +142,30 @@ func (a *API) Vendor(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, vendor)
+}
+
+func (a *API) VendorPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendor := &database.Vendor{}
+	if err := c.ShouldBindJSON(vendor); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != vendor.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.VendorCreate(getTokenFromContext(c), vendor); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) User(c *gin.Context) {
@@ -256,7 +285,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.ReviewPut(getTokenFromContext(c), review); err != nil {
+	if err := a.Backend.ReviewCreate(getTokenFromContext(c), review); err != nil {
 		c.Error(err)
 		return
 	}
