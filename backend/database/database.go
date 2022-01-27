@@ -4,10 +4,11 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"fmt"
+	"time"
+
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"time"
 )
 
 // Database abstraction layer
@@ -242,6 +243,7 @@ type Review struct {
 	UserID     uuid.UUID
 	DatePosted time.Time
 	StarRating StarRating
+	ReviewTo   uuid.UUID
 }
 
 // StarRating is an integer from 1 to 5.
@@ -256,6 +258,7 @@ func (d *Database) ReviewCreate(review *Review) error {
 			UserID,
 			DatePosted,
 			StarRating
+			
 		) VALUES (
 			:ID,
 			:Text,
