@@ -1,8 +1,12 @@
 import { Container, Header } from "semantic-ui-react";
 import HeaderBar from "../HeaderBar/HeaderBar";
 import styles from "./article.module.css";
+import { useSubmitReviewMutation } from "../../../../api";
 
 const BusinessGuideArticle: React.FC = () => {
+  
+
+
   return (
     <Container className={styles.wrapper}>
       <HeaderBar logout />
@@ -10,6 +14,14 @@ const BusinessGuideArticle: React.FC = () => {
         {" "}
         Guide{" "}
       </Header>
+      <Container className={styles.postInfo}>
+        <Container>
+          <Header as="h3" className={styles.postDate}>Post date: </Header>
+        </Container>
+        <Container>
+          <Header as="h4" className={styles.author}>Author: </Header>
+        </Container>
+      </Container>
       <Container text>
         <p>
           Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
