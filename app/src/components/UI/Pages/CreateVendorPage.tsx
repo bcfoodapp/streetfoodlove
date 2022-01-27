@@ -7,6 +7,7 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
+import MessageError from "../Atoms/Message/MessageError";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./createvendorpage.module.css";
 
@@ -24,6 +25,7 @@ const CreateVendorPage: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
       <HeaderBar logout />
+      <MessageError />
       <Header as={"h2"} className={styles.header}>
         Create New Vendor Page
       </Header>
