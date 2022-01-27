@@ -17,7 +17,7 @@ import (
 func TestAuth(t *testing.T) {
 	router := gin.New()
 	resultID := uuid.UUID{}
-	router.GET("/", Auth, func(c *gin.Context) {
+	router.GET("/", GetToken, func(c *gin.Context) {
 		resultID = c.MustGet(userIDKey).(uuid.UUID)
 	})
 

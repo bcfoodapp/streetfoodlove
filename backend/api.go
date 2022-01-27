@@ -35,23 +35,23 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/vendors/:id", a.Vendor)
 	router.GET("/users/:id", a.User)
-	router.GET("/users/:id/protected", a.UserProtected)
-	router.POST("/users/:id/protected", a.UserProtectedPost)
-	router.PUT("/users/:id/protected", a.UserProtectedPut)
+	router.GET("/users/:id/protected", GetToken, a.UserProtected)
+	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
+	router.PUT("/users/:id/protected", GetToken, a.UserProtectedPut)
 	router.GET("/reviews", a.ReviewsByVendorID)
-	router.PUT("/reviews/:id", Auth, a.ReviewPut)
+	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 	router.POST("/token", a.TokenPost)
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 
 	router.GET("/photos/:id", a.Photo)
-	router.POST("/photos/:id", a.PhotoPost)
+	router.POST("/photos/:id", GetToken, a.PhotoPost)
 
 	router.GET("/guides/:id", a.Guide)
-	router.POST("/guides/:id", a.GuidePost)
+	router.POST("/guides/:id", GetToken, a.GuidePost)
 
 	router.GET("/links/:id", a.Link)
-	router.POST("/links/:id", a.LinkPost)
+	router.POST("/links/:id", GetToken, a.LinkPost)
 }
 
 // errorHandler writes any errors to response.
@@ -83,9 +83,9 @@ type TokenClaims struct {
 	jwt.StandardClaims
 }
 
-// Auth is a middleware to validate token and get user ID. The user ID is retrieved with
+// GetToken is a middleware to validate token and get user ID. The user ID is retrieved with
 // c.MustGet(userIDKey).(uuid.UUID).
-func Auth(c *gin.Context) {
+func GetToken(c *gin.Context) {
 	headerValue := c.GetHeader("Authorization")
 	const bearer = "Bearer "
 	if !strings.HasPrefix(headerValue, bearer) {
