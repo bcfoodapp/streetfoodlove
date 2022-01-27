@@ -10,6 +10,7 @@ import {
 } from "../../../api";
 import { useAppSelector } from "../../../store";
 import { useNavigate } from "react-router-dom";
+import MessageError from "../Atoms/Message/MessageError";
 
 /**
  * Displays the Login element in the login page
@@ -23,15 +24,17 @@ export default function Login(): React.ReactElement {
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.root.error);
+  console.log(": " + error);
 
   const onSubmit = async () => {
     await setCredentialsMutation(credentials);
-    navigate("/");
+    // navigate("/");
   };
 
   return (
     <>
       <HeaderBar />
+      {error ? <MessageError errorMsg={error.toString()} /> : null}
       <Container className={styles.wrapper}>
         <Grid centered relaxed={"very"}>
           <Grid.Column className={styles.test}>
@@ -71,7 +74,7 @@ export default function Login(): React.ReactElement {
                   </Buttons>
                 </Container>
                 {/* Temporary error output */}
-                <pre>{error ? error.toString() : ""}</pre>
+                {/* <pre>{error ? error.toString() : ""}</pre> */}
               </Form>
             </Grid.Row>
           </Grid.Column>

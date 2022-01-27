@@ -1,11 +1,12 @@
 import React from "react";
 import { Message } from "semantic-ui-react";
-const MessageError: React.FC = () => (
-  <Message negative>
-    <Message.Header>New Site Features</Message.Header>
+import styles from './msgerror.module.css'
+
+const MessageError: React.FC<{errorMsg: string}> = ({errorMsg}) => (
+  <Message negative className={styles.msg}>
+    <Message.Header>Error</Message.Header>
     <Message.List>
-      <Message.Item>You can now have cover images on blog pages</Message.Item>
-      <Message.Item>Drafts will now auto-save while writing</Message.Item>
+      <Message.Item>{errorMsg}</Message.Item>
     </Message.List>
   </Message>
 );
