@@ -161,7 +161,7 @@ func addTestData(db *database.Database) error {
 			User: &database.User{
 				ID:        uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
 				Username:  "Jonney2313",
-				UserType:  database.UserTypeCustomer,
+				UserType:  database.UserTypeVendor,
 				Photo:     uuid.MustParse("d523ac1b-3036-4f4e-a275-3f0a9fd8a733"),
 				FirstName: "Jonney",
 				LastName:  "William",
