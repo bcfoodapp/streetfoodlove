@@ -27,6 +27,23 @@ func (b *Backend) Vendor(id uuid.UUID) (*database.Vendor, error) {
 	return b.Database.Vendor(id)
 }
 
+func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error {
+	// TODO A vendor user should only be able to create one vendor page.
+	// We need a way to store a relationship from a user to a vendor page so that it is a 1-to-1
+	// relationship.
+
+	user, err := b.Database.User(userID)
+	if err != nil {
+		return err
+	}
+
+	if user.UserType != database.UserTypeVendor {
+		return fmt.Errorf("you are not a vendor user type; only vendor users can create a vendor page")
+	}
+
+	return b.Database.VendorCreate(vendor)
+}
+
 func (b *Backend) User(id uuid.UUID) (*database.User, error) {
 	userProtected, err := b.Database.User(id)
 	if err != nil {
@@ -61,7 +78,7 @@ func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {
 	return b.Database.Review(id)
 }
 
-func (b *Backend) ReviewPut(userID uuid.UUID, review *database.Review) error {
+func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) error {
 	if review.UserID != userID {
 		return unauthorized
 	}
