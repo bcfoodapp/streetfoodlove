@@ -12,6 +12,8 @@ import MessageError from "../Atoms/Message/MessageError";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./createvendorpage.module.css";
 import { useState } from "react";
+import { useCreateVendorMutation, Vendor } from "../../../api";
+import { v4 as uuid } from "uuid";
 
 const timeOptions = [
   { key: "8AM ", text: "8AM-5PM", value: "hours1" },
@@ -24,6 +26,7 @@ const fileInput = () => {
 };
 
 const CreateVendorPage: React.FC = () => {
+  const [createVendor] = useCreateVendorMutation();
   const [input, setInput] = useState({
     name: "",
     businessAddress: "",
@@ -44,7 +47,21 @@ const CreateVendorPage: React.FC = () => {
       </Header>
       <Form
         onSubmit={() => {
-          console.log(input);
+          const id = uuid();
+          const vendor: Vendor = {
+            ID: id,
+            Name: input.name,
+            BusinessAddress: input.businessAddress,
+            Website: input.website,
+            BusinessHours: input.businessHours,
+            Phone: input.phoneNumber,
+            BusinessLogo: "",
+            Latitude: 0,
+            Longitude: 0,
+          };
+          createVendor(vendor);
+          // Temporary output
+          console.log(`vendor ID: ${id}`);
         }}
         className={styles.form}
       >
