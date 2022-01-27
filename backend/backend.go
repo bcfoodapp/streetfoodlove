@@ -65,6 +65,8 @@ func (b *Backend) UserProtectedUpdate(userID uuid.UUID, user *database.UserProte
 		return unauthorized
 	}
 
+	user.SignUpDate = time.Now()
+
 	return b.Database.UserUpdate(user)
 }
 
