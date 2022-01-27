@@ -4,9 +4,6 @@ import styles from "./article.module.css";
 import { useSubmitReviewMutation } from "../../../../api";
 
 const BusinessGuideArticle: React.FC = () => {
-  
-
-
   return (
     <Container className={styles.wrapper}>
       <HeaderBar logout />
@@ -16,10 +13,14 @@ const BusinessGuideArticle: React.FC = () => {
       </Header>
       <Container className={styles.postInfo}>
         <Container>
-          <Header as="h3" className={styles.postDate}>Post date: </Header>
+          <Header as="h3" className={styles.postDate}>
+            Post date:{" "}
+          </Header>
         </Container>
         <Container>
-          <Header as="h4" className={styles.author}>Author: </Header>
+          <Header as="h4" className={styles.author}>
+            Author:{" "}
+          </Header>
         </Container>
       </Container>
       <Container text>
