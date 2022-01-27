@@ -60,6 +60,13 @@ export interface GeoRectangle {
   southEastLng: number;
 }
 
+export interface Guide {
+  ID: string;
+  Guide: string;
+  DatePosted: DateTime;
+  ArticleAuthor: string;
+}
+
 export const tokenSlice = createSlice({
   name: "token",
   initialState: {
@@ -249,6 +256,11 @@ export const apiSlice = createApi({
         url: `/map/view/${rectangle.northWestLat}/${rectangle.northWestLng}/${rectangle.southEastLat}/${rectangle.southEastLng}`,
       }),
     }),
+    guide: builder.query<Guide, string>({
+      query: (id) => ({
+        url: `/guides/${id}`,
+      }),
+    }),
   }),
 });
 
@@ -279,4 +291,5 @@ export const {
   useSubmitReviewMutation,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
+  useGuideQuery,
 } = apiSlice;
