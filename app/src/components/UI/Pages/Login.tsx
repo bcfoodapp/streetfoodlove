@@ -18,7 +18,7 @@ import * as Yup from "yup";
  * Displays the Login element in the login page
  */
 
-interface myvalues {
+interface inputValues {
   Username: string;
   Password: string;
 }
@@ -32,7 +32,7 @@ export default function Login(): React.ReactElement {
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.root.error);
 
-  const initialValues: myvalues = {
+  const initialValues: inputValues = {
     Username: "",
     Password: "",
   };
@@ -42,7 +42,7 @@ export default function Login(): React.ReactElement {
     Password: Yup.string().required("Must enter Password"),
   });
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: inputValues) => {
     await setCredentialsMutation({
       Username: values.Username,
       Password: values.Password,
@@ -62,7 +62,7 @@ export default function Login(): React.ReactElement {
         enableReinitialize={true}
         validateOnChange={true}
       >
-        {(formProps: FormikProps<myvalues>) => {
+        {(formProps: FormikProps<inputValues>) => {
           const {
             dirty,
             isValid,
