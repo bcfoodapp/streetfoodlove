@@ -22,6 +22,8 @@ interface ButtonsProps {
   create?: boolean;
   clicked?: () => void | ((values: any) => void);
   children: React.ReactNode;
+  valid?: boolean;
+  dirty?: boolean;
 }
 
 export default function Buttons(props: ButtonsProps): React.ReactElement {
@@ -47,6 +49,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
         className={classes.Button + " " + name}
         color={props.color}
         onClick={props.clicked}
+        disabled={!props.valid || !props.dirty}
       >
         <span>{props.children}</span>
       </Button>

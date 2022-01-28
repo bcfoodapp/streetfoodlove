@@ -53,7 +53,7 @@ export default function Login(): React.ReactElement {
   return (
     <>
       <HeaderBar />
-      {/* {error ? <MessageError errorMsg={error.toString()} /> : null} */}
+      {error ? <MessageError errorMsg={error.toString()} /> : null}
 
       <Formik
         initialValues={initialValues}
@@ -132,7 +132,12 @@ export default function Login(): React.ReactElement {
                       {/*  <Checkbox label="I agree to the Terms and Conditions" />*/}
                       {/*</Form.Field>*/}
                       <Container>
-                        <Buttons login color="green">
+                        <Buttons
+                          login
+                          color="green"
+                          dirty={dirty}
+                          valid={isValid}
+                        >
                           Login
                         </Buttons>
                       </Container>
