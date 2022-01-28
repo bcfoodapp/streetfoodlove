@@ -20,7 +20,7 @@ interface ButtonsProps {
   writeReview?: boolean;
   color?: ButtonProps["color"];
   create?: boolean;
-  clicked?: () => void;
+  clicked?: () => void | ((values: any) => void);
   children: React.ReactNode;
 }
 

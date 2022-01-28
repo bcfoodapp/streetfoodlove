@@ -5,6 +5,7 @@
   margin-left: 300px;
   margin-top: 220px;
   width: 500px !important;
+  padding: 2rem 1rem;
 }
 
 .ui.center.container {
@@ -25,4 +26,14 @@
 
 .header {
   padding-bottom: 20px;
+}
+
+.error {
+  color: #e63946 !important;
+  font-size: 1rem;
+  padding-bottom: 2px !important;
+}
+
+.field1 {
+  margin-bottom: 20px !important;
 }
