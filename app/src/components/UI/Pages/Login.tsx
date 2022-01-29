@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Form, Checkbox, Header } from "semantic-ui-react";
+import { Container, Form, Header } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
@@ -24,7 +24,6 @@ interface inputValues {
 }
 
 export default function Login(): React.ReactElement {
-
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.root.error);

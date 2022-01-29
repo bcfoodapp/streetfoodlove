@@ -19,7 +19,6 @@ interface inputValues {
 }
 
 export default function Signup(): React.ReactElement {
-
   const [createUser] = useCreateUserMutation();
 
   const initialValues: inputValues = {
