@@ -16,7 +16,6 @@ import { v4 as uuid } from "uuid";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
 };
@@ -108,7 +107,7 @@ const CreateVendorPage: React.FC = () => {
             errors,
             handleChange,
             values,
-            setFieldValue
+            setFieldValue,
           } = formProps;
 
           return (
@@ -171,7 +170,9 @@ const CreateVendorPage: React.FC = () => {
                 id="businessHours"
                 control={Select}
                 options={businessHours}
-                onChange={(_, hour) => setFieldValue("businessHours", hour.value)}
+                onChange={(_, hour) =>
+                  setFieldValue("businessHours", hour.value)
+                }
                 // onChange={(_, data) => onChange(data)}
                 label="Business Hours"
                 placeholder="Business Hours"
@@ -207,7 +208,7 @@ const CreateVendorPage: React.FC = () => {
               <Form.Field
                 control={fileInput}
                 label="Upload Business Logo"
-                width={5}
+                width={8}
               />
 
               <Form.Field
