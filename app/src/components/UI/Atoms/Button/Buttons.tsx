@@ -45,14 +45,24 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
 
   return (
     <>
-      <Button
+      {props.valid === undefined || props.dirty === undefined ? (
+        <Button
+          className={classes.Button + " " + name}
+          color={props.color}
+          onClick={props.clicked}
+          >
+          <span>{props.children}</span>
+        </Button>
+      ) : (
+        <Button
         className={classes.Button + " " + name}
         color={props.color}
         onClick={props.clicked}
         disabled={!props.valid || !props.dirty}
-      >
-        <span>{props.children}</span>
-      </Button>
+        >
+          <span>{props.children}</span>
+        </Button>
+      )}
     </>
   );
 }
