@@ -35,13 +35,6 @@ const businessHours = [
 ];
 const CreateVendorPage: React.FC = () => {
   const [createVendor] = useCreateVendorMutation();
-  // const [input, setInput] = useState({
-  //   name: "",
-  //   businessAddress: "",
-  //   phoneNumber: "",
-  //   businessHours: "",
-  //   website: "",
-  // });
 
   const initialValues: inputValues = {
     name: "",
@@ -58,10 +51,6 @@ const CreateVendorPage: React.FC = () => {
     businessHours: Yup.string().required("Required"),
     website: Yup.string().required("Required"),
   });
-
-  // const onChange = ({ name, value }: InputOnChangeData) => {
-  //   setInput((state) => ({ ...state, [name]: value }));
-  // };
 
   const onSubmit = (data: inputValues) => {
     const id = uuid();
@@ -119,7 +108,6 @@ const CreateVendorPage: React.FC = () => {
               <Form.Input
                 name="name"
                 onChange={handleChange}
-                // onChange={(_, data) => onChange(data)}
                 label="Name"
                 placeholder="Name"
                 onBlur={handleBlur}
@@ -135,7 +123,6 @@ const CreateVendorPage: React.FC = () => {
               <Form.Input
                 name="businessAddress"
                 onChange={handleChange}
-                // onChange={(_, data) => onChange(data)}
                 label="Business Address"
                 placeholder="Business Address"
                 onBlur={handleBlur}
@@ -153,7 +140,6 @@ const CreateVendorPage: React.FC = () => {
               <Form.Input
                 name="phoneNumber"
                 onChange={handleChange}
-                // onChange={(_, data) => onChange(data)}
                 label="Phone Number"
                 placeholder="Phone Number"
                 onBlur={handleBlur}
@@ -173,7 +159,6 @@ const CreateVendorPage: React.FC = () => {
                 onChange={(_, hour) =>
                   setFieldValue("businessHours", hour.value)
                 }
-                // onChange={(_, data) => onChange(data)}
                 label="Business Hours"
                 placeholder="Business Hours"
                 searched
@@ -190,7 +175,6 @@ const CreateVendorPage: React.FC = () => {
               <Form.Input
                 name="website"
                 onChange={handleChange}
-                // onChange={(_, data) => onChange(data)}
                 label="Website URL"
                 placeholder="Website URL"
                 width={8}

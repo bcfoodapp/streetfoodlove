@@ -24,10 +24,7 @@ interface inputValues {
 }
 
 export default function Login(): React.ReactElement {
-  // const [credentials, setCredentials] = useState<Credentials>({
-  //   Password: "",
-  //   Username: "",
-  // });
+
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
   const error = useAppSelector((state) => state.root.error);
@@ -90,10 +87,6 @@ export default function Login(): React.ReactElement {
                           placeholder="Username"
                           width={7}
                           value={values.Username}
-                          // value={credentials.Username}
-                          // onChange={(_, { value }) =>
-                          //   setCredentials({ ...credentials, Username: value })
-                          // }
                           onChange={handleChange}
                           onBlur={handleBlur}
                           error={touched.Username && Boolean(errors.Username)}
@@ -112,10 +105,6 @@ export default function Login(): React.ReactElement {
                           width={7}
                           type="password"
                           value={values.Password}
-                          // value={credentials.Password}
-                          // onChange={(_, { value }) =>
-                          //   setCredentials({ ...credentials, Password: value })
-                          // }
                           onChange={handleChange}
                           onBlur={handleBlur}
                           name={"Password"}

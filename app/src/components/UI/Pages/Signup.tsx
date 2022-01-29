@@ -19,11 +19,6 @@ interface inputValues {
 }
 
 export default function Signup(): React.ReactElement {
-  // const [email, setEmail] = useState("");
-  // const [firstName, setFirstName] = useState("");
-  // const [lastName, setLastName] = useState("");
-  // const [username, setUsername] = useState("");
-  // const [password, setPassword] = useState("");
 
   const [createUser] = useCreateUserMutation();
 
@@ -96,7 +91,6 @@ export default function Signup(): React.ReactElement {
               <Form.Input
                 value={values.email}
                 onChange={handleChange}
-                // onChange={(e) => setEmail(e.target.value)}
                 onBlur={handleBlur}
                 error={touched.email && Boolean(errors.email)}
                 fluid
@@ -114,8 +108,6 @@ export default function Signup(): React.ReactElement {
               <Form.Input
                 value={values.firstName}
                 onChange={handleChange}
-                // onChange={(e) => setFirstName(e.target.value)}
-                // error={{ content: 'Please enter your first name', pointing: 'below' }}
                 onBlur={handleBlur}
                 error={touched.firstName && Boolean(errors.firstName)}
                 fluid
@@ -134,8 +126,6 @@ export default function Signup(): React.ReactElement {
               <Form.Input
                 value={values.lastName}
                 onChange={handleChange}
-                // onChange={(e) => setLastName(e.target.value)}
-                // error='Please enter your last name'
                 onBlur={handleBlur}
                 error={touched.lastName && Boolean(errors.lastName)}
                 fluid
@@ -154,10 +144,8 @@ export default function Signup(): React.ReactElement {
               <Form.Input
                 value={values.username}
                 onChange={handleChange}
-                // onChange={(e) => setUsername(e.target.value)}
                 onBlur={handleBlur}
                 error={touched.username && Boolean(errors.username)}
-                // error='Please enter your last name'
                 fluid
                 label="Username"
                 placeholder="Username"
@@ -174,10 +162,8 @@ export default function Signup(): React.ReactElement {
               <Form.Input
                 value={values.password}
                 onChange={handleChange}
-                // onChange={(e) => setPassword(e.target.value)}
                 onBlur={handleBlur}
                 error={touched.password && Boolean(errors.password)}
-                // error='Please enter your last name'
                 fluid
                 label="Password"
                 placeholder="Password"
