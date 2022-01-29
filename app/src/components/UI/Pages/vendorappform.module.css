@@ -7,10 +7,13 @@
   margin-top: 5% !important;
 }
 
-.btnContainer {
-  width: 30% !important;
+.btnContainer.ui.container {
+  width: 20% !important;
   padding-top: 20px !important;
-  padding-left: 90px !important;
+  margin-right: 20px !important;
+  max-width: 40% !important;
+  display: flex !important;
+  justify-content: flex-start !important;
 }
 
 .signUpWrapper > h1 {
