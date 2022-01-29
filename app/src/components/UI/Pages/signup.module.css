@@ -17,8 +17,6 @@
 }
 
 .btnContainer {
-  /* position: absolute; */
-  /* left: 0px; */
   width: 40% !important;
   padding-top: 20px !important;
   padding-left: 1.5% !important;
@@ -32,4 +30,15 @@
   color: #e63946 !important;
   font-size: 1rem;
   padding-bottom: 2px !important;
+}
+
+.errContainer {
+  margin-left: 0% !important;
+}
+
+.field {
+  margin-right: 10px !important;
+  margin-left: 2px !important;
+  margin-top: 4px !important;
+  margin-bottom: 1rem !important;
 }

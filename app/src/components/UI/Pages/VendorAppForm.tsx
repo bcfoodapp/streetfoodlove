@@ -1,10 +1,10 @@
 import React from "react";
-import { Form, Container, Button } from "semantic-ui-react";
+import { Form, Container } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Dropdown } from "semantic-ui-react";
 import styles from "./vendorappform.module.css";
-import { Formik, FormikProps, ErrorMessage } from "formik";
+import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 
 interface inputValues {
@@ -14,6 +14,7 @@ interface inputValues {
   fromHour: string;
   toHour: string;
   website: string;
+  agreedConditions: boolean;
 }
 
 export default function VendorAppForm(): React.ReactElement {
@@ -66,6 +67,7 @@ export default function VendorAppForm(): React.ReactElement {
     fromHour: "",
     toHour: "",
     phoneNumber: "",
+    agreedConditions: false,
   };
 
   const validationSchema = Yup.object({
@@ -75,6 +77,7 @@ export default function VendorAppForm(): React.ReactElement {
     fromHour: Yup.string().required("Required"),
     toHour: Yup.string().required("Required"),
     phoneNumber: Yup.string().required("Required"),
+    agreedConditions: Yup.bool().oneOf([true], "Required"),
   });
 
   return (
@@ -110,7 +113,6 @@ export default function VendorAppForm(): React.ReactElement {
               onReset={handleReset}
             >
               <Form.Input
-                // error={{ content: 'Please enter your first name', pointing: 'below' }}
                 fluid
                 label="Name"
                 placeholder="Name"
@@ -123,7 +125,6 @@ export default function VendorAppForm(): React.ReactElement {
                 error={touched.name && Boolean(errors.name)}
               />
               <Form.Input
-                // error='Please enter your last name'
                 fluid
                 label="Business Address"
                 placeholder="Business Address"
@@ -138,7 +139,6 @@ export default function VendorAppForm(): React.ReactElement {
                 }
               />
               <Form.Input
-                // error='Please enter your last name'
                 fluid
                 label="Website URL"
                 placeholder="Website URL"
@@ -195,11 +195,29 @@ export default function VendorAppForm(): React.ReactElement {
               />
               <h5>Logo Upload</h5>
               <input type="file" className={styles.fileInput} name="myfile" />
-              <Form.Checkbox
-                label="I agree to the Terms and Conditions"
-                required
-                className={styles.checkBox}
-              />
+
+              <label htmlFor="agreedConditions">
+                <Field
+                  type="checkbox"
+                  name="agreedConditions"
+                  label="I agree to the terms and conditions"
+                  error={touched.agreedConditions && errors.agreedConditions}
+                  required
+                  onChange={(e: { target: { checked: any } }) =>
+                    setFieldValue("agreedConditions", e.target.checked)
+                  }
+                  checked={values.agreedConditions}
+                  className={styles.field}
+                />
+                I agree to the terms and conditions
+              </label>
+              <Container className={styles.errContainer}>
+                <ErrorMessage
+                  name="agreedConditions"
+                  component="span"
+                  className={styles.error}
+                />
+              </Container>
               <Container className={styles.btnContainer}>
                 <Buttons color="green" signup dirty={dirty} valid={isValid}>
                   Sign Up

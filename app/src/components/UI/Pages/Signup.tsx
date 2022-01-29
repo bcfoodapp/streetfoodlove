@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Form, Container, Header } from "semantic-ui-react";
+import { Form, Container } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./signup.module.css";
 import { useCreateUserMutation, UserType } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
-import { Formik, FormikProps, ErrorMessage } from "formik";
+import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 
 interface inputValues {
@@ -15,6 +15,7 @@ interface inputValues {
   username: string;
   password: string;
   email: string;
+  agreedConditions: boolean;
 }
 
 export default function Signup(): React.ReactElement {
@@ -32,6 +33,7 @@ export default function Signup(): React.ReactElement {
     username: "",
     password: "",
     email: "",
+    agreedConditions: false,
   };
 
   const validationSchema = Yup.object({
@@ -40,6 +42,7 @@ export default function Signup(): React.ReactElement {
     username: Yup.string().required("Username Required"),
     password: Yup.string().required("Password Required"),
     email: Yup.string().required("Email Required"),
+    agreedConditions: Yup.bool().oneOf([true], "Required"),
   });
 
   const onSubmit = async (data: inputValues) => {
@@ -81,6 +84,7 @@ export default function Signup(): React.ReactElement {
             errors,
             handleChange,
             values,
+            setFieldValue,
           } = formProps;
 
           return (
@@ -187,14 +191,28 @@ export default function Signup(): React.ReactElement {
                 component="span"
                 className={styles.error}
               />
-              <Form.Checkbox
-                label="I agree to the Terms and Conditions"
-                // error={{
-                //   content: 'You must agree to the terms and conditions',
-                //   pointing: 'left',
-                // }}
-                required
-              />
+              <label htmlFor="agreedConditions">
+                <Field
+                  label="I agree to the Terms and Conditions"
+                  required
+                  type="checkbox"
+                  name="agreedConditions"
+                  error={touched.agreedConditions && errors.agreedConditions}
+                  onChange={(e) =>
+                    setFieldValue("agreedConditions", e.target.checked)
+                  }
+                  checked={values.agreedConditions}
+                  className={styles.field}
+                />
+                I agree to the terms and conditions
+              </label>
+              <Container className={styles.errContainer}>
+                <ErrorMessage
+                  name="agreedConditions"
+                  component="span"
+                  className={styles.error}
+                />
+              </Container>
               <Container className={styles.btnContainer}>
                 <Buttons color="green" signup dirty={dirty} valid={isValid}>
                   Sign Up

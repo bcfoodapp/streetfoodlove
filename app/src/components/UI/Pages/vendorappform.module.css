@@ -34,3 +34,20 @@
 .phoneInput {
   margin-top: 10px !important;
 }
+
+.errContainer {
+  margin-left: 0% !important;
+}
+
+.error {
+  color: #e63946 !important;
+  font-size: 1rem;
+  padding-bottom: 2px !important;
+}
+
+.field {
+  margin-right: 10px !important;
+  margin-left: 2px !important;
+  margin-top: 4px !important;
+  margin-bottom: 1rem !important;
+}
