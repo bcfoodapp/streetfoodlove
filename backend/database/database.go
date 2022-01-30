@@ -410,4 +410,42 @@ func (d *Database) Link(id uuid.UUID) (*Link, error) {
 	err := row.StructScan(link)
 
 	return link, err
+
+}
+
+//Create, Add Favorites
+type Favorite struct {
+	ID         uuid.UUID
+	DatePosted time.Time
+	VendorID   uuid.UUID
+	UserID     uuid.UUID
+}
+
+func (d *Database) FavoriteCreate(favorite *Favorite) error {
+	const command = `
+		INSERT INTO Favorite (
+			ID,
+			DatePosted,
+			VendorID,
+			UserID
+		) VALUES (
+			:ID,
+			:DatePosted,
+			:VendorID,
+			:UserID
+		)
+	`
+	_, err := d.db.NamedExec(command, favorite)
+	return err
+}
+
+func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
+	const command = `
+		SELECT * FROM Favorite WHERE ID=? 
+	`
+	row := d.db.QueryRowx(command, &id)
+
+	favorite := &Favorite{}
+	err := row.StructScan(favorite)
+	return favorite, err
 }

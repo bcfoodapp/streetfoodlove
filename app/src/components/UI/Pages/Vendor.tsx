@@ -16,7 +16,6 @@ import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
-import { useSelector } from "react-redux";
 import { RootState, useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import jwtDecode from "jwt-decode";
@@ -26,7 +25,6 @@ import jwtDecode from "jwt-decode";
  */
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
-  console.log("vendor id: " + vendorID);
   const { data: vendor } = useVendorQuery(vendorID);
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;

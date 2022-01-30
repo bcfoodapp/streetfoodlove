@@ -112,6 +112,7 @@ async function getAndSaveCredentials(
   credentials: Credentials,
   api: BaseQueryApi
 ): Promise<FetchBaseQueryError | null> {
+  api.dispatch({ type: "root/setError", payload: null });
   const response = await baseQuery(
     { url: "/token", method: "POST", body: credentials },
     api,

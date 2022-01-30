@@ -20,8 +20,10 @@ interface ButtonsProps {
   writeReview?: boolean;
   color?: ButtonProps["color"];
   create?: boolean;
-  clicked?: () => void;
+  clicked?: () => void | ((values: any) => void);
   children: React.ReactNode;
+  valid?: boolean;
+  dirty?: boolean;
 }
 
 export default function Buttons(props: ButtonsProps): React.ReactElement {
@@ -43,13 +45,24 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
 
   return (
     <>
-      <Button
-        className={classes.Button + " " + name}
-        color={props.color}
-        onClick={props.clicked}
-      >
-        <span>{props.children}</span>
-      </Button>
+      {props.valid === undefined || props.dirty === undefined ? (
+        <Button
+          className={classes.Button + " " + name}
+          color={props.color}
+          onClick={props.clicked}
+        >
+          <span>{props.children}</span>
+        </Button>
+      ) : (
+        <Button
+          className={classes.Button + " " + name}
+          color={props.color}
+          onClick={props.clicked}
+          disabled={!props.valid || !props.dirty}
+        >
+          <span>{props.children}</span>
+        </Button>
+      )}
     </>
   );
 }
