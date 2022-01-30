@@ -446,6 +446,6 @@ func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	row := d.db.QueryRowx(command, &id)
 
 	favorite := &Favorite{}
-	err := row.StructScan(&favorite)
+	err := row.StructScan(favorite)
 	return favorite, err
 }
