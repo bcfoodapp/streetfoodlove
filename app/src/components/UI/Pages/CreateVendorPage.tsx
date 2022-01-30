@@ -3,7 +3,6 @@ import {
   Form,
   Header,
   Input,
-  InputOnChangeData,
   Select,
   TextArea,
 } from "semantic-ui-react";
@@ -14,112 +13,201 @@ import styles from "./createvendorpage.module.css";
 import { useState } from "react";
 import { useCreateVendorMutation, Vendor } from "../../../api";
 import { v4 as uuid } from "uuid";
-
-const timeOptions = [
-  { key: "8AM ", text: "8AM-5PM", value: "hours1" },
-  { key: "9AM", text: "9AM-6PM", value: "hours2" },
-  { key: "10AM", text: "10Am-7PM", value: "hours3" },
-];
+import { Formik, FormikProps, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
 };
 
+interface inputValues {
+  name: string;
+  businessAddress: string;
+  phoneNumber: string;
+  businessHours: string;
+  website: string;
+}
+
+const businessHours = [
+  { key: "8AM ", text: "8AM-5PM", value: "8AM-5PM" },
+  { key: "9AM", text: "9AM-6PM", value: "9AM-6PM" },
+  { key: "10AM", text: "10AM-7PM", value: "10AM-7PM" },
+];
 const CreateVendorPage: React.FC = () => {
   const [createVendor] = useCreateVendorMutation();
-  const [input, setInput] = useState({
+
+  const initialValues: inputValues = {
     name: "",
     businessAddress: "",
     phoneNumber: "",
     businessHours: "",
     website: "",
+  };
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Required"),
+    businessAddress: Yup.string().required("Required"),
+    phoneNumber: Yup.string().required("Required"),
+    businessHours: Yup.string().required("Required"),
+    website: Yup.string().required("Required"),
   });
 
-  const onChange = ({ name, value }: InputOnChangeData) => {
-    setInput((state) => ({ ...state, [name]: value }));
+  const onSubmit = (data: inputValues) => {
+    const id = uuid();
+    const vendor: Vendor = {
+      ID: id,
+      Name: data.name,
+      BusinessAddress: data.businessAddress,
+      Website: data.website,
+      BusinessHours: data.businessHours,
+      Phone: data.phoneNumber,
+      BusinessLogo: "",
+      Latitude: 0,
+      Longitude: 0,
+    };
+    createVendor(vendor);
+    // Temporary output
+    console.log(`vendor ID: ${id}`);
   };
 
   return (
     <Container className={styles.wrapper}>
       <HeaderBar logout />
+      {/* <MessageError /> */}
       <Header as={"h2"} className={styles.header}>
         Create New Vendor Page
       </Header>
-      <Form
-        onSubmit={() => {
-          const id = uuid();
-          const vendor: Vendor = {
-            ID: id,
-            Name: input.name,
-            BusinessAddress: input.businessAddress,
-            Website: input.website,
-            BusinessHours: input.businessHours,
-            Phone: input.phoneNumber,
-            BusinessLogo: "",
-            Latitude: 0,
-            Longitude: 0,
-          };
-          createVendor(vendor);
-          // Temporary output
-          console.log(`vendor ID: ${id}`);
-        }}
-        className={styles.form}
+
+      <Formik
+        enableReinitialize
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+        validateOnChange={true}
       >
-        <Form.Group widths="equal">
-          <Form.Input
-            name="name"
-            onChange={(_, data) => onChange(data)}
-            label="Name"
-            placeholder="Name"
-          />
-          <Form.Input
-            name="businessAddress"
-            onChange={(_, data) => onChange(data)}
-            label="Business Address"
-            placeholder="Business Address"
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Input
-            name="phoneNumber"
-            onChange={(_, data) => onChange(data)}
-            label="Phone Number"
-            placeholder="Phone Number"
-          />
-          <Form.Field
-            control={Select}
-            options={timeOptions}
-            name="businessHours"
-            onChange={(_, data) => onChange(data)}
-            label="Business Hours"
-            placeholder="Business Hours"
-            search
-          />
-          <Form.Input
-            name="website"
-            onChange={(_, data) => onChange(data)}
-            label="Website URL"
-            placeholder="Website URL"
-            width={8}
-          />
-        </Form.Group>
+        {(formProps: FormikProps<inputValues>) => {
+          const {
+            dirty,
+            isValid,
+            handleSubmit,
+            handleBlur,
+            handleReset,
+            touched,
+            errors,
+            handleChange,
+            values,
+            setFieldValue,
+          } = formProps;
 
-        <Form.Field
-          control={fileInput}
-          label="Upload Business Logo"
-          width={5}
-        />
+          return (
+            <Form
+              onSubmit={handleSubmit}
+              className={styles.form}
+              onReset={handleReset}
+            >
+              <Form.Input
+                name="name"
+                onChange={handleChange}
+                label="Name"
+                placeholder="Name"
+                onBlur={handleBlur}
+                error={touched.name && Boolean(errors.name)}
+                value={values.name}
+                required
+              />
+              <ErrorMessage
+                name="name"
+                component="span"
+                className={styles.error}
+              />
+              <Form.Input
+                name="businessAddress"
+                onChange={handleChange}
+                label="Business Address"
+                placeholder="Business Address"
+                onBlur={handleBlur}
+                error={
+                  touched.businessAddress && Boolean(errors.businessAddress)
+                }
+                value={values.businessAddress}
+                required
+              />
+              <ErrorMessage
+                name="businessAddress"
+                component="span"
+                className={styles.error}
+              />
+              <Form.Input
+                name="phoneNumber"
+                onChange={handleChange}
+                label="Phone Number"
+                placeholder="Phone Number"
+                onBlur={handleBlur}
+                error={touched.phoneNumber && Boolean(errors.phoneNumber)}
+                value={values.phoneNumber}
+                required
+              />
+              <ErrorMessage
+                name="phoneNumber"
+                component="span"
+                className={styles.error}
+              />
+              <Form.Field
+                id="businessHours"
+                control={Select}
+                options={businessHours}
+                onChange={(_, hour) =>
+                  setFieldValue("businessHours", hour.value)
+                }
+                label="Business Hours"
+                placeholder="Business Hours"
+                searched
+                onBlur={handleBlur}
+                error={touched.businessHours && Boolean(errors.businessHours)}
+                value={values.businessHours}
+                required
+              />
+              <ErrorMessage
+                name="businessHours"
+                component="span"
+                className={styles.error}
+              />
+              <Form.Input
+                name="website"
+                onChange={handleChange}
+                label="Website URL"
+                placeholder="Website URL"
+                width={8}
+                onBlur={handleBlur}
+                error={touched.website && Boolean(errors.website)}
+                value={values.website}
+                required
+              />
+              <ErrorMessage
+                name="website"
+                component="span"
+                className={styles.error}
+              />
 
-        <Form.Field
-          control={TextArea}
-          label="Vendor Description"
-          placeholder="Vendor Description"
-        />
+              <Form.Field
+                control={fileInput}
+                label="Upload Business Logo"
+                width={8}
+              />
 
-        <Buttons create color="green">
-          Create
-        </Buttons>
-      </Form>
+              <Form.Field
+                control={TextArea}
+                label="Vendor Description"
+                placeholder="Vendor Description"
+              />
+
+              <Buttons create color="green" dirty={dirty} valid={isValid}>
+                Create
+              </Buttons>
+            </Form>
+          );
+        }}
+      </Formik>
     </Container>
   );
 };

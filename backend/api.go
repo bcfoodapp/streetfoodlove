@@ -49,6 +49,10 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 
+	//create, add, delete favorite
+	router.PUT("/favorite/:id", a.FavoritePut)
+	router.GET("/favorite/:id", a.Favorite)
+
 	router.GET("/photos/:id", a.Photo)
 	router.POST("/photos/:id", GetToken, a.PhotoPost)
 
@@ -450,4 +454,44 @@ func (a *API) LinkPost(c *gin.Context) {
 	}
 	_ = id
 	// TODO
+}
+
+//Favorite
+func (a *API) FavoritePut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	favorite := &database.Favorite{}
+	if err := c.ShouldBindJSON(favorite); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != favorite.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.FavoriteCreate(getTokenFromContext(c), favorite); err != nil {
+		c.Error(err)
+		return
+	}
+}
+func (a *API) Favorite(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	favorite, err := a.Backend.Favorite(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, favorite)
 }
