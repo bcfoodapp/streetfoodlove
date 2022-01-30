@@ -7,6 +7,10 @@
   margin-left: 45%;
 }
 
+.header {
+  margin-left: 10px !important;
+}
+
 .profileActions {
   margin-top: 30px !important;
   padding: 10px !important;
@@ -18,13 +22,6 @@
   height: 800px !important;
   width: 200% !important;
   border: 2px solid grey;
-}
-
-.saveBtn {
-  position: absolute;
-  right: 47%;
-  top: 90%;
-  width: 20% !important;
 }
 
 .editIcon {

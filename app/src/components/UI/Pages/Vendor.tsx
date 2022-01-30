@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   useReviewsQuery,
   useVendorQuery,
   useSubmitReviewMutation,
   StarRatingInteger,
+  useLazyUsersMultipleQuery,
+  User,
 } from "../../../api";
 import { Container, Grid } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
@@ -23,16 +25,21 @@ import jwtDecode from "jwt-decode";
  * Displays the vendor page of a vendor, including listed reviews and add review button
  */
 export function Vendor(): React.ReactElement {
-  // const [completedFormData, setCompletedFormData] = useState({});
   const vendorID = useParams().ID as string;
-  const vendorQuery = useVendorQuery(vendorID);
+  console.log("vendor id: " + vendorID);
+  const { data: vendor } = useVendorQuery(vendorID);
   const reviewsQuery = useReviewsQuery(vendorID);
+  const reviews = reviewsQuery.data;
   const [submitReview] = useSubmitReviewMutation();
   const [openReviewForm, setOpenReviewForm] = useState(false);
-  const error = useSelector<RootState, RootState["root"]["error"]>(
-    (state) => state.root.error
-  );
+  const error = useAppSelector((state) => state.root.error);
   const token = useAppSelector((state) => state.token.token);
+  const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
+  useEffect(() => {
+    if (reviewsQuery.isSuccess) {
+      usersMultipleTrigger(reviewsQuery.data!.map((r) => r.UserID));
+    }
+  }, [reviewsQuery.isSuccess]);
 
   const openReviewHandler = () => {
     setOpenReviewForm(true);
@@ -53,39 +60,40 @@ export function Vendor(): React.ReactElement {
       throw new Error("not logged in");
     }
 
+    const userID = jwtDecode<{ UserID: string }>(token).UserID;
     submitReview({
       ID: uuid(),
       Text: text,
       DatePosted: DateTime.now(),
       VendorID: vendorID,
-      UserID: jwtDecode<{ UserID: string }>(token).UserID,
+      UserID: userID,
       StarRating: starRating,
     });
+    // Add current user to users list
+    usersMultipleTrigger([...reviewsQuery.data!.map((r) => r.UserID), userID]);
   };
-
-  console.log(reviewsQuery.data);
 
   return (
     <>
-      <HeaderBar />
+      <HeaderBar signUp />
       <Container className={styles.wrapper}>
         <Grid>
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
-                Name: {vendorQuery.data?.Name}
+                Name: {vendor?.Name}
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
               <VendorDetailCards heading="contact">
-                {vendorQuery.data?.Phone}
+                {vendor?.Phone}
               </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="address">
-                {vendorQuery.data?.BusinessAddress}
+                {vendor?.BusinessAddress}
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
@@ -109,9 +117,13 @@ export function Vendor(): React.ReactElement {
       {/* Temporary error output */}
       <pre>{error ? error.toString() : ""}</pre>
       <Container className={styles.reviews}>
-        {reviewsQuery.data?.map((review, i) => (
-          <Review review={review} key={i} />
-        ))}
+        {reviews?.map((review, i) => {
+          let user = null as User | null;
+          if (users && review.UserID in users) {
+            user = users[review.UserID];
+          }
+          return <Review key={i} review={review} user={user} />;
+        })}
       </Container>
     </>
   );

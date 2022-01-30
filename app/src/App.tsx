@@ -11,6 +11,10 @@ import AccountSelection from "./components/UI/Pages/AccountSelection";
 import VendorAppForm from "./components/UI/Pages/VendorAppForm";
 import AccountProfile from "./components/UI/Pages/AccountProfile";
 import YourAccountUser from "./components/UI/Pages/YourAccountUser";
+import BusinessGuides from "./components/UI/Pages/BusinessGuides";
+import VendorDashBoard from "./components/UI/Pages/VendorDashboard";
+import CreateVendorPage from "./components/UI/Pages/CreateVendorPage";
+import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/BusinessGuideArticle";
 
 function App(): React.ReactElement {
   return (
@@ -27,6 +31,10 @@ function App(): React.ReactElement {
             <Route path="/vendor-signup" element={<VendorAppForm />} />
             <Route path="/account-profile" element={<AccountProfile />} />
             <Route path="/your-acct-user" element={<YourAccountUser />} />
+            <Route path="/business-guide" element={<BusinessGuides />} />
+            <Route path="vendor-dashboard" element={<VendorDashBoard />} />
+            <Route path="/create-vendor-page" element={<CreateVendorPage />} />
+            <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
           </Routes>
         </BrowserRouter>
       </Provider>

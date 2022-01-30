@@ -31,16 +31,22 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	corsOptions.AddAllowHeaders("Authorization")
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
+	router.Use(gin.CustomRecovery(recovery))
 
 	router.GET("/vendors/:id", a.Vendor)
+	router.PUT("/vendors/:id", GetToken, a.VendorPut)
+
 	router.GET("/users/:id", a.User)
-	router.GET("/users/:id/protected", a.UserProtected)
-	router.POST("/users/:id/protected", a.UserProtectedPost)
-	router.PUT("/users/:id/protected", a.UserProtectedPut)
+	router.GET("/users/:id/protected", GetToken, a.UserProtected)
+	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
+	router.PUT("/users/:id/protected", GetToken, a.UserProtectedPut)
+
 	router.GET("/reviews", a.ReviewsByVendorID)
-	router.PUT("/reviews/:id", Auth, a.ReviewPut)
+	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
+
 	router.POST("/token", a.TokenPost)
+
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 
 	//create, add, delete favorite
@@ -48,20 +54,31 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/favorite/:id", a.Favorite)
 
 	router.GET("/photos/:id", a.Photo)
-	router.POST("/photos/:id", a.PhotoPost)
+	router.POST("/photos/:id", GetToken, a.PhotoPost)
 
 	router.GET("/guides/:id", a.Guide)
-	router.POST("/guides/:id", a.GuidePost)
+	router.POST("/guides/:id", GetToken, a.GuidePost)
 
 	router.GET("/links/:id", a.Link)
-	router.POST("/links/:id", a.LinkPost)
+	router.POST("/links/:id", GetToken, a.LinkPost)
 }
 
-// errorHandler writes any errors to response
+// errorHandler writes any errors to response.
 func errorHandler(c *gin.Context) {
 	c.Next()
 	for _, err := range c.Errors {
 		c.JSON(http.StatusBadRequest, err.Error())
+	}
+}
+
+// recovery is a gin.RecoveryFunc that writes errors to response.
+func recovery(c *gin.Context, err interface{}) {
+	if e, ok := err.(error); ok {
+		c.AbortWithError(http.StatusInternalServerError, e)
+	} else if s, ok := err.(string); ok {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, s)
+	} else {
+		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 }
 
@@ -75,9 +92,9 @@ type TokenClaims struct {
 	jwt.StandardClaims
 }
 
-// Auth is a middleware to validate token and get user ID. The user ID is retrieved with
+// GetToken is a middleware to validate token and get user ID. The user ID is retrieved with
 // c.MustGet(userIDKey).(uuid.UUID).
-func Auth(c *gin.Context) {
+func GetToken(c *gin.Context) {
 	headerValue := c.GetHeader("Authorization")
 	const bearer = "Bearer "
 	if !strings.HasPrefix(headerValue, bearer) {
@@ -129,6 +146,30 @@ func (a *API) Vendor(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, vendor)
+}
+
+func (a *API) VendorPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendor := &database.Vendor{}
+	if err := c.ShouldBindJSON(vendor); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != vendor.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.VendorCreate(getTokenFromContext(c), vendor); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) User(c *gin.Context) {
@@ -248,7 +289,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.ReviewPut(getTokenFromContext(c), review); err != nil {
+	if err := a.Backend.ReviewCreate(getTokenFromContext(c), review); err != nil {
 		c.Error(err)
 		return
 	}
