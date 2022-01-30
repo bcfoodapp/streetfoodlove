@@ -132,6 +132,17 @@ func SetupTables(db *sqlx.DB) error {
 			PRIMARY KEY (ID)
 		)
 		`,
+		`
+		CREATE TABLE Favorite (
+			ID CHAR(36) NOT NULL,
+			DatePosted DATETIME NULL,
+			VendorID CHAR(36),
+			UserID CHAR(36),
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			PRIMARY KEY (ID)
+		)
+		`,
 	}
 
 	for _, command := range commands {

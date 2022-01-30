@@ -99,3 +99,18 @@ func (b *Backend) Guide(id uuid.UUID) (*database.Guide, error) {
 func (b *Backend) Link(id uuid.UUID) (*database.Link, error) {
 	return b.Database.Link(id)
 }
+
+//Favorite
+func (b *Backend) Favorite(id uuid.UUID) (*database.Favorite, error) {
+	return b.Database.Favorite(id)
+}
+
+func (b *Backend) FavoriteCreate(userID uuid.UUID, favorite *database.Favorite) error {
+	if favorite.UserID != userID {
+		return unauthorized
+	}
+
+	favorite.DatePosted = time.Now()
+
+	return b.Database.FavoriteCreate(favorite)
+}
