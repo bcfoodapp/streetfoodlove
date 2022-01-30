@@ -57,7 +57,6 @@ export default function Signup(): React.ReactElement {
 
   return (
     <Container className={styles.signUpWrapper}>
-      <HeaderBar login />
       <h1>Sign Up Form (user account)</h1>
 
       <Formik

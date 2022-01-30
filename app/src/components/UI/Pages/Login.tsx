@@ -48,7 +48,6 @@ export default function Login(): React.ReactElement {
 
   return (
     <>
-      <HeaderBar />
       {error ? <MessageError errorMsg={error.toString()} /> : null}
 
       <Formik

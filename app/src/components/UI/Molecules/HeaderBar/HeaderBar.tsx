@@ -13,7 +13,6 @@ interface Props {
   signUp?: boolean;
   login?: boolean;
   profile?: boolean;
-  logout?: boolean;
 }
 
 const ProfileIcon = (
@@ -54,13 +53,6 @@ export default function HeaderBar(props: Props): React.ReactElement {
           onChange={() => window.location.reload()}
         />
         <Menu.Item>
-          {props.logout ? (
-            <Link to="/login">
-              <Buttons logout color="orange">
-                Log Out
-              </Buttons>
-            </Link>
-          ) : null}
           {props.signUp ? (
             <Link to="/signup">
               <Buttons signup>Sign Up</Buttons>
