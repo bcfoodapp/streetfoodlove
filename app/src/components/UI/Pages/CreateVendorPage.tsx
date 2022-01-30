@@ -111,7 +111,7 @@ const CreateVendorPage: React.FC = () => {
                 label="Name"
                 placeholder="Name"
                 onBlur={handleBlur}
-                error={touched.name && Boolean(touched.name)}
+                error={touched.name && Boolean(errors.name)}
                 value={values.name}
                 required
               />
