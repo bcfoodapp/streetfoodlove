@@ -66,7 +66,7 @@ export default function Login(): React.ReactElement {
                 {/*  <Checkbox label="I agree to the Terms and Conditions" />*/}
                 {/*</Form.Field>*/}
                 <Container>
-                  <Buttons login color="green" clicked={onSubmit}>
+                  <Buttons login color="green">
                     Login
                   </Buttons>
                 </Container>

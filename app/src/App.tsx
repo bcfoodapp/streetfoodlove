@@ -15,10 +15,12 @@ import BusinessGuides from "./components/UI/Pages/BusinessGuides";
 import VendorDashBoard from "./components/UI/Pages/VendorDashboard";
 import CreateVendorPage from "./components/UI/Pages/CreateVendorPage";
 import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/BusinessGuideArticle";
+import HeaderBar from "./components/UI/Molecules/HeaderBar/HeaderBar";
 
 function App(): React.ReactElement {
   return (
     <ErrorBoundary>
+      <HeaderBar />
       <Provider store={store}>
         <BrowserRouter basename="/streetfoodlove">
           <Routes>
