@@ -19,6 +19,7 @@ import { v4 as uuid } from "uuid";
 import { RootState, useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import jwtDecode from "jwt-decode";
+import MessageError from "../Atoms/Message/MessageError";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -74,6 +75,7 @@ export function Vendor(): React.ReactElement {
   return (
     <>
       <HeaderBar signUp />
+      {error ? <MessageError errorMsg={error.toString()} /> : null}
       <Container className={styles.wrapper}>
         <Grid>
           <Grid.Row>

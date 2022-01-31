@@ -15,6 +15,7 @@ import { useCreateVendorMutation, Vendor } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useAppSelector } from "../../../store";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
@@ -35,6 +36,7 @@ const businessHours = [
 ];
 const CreateVendorPage: React.FC = () => {
   const [createVendor] = useCreateVendorMutation();
+  const error = useAppSelector((state) => state.root.error);
 
   const initialValues: inputValues = {
     name: "",
@@ -73,7 +75,8 @@ const CreateVendorPage: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
       <HeaderBar logout />
-      {/* <MessageError /> */}
+      {error ? <MessageError errorMsg={error.toString()} /> : null}
+
       <Header as={"h2"} className={styles.header}>
         Create New Vendor Page
       </Header>

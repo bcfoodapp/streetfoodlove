@@ -5,9 +5,12 @@ import { Tab } from "semantic-ui-react";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import AccountSettingsFormGroup from "../Molecules/Form Group/AccountSettingsFormGroup";
 import Buttons from "../Atoms/Button/Buttons";
+import { useAppSelector } from "../../../store";
+import MessageError from "../Atoms/Message/MessageError";
 
 const AccountProfile: React.FC = () => {
   const [disabledForm, setDisabledForm] = useState<boolean>(true);
+  const error = useAppSelector((state) => state.root.error);
 
   const panes = [
     {
@@ -32,6 +35,7 @@ const AccountProfile: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
       <HeaderBar signUp profile />
+      {error ? <MessageError errorMsg={error.toString()} /> : null}
       <h2>Profile</h2>
       <Container className={styles.profileActions}>
         <Tab
