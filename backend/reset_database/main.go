@@ -65,7 +65,7 @@ func SetupTables(db *sqlx.DB) error {
 	commands := [...]string{
 		`
 		CREATE TABLE IF NOT EXISTS Vendor (
-			ID CHAR(36) NOT NULL,
+			ID CHAR(36) NOT NULL
 			Name VARCHAR(100) NOT NULL,
 			BusinessAddress VARCHAR(500) NULL,
 			Website VARCHAR(500) NULL,
