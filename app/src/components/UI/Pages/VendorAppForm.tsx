@@ -21,7 +21,6 @@ interface inputValues {
 
 export default function VendorAppForm(): React.ReactElement {
   const storeUserInfo = () => {};
-  const error = useAppSelector((state) => state.root.error);
 
   const timeOptionsFromValues = [
     //options for business hours starting from...
@@ -86,7 +85,6 @@ export default function VendorAppForm(): React.ReactElement {
   return (
     <Container className={styles.signUpWrapper}>
       <HeaderBar login />
-      {error ? <MessageError errorMsg={error.toString()} /> : null}
 
       <h1>Sign Up Form (Vendor account)</h1>
 

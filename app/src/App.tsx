@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Vendor } from "./components/UI/Pages/Vendor";
 import { Provider } from "react-redux";
-import { store } from "./store";
+import { store, useAppSelector } from "./store";
 import Login from "./components/UI/Pages/Login";
 import { ErrorBoundary } from "./components/UI/Organisms/ErrorBoundary";
 import Signup from "./components/UI/Pages/Signup";
@@ -15,11 +15,15 @@ import BusinessGuides from "./components/UI/Pages/BusinessGuides";
 import VendorDashBoard from "./components/UI/Pages/VendorDashboard";
 import CreateVendorPage from "./components/UI/Pages/CreateVendorPage";
 import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/BusinessGuideArticle";
+import MessageError from "./components/UI/Atoms/Message/MessageError";
 
 function App(): React.ReactElement {
+  const error = useAppSelector((state) => state.root.error);
+
   return (
     <ErrorBoundary>
       <Provider store={store}>
+        {error ? <MessageError errorMsg={error.toString()} /> : null}
         <BrowserRouter basename="/streetfoodlove">
           <Routes>
             <Route path="/" element={<LandingPage />} />

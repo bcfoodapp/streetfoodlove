@@ -10,7 +10,6 @@ import Buttons from "../Atoms/Button/Buttons";
 import MessageError from "../Atoms/Message/MessageError";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./createvendorpage.module.css";
-import { useState } from "react";
 import { useCreateVendorMutation, Vendor } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { Formik, FormikProps, ErrorMessage } from "formik";
@@ -36,7 +35,6 @@ const businessHours = [
 ];
 const CreateVendorPage: React.FC = () => {
   const [createVendor] = useCreateVendorMutation();
-  const error = useAppSelector((state) => state.root.error);
 
   const initialValues: inputValues = {
     name: "",
@@ -75,8 +73,6 @@ const CreateVendorPage: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
       <HeaderBar logout />
-      {error ? <MessageError errorMsg={error.toString()} /> : null}
-
       <Header as={"h2"} className={styles.header}>
         Create New Vendor Page
       </Header>

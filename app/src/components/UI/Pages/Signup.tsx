@@ -22,7 +22,6 @@ interface inputValues {
 
 export default function Signup(): React.ReactElement {
   const [createUser] = useCreateUserMutation();
-  const error = useAppSelector((state) => state.root.error);
 
   const initialValues: inputValues = {
     firstName: "",
@@ -61,7 +60,6 @@ export default function Signup(): React.ReactElement {
   return (
     <Container className={styles.signUpWrapper}>
       <HeaderBar login />
-      {error ? <MessageError errorMsg={error.toString()} /> : null}
       <h1>Sign Up Form (user account)</h1>
 
       <Formik
