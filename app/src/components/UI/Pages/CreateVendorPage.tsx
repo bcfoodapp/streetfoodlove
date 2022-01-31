@@ -51,7 +51,7 @@ const CreateVendorPage: React.FC = () => {
     businessAddress: Yup.string().required("Required"),
     phoneNumber: Yup.string().required("Required"),
     businessHours: Yup.string().required("Required"),
-    website: Yup.string().required("Required"),
+    website: Yup.string(),
   });
 
   const onSubmit = (data: inputValues) => {

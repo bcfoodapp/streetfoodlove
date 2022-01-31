@@ -97,7 +97,16 @@ export function Vendor(): React.ReactElement {
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
-              <VendorDetailCards heading="map">Map Image</VendorDetailCards>
+              <VendorDetailCards heading="map">
+                {vendor ? (
+                  <iframe
+                    frameBorder="0"
+                    style={{ border: 0, width: "100%", height: "100%" }}
+                    src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAYGdHFH-OPCSqQkGrQygGw--zgcQWAv3Y&q=${vendor.Latitude},${vendor.Longitude}`}
+                    allowFullScreen
+                  />
+                ) : null}
+              </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
         </Grid>
