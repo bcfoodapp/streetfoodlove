@@ -73,7 +73,7 @@ export default function VendorAppForm(): React.ReactElement {
   const validationSchema = Yup.object({
     name: Yup.string().required("Required"),
     businessAddress: Yup.string().required("Required"),
-    website: Yup.string().required("Required"),
+    website: Yup.string(),
     fromHour: Yup.string().required("Required"),
     toHour: Yup.string().required("Required"),
     phoneNumber: Yup.string().required("Required"),
@@ -142,7 +142,6 @@ export default function VendorAppForm(): React.ReactElement {
                 fluid
                 label="Website URL"
                 placeholder="Website URL"
-                required
                 width={5}
                 name={"website"}
                 onChange={handleChange}
