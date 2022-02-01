@@ -24,6 +24,7 @@ function App(): React.ReactElement {
     <ErrorBoundary>
       {error ? <MessageError errorMsg={error.toString()} /> : null}
       <BrowserRouter basename="/streetfoodlove">
+        <HeaderBar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/vendors/:ID" element={<Vendor />} />

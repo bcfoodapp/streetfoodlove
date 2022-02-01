@@ -47,8 +47,6 @@ export default function Login(): React.ReactElement {
 
   return (
     <>
-      <HeaderBar />
-
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
