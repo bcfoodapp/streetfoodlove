@@ -6,6 +6,8 @@ import { Dropdown } from "semantic-ui-react";
 import styles from "./vendorappform.module.css";
 import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
+import { useAppSelector } from "../../../store";
+import MessageError from "../Atoms/Message/MessageError";
 
 interface inputValues {
   name: string;
@@ -83,6 +85,7 @@ export default function VendorAppForm(): React.ReactElement {
   return (
     <Container className={styles.signUpWrapper}>
       <HeaderBar login />
+
       <h1>Sign Up Form (Vendor account)</h1>
 
       <Formik
