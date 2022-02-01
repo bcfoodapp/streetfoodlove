@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Form, Container } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./signup.module.css";
 import { useCreateUserMutation, UserType } from "../../../api";
 import { v4 as uuid } from "uuid";
@@ -59,7 +58,6 @@ export default function Signup(): React.ReactElement {
 
   return (
     <Container className={styles.signUpWrapper}>
-      <HeaderBar login />
       <h1>Sign Up Form (user account)</h1>
 
       <Formik

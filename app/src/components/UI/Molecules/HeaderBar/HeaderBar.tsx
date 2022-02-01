@@ -4,17 +4,11 @@ import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 /**
  * Returns the headerbar element
  */
-
-interface Props {
-  signUp?: boolean;
-  login?: boolean;
-  profile?: boolean;
-  logout?: boolean;
-}
 
 const ProfileIcon = (
   <span>
@@ -38,7 +32,9 @@ const options = [
   { key: "sign-out", text: "Log Out" },
 ];
 
-export default function HeaderBar(props: Props): React.ReactElement {
+export default function HeaderBar(): React.ReactElement {
+  const token = useSelector((state: any) => state.token.token);
+
   return (
     <Menu size="massive">
       <Menu.Item>
@@ -47,26 +43,19 @@ export default function HeaderBar(props: Props): React.ReactElement {
       <SearchBox />
 
       <Menu.Menu position="right">
-        <Dropdown
-          trigger={ProfileIcon}
-          options={options}
-          className={styles.dropdown}
-          onChange={() => window.location.reload()}
-        />
+        {token !== null ? (
+          <Dropdown
+            trigger={ProfileIcon}
+            options={options}
+            className={styles.dropdown}
+            // onChange={() => window.location.reload()}
+          />
+        ) : null}
         <Menu.Item>
-          {props.logout ? (
-            <Link to="/login">
-              <Buttons logout color="orange">
-                Log Out
-              </Buttons>
-            </Link>
-          ) : null}
-          {props.signUp ? (
-            <Link to="/signup">
-              <Buttons signup>Sign Up</Buttons>
-            </Link>
-          ) : null}
-          {props.login ? (
+          <Link to="/signup">
+            <Buttons signup>Sign Up</Buttons>
+          </Link>
+          {token === null ? (
             <Link to="/login">
               <Buttons login color="orange">
                 Login

@@ -15,6 +15,7 @@ import BusinessGuides from "./components/UI/Pages/BusinessGuides";
 import VendorDashBoard from "./components/UI/Pages/VendorDashboard";
 import CreateVendorPage from "./components/UI/Pages/CreateVendorPage";
 import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/BusinessGuideArticle";
+import HeaderBar from "./components/UI/Molecules/HeaderBar/HeaderBar";
 import MessageError from "./components/UI/Atoms/Message/MessageError";
 
 function App(): React.ReactElement {
@@ -23,6 +24,7 @@ function App(): React.ReactElement {
     <ErrorBoundary>
       {error ? <MessageError errorMsg={error.toString()} /> : null}
       <BrowserRouter basename="/streetfoodlove">
+        <HeaderBar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/vendors/:ID" element={<Vendor />} />

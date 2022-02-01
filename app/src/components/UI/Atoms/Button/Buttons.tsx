@@ -13,7 +13,6 @@ interface ButtonsProps {
   signup?: boolean;
   apply?: boolean;
   getstarted?: boolean;
-  logout?: boolean;
   cancel?: boolean;
   edit?: boolean;
   save?: boolean;
@@ -35,7 +34,6 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
   else if (props.signup) name = classes.Signup;
   else if (props.apply) name = classes.Apply;
   else if (props.getstarted) name = classes.getStarted;
-  else if (props.logout) name = classes.Logout;
   else if (props.cancel) name = classes.Cancel;
   else if (props.writeReview) name = classes.writeReview;
   else if (props.edit) name = classes.edit;

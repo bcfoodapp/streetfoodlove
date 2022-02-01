@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 const AccountSelection: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
-      <HeaderBar />
       <h2>Choose Account Type</h2>
       <Container className={styles.selectBox}>
         <Container className={styles.customerBox}>

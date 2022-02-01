@@ -33,7 +33,6 @@ const AccountProfile: React.FC = () => {
 
   return (
     <Container className={styles.wrapper}>
-      <HeaderBar signUp profile />
       <h2>Profile</h2>
       <Container className={styles.profileActions}>
         <Tab
