@@ -19,29 +19,26 @@ import MessageError from "./components/UI/Atoms/Message/MessageError";
 
 function App(): React.ReactElement {
   const error = useAppSelector((state) => state.root.error);
-
   return (
     <ErrorBoundary>
-      <Provider store={store}>
-        {error ? <MessageError errorMsg={error.toString()} /> : null}
-        <BrowserRouter basename="/streetfoodlove">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/vendors/:ID" element={<Vendor />} />
-            <Route path="*" element={<p>Page not found</p>} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/account-selection" element={<AccountSelection />} />
-            <Route path="/vendor-signup" element={<VendorAppForm />} />
-            <Route path="/account-profile" element={<AccountProfile />} />
-            <Route path="/your-acct-user" element={<YourAccountUser />} />
-            <Route path="/business-guide" element={<BusinessGuides />} />
-            <Route path="vendor-dashboard" element={<VendorDashBoard />} />
-            <Route path="/create-vendor-page" element={<CreateVendorPage />} />
-            <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
-          </Routes>
-        </BrowserRouter>
-      </Provider>
+      {error ? <MessageError errorMsg={error.toString()} /> : null}
+      <BrowserRouter basename="/streetfoodlove">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/vendors/:ID" element={<Vendor />} />
+          <Route path="*" element={<p>Page not found</p>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/account-selection" element={<AccountSelection />} />
+          <Route path="/vendor-signup" element={<VendorAppForm />} />
+          <Route path="/account-profile" element={<AccountProfile />} />
+          <Route path="/your-acct-user" element={<YourAccountUser />} />
+          <Route path="/business-guide" element={<BusinessGuides />} />
+          <Route path="vendor-dashboard" element={<VendorDashBoard />} />
+          <Route path="/create-vendor-page" element={<CreateVendorPage />} />
+          <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
+        </Routes>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }
