@@ -7,14 +7,11 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
-import MessageError from "../Atoms/Message/MessageError";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./createvendorpage.module.css";
 import { useCreateVendorMutation, Vendor } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useAppSelector } from "../../../store";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
@@ -73,7 +70,7 @@ const CreateVendorPage: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
       <Header as={"h2"} className={styles.header}>
-        Create New Vendor Page
+        Edit Vendor Page
       </Header>
 
       <Formik
@@ -199,8 +196,8 @@ const CreateVendorPage: React.FC = () => {
                 placeholder="Vendor Description"
               />
 
-              <Buttons create color="green" dirty={dirty} valid={isValid}>
-                Create
+              <Buttons edit color="green" dirty={dirty} valid={isValid}>
+                Edit
               </Buttons>
             </Form>
           );
