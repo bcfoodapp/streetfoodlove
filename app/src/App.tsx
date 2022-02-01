@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Vendor } from "./components/UI/Pages/Vendor";
-import { Provider } from "react-redux";
 import { store, useAppSelector } from "./store";
 import Login from "./components/UI/Pages/Login";
 import { ErrorBoundary } from "./components/UI/Organisms/ErrorBoundary";
@@ -13,7 +12,7 @@ import AccountProfile from "./components/UI/Pages/AccountProfile";
 import YourAccountUser from "./components/UI/Pages/YourAccountUser";
 import BusinessGuides from "./components/UI/Pages/BusinessGuides";
 import VendorDashBoard from "./components/UI/Pages/VendorDashboard";
-import CreateVendorPage from "./components/UI/Pages/EditVendorPage";
+import EditVendorPage from "./components/UI/Pages/EditVendorPage";
 import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/BusinessGuideArticle";
 import HeaderBar from "./components/UI/Molecules/HeaderBar/HeaderBar";
 import MessageError from "./components/UI/Atoms/Message/MessageError";
@@ -37,7 +36,7 @@ function App(): React.ReactElement {
           <Route path="/your-acct-user" element={<YourAccountUser />} />
           <Route path="/business-guide" element={<BusinessGuides />} />
           <Route path="vendor-dashboard" element={<VendorDashBoard />} />
-          <Route path="/create-vendor-page" element={<CreateVendorPage />} />
+          <Route path="/edit-vendor-page" element={<EditVendorPage />} />
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
         </Routes>
       </BrowserRouter>
