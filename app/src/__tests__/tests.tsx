@@ -99,7 +99,7 @@ test("VendorAppForm", () => {
   );
 });
 
-test("VendorAppForm", () => {
+test("VendorDashboard", () => {
   renderer.create(
     <MockEnvironment>
       <VendorDashboard />
