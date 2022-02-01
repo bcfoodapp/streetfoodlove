@@ -14,6 +14,7 @@ import { Vendor } from "../components/UI/Pages/Vendor";
 import VendorAppForm from "../components/UI/Pages/VendorAppForm";
 import VendorDashboard from "../components/UI/Pages/VendorDashboard";
 import YourAccountUser from "../components/UI/Pages/YourAccountUser";
+import App from "../App";
 
 const MockEnvironment: React.FC = ({
   children,
@@ -26,6 +27,14 @@ const MockEnvironment: React.FC = ({
     </>
   );
 };
+
+test("App", () => {
+  renderer.create(
+    <MockEnvironment>
+      <App />
+    </MockEnvironment>
+  );
+});
 
 test("AccountProfile", () => {
   renderer.create(
