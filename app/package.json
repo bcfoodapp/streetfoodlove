@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "webpack serve --config webpack/webpack.dev.js",
-    "test": "jest --config src/__tests__/jest.config.js",
+    "test": "jest",
     "build": "webpack --config webpack/webpack.prod.js",
     "typescript": "tsc -p tsconfig.json",
     "prettier": "prettier -w ."
