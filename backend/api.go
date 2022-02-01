@@ -1,12 +1,15 @@
+//nolint:errcheck
 package main
 
 import (
 	"fmt"
+	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -28,20 +31,54 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	corsOptions.AddAllowHeaders("Authorization")
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
+	router.Use(gin.CustomRecovery(recovery))
 
 	router.GET("/vendors/:id", a.Vendor)
+	router.PUT("/vendors/:id", GetToken, a.VendorPut)
+
 	router.GET("/users/:id", a.User)
+	router.GET("/users/:id/protected", GetToken, a.UserProtected)
+	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
+	router.PUT("/users/:id/protected", GetToken, a.UserProtectedPut)
+
 	router.GET("/reviews", a.ReviewsByVendorID)
-	router.PUT("/reviews/:id", Auth, a.ReviewPut)
+	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
+
 	router.POST("/token", a.TokenPost)
+
+	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
+
+	//create, add, delete favorite
+	router.PUT("/favorite/:id", a.FavoritePut)
+	router.GET("/favorite/:id", a.Favorite)
+
+	router.GET("/photos/:id", a.Photo)
+	router.POST("/photos/:id", GetToken, a.PhotoPost)
+
+	router.GET("/guides/:id", a.Guide)
+	router.POST("/guides/:id", GetToken, a.GuidePost)
+
+	router.GET("/links/:id", a.Link)
+	router.POST("/links/:id", GetToken, a.LinkPost)
 }
 
-// errorHandler writes any errors to response
+// errorHandler writes any errors to response.
 func errorHandler(c *gin.Context) {
 	c.Next()
 	for _, err := range c.Errors {
 		c.JSON(http.StatusBadRequest, err.Error())
+	}
+}
+
+// recovery is a gin.RecoveryFunc that writes errors to response.
+func recovery(c *gin.Context, err interface{}) {
+	if e, ok := err.(error); ok {
+		c.AbortWithError(http.StatusInternalServerError, e)
+	} else if s, ok := err.(string); ok {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, s)
+	} else {
+		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 }
 
@@ -55,9 +92,9 @@ type TokenClaims struct {
 	jwt.StandardClaims
 }
 
-// Auth is a middleware to validate token and get user ID. The user ID is retrieved with
+// GetToken is a middleware to validate token and get user ID. The user ID is retrieved with
 // c.MustGet(userIDKey).(uuid.UUID).
-func Auth(c *gin.Context) {
+func GetToken(c *gin.Context) {
 	headerValue := c.GetHeader("Authorization")
 	const bearer = "Bearer "
 	if !strings.HasPrefix(headerValue, bearer) {
@@ -89,6 +126,12 @@ func Auth(c *gin.Context) {
 	c.Set(userIDKey, claims.UserID)
 }
 
+func getTokenFromContext(c *gin.Context) uuid.UUID {
+	return c.MustGet(userIDKey).(uuid.UUID)
+}
+
+var idsDoNotMatch = fmt.Errorf("ids do not match")
+
 func (a *API) Vendor(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -105,6 +148,30 @@ func (a *API) Vendor(c *gin.Context) {
 	c.JSON(http.StatusOK, vendor)
 }
 
+func (a *API) VendorPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendor := &database.Vendor{}
+	if err := c.ShouldBindJSON(vendor); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != vendor.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.VendorCreate(getTokenFromContext(c), vendor); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
 func (a *API) User(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -119,6 +186,73 @@ func (a *API) User(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+func (a *API) UserProtected(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	user, err := a.Backend.UserProtected(getTokenFromContext(c), id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+func (a *API) UserProtectedPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	user := &database.UserProtected{}
+	if err := c.ShouldBindJSON(user); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != user.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.UserProtectedUpdate(getTokenFromContext(c), user); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) UserProtectedPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	userWithPassword := &struct {
+		*database.UserProtected
+		Password string
+	}{}
+	if err := c.ShouldBindJSON(userWithPassword); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != userWithPassword.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.UserProtectedCreate(userWithPassword.UserProtected, userWithPassword.Password); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) ReviewsByVendorID(c *gin.Context) {
@@ -144,18 +278,18 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	review := &Review{}
+	review := &database.Review{}
 	if err := c.ShouldBindJSON(review); err != nil {
 		c.Error(err)
 		return
 	}
 
 	if id != review.ID {
-		c.Error(fmt.Errorf("ids do not match"))
+		c.Error(idsDoNotMatch)
 		return
 	}
 
-	if err := a.Backend.ReviewPut(c.MustGet(userIDKey).(uuid.UUID), review); err != nil {
+	if err := a.Backend.ReviewCreate(getTokenFromContext(c), review); err != nil {
 		c.Error(err)
 		return
 	}
@@ -178,7 +312,7 @@ func (a *API) Review(c *gin.Context) {
 }
 
 func (a *API) TokenPost(c *gin.Context) {
-	credentials := &Credentials{}
+	credentials := &database.Credentials{}
 	if err := c.ShouldBindJSON(credentials); err != nil {
 		c.Error(err)
 		return
@@ -193,7 +327,7 @@ func (a *API) TokenPost(c *gin.Context) {
 	claims := TokenClaims{
 		UserID: userID,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: (time.Now().Add(time.Minute * 10)).Unix(),
+			ExpiresAt: (time.Now().Add(time.Minute*10 + time.Second*5)).Unix(),
 		},
 	}
 
@@ -202,4 +336,162 @@ func (a *API) TokenPost(c *gin.Context) {
 		panic(err)
 	}
 	c.JSON(http.StatusOK, tokenStr)
+}
+
+func (a *API) MapView(c *gin.Context) {
+	northWestLat, err := strconv.ParseFloat(c.Param("northWestLat"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	northWestLng, err := strconv.ParseFloat(c.Param("northWestLng"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	southEastLat, err := strconv.ParseFloat(c.Param("southEastLat"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	southEastLng, err := strconv.ParseFloat(c.Param("southEastLng"), 64)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	bounds := database.CoordinateBounds{
+		NorthWestLat: northWestLat,
+		NorthWestLng: northWestLng,
+		SouthEastLat: southEastLat,
+		SouthEastLng: southEastLng,
+	}
+	vendors, err := a.Backend.VendorsByCoordinateBounds(&bounds)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, vendors)
+}
+
+func (a *API) Photo(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	photo, err := a.Backend.Photo(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, photo)
+}
+
+func (a *API) PhotoPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	_ = id
+	// TODO
+}
+
+func (a *API) Guide(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	guide, err := a.Backend.Guide(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, guide)
+}
+
+func (a *API) GuidePost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	_ = id
+	// TODO
+}
+
+func (a *API) Link(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	link, err := a.Backend.Link(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, link)
+}
+
+func (a *API) LinkPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	_ = id
+	// TODO
+}
+
+//Favorite
+func (a *API) FavoritePut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	favorite := &database.Favorite{}
+	if err := c.ShouldBindJSON(favorite); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != favorite.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.FavoriteCreate(getTokenFromContext(c), favorite); err != nil {
+		c.Error(err)
+		return
+	}
+}
+func (a *API) Favorite(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	favorite, err := a.Backend.Favorite(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, favorite)
 }

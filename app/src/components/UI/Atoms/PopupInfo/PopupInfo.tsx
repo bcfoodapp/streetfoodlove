@@ -1,17 +1,21 @@
 import React from "react";
 import styles from "./popupInfo.module.css";
+import { Vendor } from "../../../../api";
+
+interface Props {
+  vendor: Vendor;
+}
 
 /**
  * This component is for storing the vendor information in the popups that appear on the map
  */
-
-export default function PopupInfo(): React.ReactElement {
+export default function PopupInfo({ vendor }: Props): React.ReactElement {
   return (
     <div>
       <div className={styles.header}>
         <div className={styles.vendorName}>
           <div>
-            <span>McDonalds</span>
+            <span className={styles.title}>{vendor.Name}</span>
           </div>
           <div className={styles.firstImage}>
             <img
@@ -22,7 +26,7 @@ export default function PopupInfo(): React.ReactElement {
         </div>
         <div className={styles.secondImage}>
           <img
-            src="https://saferchemicals.org/wp-content/uploads/2021/01/McDonalds-sign-scaled.jpeg"
+            src="https://s3-media0.fl.yelpcdn.com/bphoto/L96pd4xrj0l_AvDeO8I0JQ/348s.jpg"
             alt="cannot be displayed"
           />
         </div>

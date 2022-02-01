@@ -1,0 +1,37 @@
+.wrapper {
+  width: 100% !important;
+}
+
+.wrapper > h2 {
+  font-size: 40px;
+  margin-left: 45%;
+}
+
+.header {
+  margin-left: 10px !important;
+}
+
+.profileActions {
+  margin-top: 30px !important;
+  padding: 10px !important;
+  width: 80% !important;
+  border: 2px solid grey;
+}
+
+.pane {
+  height: 800px !important;
+  width: 200% !important;
+  border: 2px solid grey;
+}
+
+.editIcon {
+  position: absolute;
+  height: 60px !important;
+  width: 60px !important;
+}
+
+.editBtn {
+  position: absolute;
+  left: 270px;
+  top: 1.5%;
+}

@@ -3,15 +3,16 @@
   cursor: pointer;
 }
 
+.Create,
 .Submit,
 .Login,
-.Logout,
 .SignUp,
 .Apply,
 .Enter,
 .Cancel,
 .getStarted,
-.writeReview {
+.Save,
+.writeReview .Edit {
   font-family: "Bahnschrift", sans-serif !important;
   font-size: 16px;
 }
@@ -22,7 +23,9 @@
 }
 
 .Enter,
-.Submit {
+.Submit,
+.Save,
+.Edit {
   color: white !important;
   border-radius: 4px !important;
   margin-left: 10px !important;
