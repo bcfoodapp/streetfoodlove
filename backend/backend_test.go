@@ -136,3 +136,108 @@ func (b *BackendTestSuite) TestUser() {
 		b.Equal(user.Username, result.Username)
 	}
 }
+
+func (b *BackendTestSuite) TestReview() {
+	review := &database.Review{
+		ID:       uuid.MustParse("e6f52c09-8954-48f0-a11c-348176dc455f"),
+		Text:     "new review",
+		VendorID: uuid.MustParse("e72ac985-3d7e-47eb-9f0c-f8e52621a708"),
+		UserID:   uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4"),
+	}
+	{
+		// Review does not exist
+		_, err := b.backend.Review(review.ID)
+		b.ErrorAs(err, &sql.ErrNoRows)
+	}
+	{
+		// Not authorized
+		err := b.backend.ReviewCreate(uuid.UUID{}, review)
+		b.ErrorAs(err, &unauthorized)
+	}
+	{
+		// Create review
+		err := b.backend.ReviewCreate(review.UserID, review)
+		b.NoError(err)
+
+		result, err := b.backend.Review(review.ID)
+		b.NoError(err)
+		b.Equal(review.Text, result.Text)
+	}
+	{
+		// Review not found
+		reviews, err := b.backend.ReviewsByVendorID(uuid.UUID{})
+		b.NoError(err)
+		b.Len(reviews, 0)
+	}
+	{
+		// Find review by vendor ID
+		reviews, err := b.backend.ReviewsByVendorID(review.VendorID)
+		b.NoError(err)
+		b.Len(reviews, 1)
+
+		b.Equal(review.Text, reviews[0].Text)
+	}
+}
+
+func (b *BackendTestSuite) TestVendorsByCoordinateBounds() {
+	vendor := &database.Vendor{
+		ID:        uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
+		Latitude:  10,
+		Longitude: 20,
+	}
+
+	{
+		// Add vendor
+		err := b.backend.VendorCreate(uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"), vendor)
+		if !b.NoError(err) {
+			b.FailNow("")
+		}
+	}
+	{
+		// No vendor within bounds
+		vendors, err := b.backend.VendorsByCoordinateBounds(&database.CoordinateBounds{})
+		b.NoError(err)
+		b.Len(vendors, 0)
+	}
+	{
+		// Find vendor in bounds
+		bounds := &database.CoordinateBounds{
+			NorthWestLat: 15,
+			NorthWestLng: 15,
+			SouthEastLat: 5,
+			SouthEastLng: 25,
+		}
+		vendors, err := b.backend.VendorsByCoordinateBounds(bounds)
+		b.NoError(err)
+		b.Len(vendors, 1)
+
+		b.Equal(vendor.ID, vendors[0])
+	}
+}
+
+func (b *BackendTestSuite) TestFavorite() {
+	favorite := &database.Favorite{
+		ID:       uuid.MustParse("09e8267b-027a-40dd-925c-d8111a87338a"),
+		VendorID: uuid.MustParse("e72ac985-3d7e-47eb-9f0c-f8e52621a708"),
+		UserID:   uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4"),
+	}
+	{
+		// Favorite does not exist
+		_, err := b.backend.Favorite(favorite.ID)
+		b.ErrorAs(err, &sql.ErrNoRows)
+	}
+	{
+		// Not authorized
+		err := b.backend.FavoriteCreate(uuid.UUID{}, favorite)
+		b.ErrorAs(err, &unauthorized)
+	}
+	{
+		// Create favorite
+		err := b.backend.FavoriteCreate(favorite.UserID, favorite)
+		b.NoError(err)
+
+		result, err := b.backend.Favorite(favorite.ID)
+		b.NoError(err)
+		b.Equal(favorite.ID, result.ID)
+	}
+}
