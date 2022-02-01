@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "webpack serve --config webpack/webpack.dev.js",
-    "test": "jest",
+    "test": "jest --config src/__tests__/jest.config.js",
     "build": "webpack --config webpack/webpack.prod.js",
     "typescript": "tsc -p tsconfig.json",
     "prettier": "prettier -w ."
@@ -56,21 +56,5 @@
     "webpack-dev-server": "^4.4.0",
     "webpack-merge": "^5.8.0",
     "yup": "^0.32.11"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "moduleNameMapper": {
-      "\\.(css|less)$": "identity-obj-proxy"
-    },
-    "testRegex": "src/__tests__/.*\\.tsx?$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx"
-    ],
-    "testEnvironment": "jsdom"
   }
 }
