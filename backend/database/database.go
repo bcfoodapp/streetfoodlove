@@ -34,6 +34,7 @@ type Vendor struct {
 	BusinessLogo    string
 	Latitude        float64
 	Longitude       float64
+	Owner           uuid.UUID
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -47,8 +48,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			Phone,
 			BusinessLogo,
 			Latitude,
-			Longitude
-
+			Longitude,
+			Owner
 	   ) VALUES (
 			:ID,
 			:Name,
@@ -58,7 +59,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:Phone,
 			:BusinessLogo,
 			:Latitude,
-			:Longitude
+			:Longitude,
+	    	:Owner
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
