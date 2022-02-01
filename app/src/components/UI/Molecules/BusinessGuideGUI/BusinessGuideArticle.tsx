@@ -17,7 +17,7 @@ const BusinessGuideArticle: React.FC = () => {
       <Container className={styles.postInfo}>
         <Container>
           <Header as="h3" className={styles.postDate}>
-            Post date:{" " + guideInfo?.DatePosted}
+            Post date:{" " + guideInfo?.DatePosted.toLocaleString()}
           </Header>
         </Container>
         <Container>
