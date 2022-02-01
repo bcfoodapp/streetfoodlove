@@ -51,8 +51,6 @@ export interface Review {
   StarRating: StarRatingInteger;
 }
 
-type RawReview = Review & { DatePosted: string };
-
 export interface Credentials {
   Username: string;
   Password: string;
@@ -207,6 +205,10 @@ export const apiSlice = createApi({
     }),
     userProtected: builder.query<UserProtected, string>({
       query: (id) => `/users/${encode(id)}/protected`,
+      transformResponse: (user: any) => ({
+        ...user,
+        SignUpDate: DateTime.fromISO(user.SignUpDate),
+      }),
     }),
     updateUser: builder.mutation<undefined, UserProtected>({
       query: (user) => ({
@@ -238,8 +240,8 @@ export const apiSlice = createApi({
     }),
     reviews: builder.query<Review[], string>({
       query: (vendorID) => `/reviews?vendorID=${encode(vendorID)}`,
-      transformResponse: (response) =>
-        (response as RawReview[]).map((review) => ({
+      transformResponse: (response: any[]) =>
+        response.map((review) => ({
           ...review,
           PostDate: DateTime.fromISO(review.DatePosted),
         })),
@@ -287,6 +289,10 @@ export const apiSlice = createApi({
     guide: builder.query<Guide, string>({
       query: (id) => ({
         url: `/guides/${id}`,
+      }),
+      transformResponse: (guide: any) => ({
+        ...guide,
+        DatePosted: DateTime.fromISO(guide.DatePosted),
       }),
     }),
   }),
