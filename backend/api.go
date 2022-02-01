@@ -39,7 +39,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/users/:id", a.User)
 	router.GET("/users/:id/protected", GetToken, a.UserProtected)
 	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
-	router.PUT("/users/:id/protected", GetToken, a.UserProtectedPut)
+	router.PUT("/users/:id/protected", a.UserProtectedPut)
 
 	router.GET("/reviews", a.ReviewsByVendorID)
 	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
