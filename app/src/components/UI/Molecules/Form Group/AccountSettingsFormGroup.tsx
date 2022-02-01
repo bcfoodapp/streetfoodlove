@@ -19,7 +19,7 @@ const AccountSettings: React.FC<{
   const userID = jwtDecode<{ UserID: string }>(token).UserID;
   const userQuery = useUserProtectedQuery(userID);
   const user = userQuery.data;
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -38,7 +38,7 @@ const AccountSettings: React.FC<{
   const [updateSetting] = useUpdateUserMutation();
 
   const handleSubmit = async () => {
-    dispatch(setName({firstName: firstName, lastName: lastName}))
+    dispatch(setName({ firstName: firstName, lastName: lastName }));
     // user is defined when handleSubmit is called
     await updateSetting({
       ID: userID,

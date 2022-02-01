@@ -12,8 +12,8 @@ import { useSelector } from "react-redux";
 
 export default function HeaderBar(): React.ReactElement {
   const token = useSelector((state: any) => state.token.token);
-  const firstName = useSelector((state: any) => state.UserName.FirstName)
-  const lastName = useSelector((state: any) => state.UserName.LastName)
+  const firstName = useSelector((state: any) => state.UserName.FirstName);
+  const lastName = useSelector((state: any) => state.UserName.LastName);
 
   const ProfileIcon = (
     <span>
@@ -26,7 +26,10 @@ export default function HeaderBar(): React.ReactElement {
       key: "user",
       text: (
         <span>
-          Signed in as <strong>{firstName} {lastName}</strong>
+          Signed in as{" "}
+          <strong>
+            {firstName} {lastName}
+          </strong>
         </span>
       ),
       disabled: true,

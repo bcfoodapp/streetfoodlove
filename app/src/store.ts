@@ -10,8 +10,8 @@ import { apiSlice, tokenSlice } from "./api";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 interface Name {
-  firstName: string
-  lastName: string
+  firstName: string;
+  lastName: string;
 }
 
 const apiErrorHandler: Middleware =
@@ -47,11 +47,11 @@ export const nameSlice = createSlice({
   },
   reducers: {
     setName: (state, { payload }: PayloadAction<Name>) => {
-      state.FirstName = payload.firstName,
-      state.LastName = payload.lastName
-    }
-  }
-})
+      (state.FirstName = payload.firstName),
+        (state.LastName = payload.lastName);
+    },
+  },
+});
 
 export const { setName } = nameSlice.actions;
 
@@ -60,7 +60,7 @@ export const store = configureStore({
     root: rootSlice.reducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
     [tokenSlice.name]: tokenSlice.reducer,
-    [nameSlice.name]: nameSlice.reducer
+    [nameSlice.name]: nameSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
