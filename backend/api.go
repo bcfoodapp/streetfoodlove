@@ -49,7 +49,6 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 
-	//create, add, delete favorite
 	router.PUT("/favorite/:id", a.FavoritePut)
 	router.GET("/favorite/:id", a.Favorite)
 
@@ -456,7 +455,6 @@ func (a *API) LinkPost(c *gin.Context) {
 	// TODO
 }
 
-//Favorite
 func (a *API) FavoritePut(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
