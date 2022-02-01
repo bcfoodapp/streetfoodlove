@@ -10,30 +10,32 @@ import { useSelector } from "react-redux";
  * Returns the headerbar element
  */
 
-const ProfileIcon = (
-  <span>
-    <Icon name="user circle" size="big" /> Hi Colin
-  </span>
-);
-
-const options = [
-  {
-    key: "user",
-    text: (
-      <span>
-        Signed in as <strong>Colin Zhou</strong>
-      </span>
-    ),
-    disabled: true,
-  },
-  { key: "profile", text: "Profile Settings" },
-  { key: "page", text: "Create Vendor Page" },
-  { key: "help", text: "Help" },
-  { key: "sign-out", text: "Log Out" },
-];
-
 export default function HeaderBar(): React.ReactElement {
   const token = useSelector((state: any) => state.token.token);
+  const firstName = useSelector((state: any) => state.UserName.FirstName)
+  const lastName = useSelector((state: any) => state.UserName.LastName)
+
+  const ProfileIcon = (
+    <span>
+      <Icon name="user circle" size="big" /> Hi {firstName}
+    </span>
+  );
+
+  const options = [
+    {
+      key: "user",
+      text: (
+        <span>
+          Signed in as <strong>{firstName} {lastName}</strong>
+        </span>
+      ),
+      disabled: true,
+    },
+    { key: "profile", text: "Profile Settings" },
+    { key: "page", text: "Create Vendor Page" },
+    { key: "help", text: "Help" },
+    { key: "sign-out", text: "Log Out" },
+  ];
 
   return (
     <Menu size="massive">
