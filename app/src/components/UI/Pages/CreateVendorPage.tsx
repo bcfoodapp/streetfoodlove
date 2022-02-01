@@ -10,11 +10,11 @@ import Buttons from "../Atoms/Button/Buttons";
 import MessageError from "../Atoms/Message/MessageError";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./createvendorpage.module.css";
-import { useState } from "react";
 import { useCreateVendorMutation, Vendor } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useAppSelector } from "../../../store";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
@@ -49,7 +49,7 @@ const CreateVendorPage: React.FC = () => {
     businessAddress: Yup.string().required("Required"),
     phoneNumber: Yup.string().required("Required"),
     businessHours: Yup.string().required("Required"),
-    website: Yup.string().required("Required"),
+    website: Yup.string(),
   });
 
   const onSubmit = (data: inputValues) => {
@@ -72,7 +72,6 @@ const CreateVendorPage: React.FC = () => {
 
   return (
     <Container className={styles.wrapper}>
-      {/* <MessageError /> */}
       <Header as={"h2"} className={styles.header}>
         Create New Vendor Page
       </Header>

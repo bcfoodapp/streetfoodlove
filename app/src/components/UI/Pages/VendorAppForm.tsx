@@ -6,6 +6,8 @@ import { Dropdown } from "semantic-ui-react";
 import styles from "./vendorappform.module.css";
 import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
+import { useAppSelector } from "../../../store";
+import MessageError from "../Atoms/Message/MessageError";
 
 interface inputValues {
   name: string;
@@ -73,7 +75,7 @@ export default function VendorAppForm(): React.ReactElement {
   const validationSchema = Yup.object({
     name: Yup.string().required("Required"),
     businessAddress: Yup.string().required("Required"),
-    website: Yup.string().required("Required"),
+    website: Yup.string(),
     fromHour: Yup.string().required("Required"),
     toHour: Yup.string().required("Required"),
     phoneNumber: Yup.string().required("Required"),
@@ -82,6 +84,11 @@ export default function VendorAppForm(): React.ReactElement {
 
   return (
     <Container className={styles.signUpWrapper}>
+<<<<<<< HEAD
+=======
+      <HeaderBar login />
+
+>>>>>>> main
       <h1>Sign Up Form (Vendor account)</h1>
 
       <Formik
@@ -141,7 +148,6 @@ export default function VendorAppForm(): React.ReactElement {
                 fluid
                 label="Website URL"
                 placeholder="Website URL"
-                required
                 width={5}
                 name={"website"}
                 onChange={handleChange}

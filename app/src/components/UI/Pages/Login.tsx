@@ -26,7 +26,6 @@ interface inputValues {
 export default function Login(): React.ReactElement {
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
-  const error = useAppSelector((state) => state.root.error);
 
   const initialValues: inputValues = {
     Username: "",
@@ -48,7 +47,7 @@ export default function Login(): React.ReactElement {
 
   return (
     <>
-      {error ? <MessageError errorMsg={error.toString()} /> : null}
+      <HeaderBar />
 
       <Formik
         initialValues={initialValues}
