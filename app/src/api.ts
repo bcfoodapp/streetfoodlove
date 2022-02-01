@@ -292,11 +292,13 @@ export const apiSlice = createApi({
   }),
 });
 
+// Sets credentials in localStorage.
 function setCredentialsState(credentials: Credentials) {
   console.info("set localStorage");
   localStorage.setItem("user", JSON.stringify(credentials));
 }
 
+// Gets credentials from localStorage.
 function getCredentials(): Credentials | null {
   const entry = localStorage.getItem("user");
   if (entry === null) {
@@ -304,6 +306,12 @@ function getCredentials(): Credentials | null {
   }
 
   return JSON.parse(entry);
+}
+
+// Deletes credentials entry in localStorage.
+export function deleteCredentials() {
+  console.info("clear localStorage");
+  localStorage.clear();
 }
 
 export const {
