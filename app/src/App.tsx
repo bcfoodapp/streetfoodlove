@@ -13,7 +13,7 @@ import AccountProfile from "./components/UI/Pages/AccountProfile";
 import YourAccountUser from "./components/UI/Pages/YourAccountUser";
 import BusinessGuides from "./components/UI/Pages/BusinessGuides";
 import VendorDashBoard from "./components/UI/Pages/VendorDashboard";
-import CreateVendorPage from "./components/UI/Pages/CreateVendorPage";
+import CreateVendorPage from "./components/UI/Pages/EditVendorPage";
 import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/BusinessGuideArticle";
 import HeaderBar from "./components/UI/Molecules/HeaderBar/HeaderBar";
 import MessageError from "./components/UI/Atoms/Message/MessageError";

@@ -51,18 +51,18 @@ export default function HeaderBar(): React.ReactElement {
             // onChange={() => window.location.reload()}
           />
         ) : null}
-        <Menu.Item>
-          <Link to="/signup">
-            <Buttons signup>Sign Up</Buttons>
-          </Link>
-          {token === null ? (
+        {token === null ? (
+          <Menu.Item>
+            <Link to="/signup">
+              <Buttons signup>Sign Up</Buttons>
+            </Link>
             <Link to="/login">
               <Buttons login color="orange">
                 Login
               </Buttons>
             </Link>
-          ) : null}
-        </Menu.Item>
+          </Menu.Item>
+        ) : null}
       </Menu.Menu>
     </Menu>
   );
