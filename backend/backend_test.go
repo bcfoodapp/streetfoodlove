@@ -4,6 +4,7 @@ package main
 
 import (
 	"database/sql"
+	"github.com/DATA-DOG/go-txdb"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"github.com/go-sql-driver/mysql"
@@ -23,12 +24,9 @@ func TestBackendSuite(t *testing.T) {
 		DBName:               "streetfoodlove",
 		ParseTime:            true,
 	}
-	db, err := sqlx.Connect("mysql", config.FormatDSN())
-	if err != nil {
-		panic(err)
-	}
+	txdb.Register("txdb", "mysql", config.FormatDSN())
 
-	backend := &Backend{Database: database.NewDatabase(db)}
+	backend := &Backend{}
 	defer func() {
 		if err := backend.Close(); err != nil {
 			panic(err)
@@ -44,6 +42,19 @@ func TestBackendSuite(t *testing.T) {
 type BackendTestSuite struct {
 	suite.Suite
 	backend *Backend
+}
+
+func (b *BackendTestSuite) SetupTest() {
+	if b.backend.Database != nil {
+		if err := b.backend.Database.Close(); err != nil {
+			panic(err)
+		}
+	}
+	db, err := sqlx.Connect("txdb", "identifier")
+	if err != nil {
+		panic(err)
+	}
+	b.backend.Database = database.NewDatabase(db)
 }
 
 func (b *BackendTestSuite) TestVendor() {
