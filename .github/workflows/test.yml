@@ -27,6 +27,23 @@ jobs:
         npm run typescript
         npm run build
       working-directory: app
+  frontend-test:
+    name: Frontend tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '17.1'
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+      - name: Tests
+        run: |
+          npm ci
+          npm run test
+        working-directory: app
   prettier:
     name: Prettier
     runs-on: ubuntu-20.04
