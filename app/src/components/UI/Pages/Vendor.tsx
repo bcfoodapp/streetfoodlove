@@ -75,7 +75,6 @@ export function Vendor(): React.ReactElement {
   return (
     <>
       <HeaderBar signUp />
-      {error ? <MessageError errorMsg={error.toString()} /> : null}
       <Container className={styles.wrapper}>
         <Grid>
           <Grid.Row>
