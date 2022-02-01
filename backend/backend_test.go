@@ -1,5 +1,3 @@
-// Integration tests for backend functions.
-
 package main
 
 import (
@@ -13,6 +11,8 @@ import (
 	"testing"
 )
 
+// Integration tests for backend functions.
+// Database must be reset before running.
 func TestBackendSuite(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -63,26 +63,76 @@ func (b *BackendTestSuite) TestVendor() {
 		Name: "new vendor",
 	}
 	{
+		// Vendor does not exist
 		_, err := b.backend.Vendor(vendor.ID)
 		b.ErrorAs(err, &sql.ErrNoRows)
 	}
 	{
+		// Invalid user ID
 		err := b.backend.VendorCreate(uuid.UUID{}, vendor)
 		b.Error(err)
 	}
 	{
+		// User is not a vendor
 		notVendor := uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4")
 		err := b.backend.VendorCreate(notVendor, vendor)
 		b.Error(err)
 	}
 	{
+		// Create vendor
 		vendorUser := uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a")
 		err := b.backend.VendorCreate(vendorUser, vendor)
 		b.NoError(err)
-	}
-	{
+
 		result, err := b.backend.Vendor(vendor.ID)
 		b.NoError(err)
 		b.Equal(vendor, result)
+	}
+}
+
+func (b *BackendTestSuite) TestUser() {
+	user := &database.UserProtected{
+		User: &database.User{
+			ID:       uuid.MustParse("1b733820-9661-40a4-a898-dfe662b98002"),
+			Username: "new user",
+		},
+	}
+	{
+		// User does not exist
+		_, err := b.backend.UserProtected(user.ID, user.ID)
+		b.ErrorAs(err, &sql.ErrNoRows)
+	}
+	{
+		// Not authorized
+		_, err := b.backend.UserProtected(uuid.UUID{}, user.ID)
+		b.ErrorAs(err, &unauthorized)
+	}
+	{
+		// Create user
+		err := b.backend.UserProtectedCreate(user, "")
+		b.NoError(err)
+
+		result, err := b.backend.UserProtected(user.ID, user.ID)
+		b.NoError(err)
+		b.Equal(user.Username, result.Username)
+	}
+	{
+		// User does not exist
+		err := b.backend.UserProtectedUpdate(user.ID, &database.UserProtected{User: &database.User{}})
+		b.ErrorAs(err, &sql.ErrNoRows)
+	}
+	{
+		// Not authorized
+		err := b.backend.UserProtectedUpdate(uuid.UUID{}, user)
+		b.ErrorAs(err, &unauthorized)
+	}
+	{
+		// Change username
+		user.Username = "different username"
+		err := b.backend.UserProtectedUpdate(user.ID, user)
+		b.NoError(err, &unauthorized)
+		result, err := b.backend.User(user.ID)
+		b.NoError(err)
+		b.Equal(user.Username, result.Username)
 	}
 }
