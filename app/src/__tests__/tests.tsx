@@ -1,4 +1,4 @@
-import * as renderer from "react-test-renderer";
+import * as renderer from 'react-test-renderer'
 import React from "react";
 import { LandingPage } from "../components/UI/Pages/LandingPage";
 import AccountProfile from "../components/UI/Pages/AccountProfile";
@@ -7,7 +7,7 @@ import { store } from "../store";
 import { Provider } from "react-redux";
 import AccountSelection from "../components/UI/Pages/AccountSelection";
 import BusinessGuides from "../components/UI/Pages/BusinessGuides";
-import CreateVendorPage from "../components/UI/Pages/CreateVendorPage";
+import CreateVendorPage from "../components/UI/Pages/EditVendorPage";
 import Login from "../components/UI/Pages/Login";
 import Signup from "../components/UI/Pages/Signup";
 import { Vendor } from "../components/UI/Pages/Vendor";
