@@ -6,15 +6,13 @@ import { Grid } from "semantic-ui-react";
 import {
   useGetTokenQuery,
   useSetCredentialsAndGetTokenMutation,
-  useUserProtectedQuery,
-  useUserQuery,
 } from "../../../api";
 import { useNavigate } from "react-router-dom";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAppSelector } from "../../../store";
 import jwtDecode from "jwt-decode";
-
+import { createApi } from '@reduxjs/toolkit/query/react'
 /**
  * Displays the Login element in the login page
  */
@@ -24,37 +22,49 @@ interface inputValues {
   Password: string;
 }
 
-const Login: React.FC<{ token: string }> = ({ token }) => {
+export default function Login(): React.ReactElement {
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
-  const userID = jwtDecode<{ UserID: string }>(token).UserID;
-  const userQuery = useUserProtectedQuery(userID);
+  // const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
 
-  if (
-    userQuery.data?.FirstName !== undefined &&
-    userQuery.data?.LastName !== undefined
-  ) {
-    localStorage.setItem("firstName", userQuery.data?.FirstName);
-    localStorage.setItem("lastName", userQuery.data?.LastName);
-  }
-
+  useGetTokenQuery();
+  const token = useAppSelector((state) => state.token.token);
+  
   const initialValues: inputValues = {
     Username: "",
-    Password: "",
-  };
-
-  const validationSchema = Yup.object({
-    Username: Yup.string().required("Must enter Username"),
-    Password: Yup.string().required("Must enter Password"),
-  });
-
-  const onSubmit = async (values: inputValues) => {
-    // localStorage.setItem("firstName", firstName)
-    // localStorage.setItem("lastName", lastName)
-    await setCredentialsMutation({
-      Username: values.Username,
-      Password: values.Password,
+      Password: "",
+    };
+    
+    const validationSchema = Yup.object({
+      Username: Yup.string().required("Must enter Username"),
+      Password: Yup.string().required("Must enter Password"),
     });
+    
+    const onSubmit = async (values: inputValues) => {
+      // localStorage.setItem("firstName", firstName)
+      // localStorage.setItem("lastName", lastName)
+      await setCredentialsMutation({
+        Username: values.Username,
+        Password: values.Password,
+      });
+
+      if (token === null) {
+        throw new Error("not logged in");
+      }
+      
+      const userID = jwtDecode<{ UserID: string }>(token).UserID;
+      console.log(userID);
+      // usersMultipleTrigger([userID], true)
+      // console.log(users);
+      // const userQuery = useUserProtectedQuery(userID);
+
+      // if (
+      //   userQuery.data?.FirstName !== undefined &&
+      //   userQuery.data?.LastName !== undefined
+      //   ) {
+      //     localStorage.setItem("firstName", userQuery.data?.FirstName);
+      //     localStorage.setItem("lastName", userQuery.data?.LastName);
+      //   }
     navigate("/");
   };
 
@@ -152,15 +162,14 @@ const Login: React.FC<{ token: string }> = ({ token }) => {
   );
 };
 
-const LoginWrapper: React.FC = () => {
-  useGetTokenQuery();
-  const token = useAppSelector((state) => state.token.token);
+// const LoginWrapper: React.FC = () => {
+//   useGetTokenQuery();
+//   const token = useAppSelector((state) => state.token.token)!;
 
-  if (token === null) {
-    return <p>failed</p>;
-  }
+//   if (token === null) {
+//     return  <Login />;
+//   }
 
-  return <Login token={token} />;
-};
+//   return <Login token={token} />;
+// };
 
-export default LoginWrapper;

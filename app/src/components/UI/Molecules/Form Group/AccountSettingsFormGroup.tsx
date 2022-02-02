@@ -8,7 +8,7 @@ import {
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
-import { useAppSelector, useAppDispatch, setName } from "../../../../store";
+import { useAppSelector, useAppDispatch } from "../../../../store";
 import jwtDecode from "jwt-decode";
 
 const AccountSettings: React.FC<{

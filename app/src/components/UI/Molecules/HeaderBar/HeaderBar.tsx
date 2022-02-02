@@ -3,8 +3,9 @@ import { Icon, Menu, Dropdown, Button } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { deleteCredentials } from "../../../../api";
 
 /**
  * Returns the headerbar element
@@ -15,7 +16,8 @@ export default function HeaderBar(): React.ReactElement {
 
   const firstName = localStorage.getItem("firstName");
   const lastName = localStorage.getItem("lastName");
-
+  const navigate = useNavigate();
+  
   const ProfileIcon = (
     <span>
       <Icon name="user circle" size="big" /> Hi {firstName}
@@ -38,7 +40,14 @@ export default function HeaderBar(): React.ReactElement {
     { key: "profile", text: "Profile Settings" },
     { key: "page", text: "Create Vendor Page" },
     { key: "help", text: "Help" },
-    { key: "sign-out", text: "Log Out" },
+    { 
+      key: "log-out",
+      text: "Log Out",
+      onClick: () => {
+        deleteCredentials();
+        navigate("/")
+      },
+    }
   ];
 
   return (

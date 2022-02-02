@@ -39,28 +39,12 @@ export const rootSlice = createSlice({
 
 export const { setError } = rootSlice.actions;
 
-export const nameSlice = createSlice({
-  name: "UserName",
-  initialState: {
-    FirstName: null as string | null,
-    LastName: null as string | null,
-  },
-  reducers: {
-    setName: (state, { payload }: PayloadAction<Name>) => {
-      (state.FirstName = payload.firstName),
-        (state.LastName = payload.lastName);
-    },
-  },
-});
-
-export const { setName } = nameSlice.actions;
 
 export const store = configureStore({
   reducer: {
     root: rootSlice.reducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
     [tokenSlice.name]: tokenSlice.reducer,
-    [nameSlice.name]: nameSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
