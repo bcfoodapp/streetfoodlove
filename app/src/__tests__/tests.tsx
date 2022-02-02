@@ -1,4 +1,4 @@
-import * as renderer from 'react-test-renderer'
+import * as renderer from "react-test-renderer";
 import React from "react";
 import { LandingPage } from "../components/UI/Pages/LandingPage";
 import AccountProfile from "../components/UI/Pages/AccountProfile";
