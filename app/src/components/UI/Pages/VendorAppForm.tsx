@@ -8,6 +8,7 @@ import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 import { useAppSelector } from "../../../store";
 import MessageError from "../Atoms/Message/MessageError";
+import { useNavigate } from "react-router-dom";
 
 interface inputValues {
   name: string;
@@ -20,7 +21,16 @@ interface inputValues {
 }
 
 export default function VendorAppForm(): React.ReactElement {
-  const storeUserInfo = () => {};
+  const navigate = useNavigate();
+
+  const onSubmit = () => {
+    // TODO submit data
+  };
+
+  // TODO replace with isSuccess status
+  if (false) {
+    navigate("/vendor-dashboard");
+  }
 
   const timeOptionsFromValues = [
     //options for business hours starting from...
@@ -88,7 +98,7 @@ export default function VendorAppForm(): React.ReactElement {
 
       <Formik
         enableReinitialize
-        onSubmit={storeUserInfo}
+        onSubmit={onSubmit}
         validateOnChange={true}
         initialValues={initialValues}
         validationSchema={validationSchema}
