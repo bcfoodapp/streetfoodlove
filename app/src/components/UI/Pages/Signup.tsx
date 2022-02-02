@@ -9,6 +9,7 @@ import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 import { useAppSelector } from "../../../store";
 import MessageError from "../Atoms/Message/MessageError";
+import { useNavigate } from "react-router-dom";
 
 interface inputValues {
   firstName: string;
@@ -20,7 +21,8 @@ interface inputValues {
 }
 
 export default function Signup(): React.ReactElement {
-  const [createUser] = useCreateUserMutation();
+  const [createUser, { isSuccess }] = useCreateUserMutation();
+  const navigate = useNavigate();
 
   const initialValues: inputValues = {
     firstName: "",
@@ -40,8 +42,8 @@ export default function Signup(): React.ReactElement {
     agreedConditions: Yup.bool().oneOf([true], "Required"),
   });
 
-  const onSubmit = async (data: inputValues) => {
-    await createUser({
+  const onSubmit = (data: inputValues) => {
+    createUser({
       ID: uuid(),
       Username: data.username,
       Photo: uuid(),
@@ -52,9 +54,11 @@ export default function Signup(): React.ReactElement {
       Password: data.password,
       SignUpDate: DateTime.now(),
     });
-    // TODO need better feedback, and show any errors if they occurred
-    alert("created account");
   };
+
+  if (isSuccess) {
+    navigate("/");
+  }
 
   return (
     <Container className={styles.signUpWrapper}>
