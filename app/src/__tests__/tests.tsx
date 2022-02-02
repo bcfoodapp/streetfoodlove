@@ -7,7 +7,7 @@ import { store } from "../store";
 import { Provider } from "react-redux";
 import AccountSelection from "../components/UI/Pages/AccountSelection";
 import BusinessGuides from "../components/UI/Pages/BusinessGuides";
-import CreateVendorPage from "../components/UI/Pages/CreateVendorPage";
+import EditVendorPage from "../components/UI/Pages/EditVendorPage";
 import Login from "../components/UI/Pages/Login";
 import Signup from "../components/UI/Pages/Signup";
 import { Vendor } from "../components/UI/Pages/Vendor";
@@ -63,7 +63,7 @@ test("BusinessGuides", () => {
 test("CreateVendorPage", () => {
   renderer.create(
     <MockEnvironment>
-      <CreateVendorPage />
+      <EditVendorPage />
     </MockEnvironment>
   );
 });
