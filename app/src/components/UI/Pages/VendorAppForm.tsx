@@ -8,6 +8,8 @@ import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 import { useAppSelector } from "../../../store";
 import MessageError from "../Atoms/Message/MessageError";
+import { useCreateVendorMutation, Vendor } from "../../../api";
+import { v4 as uuid } from "uuid";
 
 interface inputValues {
   name: string;
@@ -20,7 +22,23 @@ interface inputValues {
 }
 
 export default function VendorAppForm(): React.ReactElement {
-  const storeUserInfo = () => {};
+  const [createVendor] = useCreateVendorMutation();
+
+  const onSubmit = (data: inputValues) => {
+    const vendor: Vendor = {
+      ID: uuid(),
+      Name: data.name,
+      BusinessAddress: data.businessAddress,
+      Website: data.website,
+      BusinessHours: `${data.fromHour}-${data.toHour}`,
+      Phone: data.phoneNumber,
+      BusinessLogo: "",
+      Latitude: 0,
+      Longitude: 0,
+    };
+    createVendor(vendor);
+    // TODO navigate to vendor page
+  };
 
   const timeOptionsFromValues = [
     //options for business hours starting from...
@@ -88,7 +106,7 @@ export default function VendorAppForm(): React.ReactElement {
 
       <Formik
         enableReinitialize
-        onSubmit={storeUserInfo}
+        onSubmit={onSubmit}
         validateOnChange={true}
         initialValues={initialValues}
         validationSchema={validationSchema}

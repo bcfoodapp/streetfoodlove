@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./popupInfo.module.css";
 import { Vendor } from "../../../../api";
+import { Link } from "react-router-dom";
 
 interface Props {
   vendor: Vendor;
@@ -15,7 +16,9 @@ export default function PopupInfo({ vendor }: Props): React.ReactElement {
       <div className={styles.header}>
         <div className={styles.vendorName}>
           <div>
-            <span className={styles.title}>{vendor.Name}</span>
+            <span className={styles.title}>
+              <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+            </span>
           </div>
           <div className={styles.firstImage}>
             <img
