@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Vendor } from "./components/UI/Pages/Vendor";
 import { store, useAppSelector } from "./store";
-import Login from "./components/UI/Pages/Login";
 import { ErrorBoundary } from "./components/UI/Organisms/ErrorBoundary";
 import Signup from "./components/UI/Pages/Signup";
 import { LandingPage } from "./components/UI/Pages/LandingPage";
@@ -16,6 +15,7 @@ import EditVendorPage from "./components/UI/Pages/EditVendorPage";
 import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/BusinessGuideArticle";
 import HeaderBar from "./components/UI/Molecules/HeaderBar/HeaderBar";
 import MessageError from "./components/UI/Atoms/Message/MessageError";
+import LoginWrapper from "./components/UI/Pages/Login";
 
 function App(): React.ReactElement {
   const error = useAppSelector((state) => state.root.error);
@@ -28,7 +28,7 @@ function App(): React.ReactElement {
           <Route path="/" element={<LandingPage />} />
           <Route path="/vendors/:ID" element={<Vendor />} />
           <Route path="*" element={<p>Page not found</p>} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<LoginWrapper />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/account-selection" element={<AccountSelection />} />
           <Route path="/vendor-signup" element={<VendorAppForm />} />

@@ -38,7 +38,9 @@ const AccountSettings: React.FC<{
   const [updateSetting] = useUpdateUserMutation();
 
   const handleSubmit = async () => {
-    dispatch(setName({ firstName: firstName, lastName: lastName }));
+
+
+    // dispatch(setName({ firstName: firstName, lastName: lastName }));
     // user is defined when handleSubmit is called
     await updateSetting({
       ID: userID,
