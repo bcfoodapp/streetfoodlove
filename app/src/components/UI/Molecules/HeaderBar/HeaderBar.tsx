@@ -13,9 +13,8 @@ import { useSelector } from "react-redux";
 export default function HeaderBar(): React.ReactElement {
   const token = useSelector((state: any) => state.token.token);
 
-  
-  const firstName = localStorage.getItem("firstName")
-  const lastName = localStorage.getItem("lastName")
+  const firstName = localStorage.getItem("firstName");
+  const lastName = localStorage.getItem("lastName");
 
   const ProfileIcon = (
     <span>

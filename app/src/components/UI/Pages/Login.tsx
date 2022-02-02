@@ -3,7 +3,12 @@ import { Container, Form, Header } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
-import { useGetTokenQuery, useSetCredentialsAndGetTokenMutation, useUserProtectedQuery, useUserQuery } from "../../../api";
+import {
+  useGetTokenQuery,
+  useSetCredentialsAndGetTokenMutation,
+  useUserProtectedQuery,
+  useUserQuery,
+} from "../../../api";
 import { useNavigate } from "react-router-dom";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -19,18 +24,20 @@ interface inputValues {
   Password: string;
 }
 
-const Login: React.FC<{token: string}> = ({token}) => {
+const Login: React.FC<{ token: string }> = ({ token }) => {
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
-  const userID = jwtDecode<{UserID: string}>(token).UserID 
-  const userQuery = useUserProtectedQuery(userID)
+  const userID = jwtDecode<{ UserID: string }>(token).UserID;
+  const userQuery = useUserProtectedQuery(userID);
 
-  if (userQuery.data?.FirstName !== undefined && userQuery.data?.LastName !== undefined) {
-    localStorage.setItem("firstName", userQuery.data?.FirstName)
-    localStorage.setItem("lastName", userQuery.data?.LastName)
+  if (
+    userQuery.data?.FirstName !== undefined &&
+    userQuery.data?.LastName !== undefined
+  ) {
+    localStorage.setItem("firstName", userQuery.data?.FirstName);
+    localStorage.setItem("lastName", userQuery.data?.LastName);
   }
 
-  
   const initialValues: inputValues = {
     Username: "",
     Password: "",
@@ -143,23 +150,17 @@ const Login: React.FC<{token: string}> = ({token}) => {
       </Formik>
     </>
   );
-}
+};
 
 const LoginWrapper: React.FC = () => {
-  useGetTokenQuery()
+  useGetTokenQuery();
   const token = useAppSelector((state) => state.token.token);
 
   if (token === null) {
     return <p>failed</p>;
   }
 
-  return (
-    <Login
-      token={token}
-    />
-  )
-}
+  return <Login token={token} />;
+};
 
-export default LoginWrapper
-
-
+export default LoginWrapper;
