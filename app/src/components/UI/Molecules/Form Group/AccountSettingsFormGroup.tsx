@@ -14,16 +14,17 @@ const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
-  const { data: token, isSuccess } = useGetTokenQuery();
+  const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
 
   let userID = "";
-  if (isSuccess && token !== null) {
+  if (tokenIsSuccess && token !== null) {
     userID = getUserIDFromToken(token as string);
   }
-  const { data: user, isSuccess: userQueryIsSuccess } = useUserProtectedQuery(
-    userID,
-    { skip: userID === "" }
-  );
+  const {
+    data: user,
+    isSuccess: userQueryIsSuccess,
+    isLoading: userQueryIsLoading,
+  } = useUserProtectedQuery(userID, { skip: userID === "" });
 
   const [updateSetting] = useUpdateUserMutation();
 
@@ -55,7 +56,7 @@ const AccountSettingsFormGroup: React.FC<{
     }
   };
 
-  if (isSuccess && token === null) {
+  if (tokenIsSuccess && token === null) {
     return <p>Not logged in</p>;
   }
 
@@ -69,6 +70,7 @@ const AccountSettingsFormGroup: React.FC<{
             disabled={disabled}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
+            loading={userQueryIsLoading}
           />
           <Form.Input
             label="Last Name"
@@ -76,6 +78,7 @@ const AccountSettingsFormGroup: React.FC<{
             disabled={disabled}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
+            loading={userQueryIsLoading}
           />
           <Form.Input
             label="Email"
@@ -83,6 +86,7 @@ const AccountSettingsFormGroup: React.FC<{
             disabled={disabled}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            loading={userQueryIsLoading}
           />
         </Form.Group>
         <Container className={styles.saveBtn}>
