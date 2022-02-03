@@ -6,7 +6,11 @@ import {
 import { RootState } from "./store";
 import { DateTime } from "luxon";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BaseQueryApi } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import {
+  BaseQueryApi,
+  QueryReturnValue,
+} from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import jwtDecode from "jwt-decode";
 
 export interface Vendor {
   ID: string;
@@ -54,6 +58,10 @@ export interface Review {
 export interface Credentials {
   Username: string;
   Password: string;
+}
+
+export interface CredentialsAndName extends Credentials {
+  Name: string;
 }
 
 export interface GeoRectangle {
@@ -105,11 +113,11 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// Gets token and saves it to localStorage if successful. Returns error if error occurred.
+// Gets token and saves it to localStorage if successful. Returns response.
 async function getAndSaveCredentials(
   credentials: Credentials,
   api: BaseQueryApi
-): Promise<FetchBaseQueryError | null> {
+): Promise<QueryReturnValue<string, FetchBaseQueryError>> {
   api.dispatch({ type: "root/setError", payload: null });
   const response = await baseQuery(
     { url: "/token", method: "POST", body: credentials },
@@ -117,7 +125,7 @@ async function getAndSaveCredentials(
     {}
   );
   if (response.error) {
-    return response.error;
+    return response;
   }
 
   api.dispatch(
@@ -126,7 +134,7 @@ async function getAndSaveCredentials(
       time: DateTime.now().toSeconds(),
     })
   );
-  return null;
+  return response as QueryReturnValue<string, FetchBaseQueryError>;
 }
 
 // This is the API abstraction.
@@ -255,28 +263,19 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
-    // Retrieves token using stored credentials and saves it to state if token state is null.
-    getToken: builder.query<undefined, void>({
-      queryFn: async (arg, api, extraOptions) => {
-        const credentials = getCredentials();
-        if (credentials !== null) {
-          const result = await getAndSaveCredentials(credentials, api);
-          if (result) {
-            return { error: result };
-          }
-        }
-        return { data: undefined };
-      },
-    }),
-    // Retrieves token and stores credentials to localStorage.
+    // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
         const result = await getAndSaveCredentials(args, api);
-        if (result) {
-          return { error: result };
+        if (result.error) {
+          return result;
         }
 
-        setCredentialsState(args);
+        const userID = jwtDecode<{ UserID: string }>(
+          result.data as string
+        ).UserID;
+
+        setCredentialsAndName(args);
         return { data: undefined };
       },
     }),
@@ -298,14 +297,14 @@ export const apiSlice = createApi({
   }),
 });
 
-// Sets credentials in localStorage.
-function setCredentialsState(credentials: Credentials) {
+// Sets credentials and name in localStorage.
+function setCredentialsAndName(entry: CredentialsAndName) {
   console.info("set localStorage");
-  localStorage.setItem("user", JSON.stringify(credentials));
+  localStorage.setItem("user", JSON.stringify(entry));
 }
 
 // Gets credentials from localStorage.
-function getCredentials(): Credentials | null {
+function getCredentials(): CredentialsAndName | null {
   const entry = localStorage.getItem("user");
   if (entry === null) {
     return null;
@@ -314,8 +313,8 @@ function getCredentials(): Credentials | null {
   return JSON.parse(entry);
 }
 
-// Deletes credentials entry in localStorage.
-export function deleteCredentials() {
+// Clears all entries in localStorage.
+export function clearLocalStorage() {
   console.info("clear localStorage");
   localStorage.clear();
 }
@@ -332,7 +331,6 @@ export const {
   useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
-  useGetTokenQuery,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
   useGuideQuery,
