@@ -24,9 +24,9 @@ interface inputValues {
 
 export default function VendorAppForm(): React.ReactElement {
   const navigate = useNavigate();
-  const [createVendor, { isSuccess }] = useCreateVendorMutation();
+  const [createVendor] = useCreateVendorMutation();
 
-  const onSubmit = (data: inputValues) => {
+  const onSubmit = async (data: inputValues) => {
     const vendor: Vendor = {
       ID: uuid(),
       Name: data.name,
@@ -38,12 +38,11 @@ export default function VendorAppForm(): React.ReactElement {
       Latitude: 0,
       Longitude: 0,
     };
-    createVendor(vendor);
+    const result = await createVendor(vendor);
+    if ((result as any).error === undefined) {
+      navigate("/vendor-dashboard");
+    }
   };
-
-  if (isSuccess) {
-    navigate("/vendor-dashboard");
-  }
 
   const timeOptionsFromValues = [
     //options for business hours starting from...

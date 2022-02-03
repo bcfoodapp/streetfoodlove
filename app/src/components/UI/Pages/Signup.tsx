@@ -19,7 +19,7 @@ interface inputValues {
 }
 
 export default function Signup(): React.ReactElement {
-  const [createUser, { isSuccess }] = useCreateUserMutation();
+  const [createUser] = useCreateUserMutation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   let userType = UserType.Customer;
@@ -45,8 +45,8 @@ export default function Signup(): React.ReactElement {
     agreedConditions: Yup.bool().oneOf([true], "Required"),
   });
 
-  const onSubmit = (data: inputValues) => {
-    createUser({
+  const onSubmit = async (data: inputValues) => {
+    const result = await createUser({
       ID: uuid(),
       Username: data.username,
       Photo: uuid(),
@@ -57,15 +57,15 @@ export default function Signup(): React.ReactElement {
       Password: data.password,
       SignUpDate: DateTime.now(),
     });
-  };
 
-  if (isSuccess) {
-    if (userType === UserType.Customer) {
-      navigate("/");
-    } else {
-      navigate("/vendor-signup");
+    if ((result as any).error === undefined) {
+      if (userType === UserType.Customer) {
+        navigate("/");
+      } else {
+        navigate("/vendor-signup");
+      }
     }
-  }
+  };
 
   return (
     <Container className={styles.signUpWrapper}>
