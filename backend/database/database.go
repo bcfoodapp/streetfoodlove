@@ -198,7 +198,6 @@ func (d *Database) UserUpdate(user *UserProtected) error {
 			Username = :Username,
 			FirstName = :FirstName,
 			LastName = :LastName,
-			SignUpDate = :SignUpDate,
 			UserType = :UserType,
 			Photo = :Photo
 		WHERE ID = :ID

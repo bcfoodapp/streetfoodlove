@@ -9,51 +9,56 @@ import {
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
-import { useAppSelector, useAppDispatch } from "../../../../store";
-import jwtDecode from "jwt-decode";
 
-const AccountSettings: React.FC<{
-  token: string;
+const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
-}> = ({ token, disabled, setDisabledForm }) => {
-  useGetTokenQuery();
-  const userID = getUserIDFromToken(token);
-  const userQuery = useUserProtectedQuery(userID);
-  const user = userQuery.data;
-  const dispatch = useAppDispatch();
+}> = ({ disabled, setDisabledForm }) => {
+  const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
+
+  let userID = "";
+  if (tokenIsSuccess && token !== null) {
+    userID = getUserIDFromToken(token as string);
+  }
+  const {
+    data: user,
+    isSuccess: userQueryIsSuccess,
+    isLoading: userQueryIsLoading,
+  } = useUserProtectedQuery(userID, { skip: userID === "" });
+
+  const [updateSetting] = useUpdateUserMutation();
 
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
 
   useEffect(() => {
-    if (userQuery.isSuccess) {
+    if (userQueryIsSuccess) {
       setEmail(user!.Email);
       setFirstName(user!.FirstName);
       setLastName(user!.LastName);
-      setUsername(user!.Username);
     }
-  }, [userQuery.isSuccess]);
-
-  const [updateSetting] = useUpdateUserMutation();
+  }, [userQueryIsSuccess]);
 
   const handleSubmit = async () => {
-    // dispatch(setName({ firstName: firstName, lastName: lastName }));
-    // user is defined when handleSubmit is called
-    await updateSetting({
+    const response = await updateSetting({
       ID: userID,
       Photo: user!.Photo,
-      Username: username,
+      Username: user!.Username,
       Email: email,
       FirstName: firstName,
       LastName: lastName,
       UserType: UserType.Customer,
       SignUpDate: user!.SignUpDate,
     });
-    alert("Updated User Settings!");
+    if ((response as any).error === undefined) {
+      alert("Updated User Settings!");
+    }
   };
+
+  if (tokenIsSuccess && token === null) {
+    return <p>Not logged in</p>;
+  }
 
   return (
     <Container className={styles.wrapper}>
@@ -65,6 +70,7 @@ const AccountSettings: React.FC<{
             disabled={disabled}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
+            loading={userQueryIsLoading}
           />
           <Form.Input
             label="Last Name"
@@ -72,6 +78,7 @@ const AccountSettings: React.FC<{
             disabled={disabled}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
+            loading={userQueryIsLoading}
           />
           <Form.Input
             label="Email"
@@ -79,19 +86,11 @@ const AccountSettings: React.FC<{
             disabled={disabled}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Input
-            label="Username"
-            placeholder="Username"
-            disabled={disabled}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            loading={userQueryIsLoading}
           />
         </Form.Group>
         <Container className={styles.saveBtn}>
-          {userQuery.isSuccess ? (
+          {userQueryIsSuccess ? (
             <Buttons submit color="green" clicked={() => setDisabledForm(true)}>
               Save
             </Buttons>
@@ -99,24 +98,6 @@ const AccountSettings: React.FC<{
         </Container>
       </Form>
     </Container>
-  );
-};
-
-const AccountSettingsFormGroup: React.FC<{
-  disabled: boolean;
-  setDisabledForm: (value: boolean) => void;
-}> = ({ disabled, setDisabledForm }) => {
-  const token = useAppSelector((state) => state.token.token);
-  if (token === null) {
-    return <p>Not logged in</p>;
-  }
-
-  return (
-    <AccountSettings
-      token={token}
-      disabled={disabled}
-      setDisabledForm={setDisabledForm}
-    />
   );
 };
 
