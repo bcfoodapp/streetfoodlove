@@ -31,8 +31,20 @@ export default function HeaderBar(): React.ReactElement {
       ),
       disabled: true,
     },
-    { key: "profile", text: "Profile Settings" },
-    { key: "page", text: "Create Vendor Page" },
+    {
+      key: "profile",
+      text: "Profile Settings",
+      onClick: () => {
+        navigate("/account-profile");
+      },
+    },
+    {
+      key: "page",
+      text: "Edit Vendor Page",
+      onClick: () => {
+        navigate("/edit-vendor-page");
+      },
+    },
     { key: "help", text: "Help" },
     {
       key: "log-out",
@@ -46,9 +58,11 @@ export default function HeaderBar(): React.ReactElement {
 
   return (
     <Menu size="massive">
-      <Menu.Item>
-        <h2>StreetFoodLove</h2>
-      </Menu.Item>
+      <Link to="/">
+        <Menu.Item>
+          <h2>StreetFoodLove</h2>
+        </Menu.Item>
+      </Link>
       <SearchBox />
 
       <Menu.Menu position="right">
