@@ -62,7 +62,7 @@ export default function HeaderBar(): React.ReactElement {
         ) : null}
         {token === null ? (
           <Menu.Item>
-            <Link to="/signup">
+            <Link to="/account-selection">
               <Buttons signup>Sign Up</Buttons>
             </Link>
             <Link to="/login">
