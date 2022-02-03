@@ -4,13 +4,7 @@ import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
-import {
-  Credentials,
-  useSetCredentialsAndGetTokenMutation,
-} from "../../../api";
-import { useAppSelector } from "../../../store";
-import { useNavigate } from "react-router-dom";
-import MessageError from "../Atoms/Message/MessageError";
+import { useSetCredentialsAndGetTokenMutation } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
@@ -25,7 +19,6 @@ interface inputValues {
 
 export default function Login(): React.ReactElement {
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
-  const navigate = useNavigate();
 
   const initialValues: inputValues = {
     Username: "",

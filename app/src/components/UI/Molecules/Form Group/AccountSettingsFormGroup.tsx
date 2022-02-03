@@ -9,7 +9,6 @@ import {
 } from "../../../../api";
 import { UserType } from "../../../../api";
 import { useAppSelector } from "../../../../store";
-import jwtDecode from "jwt-decode";
 
 const AccountSettings: React.FC<{
   token: string;

@@ -13,13 +13,11 @@ import { Container, Grid } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./vendor.module.css";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
-import { RootState, useAppSelector } from "../../../store";
+import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
-import jwtDecode from "jwt-decode";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
