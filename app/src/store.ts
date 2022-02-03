@@ -39,7 +39,6 @@ export const rootSlice = createSlice({
 
 export const { setError } = rootSlice.actions;
 
-
 export const store = configureStore({
   reducer: {
     root: rootSlice.reducer,

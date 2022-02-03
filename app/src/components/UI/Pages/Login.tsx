@@ -27,22 +27,22 @@ export default function Login(): React.ReactElement {
 
   useGetTokenQuery();
   const token = useAppSelector((state) => state.token.token);
-  
+
   const initialValues: inputValues = {
     Username: "",
     Password: "",
   };
-    
-    const validationSchema = Yup.object({
-      Username: Yup.string().required("Must enter Username"),
-      Password: Yup.string().required("Must enter Password"),
+
+  const validationSchema = Yup.object({
+    Username: Yup.string().required("Must enter Username"),
+    Password: Yup.string().required("Must enter Password"),
+  });
+
+  const onSubmit = async (values: inputValues) => {
+    await setCredentialsMutation({
+      Username: values.Username,
+      Password: values.Password,
     });
-    
-    const onSubmit = async (values: inputValues) => {
-      await setCredentialsMutation({
-        Username: values.Username,
-        Password: values.Password,
-      });
 
     navigate("/");
   };
@@ -139,7 +139,7 @@ export default function Login(): React.ReactElement {
       </Formik>
     </>
   );
-};
+}
 
 // const LoginWrapper: React.FC = () => {
 //   useGetTokenQuery();
@@ -151,4 +151,3 @@ export default function Login(): React.ReactElement {
 
 //   return <Login token={token} />;
 // };
-

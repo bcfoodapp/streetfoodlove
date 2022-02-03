@@ -15,13 +15,13 @@ export default function HeaderBar(): React.ReactElement {
   const token = useSelector((state: any) => state.token.token);
   var name;
 
-  const value = localStorage.getItem("user")
-  if (typeof value === 'string') {
-    name = JSON.parse(value).Name
+  const value = localStorage.getItem("user");
+  if (typeof value === "string") {
+    name = JSON.parse(value).Name;
   }
 
   const navigate = useNavigate();
-  
+
   const ProfileIcon = (
     <span>
       <Icon name="user circle" size="big" /> Hi {name}
@@ -33,10 +33,7 @@ export default function HeaderBar(): React.ReactElement {
       key: "user",
       text: (
         <span>
-          Signed in as{" "}
-          <strong>
-            {name}
-          </strong>
+          Signed in as <strong>{name}</strong>
         </span>
       ),
       disabled: true,
@@ -56,14 +53,14 @@ export default function HeaderBar(): React.ReactElement {
       },
     },
     { key: "help", text: "Help" },
-    { 
+    {
       key: "log-out",
       text: "Log Out",
       onClick: () => {
         clearLocalStorage();
         navigate("/");
       },
-    }
+    },
   ];
 
   return (
