@@ -9,21 +9,23 @@ import {
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
-import { useAppSelector } from "../../../../store";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
-  useGetTokenQuery();
-  const token = useAppSelector((state) => state.token.token);
-  if (token === null) {
-    return <p>Not logged in</p>;
-  }
+  const { data: token, isSuccess } = useGetTokenQuery();
 
-  const userID = getUserIDFromToken(token);
-  const userQuery = useUserProtectedQuery(userID);
-  const user = userQuery.data;
+  let userID = "";
+  if (isSuccess && token !== null) {
+    userID = getUserIDFromToken(token as string);
+  }
+  const { data: user, isSuccess: userQueryIsSuccess } = useUserProtectedQuery(
+    userID,
+    { skip: userID === "" }
+  );
+
+  const [updateSetting] = useUpdateUserMutation();
 
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -31,15 +33,13 @@ const AccountSettingsFormGroup: React.FC<{
   const [username, setUsername] = useState("");
 
   useEffect(() => {
-    if (userQuery.isSuccess) {
+    if (userQueryIsSuccess) {
       setEmail(user!.Email);
       setFirstName(user!.FirstName);
       setLastName(user!.LastName);
       setUsername(user!.Username);
     }
-  }, [userQuery.isSuccess]);
-
-  const [updateSetting] = useUpdateUserMutation();
+  }, [userQueryIsSuccess]);
 
   const handleSubmit = async () => {
     await updateSetting({
@@ -54,6 +54,10 @@ const AccountSettingsFormGroup: React.FC<{
     });
     alert("Updated User Settings!");
   };
+
+  if (isSuccess && token === null) {
+    return <p>Not logged in</p>;
+  }
 
   return (
     <Container className={styles.wrapper}>
@@ -91,7 +95,7 @@ const AccountSettingsFormGroup: React.FC<{
           />
         </Form.Group>
         <Container className={styles.saveBtn}>
-          {userQuery.isSuccess ? (
+          {userQueryIsSuccess ? (
             <Buttons submit color="green" clicked={() => setDisabledForm(true)}>
               Save
             </Buttons>
