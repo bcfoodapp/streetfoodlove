@@ -11,8 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useAppSelector } from "../../../store";
-import jwtDecode from "jwt-decode";
-import { createApi } from '@reduxjs/toolkit/query/react'
 /**
  * Displays the Login element in the login page
  */
@@ -32,8 +30,8 @@ export default function Login(): React.ReactElement {
   
   const initialValues: inputValues = {
     Username: "",
-      Password: "",
-    };
+    Password: "",
+  };
     
     const validationSchema = Yup.object({
       Username: Yup.string().required("Must enter Username"),
@@ -52,8 +50,8 @@ export default function Login(): React.ReactElement {
         throw new Error("not logged in");
       }
       
-      const userID = jwtDecode<{ UserID: string }>(token).UserID;
-      console.log(userID);
+      // const userID = jwtDecode<{ UserID: string }>(token).UserID;
+      // console.log(userID);
       // usersMultipleTrigger([userID], true)
       // console.log(users);
       // const userQuery = useUserProtectedQuery(userID);
