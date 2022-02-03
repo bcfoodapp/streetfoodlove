@@ -122,7 +122,7 @@ const baseQuery = fetchBaseQuery({
 async function getAndSaveCredentials(
   credentials: Credentials,
   api: BaseQueryApi
-): Promise<QueryReturnValue<string, FetchBaseQueryError>> {
+): Promise<QueryReturnValue<string, FetchBaseQueryError, {}>> {
   const response = await baseQuery(
     { url: "/token", method: "POST", body: credentials },
     api,
@@ -138,7 +138,7 @@ async function getAndSaveCredentials(
       time: DateTime.now().toSeconds(),
     })
   );
-  return response as QueryReturnValue<string, FetchBaseQueryError>;
+  return response as QueryReturnValue<string, FetchBaseQueryError, {}>;
 }
 
 // This is the API abstraction.
@@ -153,9 +153,9 @@ export const apiSlice = createApi({
     ) {
       const credentials = getCredentials();
       if (credentials !== null) {
-        const result = await getAndSaveCredentials(credentials, api);
-        if (result) {
-          return { error: result };
+        const response = await getAndSaveCredentials(credentials, api);
+        if (response.error) {
+          return response;
         }
       }
     }
