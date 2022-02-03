@@ -13,14 +13,18 @@ import { clearLocalStorage } from "../../../../api";
 
 export default function HeaderBar(): React.ReactElement {
   const token = useSelector((state: any) => state.token.token);
+  var name;
 
-  const firstName = localStorage.getItem("firstName");
-  const lastName = localStorage.getItem("lastName");
+  const value = localStorage.getItem("user")
+  if (typeof value === 'string') {
+    name = JSON.parse(value).Name
+  }
+
   const navigate = useNavigate();
   
   const ProfileIcon = (
     <span>
-      <Icon name="user circle" size="big" /> Hi {firstName}
+      <Icon name="user circle" size="big" /> Hi {name}
     </span>
   );
 
@@ -31,7 +35,7 @@ export default function HeaderBar(): React.ReactElement {
         <span>
           Signed in as{" "}
           <strong>
-            {firstName} {lastName}
+            {name}
           </strong>
         </span>
       ),

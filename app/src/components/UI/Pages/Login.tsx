@@ -39,30 +39,11 @@ export default function Login(): React.ReactElement {
     });
     
     const onSubmit = async (values: inputValues) => {
-      // localStorage.setItem("firstName", firstName)
-      // localStorage.setItem("lastName", lastName)
       await setCredentialsMutation({
         Username: values.Username,
         Password: values.Password,
       });
 
-      if (token === null) {
-        throw new Error("not logged in");
-      }
-      
-      // const userID = jwtDecode<{ UserID: string }>(token).UserID;
-      // console.log(userID);
-      // usersMultipleTrigger([userID], true)
-      // console.log(users);
-      // const userQuery = useUserProtectedQuery(userID);
-
-      // if (
-      //   userQuery.data?.FirstName !== undefined &&
-      //   userQuery.data?.LastName !== undefined
-      //   ) {
-      //     localStorage.setItem("firstName", userQuery.data?.FirstName);
-      //     localStorage.setItem("lastName", userQuery.data?.LastName);
-      //   }
     navigate("/");
   };
 
