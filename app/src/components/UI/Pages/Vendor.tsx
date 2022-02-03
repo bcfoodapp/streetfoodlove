@@ -18,6 +18,7 @@ import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
+import jwtDecode from "jwt-decode";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -32,6 +33,7 @@ export function Vendor(): React.ReactElement {
   const error = useAppSelector((state) => state.root.error);
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
+
   useEffect(() => {
     if (reviewsQuery.isSuccess) {
       usersMultipleTrigger(reviewsQuery.data!.map((r) => r.UserID));
@@ -69,8 +71,6 @@ export function Vendor(): React.ReactElement {
     // Add current user to users list
     usersMultipleTrigger([...reviewsQuery.data!.map((r) => r.UserID), userID]);
   };
-
-  console.log(reviewsQuery.data);
 
   return (
     <>
