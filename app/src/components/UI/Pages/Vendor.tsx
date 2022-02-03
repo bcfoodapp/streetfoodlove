@@ -18,7 +18,6 @@ import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
-import jwtDecode from "jwt-decode";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -44,7 +43,7 @@ export function Vendor(): React.ReactElement {
     setOpenReviewForm(true);
   };
 
-  const cancelReviewHandler = () => {
+  const closeReviewHandler = () => {
     setOpenReviewForm(false);
   };
 
@@ -111,8 +110,8 @@ export function Vendor(): React.ReactElement {
       </Container>
       {openReviewForm ? (
         <ReviewForm
-          cancelFormHandler={cancelReviewHandler}
           finishedFormHandler={completedReviewHandler}
+          closeReviewHandler={closeReviewHandler}
         />
       ) : (
         <Container className={styles.textArea}>
