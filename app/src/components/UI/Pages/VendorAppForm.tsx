@@ -37,6 +37,8 @@ export default function VendorAppForm(): React.ReactElement {
       BusinessLogo: "",
       Latitude: 0,
       Longitude: 0,
+      // TODO get user ID
+      Owner: uuid(),
     };
     const result = await createVendor(vendor);
     if ((result as any).error === undefined) {
