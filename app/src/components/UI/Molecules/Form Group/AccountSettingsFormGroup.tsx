@@ -9,7 +9,8 @@ import {
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
-import { useAppSelector } from "../../../../store";
+import { useAppSelector, useAppDispatch } from "../../../../store";
+import jwtDecode from "jwt-decode";
 
 const AccountSettings: React.FC<{
   token: string;
@@ -20,6 +21,7 @@ const AccountSettings: React.FC<{
   const userID = getUserIDFromToken(token);
   const userQuery = useUserProtectedQuery(userID);
   const user = userQuery.data;
+  const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -38,6 +40,7 @@ const AccountSettings: React.FC<{
   const [updateSetting] = useUpdateUserMutation();
 
   const handleSubmit = async () => {
+    // dispatch(setName({ firstName: firstName, lastName: lastName }));
     // user is defined when handleSubmit is called
     await updateSetting({
       ID: userID,
@@ -51,6 +54,7 @@ const AccountSettings: React.FC<{
     });
     alert("Updated User Settings!");
   };
+
   return (
     <Container className={styles.wrapper}>
       <Form onSubmit={handleSubmit}>

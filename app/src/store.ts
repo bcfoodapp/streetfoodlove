@@ -9,6 +9,11 @@ import {
 import { apiSlice, tokenSlice } from "./api";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
+interface Name {
+  firstName: string;
+  lastName: string;
+}
+
 const apiErrorHandler: Middleware =
   (api: MiddlewareAPI<typeof store.dispatch, RootState>) =>
   (next) =>
