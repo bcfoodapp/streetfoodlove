@@ -30,14 +30,12 @@ const AccountSettingsFormGroup: React.FC<{
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
 
   useEffect(() => {
     if (userQueryIsSuccess) {
       setEmail(user!.Email);
       setFirstName(user!.FirstName);
       setLastName(user!.LastName);
-      setUsername(user!.Username);
     }
   }, [userQueryIsSuccess]);
 
@@ -45,7 +43,7 @@ const AccountSettingsFormGroup: React.FC<{
     const response = await updateSetting({
       ID: userID,
       Photo: user!.Photo,
-      Username: username,
+      Username: user!.Username,
       Email: email,
       FirstName: firstName,
       LastName: lastName,
@@ -85,15 +83,6 @@ const AccountSettingsFormGroup: React.FC<{
             disabled={disabled}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Input
-            label="Username"
-            placeholder="Username"
-            disabled={disabled}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
           />
         </Form.Group>
         <Container className={styles.saveBtn}>
