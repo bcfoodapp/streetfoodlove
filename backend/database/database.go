@@ -50,17 +50,17 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			Latitude,
 			Longitude,
 			Owner
-	   ) VALUES (
+		) VALUES (
 			:ID,
 			:Name,
-	    	:BusinessAddress,
+			:BusinessAddress,
 			:Website,
 			:BusinessHours,
 			:Phone,
 			:BusinessLogo,
 			:Latitude,
 			:Longitude,
-	    	:Owner
+			:Owner
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
