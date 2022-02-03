@@ -9,19 +9,21 @@ import {
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
-import { useAppSelector, useAppDispatch } from "../../../../store";
-import jwtDecode from "jwt-decode";
+import { useAppSelector } from "../../../../store";
 
-const AccountSettings: React.FC<{
-  token: string;
+const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
-}> = ({ token, disabled, setDisabledForm }) => {
+}> = ({ disabled, setDisabledForm }) => {
   useGetTokenQuery();
+  const token = useAppSelector((state) => state.token.token);
+  if (token === null) {
+    return <p>Not logged in</p>;
+  }
+
   const userID = getUserIDFromToken(token);
   const userQuery = useUserProtectedQuery(userID);
   const user = userQuery.data;
-  const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -40,8 +42,6 @@ const AccountSettings: React.FC<{
   const [updateSetting] = useUpdateUserMutation();
 
   const handleSubmit = async () => {
-    // dispatch(setName({ firstName: firstName, lastName: lastName }));
-    // user is defined when handleSubmit is called
     await updateSetting({
       ID: userID,
       Photo: user!.Photo,
@@ -99,24 +99,6 @@ const AccountSettings: React.FC<{
         </Container>
       </Form>
     </Container>
-  );
-};
-
-const AccountSettingsFormGroup: React.FC<{
-  disabled: boolean;
-  setDisabledForm: (value: boolean) => void;
-}> = ({ disabled, setDisabledForm }) => {
-  const token = useAppSelector((state) => state.token.token);
-  if (token === null) {
-    return <p>Not logged in</p>;
-  }
-
-  return (
-    <AccountSettings
-      token={token}
-      disabled={disabled}
-      setDisabledForm={setDisabledForm}
-    />
   );
 };
 
