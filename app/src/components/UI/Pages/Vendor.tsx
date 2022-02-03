@@ -7,6 +7,7 @@ import {
   StarRatingInteger,
   useLazyUsersMultipleQuery,
   User,
+  getUserIDFromToken,
 } from "../../../api";
 import { Container, Grid } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
@@ -15,7 +16,7 @@ import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
-import { RootState, useAppSelector } from "../../../store";
+import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import jwtDecode from "jwt-decode";
 
@@ -58,7 +59,7 @@ export function Vendor(): React.ReactElement {
       throw new Error("not logged in");
     }
 
-    const userID = jwtDecode<{ UserID: string }>(token).UserID;
+    const userID = getUserIDFromToken(token);
     submitReview({
       ID: uuid(),
       Text: text,

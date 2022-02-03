@@ -3,6 +3,7 @@ import { Container, Form } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
 import {
+  getUserIDFromToken,
   useGetTokenQuery,
   useUpdateUserMutation,
   useUserProtectedQuery,
@@ -16,7 +17,8 @@ const AccountSettings: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ token, disabled, setDisabledForm }) => {
-  const userID = jwtDecode<{ UserID: string }>(token).UserID;
+  useGetTokenQuery();
+  const userID = getUserIDFromToken(token);
   const userQuery = useUserProtectedQuery(userID);
   const user = userQuery.data;
   const dispatch = useAppDispatch();
@@ -104,7 +106,6 @@ const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
-  useGetTokenQuery();
   const token = useAppSelector((state) => state.token.token);
   if (token === null) {
     return <p>Not logged in</p>;
