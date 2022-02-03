@@ -271,14 +271,26 @@ export const apiSlice = createApi({
     // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
-        const result = await getAndSaveCredentials(args, api);
-        if (result.error) {
-          return result;
+        const credentialsResponse = await getAndSaveCredentials(args, api);
+        if (credentialsResponse.error) {
+          return credentialsResponse;
         }
 
-        const userID = getUserIDFromToken(result.data as string);
+        const userID = getUserIDFromToken(credentialsResponse.data as string);
+        const userResponse = await baseQuery(
+          `/users/${encode(userID)}`,
+          api,
+          extraOptions
+        );
+        if (userResponse.error) {
+          return userResponse;
+        }
+        const user = userResponse.data as User;
 
-        setCredentialsAndName(args);
+        setCredentialsAndName({
+          ...args,
+          Name: `${user.FirstName} ${user.LastName}`,
+        });
         return { data: undefined };
       },
     }),
