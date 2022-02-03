@@ -42,7 +42,7 @@ const AccountSettingsFormGroup: React.FC<{
   }, [userQueryIsSuccess]);
 
   const handleSubmit = async () => {
-    await updateSetting({
+    const response = await updateSetting({
       ID: userID,
       Photo: user!.Photo,
       Username: username,
@@ -52,7 +52,9 @@ const AccountSettingsFormGroup: React.FC<{
       UserType: UserType.Customer,
       SignUpDate: user!.SignUpDate,
     });
-    alert("Updated User Settings!");
+    if ((response as any).error === undefined) {
+      alert("Updated User Settings!");
+    }
   };
 
   if (isSuccess && token === null) {
