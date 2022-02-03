@@ -4,15 +4,10 @@ import Buttons from "../Atoms/Button/Buttons";
 import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
-import {
-  Credentials,
-  useSetCredentialsAndGetTokenMutation,
-} from "../../../api";
-import { useAppSelector } from "../../../store";
-import { useNavigate } from "react-router-dom";
-import MessageError from "../Atoms/Message/MessageError";
+import { useSetCredentialsAndGetTokenMutation } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Displays the Login element in the login page
@@ -42,7 +37,7 @@ export default function Login(): React.ReactElement {
       Username: values.Username,
       Password: values.Password,
     });
-    // navigate("/");
+    navigate("/");
   };
 
   return (
