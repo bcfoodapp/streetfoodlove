@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Container, Form } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
-import { useUpdateUserMutation, useUserProtectedQuery } from "../../../../api";
+import {
+  getUserIDFromToken,
+  useUpdateUserMutation,
+  useUserProtectedQuery,
+} from "../../../../api";
 import { UserType } from "../../../../api";
 import { useAppSelector } from "../../../../store";
 import jwtDecode from "jwt-decode";
@@ -12,7 +16,7 @@ const AccountSettings: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ token, disabled, setDisabledForm }) => {
-  const userID = jwtDecode<{ UserID: string }>(token).UserID;
+  const userID = getUserIDFromToken(token);
   const userQuery = useUserProtectedQuery(userID);
   const user = userQuery.data;
 

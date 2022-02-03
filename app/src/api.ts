@@ -100,6 +100,11 @@ export const tokenSlice = createSlice({
 
 const { setTokenAndTime } = tokenSlice.actions;
 
+// Returns userID inside token.
+export function getUserIDFromToken(token: string) {
+  return jwtDecode<{ UserID: string }>(token).UserID;
+}
+
 const encode = encodeURIComponent;
 
 const baseQuery = fetchBaseQuery({
@@ -271,9 +276,7 @@ export const apiSlice = createApi({
           return result;
         }
 
-        const userID = jwtDecode<{ UserID: string }>(
-          result.data as string
-        ).UserID;
+        const userID = getUserIDFromToken(result.data as string);
 
         setCredentialsAndName(args);
         return { data: undefined };
