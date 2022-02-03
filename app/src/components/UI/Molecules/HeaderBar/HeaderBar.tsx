@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, Menu, Dropdown, DropdownItemProps } from "semantic-ui-react";
+import { Icon, Menu, Dropdown, Button } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
@@ -11,22 +11,29 @@ import { clearLocalStorage } from "../../../../api";
  * Returns the headerbar element
  */
 
-const ProfileIcon = (
-  <span>
-    <Icon name="user circle" size="big" /> Hi Colin
-  </span>
-);
-
 export default function HeaderBar(): React.ReactElement {
   const token = useSelector((state: any) => state.token.token);
+  var name;
+
+  const value = localStorage.getItem("user");
+  if (typeof value === "string") {
+    name = JSON.parse(value).Name;
+  }
+
   const navigate = useNavigate();
 
-  const options: DropdownItemProps[] = [
+  const ProfileIcon = (
+    <span>
+      <Icon name="user circle" size="big" /> Hi {name}
+    </span>
+  );
+
+  const options = [
     {
       key: "user",
       text: (
         <span>
-          Signed in as <strong>Colin Zhou</strong>
+          Signed in as <strong>{name}</strong>
         </span>
       ),
       disabled: true,
