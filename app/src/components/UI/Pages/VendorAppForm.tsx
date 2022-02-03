@@ -24,7 +24,7 @@ interface inputValues {
 
 export default function VendorAppForm(): React.ReactElement {
   const navigate = useNavigate();
-  const [createVendor] = useCreateVendorMutation();
+  const [createVendor, { isSuccess }] = useCreateVendorMutation();
 
   const onSubmit = (data: inputValues) => {
     const vendor: Vendor = {
@@ -39,11 +39,9 @@ export default function VendorAppForm(): React.ReactElement {
       Longitude: 0,
     };
     createVendor(vendor);
-    // TODO navigate to vendor page
   };
 
-  // TODO replace with isSuccess status
-  if (false) {
+  if (isSuccess) {
     navigate("/vendor-dashboard");
   }
 
