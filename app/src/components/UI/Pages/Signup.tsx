@@ -1,14 +1,13 @@
 import React from "react";
-import { Form, Container } from "semantic-ui-react";
+import { Container, Form } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./signup.module.css";
 import { useCreateUserMutation, UserType } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
-import { Formik, FormikProps, ErrorMessage, Field } from "formik";
+import { ErrorMessage, Field, Formik, FormikProps } from "formik";
 import * as Yup from "yup";
-import { useAppSelector } from "../../../store";
-import MessageError from "../Atoms/Message/MessageError";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface inputValues {
   firstName: string;
@@ -21,6 +20,12 @@ interface inputValues {
 
 export default function Signup(): React.ReactElement {
   const [createUser] = useCreateUserMutation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  let userType = UserType.Customer;
+  if (searchParams.get("usertype") === "vendor") {
+    userType = UserType.Vendor;
+  }
 
   const initialValues: inputValues = {
     firstName: "",
@@ -41,19 +46,25 @@ export default function Signup(): React.ReactElement {
   });
 
   const onSubmit = async (data: inputValues) => {
-    await createUser({
+    const result = await createUser({
       ID: uuid(),
       Username: data.username,
       Photo: uuid(),
-      UserType: UserType.Customer,
+      UserType: userType,
       Email: data.email,
       FirstName: data.firstName,
       LastName: data.lastName,
       Password: data.password,
       SignUpDate: DateTime.now(),
     });
-    // TODO need better feedback, and show any errors if they occurred
-    alert("created account");
+
+    if ((result as any).error === undefined) {
+      if (userType === UserType.Customer) {
+        navigate("/");
+      } else {
+        navigate("/vendor-signup");
+      }
+    }
   };
 
   return (
