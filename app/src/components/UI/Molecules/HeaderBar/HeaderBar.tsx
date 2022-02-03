@@ -5,7 +5,7 @@ import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { deleteCredentials } from "../../../../api";
+import { clearLocalStorage } from "../../../../api";
 
 /**
  * Returns the headerbar element
@@ -50,7 +50,7 @@ export default function HeaderBar(): React.ReactElement {
       key: "log-out",
       text: "Log Out",
       onClick: () => {
-        deleteCredentials();
+        clearLocalStorage();
         navigate("/");
       },
     },
