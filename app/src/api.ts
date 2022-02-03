@@ -276,6 +276,7 @@ export const apiSlice = createApi({
           return credentialsResponse;
         }
 
+        // Get name of user
         const userID = getUserIDFromToken(credentialsResponse.data as string);
         const userResponse = await baseQuery(
           `/users/${encode(userID)}`,

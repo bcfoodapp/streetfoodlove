@@ -7,6 +7,7 @@ import { Grid } from "semantic-ui-react";
 import { useSetCredentialsAndGetTokenMutation } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Displays the Login element in the login page
@@ -19,6 +20,7 @@ interface inputValues {
 
 export default function Login(): React.ReactElement {
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
+  const navigate = useNavigate();
 
   const initialValues: inputValues = {
     Username: "",
@@ -35,7 +37,7 @@ export default function Login(): React.ReactElement {
       Username: values.Username,
       Password: values.Password,
     });
-    // navigate("/");
+    navigate("/");
   };
 
   return (
