@@ -4,6 +4,7 @@ import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
 import {
   getUserIDFromToken,
+  useGetTokenQuery,
   useUpdateUserMutation,
   useUserProtectedQuery,
 } from "../../../../api";
@@ -15,6 +16,7 @@ const AccountSettings: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ token, disabled, setDisabledForm }) => {
+  useGetTokenQuery();
   const userID = getUserIDFromToken(token);
   const userQuery = useUserProtectedQuery(userID);
   const user = userQuery.data;

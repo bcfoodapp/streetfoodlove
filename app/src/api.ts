@@ -267,6 +267,19 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
+    // Retrieves token using stored credentials and saves it to state if token state is null.
+    getToken: builder.query<undefined, void>({
+      queryFn: async (arg, api, extraOptions) => {
+        const credentials = getCredentials();
+        if (credentials !== null) {
+          const result = await getAndSaveCredentials(credentials, api);
+          if (result) {
+            return { error: result };
+          }
+        }
+        return { data: undefined };
+      },
+    }),
     // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
@@ -346,6 +359,7 @@ export const {
   useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
+  useGetTokenQuery,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
   useGuideQuery,
