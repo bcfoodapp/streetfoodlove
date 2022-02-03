@@ -10,6 +10,7 @@ import { useAppSelector } from "../../../store";
 import MessageError from "../Atoms/Message/MessageError";
 import { useCreateVendorMutation, Vendor } from "../../../api";
 import { v4 as uuid } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 interface inputValues {
   name: string;
@@ -22,9 +23,10 @@ interface inputValues {
 }
 
 export default function VendorAppForm(): React.ReactElement {
+  const navigate = useNavigate();
   const [createVendor] = useCreateVendorMutation();
 
-  const onSubmit = (data: inputValues) => {
+  const onSubmit = async (data: inputValues) => {
     const vendor: Vendor = {
       ID: uuid(),
       Name: data.name,
@@ -36,8 +38,10 @@ export default function VendorAppForm(): React.ReactElement {
       Latitude: 0,
       Longitude: 0,
     };
-    createVendor(vendor);
-    // TODO navigate to vendor page
+    const result = await createVendor(vendor);
+    if ((result as any).error === undefined) {
+      navigate("/vendor-dashboard");
+    }
   };
 
   const timeOptionsFromValues = [
