@@ -1,6 +1,6 @@
-import { Container, Grid, Comment } from "semantic-ui-react"
-import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel"
-import styles from './commentCard.module.css'
+import { Container, Grid, Comment } from "semantic-ui-react";
+import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
+import styles from "./commentCard.module.css";
 
 const CommentCard: React.FC = () => {
   return (
@@ -21,15 +21,15 @@ const CommentCard: React.FC = () => {
               <pre>This is a comment</pre>
             </Grid.Row>
             <Grid.Row>
-              <Comment.Actions >
+              <Comment.Actions>
                 <Comment.Action className={styles.reply}>Reply</Comment.Action>
               </Comment.Actions>
             </Grid.Row>
           </Grid.Column>
         </Grid.Row>
-      </Grid>      
+      </Grid>
     </Container>
-  )
-}
+  );
+};
 
-export default CommentCard
+export default CommentCard;

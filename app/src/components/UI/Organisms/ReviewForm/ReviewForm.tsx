@@ -31,7 +31,7 @@ export const ReviewForm = (props: Props) => {
   const handleSubmit = () => {
     // TODO make sure user selects a rating
 
-    props.closeReviewHandler()
+    props.closeReviewHandler();
     if (starRating === null) {
       throw new Error("starRating is null");
     }
