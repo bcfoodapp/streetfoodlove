@@ -38,12 +38,12 @@ export default function HeaderBar(): React.ReactElement {
         navigate("/account-profile");
       },
     },
-    { 
-      key: "page", 
+    {
+      key: "page",
       text: "Edit Vendor Page",
       onClick: () => {
-        navigate("/edit-vendor-page")
-      } 
+        navigate("/edit-vendor-page");
+      },
     },
     { key: "help", text: "Help" },
     {
