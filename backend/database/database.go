@@ -239,11 +239,8 @@ type Review struct {
 	VendorID   uuid.UUID
 	UserID     uuid.UUID
 	DatePosted time.Time
-	StarRating StarRating
+	StarRating *int
 }
-
-// StarRating is an integer from 1 to 5.
-type StarRating int
 
 func (d *Database) ReviewCreate(review *Review) error {
 	const command = `
