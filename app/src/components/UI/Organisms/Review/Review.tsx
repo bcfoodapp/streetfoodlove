@@ -91,12 +91,12 @@ export const Review: React.FC<Props> = ({ review, user }) => {
         <Container className="commentWrap">
           <CommentCard />
         </Container>
-        {/* <Container className="commentWrap">
+        <Container className="commentWrap">
           <CommentCard />
         </Container>
         <Container className="commentWrap">
           <CommentCard />
-        </Container> */}
+        </Container>
       </Container>
     </Container>
   );
