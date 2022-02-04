@@ -127,7 +127,7 @@ async function getAndSaveCredentials(
   api: BaseQueryApi
 ): Promise<QueryReturnValue<string, FetchBaseQueryError, {}>> {
   const response = await baseQuery(
-    { url: "/token", method: "POST", body: credentials },
+    { url: "/token", method: POST, body: credentials },
     api,
     {}
   );
@@ -143,6 +143,9 @@ async function getAndSaveCredentials(
   );
   return response as QueryReturnValue<string, FetchBaseQueryError, {}>;
 }
+
+const PUT = "PUT";
+const POST = "POST";
 
 // This is the API abstraction.
 // API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
@@ -192,7 +195,14 @@ export const apiSlice = createApi({
     createVendor: builder.mutation<undefined, Vendor>({
       query: (vendor) => ({
         url: `/vendors/${encode(vendor.ID)}`,
-        method: "PUT",
+        method: PUT,
+        body: vendor,
+      }),
+    }),
+    updateVendor: builder.mutation<undefined, Vendor>({
+      query: (vendor) => ({
+        url: `/vendors/${encode(vendor.ID)}`,
+        method: POST,
         body: vendor,
       }),
     }),
@@ -228,7 +238,7 @@ export const apiSlice = createApi({
     updateUser: builder.mutation<undefined, UserProtected>({
       query: (user) => ({
         url: `/users/${encode(user.ID)}/protected`,
-        method: "POST",
+        method: POST,
         body: user,
       }),
     }),
@@ -238,7 +248,7 @@ export const apiSlice = createApi({
     >({
       query: (payload) => ({
         url: `/users/${encode(payload.ID)}/protected`,
-        method: "PUT",
+        method: PUT,
         body: payload,
       }),
     }),
@@ -249,7 +259,7 @@ export const apiSlice = createApi({
     >({
       query: ({ userID, password }) => ({
         url: `/users/${encode(userID)}/password`,
-        method: "POST",
+        method: POST,
         body: password,
       }),
     }),
@@ -265,7 +275,7 @@ export const apiSlice = createApi({
     submitReview: builder.mutation<undefined, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
-        method: "PUT",
+        method: PUT,
         body: review,
       }),
       invalidatesTags: ["Review"],
@@ -353,6 +363,7 @@ export const {
   useVendorQuery,
   useVendorsMultipleQuery,
   useCreateVendorMutation,
+  useUpdateVendorMutation,
   useUserQuery,
   useLazyUsersMultipleQuery,
   useUserProtectedQuery,
