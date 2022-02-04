@@ -108,6 +108,9 @@ export function getUserIDFromToken(token: string) {
   return jwtDecode<{ UserID: string }>(token).UserID;
 }
 
+const PUT = "PUT";
+const POST = "POST";
+
 const encode = encodeURIComponent;
 
 const baseQuery = fetchBaseQuery({
@@ -143,9 +146,6 @@ async function getAndSaveCredentials(
   );
   return response as QueryReturnValue<string, FetchBaseQueryError, {}>;
 }
-
-const PUT = "PUT";
-const POST = "POST";
 
 // This is the API abstraction.
 // API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
