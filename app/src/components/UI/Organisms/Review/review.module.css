@@ -27,6 +27,20 @@
   color: darkblue !important;
 }
 
-#test.ui.label{
-  background-color: white !important;
+.replyForm {
+  margin-left: 6% !important;
+}
+
+.replyFormArea {
+  border: 1px solid black !important;
+}
+
+.commentWrap {
+  width: 100% !important;
+  padding-left: 22px !important
+}
+
+.commentWrap2 {
+  width: 100% !important;
+  padding-left: 44px !important
 }

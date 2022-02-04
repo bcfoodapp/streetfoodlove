@@ -4,7 +4,7 @@ import styles from "./commentCard.module.css";
 
 const CommentCard: React.FC = () => {
   return (
-    <Container>
+    <>
       <Grid divided celled columns={4} className={styles.row}>
         <Grid.Row>
           <Grid.Column width={1}>
@@ -14,7 +14,7 @@ const CommentCard: React.FC = () => {
             <Grid.Row>
               {/* {user ? <b>{user.FirstName} {user.LastName}</b> : null} */}
               {<b>Colin Zhou</b>}
-              <i>Liked by vendor!</i>
+              {/* <i>Liked by vendor!</i> */}
             </Grid.Row>
             <Grid.Row>
               {/* <pre>{review.Text}</pre> */}
@@ -28,7 +28,7 @@ const CommentCard: React.FC = () => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-    </Container>
+    </>
   );
 };
 

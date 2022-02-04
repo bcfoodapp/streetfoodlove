@@ -5,6 +5,7 @@ import { Review as ReviewObj, User } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 import React, { useState } from "react";
 import Buttons from "../../Atoms/Button/Buttons";
+import CommentCard from "../CommentCard/CommentCard";
 
 interface Props {
   review: ReviewObj;
@@ -51,7 +52,7 @@ export const Review: React.FC<Props> = ({ review, user }) => {
             <Grid.Row>
               <Comment.Actions>
                 <Label id="test" onClick={() => setOpenCommentForm(true)}>
-                  <Comment.Action className={styles.reply}>Reply</Comment.Action>
+                  <Comment.Action className={styles.reply} active>Reply</Comment.Action>
                 </Label>
               </Comment.Actions>
             </Grid.Row>
@@ -60,11 +61,22 @@ export const Review: React.FC<Props> = ({ review, user }) => {
       </Grid>
       <Container>
         {openCommentForm ? (
-          <Form reply>
-            <Form.TextArea />
+          <Form reply className={styles.replyForm}>
+            <Form.TextArea className={styles.replyFormArea}/>
             <Buttons color="green" submit clicked={() => setOpenCommentForm(false)}>Comment</Buttons>
           </Form>
         ) : null}
+      </Container>
+      <Container>
+        <Container className={styles.commentWrap}>
+          <CommentCard />
+        </Container>
+        <Container className={styles.commentWrap2}>
+          <CommentCard />
+        </Container>
+        {/* <Container className={styles.commentWrap}>
+          <CommentCard />
+        </Container> */}
       </Container>
     </Container>
   );
