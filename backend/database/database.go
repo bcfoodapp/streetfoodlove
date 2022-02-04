@@ -34,6 +34,7 @@ type Vendor struct {
 	BusinessLogo    string
 	Latitude        float64
 	Longitude       float64
+	Owner           uuid.UUID
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -47,18 +48,19 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			Phone,
 			BusinessLogo,
 			Latitude,
-			Longitude
-
-	   ) VALUES (
+			Longitude,
+			Owner
+		) VALUES (
 			:ID,
 			:Name,
-	    	:BusinessAddress,
+			:BusinessAddress,
 			:Website,
 			:BusinessHours,
 			:Phone,
 			:BusinessLogo,
 			:Latitude,
-			:Longitude
+			:Longitude,
+			:Owner
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
@@ -239,11 +241,8 @@ type Review struct {
 	VendorID   uuid.UUID
 	UserID     uuid.UUID
 	DatePosted time.Time
-	StarRating StarRating
+	StarRating *int
 }
-
-// StarRating is an integer from 1 to 5.
-type StarRating int
 
 func (d *Database) ReviewCreate(review *Review) error {
 	const command = `

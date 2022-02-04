@@ -27,7 +27,6 @@ const AccountSettingsFormGroup: React.FC<{
   } = useUserProtectedQuery(userID, { skip: userID === "" });
 
   const [updateSetting] = useUpdateUserMutation();
-
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
