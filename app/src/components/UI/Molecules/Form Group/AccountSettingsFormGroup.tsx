@@ -4,7 +4,6 @@ import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
 import {
   getUserIDFromToken,
-  useGetTokenQuery,
   useUpdateUserMutation,
   useUserProtectedQuery,
 } from "../../../../api";
