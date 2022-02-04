@@ -3,9 +3,10 @@ import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./review.module.css";
 import { Review as ReviewObj, User } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Buttons from "../../Atoms/Button/Buttons";
 import CommentCard from "../CommentCard/CommentCard";
+import styleComments from './script.js'
 
 interface Props {
   review: ReviewObj;
@@ -19,6 +20,10 @@ interface Props {
 export const Review: React.FC<Props> = ({ review, user }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
 
+  useEffect(() => {
+    styleComments()
+  }, [])
+  
   return (
     <Container className={styles.wrap}>
       <Grid divided celled columns={4} className={styles.row}>
@@ -68,15 +73,15 @@ export const Review: React.FC<Props> = ({ review, user }) => {
         ) : null}
       </Container>
       <Container>
-        <Container className={styles.commentWrap}>
+        <Container className="commentWrap">
           <CommentCard />
         </Container>
-        <Container className={styles.commentWrap2}>
+        <Container className="commentWrap">
           <CommentCard />
         </Container>
-        {/* <Container className={styles.commentWrap}>
+        <Container className="commentWrap">
           <CommentCard />
-        </Container> */}
+        </Container>
       </Container>
     </Container>
   );
