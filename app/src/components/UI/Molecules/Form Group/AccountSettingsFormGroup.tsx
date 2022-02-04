@@ -9,16 +9,16 @@ import {
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
+import { useAppSelector } from "../../../../store";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
-  const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
-
+  const token = useAppSelector((state) => state.token.token);
   let userID = "";
-  if (tokenIsSuccess && token !== null) {
-    userID = getUserIDFromToken(token as string);
+  if (token !== null) {
+    userID = getUserIDFromToken(token);
   }
   const {
     data: user,
@@ -55,7 +55,7 @@ const AccountSettingsFormGroup: React.FC<{
     }
   };
 
-  if (tokenIsSuccess && token === null) {
+  if (userID === "") {
     return <p>Not logged in</p>;
   }
 
