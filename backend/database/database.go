@@ -130,6 +130,31 @@ func (d *Database) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]Vendor
 	return result, rows.Err()
 }
 
+func (d *Database) VendorByOwnerID(userID uuid.UUID) ([]Vendor, error) {
+	const command = `
+		SELECT *
+		FROM Vendor
+		WHERE Owner = ?
+	`
+
+	rows, err := d.db.Queryx(command, &userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Vendor, 0)
+
+	for rows.Next() {
+		result = append(result, Vendor{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
 type UserType int
 
 const (

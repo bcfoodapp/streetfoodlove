@@ -42,7 +42,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
 	router.PUT("/users/:id/protected", a.UserProtectedPut)
 
-	router.GET("/reviews", a.ReviewsByVendorID)
+	router.GET("/reviews", a.Reviews)
 	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 
@@ -197,6 +197,22 @@ func (a *API) VendorPost(c *gin.Context) {
 	}
 }
 
+func (a *API) Vendors(c *gin.Context) {
+	ownerID, err := uuid.Parse(c.Query("owner"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendors, err := a.Backend.VendorByOwnerID(ownerID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, vendors)
+}
+
 func (a *API) User(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -280,7 +296,7 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 }
 
-func (a *API) ReviewsByVendorID(c *gin.Context) {
+func (a *API) Reviews(c *gin.Context) {
 	vendorID, err := uuid.Parse(c.Query("vendorID"))
 	if err != nil {
 		c.Error(err)

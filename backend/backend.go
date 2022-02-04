@@ -56,6 +56,10 @@ func (b *Backend) VendorUpdate(userID uuid.UUID, vendor *database.Vendor) error 
 	return b.Database.VendorUpdate(vendor)
 }
 
+func (b *Backend) VendorByOwnerID(userID uuid.UUID) ([]database.Vendor, error) {
+	return b.Database.VendorByOwnerID(userID)
+}
+
 func (b *Backend) User(id uuid.UUID) (*database.User, error) {
 	userProtected, err := b.Database.User(id)
 	if err != nil {
