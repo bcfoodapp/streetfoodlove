@@ -53,6 +53,8 @@ export interface Review {
   VendorID: string;
   UserID: string;
   StarRating: StarRatingInteger;
+  // Contains the ID of the parent review, or null if there is no parent.
+  ReplyTo: string | null;
 }
 
 export interface Credentials {

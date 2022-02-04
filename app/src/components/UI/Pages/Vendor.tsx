@@ -66,6 +66,7 @@ export function Vendor(): React.ReactElement {
       VendorID: vendorID,
       UserID: userID,
       StarRating: starRating,
+      ReplyTo: null,
     });
     // Add current user to users list
     usersMultipleTrigger([...reviewsQuery.data!.map((r) => r.UserID), userID]);
