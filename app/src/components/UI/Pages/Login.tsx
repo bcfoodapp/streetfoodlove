@@ -23,10 +23,6 @@ interface inputValues {
 export default function Login(): React.ReactElement {
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
-  // const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
-
-  useGetTokenQuery();
-  const token = useAppSelector((state) => state.token.token);
 
   const initialValues: inputValues = {
     Username: "",
