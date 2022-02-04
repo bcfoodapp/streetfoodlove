@@ -192,7 +192,7 @@ export const apiSlice = createApi({
         return { data: vendors };
       },
     }),
-    // Returns vendors with given owner ID.
+    // Returns vendors with given owner ID. There should only be zero or one vendor associated with a user.
     vendorByOwnerID: builder.query<Vendor[], string>({
       query: (ownerID) => `/vendors?owner=${encode(ownerID)}`,
     }),
