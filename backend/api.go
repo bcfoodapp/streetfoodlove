@@ -35,6 +35,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/vendors/:id", a.Vendor)
 	router.PUT("/vendors/:id", GetToken, a.VendorPut)
+	router.POST("/vendors/:id", GetToken, a.VendorPost)
 
 	router.GET("/users/:id", a.User)
 	router.GET("/users/:id/protected", GetToken, a.UserProtected)
@@ -167,6 +168,30 @@ func (a *API) VendorPut(c *gin.Context) {
 	}
 
 	if err := a.Backend.VendorCreate(getTokenFromContext(c), vendor); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) VendorPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendor := &database.Vendor{}
+	if err := c.ShouldBindJSON(vendor); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != vendor.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.VendorUpdate(getTokenFromContext(c), vendor); err != nil {
 		c.Error(err)
 		return
 	}

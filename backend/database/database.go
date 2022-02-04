@@ -78,6 +78,24 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	return vendor, err
 }
 
+func (d *Database) VendorUpdate(vendor *Vendor) error {
+	const command = `
+		UPDATE Vendor SET
+			Name = :Name,
+			BusinessAddress = :BusinessAddress,
+			Website = :Website,
+			BusinessHours = :BusinessHours,
+			Phone = :Phone,
+			BusinessLogo = :BusinessLogo,
+			Latitude = :Latitude,
+			Longitude = :Longitude,
+			Owner = :Owner
+		WHERE ID = :ID
+	`
+	_, err := d.db.NamedExec(command, &vendor)
+	return err
+}
+
 type CoordinateBounds struct {
 	NorthWestLat float64
 	NorthWestLng float64

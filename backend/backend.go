@@ -41,7 +41,19 @@ func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error 
 		return fmt.Errorf("you are not a vendor user type; only vendor users can create a vendor page")
 	}
 
+	if userID != vendor.Owner {
+		return fmt.Errorf("owner field does not match userID")
+	}
+
 	return b.Database.VendorCreate(vendor)
+}
+
+func (b *Backend) VendorUpdate(userID uuid.UUID, vendor *database.Vendor) error {
+	if userID != vendor.Owner {
+		return unauthorized
+	}
+
+	return b.Database.VendorUpdate(vendor)
 }
 
 func (b *Backend) User(id uuid.UUID) (*database.User, error) {
