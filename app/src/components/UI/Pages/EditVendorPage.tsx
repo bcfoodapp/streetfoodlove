@@ -61,6 +61,8 @@ const CreateVendorPage: React.FC = () => {
       BusinessLogo: "",
       Latitude: 0,
       Longitude: 0,
+      // TODO get user ID
+      Owner: "c8936fa6-69b7-4bf8-a033-a1056c80682a",
     };
     createVendor(vendor);
     // Temporary output

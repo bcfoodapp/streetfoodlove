@@ -1,24 +1,17 @@
 import React from "react";
-import { Icon, Menu, Dropdown, Button } from "semantic-ui-react";
+import { Icon, Menu, Dropdown } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { clearLocalStorage } from "../../../../api";
+import { clearLocalStorage, getCredentialsAndName } from "../../../../api";
 
 /**
  * Returns the headerbar element
  */
 
 export default function HeaderBar(): React.ReactElement {
-  const token = useSelector((state: any) => state.token.token);
-  var name;
-
-  const value = localStorage.getItem("user");
-  if (typeof value === "string") {
-    name = JSON.parse(value).Name;
-  }
+  const name = getCredentialsAndName()?.Name;
 
   const navigate = useNavigate();
 
@@ -73,15 +66,7 @@ export default function HeaderBar(): React.ReactElement {
       <SearchBox />
 
       <Menu.Menu position="right">
-        {token !== null ? (
-          <Dropdown
-            trigger={ProfileIcon}
-            options={options}
-            className={styles.dropdown}
-            // onChange={() => window.location.reload()}
-          />
-        ) : null}
-        {token === null ? (
+        {name === null ? (
           <Menu.Item>
             <Link to="/account-selection">
               <Buttons signup>Sign Up</Buttons>
@@ -92,7 +77,13 @@ export default function HeaderBar(): React.ReactElement {
               </Buttons>
             </Link>
           </Menu.Item>
-        ) : null}
+        ) : (
+          <Dropdown
+            trigger={ProfileIcon}
+            options={options}
+            className={styles.dropdown}
+          />
+        )}
       </Menu.Menu>
     </Menu>
   );
