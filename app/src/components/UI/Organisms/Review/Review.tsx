@@ -1,4 +1,11 @@
-import { Container, Grid, Rating, Comment, Form, Label } from "semantic-ui-react";
+import {
+  Container,
+  Grid,
+  Rating,
+  Comment,
+  Form,
+  Label,
+} from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./review.module.css";
 import { Review as ReviewObj, User } from "../../../../api";
@@ -6,7 +13,7 @@ import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 import React, { useEffect, useState } from "react";
 import Buttons from "../../Atoms/Button/Buttons";
 import CommentCard from "../CommentCard/CommentCard";
-import styleComments from './script.js'
+import styleComments from "./script.js";
 
 interface Props {
   review: ReviewObj;
@@ -21,9 +28,9 @@ export const Review: React.FC<Props> = ({ review, user }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
 
   useEffect(() => {
-    styleComments()
-  }, [])
-  
+    styleComments();
+  }, []);
+
   return (
     <Container className={styles.wrap}>
       <Grid divided celled columns={4} className={styles.row}>
@@ -57,7 +64,9 @@ export const Review: React.FC<Props> = ({ review, user }) => {
             <Grid.Row>
               <Comment.Actions>
                 <Label id="test" onClick={() => setOpenCommentForm(true)}>
-                  <Comment.Action className={styles.reply} active>Reply</Comment.Action>
+                  <Comment.Action className={styles.reply} active>
+                    Reply
+                  </Comment.Action>
                 </Label>
               </Comment.Actions>
             </Grid.Row>
@@ -67,8 +76,14 @@ export const Review: React.FC<Props> = ({ review, user }) => {
       <Container>
         {openCommentForm ? (
           <Form reply className={styles.replyForm}>
-            <Form.TextArea className={styles.replyFormArea}/>
-            <Buttons color="green" submit clicked={() => setOpenCommentForm(false)}>Comment</Buttons>
+            <Form.TextArea className={styles.replyFormArea} />
+            <Buttons
+              color="green"
+              submit
+              clicked={() => setOpenCommentForm(false)}
+            >
+              Comment
+            </Buttons>
           </Form>
         ) : null}
       </Container>
