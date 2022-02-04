@@ -44,7 +44,7 @@ export interface UserProtected extends User {
   SignUpDate: DateTime;
 }
 
-export type StarRatingInteger = 1 | 2 | 3 | 4 | 5;
+export type StarRatingInteger = 1 | 2 | 3 | 4 | 5 | null;
 
 export interface Review {
   ID: string;

@@ -20,9 +20,7 @@ interface Props {
 
 export const ReviewForm = (props: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
-  const [starRating, setStarRating] = useState(
-    null as StarRatingInteger | null
-  );
+  const [starRating, setStarRating] = useState(null as StarRatingInteger);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaInput(e.target.value);
