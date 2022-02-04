@@ -153,7 +153,7 @@ export const apiSlice = createApi({
       (api.getState() as RootState).token.tokenTime <=
         DateTime.now().minus({ minutes: 10 }).toSeconds()
     ) {
-      const credentials = getCredentials();
+      const credentials = getCredentialsAndName();
       if (credentials !== null) {
         const response = await getAndSaveCredentials(credentials, api);
         if (response.error) {
@@ -272,7 +272,7 @@ export const apiSlice = createApi({
     // Gets token using stored credentials and saves it to state. Returns null if credentials are not stored.
     getToken: builder.query<string | null, void>({
       queryFn: async (arg, api, extraOptions) => {
-        const credentials = getCredentials();
+        const credentials = getCredentialsAndName();
         if (credentials !== null) {
           return getAndSaveCredentials(credentials, api);
         }
@@ -331,7 +331,7 @@ function setCredentialsAndName(entry: CredentialsAndName) {
 }
 
 // Gets credentials from localStorage.
-function getCredentials(): CredentialsAndName | null {
+export function getCredentialsAndName(): CredentialsAndName | null {
   const entry = localStorage.getItem("user");
   if (entry === null) {
     return null;
