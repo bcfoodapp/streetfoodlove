@@ -14,7 +14,8 @@ interface Props {
     text: string;
     starRating: StarRatingInteger;
   }) => void;
-  cancelFormHandler: () => void;
+  // cancelFormHandler: () => void;
+  closeReviewHandler: () => void;
 }
 
 export const ReviewForm = (props: Props) => {
@@ -29,6 +30,8 @@ export const ReviewForm = (props: Props) => {
 
   const handleSubmit = () => {
     // TODO make sure user selects a rating
+
+    props.closeReviewHandler();
     if (starRating === null) {
       throw new Error("starRating is null");
     }
@@ -57,7 +60,7 @@ export const ReviewForm = (props: Props) => {
           />
         </Container>
         <Container className={styles.buttons}>
-          <Buttons cancel clicked={props.cancelFormHandler}>
+          <Buttons cancel clicked={props.closeReviewHandler}>
             Cancel
           </Buttons>
           <Buttons submit color="green">

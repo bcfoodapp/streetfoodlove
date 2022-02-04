@@ -2,10 +2,26 @@
   box-sizing: border-box;
 }
 
+.row {
+  border-radius: 5px !important;
+}
+
 .stars {
-  position: relative;
+  margin-top: 5px;
 }
 
 .h2 {
   margin-left: 62px;
+}
+
+.heart {
+  margin-left: 5%;
+}
+
+.reply {
+  cursor: pointer;
+}
+
+.reply:hover {
+  color: darkblue !important;
 }
