@@ -33,6 +33,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(errorHandler)
 	router.Use(gin.CustomRecovery(recovery))
 
+	router.GET("/vendors", a.Vendors)
 	router.GET("/vendors/:id", a.Vendor)
 	router.PUT("/vendors/:id", GetToken, a.VendorPut)
 	router.POST("/vendors/:id", GetToken, a.VendorPost)
