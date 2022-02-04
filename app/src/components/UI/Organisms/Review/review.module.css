@@ -4,6 +4,7 @@
 
 .row {
   border-radius: 5px !important;
+  border-color: white !important;
 }
 
 .stars {
@@ -24,4 +25,8 @@
 
 .reply:hover {
   color: darkblue !important;
+}
+
+#test.ui.label{
+  background-color: white !important;
 }

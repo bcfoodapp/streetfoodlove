@@ -1,9 +1,10 @@
-import { Container, Grid, Rating, Comment } from "semantic-ui-react";
+import { Container, Grid, Rating, Comment, Form, Label } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./review.module.css";
 import { Review as ReviewObj, User } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 import React, { useState } from "react";
+import Buttons from "../../Atoms/Button/Buttons";
 
 interface Props {
   review: ReviewObj;
@@ -49,13 +50,22 @@ export const Review: React.FC<Props> = ({ review, user }) => {
             </Grid.Row>
             <Grid.Row>
               <Comment.Actions>
-                <Comment.Action className={styles.reply}>Reply</Comment.Action>
+                <Label id="test" onClick={() => setOpenCommentForm(true)}>
+                  <Comment.Action className={styles.reply}>Reply</Comment.Action>
+                </Label>
               </Comment.Actions>
             </Grid.Row>
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Container>{}</Container>
+      <Container>
+        {openCommentForm ? (
+          <Form reply>
+            <Form.TextArea />
+            <Buttons color="green" submit clicked={() => setOpenCommentForm(false)}>Comment</Buttons>
+          </Form>
+        ) : null}
+      </Container>
     </Container>
   );
 };
