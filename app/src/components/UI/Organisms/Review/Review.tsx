@@ -28,7 +28,7 @@ export const Review: React.FC<Props> = ({ review, user }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
 
   useEffect(() => {
-    styleComments()
+    styleComments();
   }, []);
 
   return (
