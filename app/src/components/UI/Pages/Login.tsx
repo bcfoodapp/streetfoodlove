@@ -21,7 +21,7 @@ interface inputValues {
 }
 
 export default function Login(): React.ReactElement {
-  const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
+  const [setCredentials] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
 
   const initialValues: inputValues = {
@@ -35,7 +35,7 @@ export default function Login(): React.ReactElement {
   });
 
   const onSubmit = async (values: inputValues) => {
-    await setCredentialsMutation({
+    await setCredentials({
       Username: values.Username,
       Password: values.Password,
     });

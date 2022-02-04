@@ -2,7 +2,11 @@ import React from "react";
 import { Container, Form } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./signup.module.css";
-import { useCreateUserMutation, UserType } from "../../../api";
+import {
+  useCreateUserMutation,
+  UserType,
+  useSetCredentialsAndGetTokenMutation,
+} from "../../../api";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
 import { ErrorMessage, Field, Formik, FormikProps } from "formik";
@@ -20,6 +24,7 @@ interface inputValues {
 
 export default function Signup(): React.ReactElement {
   const [createUser] = useCreateUserMutation();
+  const [setCredentials] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   let userType = UserType.Customer;
@@ -59,6 +64,11 @@ export default function Signup(): React.ReactElement {
     });
 
     if ((result as any).error === undefined) {
+      await setCredentials({
+        Username: data.username,
+        Password: data.password,
+      });
+
       if (userType === UserType.Customer) {
         navigate("/");
       } else {

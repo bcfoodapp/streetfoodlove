@@ -1,14 +1,16 @@
 import React from "react";
 import { Form, Container } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Dropdown } from "semantic-ui-react";
 import styles from "./vendorappform.module.css";
 import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
-import { useAppSelector } from "../../../store";
-import MessageError from "../Atoms/Message/MessageError";
-import { useCreateVendorMutation, Vendor } from "../../../api";
+import {
+  getUserIDFromToken,
+  useCreateVendorMutation,
+  useGetTokenQuery,
+  Vendor,
+} from "../../../api";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
 
@@ -25,8 +27,17 @@ interface inputValues {
 export default function VendorAppForm(): React.ReactElement {
   const navigate = useNavigate();
   const [createVendor] = useCreateVendorMutation();
+  const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
+
+  if (tokenIsSuccess && token === null) {
+    return <p>Not logged in</p>;
+  }
 
   const onSubmit = async (data: inputValues) => {
+    let userID = "";
+    if (tokenIsSuccess && token !== null) {
+      userID = getUserIDFromToken(token as string);
+    }
     const vendor: Vendor = {
       ID: uuid(),
       Name: data.name,
@@ -37,8 +48,7 @@ export default function VendorAppForm(): React.ReactElement {
       BusinessLogo: "",
       Latitude: 0,
       Longitude: 0,
-      // TODO get user ID
-      Owner: uuid(),
+      Owner: userID,
     };
     const result = await createVendor(vendor);
     if ((result as any).error === undefined) {

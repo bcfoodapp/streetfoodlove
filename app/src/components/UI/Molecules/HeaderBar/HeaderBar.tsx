@@ -66,7 +66,13 @@ export default function HeaderBar(): React.ReactElement {
       <SearchBox />
 
       <Menu.Menu position="right">
-        {name === null ? (
+        {name ? (
+          <Dropdown
+            trigger={ProfileIcon}
+            options={options}
+            className={styles.dropdown}
+          />
+        ) : (
           <Menu.Item>
             <Link to="/account-selection">
               <Buttons signup>Sign Up</Buttons>
@@ -77,12 +83,6 @@ export default function HeaderBar(): React.ReactElement {
               </Buttons>
             </Link>
           </Menu.Item>
-        ) : (
-          <Dropdown
-            trigger={ProfileIcon}
-            options={options}
-            className={styles.dropdown}
-          />
         )}
       </Menu.Menu>
     </Menu>

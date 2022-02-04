@@ -366,6 +366,7 @@ export function clearLocalStorage() {
 export const {
   useVendorQuery,
   useVendorsMultipleQuery,
+  useVendorByOwnerIDQuery,
   useCreateVendorMutation,
   useUpdateVendorMutation,
   useUserQuery,
