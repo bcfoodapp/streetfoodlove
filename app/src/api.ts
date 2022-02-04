@@ -22,6 +22,7 @@ export interface Vendor {
   BusinessLogo: string;
   Latitude: number;
   Longitude: number;
+  Owner: string;
 }
 
 export enum UserType {

@@ -64,20 +64,6 @@ func main() {
 func SetupTables(db *sqlx.DB) error {
 	commands := [...]string{
 		`
-		CREATE TABLE IF NOT EXISTS Vendor (
-			ID CHAR(36) NOT NULL,
-			Name VARCHAR(100) NOT NULL,
-			BusinessAddress VARCHAR(500) NULL,
-			Website VARCHAR(500) NULL,
-			BusinessHours VARCHAR(500) NOT NULL,
-			Phone VARCHAR(50) NULL,
-			BusinessLogo CHAR(36) NOT NULL,
-			Latitude FLOAT NOT NULL,
-			Longitude FLOAT NOT NULL,
-			PRIMARY KEY (ID)
-		)
-		`,
-		`
 		CREATE TABLE IF NOT EXISTS User (
 			ID CHAR(36) NOT NULL,
 			Email VARCHAR(100) NULL,
@@ -89,6 +75,23 @@ func SetupTables(db *sqlx.DB) error {
 			UserType TINYINT NULL,
 			Photo CHAR(36),
 			PRIMARY KEY (ID)
+		)
+		`,
+		`
+		CREATE TABLE IF NOT EXISTS Vendor (
+			ID CHAR(36) NOT NULL,
+			Name VARCHAR(100) NOT NULL,
+			BusinessAddress VARCHAR(500) NULL,
+			Website VARCHAR(500) NULL,
+			BusinessHours VARCHAR(500) NOT NULL,
+			Phone VARCHAR(50) NULL,
+			BusinessLogo CHAR(36) NOT NULL,
+			Latitude FLOAT NOT NULL,
+			Longitude FLOAT NOT NULL,
+			Owner CHAR(36) NOT NULL,
+			PRIMARY KEY (ID),
+			FOREIGN KEY (Owner) REFERENCES User(ID)
+			ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
@@ -199,17 +202,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image0_url",
 			Latitude:        47.608013,
 			Longitude:       -122.335161,
-		},
-		{
-			ID:              uuid.MustParse("b924349d-442f-4fff-984e-ab0ec36f4590"),
-			Name:            "vendor1",
-			BusinessAddress: "address1",
-			Website:         "www.vendor1.com",
-			BusinessHours:   "Mon-Sun 8:00AM-5:00PM",
-			Phone:           "321-321-4321",
-			BusinessLogo:    "Image1_url",
-			Latitude:        47.982567,
-			Longitude:       -122.193375,
+			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
 		},
 	}
 
