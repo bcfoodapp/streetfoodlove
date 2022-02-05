@@ -1,25 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Container, Form, Header } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
-import {
-  useGetTokenQuery,
-  useSetCredentialsAndGetTokenMutation,
-} from "../../../api";
+import { useSetCredentialsAndGetTokenMutation } from "../../../api";
 import { useNavigate } from "react-router-dom";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useAppSelector } from "../../../store";
-/**
- * Displays the Login element in the login page
- */
 
 interface inputValues {
   Username: string;
   Password: string;
 }
 
+/**
+ * Displays the Login element in the login page
+ */
 export default function Login(): React.ReactElement {
   const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
   const navigate = useNavigate();
@@ -45,34 +41,34 @@ export default function Login(): React.ReactElement {
 
   return (
     <>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={validationSchema}
-        enableReinitialize={true}
-        validateOnChange={true}
-      >
-        {(formProps: FormikProps<inputValues>) => {
-          const {
-            dirty,
-            isValid,
-            handleSubmit,
-            values,
-            handleBlur,
-            handleReset,
-            errors,
-            touched,
-            handleChange,
-          } = formProps;
+      <Container className={styles.wrapper}>
+        <Grid centered relaxed={"very"}>
+          <Grid.Column className={styles.test}>
+            <Grid.Row centered>
+              <h1 className={styles.header}>Login</h1>
+            </Grid.Row>
+            <Grid.Row>
+              <Formik
+                initialValues={initialValues}
+                onSubmit={onSubmit}
+                validationSchema={validationSchema}
+                enableReinitialize
+                validateOnChange
+              >
+                {(formProps: FormikProps<inputValues>) => {
+                  const {
+                    dirty,
+                    isValid,
+                    handleSubmit,
+                    values,
+                    handleBlur,
+                    handleReset,
+                    errors,
+                    touched,
+                    handleChange,
+                  } = formProps;
 
-          return (
-            <Container className={styles.wrapper}>
-              <Grid centered relaxed={"very"}>
-                <Grid.Column className={styles.test}>
-                  <Grid.Row centered>
-                    <h1 className={styles.header}>Login</h1>
-                  </Grid.Row>
-                  <Grid.Row>
+                  return (
                     <Form onSubmit={handleSubmit} onReset={handleReset}>
                       <Form.Field className={styles.field1}>
                         <Header as={"h3"}>Username</Header>
@@ -109,10 +105,6 @@ export default function Login(): React.ReactElement {
                           className={styles.error}
                         />
                       </Form.Field>
-                      {/* TODO this belongs in the create account form */}
-                      {/*<Form.Field>*/}
-                      {/*  <Checkbox label="I agree to the Terms and Conditions" />*/}
-                      {/*</Form.Field>*/}
                       <Container>
                         <Buttons
                           login
@@ -123,27 +115,14 @@ export default function Login(): React.ReactElement {
                           Login
                         </Buttons>
                       </Container>
-                      {/* Temporary error output */}
-                      {/* <pre>{error ? error.toString() : ""}</pre> */}
                     </Form>
-                  </Grid.Row>
-                </Grid.Column>
-              </Grid>
-            </Container>
-          );
-        }}
-      </Formik>
+                  );
+                }}
+              </Formik>
+            </Grid.Row>
+          </Grid.Column>
+        </Grid>
+      </Container>
     </>
   );
 }
-
-// const LoginWrapper: React.FC = () => {
-//   useGetTokenQuery();
-//   const token = useAppSelector((state) => state.token.token)!;
-
-//   if (token === null) {
-//     return  <Login />;
-//   }
-
-//   return <Login token={token} />;
-// };
