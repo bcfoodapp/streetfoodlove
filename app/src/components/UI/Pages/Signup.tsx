@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Container, Form } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./signup.module.css";
@@ -68,19 +68,17 @@ export default function Signup(): React.ReactElement {
     }
   };
 
+  const googleButton = useRef(null);
+
   useEffect(() => {
     // @ts-ignore
-    gapi.signin2.render("googleButton", {
-      scope: "profile email",
-      width: 240,
-      height: 50,
-      longtitle: true,
-      theme: "dark",
-      onsuccess: signInWithGoogle,
-      onfailure: () => {
-        throw new Error("sign in with Google failed");
-      },
+    google.accounts.id.initialize({
+      client_id:
+        "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
+      callback: (data) => signInWithGoogle(data.credential),
     });
+    // @ts-ignore
+    google.accounts.id.renderButton(googleButton.current, {});
   }, []);
 
   return (
@@ -89,7 +87,7 @@ export default function Signup(): React.ReactElement {
 
       <div className={styles.formWrapper}>
         <div className={styles.googleButtonWrapper}>
-          <div id="googleButton" />
+          <div ref={googleButton} />
         </div>
 
         <Formik
