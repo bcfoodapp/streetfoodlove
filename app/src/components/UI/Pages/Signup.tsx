@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Form } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./signup.module.css";
@@ -8,6 +8,7 @@ import { DateTime } from "luxon";
 import { ErrorMessage, Field, Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { signInWithGoogle } from "../../../googleSignIn";
 
 interface inputValues {
   firstName: string;
@@ -67,13 +68,28 @@ export default function Signup(): React.ReactElement {
     }
   };
 
+  useEffect(() => {
+    // @ts-ignore
+    gapi.signin2.render("googleButton", {
+      scope: "profile email",
+      width: 240,
+      height: 50,
+      longtitle: true,
+      theme: "dark",
+      onsuccess: signInWithGoogle,
+      onfailure: () => {
+        throw new Error("sign in with Google failed");
+      },
+    });
+  }, []);
+
   return (
     <Container className={styles.signUpWrapper}>
       <h1>Sign Up Form (user account)</h1>
 
       <div className={styles.formWrapper}>
         <div className={styles.googleButtonWrapper}>
-          <div className="g-signin2" data-onsuccess="onSignIn" />
+          <div id="googleButton" />
         </div>
 
         <Formik
