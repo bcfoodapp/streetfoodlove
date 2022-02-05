@@ -48,17 +48,12 @@ export default function Login(): React.ReactElement {
               <h1 className={styles.header}>Login</h1>
             </Grid.Row>
             <Grid.Row>
-              <div className={styles.googleButtonWrapper}>
-                <div className="g-signin2" data-onsuccess="onSignIn" />
-              </div>
-            </Grid.Row>
-            <Grid.Row>
               <Formik
                 initialValues={initialValues}
                 onSubmit={onSubmit}
                 validationSchema={validationSchema}
-                enableReinitialize={true}
-                validateOnChange={true}
+                enableReinitialize
+                validateOnChange
               >
                 {(formProps: FormikProps<inputValues>) => {
                   const {
