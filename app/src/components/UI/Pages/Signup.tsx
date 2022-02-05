@@ -71,13 +71,11 @@ export default function Signup(): React.ReactElement {
   const googleButton = useRef(null);
 
   useEffect(() => {
-    // @ts-ignore
     google.accounts.id.initialize({
       client_id:
         "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
       callback: (data) => signInWithGoogle(data.credential),
     });
-    // @ts-ignore
     google.accounts.id.renderButton(googleButton.current, {});
   }, []);
 
