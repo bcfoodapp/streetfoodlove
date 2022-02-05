@@ -6,7 +6,7 @@
   margin-left: 40% !important;
 }
 
-.form {
+.formWrapper {
   margin-left: 37% !important;
   margin-top: 5% !important;
   border: 2px solid rgba(0, 0, 0, 0.25);
@@ -41,4 +41,10 @@
   margin-left: 2px !important;
   margin-top: 4px !important;
   margin-bottom: 1rem !important;
+}
+
+.googleButtonWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
 }

@@ -45,34 +45,39 @@ export default function Login(): React.ReactElement {
 
   return (
     <>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={validationSchema}
-        enableReinitialize={true}
-        validateOnChange={true}
-      >
-        {(formProps: FormikProps<inputValues>) => {
-          const {
-            dirty,
-            isValid,
-            handleSubmit,
-            values,
-            handleBlur,
-            handleReset,
-            errors,
-            touched,
-            handleChange,
-          } = formProps;
+      <Container className={styles.wrapper}>
+        <Grid centered relaxed={"very"}>
+          <Grid.Column className={styles.test}>
+            <Grid.Row centered>
+              <h1 className={styles.header}>Login</h1>
+            </Grid.Row>
+            <Grid.Row>
+              <div className={styles.googleButtonWrapper}>
+                <div className="g-signin2" data-onsuccess="onSignIn" />
+              </div>
+            </Grid.Row>
+            <Grid.Row>
+              <Formik
+                initialValues={initialValues}
+                onSubmit={onSubmit}
+                validationSchema={validationSchema}
+                enableReinitialize={true}
+                validateOnChange={true}
+              >
+                {(formProps: FormikProps<inputValues>) => {
+                  const {
+                    dirty,
+                    isValid,
+                    handleSubmit,
+                    values,
+                    handleBlur,
+                    handleReset,
+                    errors,
+                    touched,
+                    handleChange,
+                  } = formProps;
 
-          return (
-            <Container className={styles.wrapper}>
-              <Grid centered relaxed={"very"}>
-                <Grid.Column className={styles.test}>
-                  <Grid.Row centered>
-                    <h1 className={styles.header}>Login</h1>
-                  </Grid.Row>
-                  <Grid.Row>
+                  return (
                     <Form onSubmit={handleSubmit} onReset={handleReset}>
                       <Form.Field className={styles.field1}>
                         <Header as={"h3"}>Username</Header>
@@ -126,13 +131,13 @@ export default function Login(): React.ReactElement {
                       {/* Temporary error output */}
                       {/* <pre>{error ? error.toString() : ""}</pre> */}
                     </Form>
-                  </Grid.Row>
-                </Grid.Column>
-              </Grid>
-            </Container>
-          );
-        }}
-      </Formik>
+                  );
+                }}
+              </Formik>
+            </Grid.Row>
+          </Grid.Column>
+        </Grid>
+      </Container>
     </>
   );
 }
