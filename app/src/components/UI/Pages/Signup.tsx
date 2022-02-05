@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Container, Form } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./signup.module.css";
@@ -8,6 +8,7 @@ import { DateTime } from "luxon";
 import { ErrorMessage, Field, Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { signInWithGoogle } from "../../../googleSignIn";
 
 interface inputValues {
   firstName: string;
@@ -67,11 +68,26 @@ export default function Signup(): React.ReactElement {
     }
   };
 
+  const googleButton = useRef(null);
+
+  useEffect(() => {
+    google.accounts.id.initialize({
+      client_id:
+        "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
+      callback: (data) => signInWithGoogle(data.credential),
+    });
+    google.accounts.id.renderButton(googleButton.current, {});
+  }, []);
+
   return (
     <Container className={styles.signUpWrapper}>
       <h1>Sign Up Form (user account)</h1>
 
       <div className={styles.formWrapper}>
+        <div className={styles.googleButtonWrapper}>
+          <div ref={googleButton} />
+        </div>
+
         <Formik
           enableReinitialize
           initialValues={initialValues}

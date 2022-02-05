@@ -42,3 +42,9 @@
   margin-top: 4px !important;
   margin-bottom: 1rem !important;
 }
+
+.googleButtonWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
