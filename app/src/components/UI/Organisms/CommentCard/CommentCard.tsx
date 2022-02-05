@@ -2,7 +2,9 @@ import { Container, Grid, Comment } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./commentCard.module.css";
 
-const CommentCardContainer: React.FC<{commentArray: string[]}> = ({commentArray}) => {
+const CommentCardContainer: React.FC<{ commentArray: Comment[] }> = ({
+  commentArray,
+}) => {
   // let filterParentComment = commentArray.filter(comment => comment.id !== comment.parent.id)
 
   return (
@@ -13,14 +15,17 @@ const CommentCardContainer: React.FC<{commentArray: string[]}> = ({commentArray}
         )
       })} */}
     </>
-  )
-}
+  );
+};
 
-export default CommentCardContainer
+export default CommentCardContainer;
 
 //Comment type is from backend
 
-const CommentCard: React.FC<{comment: object, allComments: typeof Comment[]}> = (comment, allComments) => {
+const CommentCard: React.FC<{
+  comment: object;
+  allComments: typeof Comment[];
+}> = (comment, allComments) => {
   // const childComments = () => allComments.filter(c => c.parent_id === comment.id)
 
   return (
@@ -46,6 +51,11 @@ const CommentCard: React.FC<{comment: object, allComments: typeof Comment[]}> = 
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      {/* {childComments.map((element, key) => {
+        return (
+          <CommentCard />
+        )
+      })} */}
     </>
   );
 };

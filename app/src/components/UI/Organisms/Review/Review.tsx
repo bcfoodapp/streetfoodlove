@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import Buttons from "../../Atoms/Button/Buttons";
 import CommentCard from "../CommentCard/CommentCard";
 import styleComments from "./script.js";
+import CommentCardContainer from "../CommentCard/CommentCard";
 
 interface Props {
   review: ReviewObj;
@@ -87,9 +88,7 @@ export const Review: React.FC<Props> = ({ review, user }) => {
           </Form>
         ) : null}
       </Container>
-        <Container>
-          
-        </Container>
+      <Container>{/* <CommentCardContainer /> */}</Container>
     </Container>
   );
 };
