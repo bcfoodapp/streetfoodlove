@@ -49,6 +49,7 @@ const AccountSettingsFormGroup: React.FC<{
       LastName: lastName,
       UserType: UserType.Customer,
       SignUpDate: user!.SignUpDate,
+      GoogleID: user!.GoogleID,
     });
     if ((response as any).error === undefined) {
       alert("Updated User Settings!");

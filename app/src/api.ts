@@ -43,6 +43,7 @@ export interface User {
 export interface UserProtected extends User {
   Email: string;
   SignUpDate: DateTime;
+  GoogleID: string | null;
 }
 
 export type StarRatingInteger = 1 | 2 | 3 | 4 | 5 | null;
