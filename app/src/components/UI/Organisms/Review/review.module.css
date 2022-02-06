@@ -4,6 +4,7 @@
 
 .row {
   border-radius: 5px !important;
+  border-color: white !important;
 }
 
 .stars {
@@ -24,4 +25,12 @@
 
 .reply:hover {
   color: darkblue !important;
+}
+
+.replyForm {
+  margin-left: 6% !important;
+}
+
+.replyFormArea {
+  border: 1px solid black !important;
 }
