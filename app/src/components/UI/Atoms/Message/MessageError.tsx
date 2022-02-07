@@ -1,11 +1,13 @@
-import React, { useState, MouseEvent } from "react";
-import { Container, Message, MessageProps } from "semantic-ui-react";
+import React, { useState } from "react";
+import { Container, Message } from "semantic-ui-react";
 import styles from "./msgerror.module.css";
+import { useAppSelector } from "../../../../store";
 
-const MessageError: React.FC<{ errorMsg: string }> = ({ errorMsg }) => {
-  const [visibleMsg, setVisibleMsg] = useState<boolean>(true);
+const MessageError: React.FC = () => {
+  const error = useAppSelector((state) => state.root.error);
+  const [visibleMsg, setVisibleMsg] = useState(true);
 
-  const dismissHandler = (e: MouseEvent<HTMLElement>, data: MessageProps) => {
+  const dismissHandler = () => {
     setVisibleMsg(false);
   };
 
@@ -15,7 +17,7 @@ const MessageError: React.FC<{ errorMsg: string }> = ({ errorMsg }) => {
         <Message negative className={styles.msg} onDismiss={dismissHandler}>
           <Message.Header>Error</Message.Header>
           <Message.List>
-            <Message.Item>{errorMsg}</Message.Item>
+            <Message.Item>{error}</Message.Item>
           </Message.List>
         </Message>
       ) : null}
