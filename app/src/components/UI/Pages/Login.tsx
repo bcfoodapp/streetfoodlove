@@ -31,12 +31,14 @@ export default function Login(): React.ReactElement {
   });
 
   const onSubmit = async (values: inputValues) => {
-    await setCredentialsMutation({
+    const response = await setCredentialsMutation({
       Username: values.Username,
       Password: values.Password,
     });
 
-    navigate("/");
+    if ((response as any).error === undefined) {
+      navigate("/");
+    }
   };
 
   return (
