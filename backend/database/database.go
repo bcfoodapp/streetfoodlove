@@ -78,6 +78,24 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	return vendor, err
 }
 
+func (d *Database) VendorUpdate(vendor *Vendor) error {
+	const command = `
+		UPDATE Vendor SET
+			Name = :Name,
+			BusinessAddress = :BusinessAddress,
+			Website = :Website,
+			BusinessHours = :BusinessHours,
+			Phone = :Phone,
+			BusinessLogo = :BusinessLogo,
+			Latitude = :Latitude,
+			Longitude = :Longitude,
+			Owner = :Owner
+		WHERE ID = :ID
+	`
+	_, err := d.db.NamedExec(command, &vendor)
+	return err
+}
+
 type CoordinateBounds struct {
 	NorthWestLat float64
 	NorthWestLng float64
@@ -95,6 +113,31 @@ func (d *Database) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]Vendor
 	`
 
 	rows, err := d.db.NamedQuery(command, bounds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Vendor, 0)
+
+	for rows.Next() {
+		result = append(result, Vendor{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) VendorByOwnerID(userID uuid.UUID) ([]Vendor, error) {
+	const command = `
+		SELECT *
+		FROM Vendor
+		WHERE Owner = ?
+	`
+
+	rows, err := d.db.Queryx(command, &userID)
 	if err != nil {
 		return nil, err
 	}
