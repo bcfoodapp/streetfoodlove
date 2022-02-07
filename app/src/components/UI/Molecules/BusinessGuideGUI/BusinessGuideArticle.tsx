@@ -10,7 +10,6 @@ const BusinessGuideArticle: React.FC = () => {
 
   return (
     <Container className={styles.wrapper}>
-      <HeaderBar logout />
       <Header as="h2" className={styles.header}>
         {" "}
         Guide{" "}
@@ -18,7 +17,7 @@ const BusinessGuideArticle: React.FC = () => {
       <Container className={styles.postInfo}>
         <Container>
           <Header as="h3" className={styles.postDate}>
-            Post date:{" " + guideInfo?.DatePosted}
+            Post date:{" " + guideInfo?.DatePosted.toLocaleString()}
           </Header>
         </Container>
         <Container>

@@ -28,10 +28,6 @@ func (b *Backend) Vendor(id uuid.UUID) (*database.Vendor, error) {
 }
 
 func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error {
-	// TODO A vendor user should only be able to create one vendor page.
-	// We need a way to store a relationship from a user to a vendor page so that it is a 1-to-1
-	// relationship.
-
 	user, err := b.Database.User(userID)
 	if err != nil {
 		return err
@@ -41,7 +37,32 @@ func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error 
 		return fmt.Errorf("you are not a vendor user type; only vendor users can create a vendor page")
 	}
 
+	if userID != vendor.Owner {
+		return fmt.Errorf("owner field does not match userID")
+	}
+
+	existingVendors, err := b.Database.VendorByOwnerID(userID)
+	if err != nil {
+		return err
+	}
+
+	if len(existingVendors) > 0 {
+		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
+	}
+
 	return b.Database.VendorCreate(vendor)
+}
+
+func (b *Backend) VendorUpdate(userID uuid.UUID, vendor *database.Vendor) error {
+	if userID != vendor.Owner {
+		return unauthorized
+	}
+
+	return b.Database.VendorUpdate(vendor)
+}
+
+func (b *Backend) VendorByOwnerID(userID uuid.UUID) ([]database.Vendor, error) {
+	return b.Database.VendorByOwnerID(userID)
 }
 
 func (b *Backend) User(id uuid.UUID) (*database.User, error) {

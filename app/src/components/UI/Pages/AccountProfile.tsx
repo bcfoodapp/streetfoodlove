@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Container } from "semantic-ui-react";
 import styles from "./accountprofile.module.css";
 import { Tab } from "semantic-ui-react";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import AccountSettingsFormGroup from "../Molecules/Form Group/AccountSettingsFormGroup";
 import Buttons from "../Atoms/Button/Buttons";
 
@@ -31,7 +30,6 @@ const AccountProfile: React.FC = () => {
 
   return (
     <Container className={styles.wrapper}>
-      <HeaderBar signUp profile />
       <h2>Profile</h2>
       <Container className={styles.profileActions}>
         <Tab

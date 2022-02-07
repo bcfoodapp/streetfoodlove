@@ -6,7 +6,11 @@ import {
 import { RootState } from "./store";
 import { DateTime } from "luxon";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BaseQueryApi } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import {
+  BaseQueryApi,
+  QueryReturnValue,
+} from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import jwtDecode from "jwt-decode";
 
 export interface Vendor {
   ID: string;
@@ -18,6 +22,7 @@ export interface Vendor {
   BusinessLogo: string;
   Latitude: number;
   Longitude: number;
+  Owner: string;
 }
 
 export enum UserType {
@@ -40,7 +45,7 @@ export interface UserProtected extends User {
   SignUpDate: DateTime;
 }
 
-export type StarRatingInteger = 1 | 2 | 3 | 4 | 5;
+export type StarRatingInteger = 1 | 2 | 3 | 4 | 5 | null;
 
 export interface Review {
   ID: string;
@@ -49,13 +54,17 @@ export interface Review {
   VendorID: string;
   UserID: string;
   StarRating: StarRatingInteger;
+  // Contains the ID of the parent review, or null if there is no parent.
+  ReplyTo: string | null;
 }
-
-type RawReview = Review & { DatePosted: string };
 
 export interface Credentials {
   Username: string;
   Password: string;
+}
+
+export interface CredentialsAndName extends Credentials {
+  Name: string;
 }
 
 export interface GeoRectangle {
@@ -94,6 +103,11 @@ export const tokenSlice = createSlice({
 
 const { setTokenAndTime } = tokenSlice.actions;
 
+// Returns userID inside token.
+export function getUserIDFromToken(token: string) {
+  return jwtDecode<{ UserID: string }>(token).UserID;
+}
+
 const encode = encodeURIComponent;
 
 const baseQuery = fetchBaseQuery({
@@ -107,18 +121,18 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// Gets token and saves it to localStorage if successful. Returns error if error occurred.
+// Gets token and saves it to localStorage if successful. Returns response.
 async function getAndSaveCredentials(
   credentials: Credentials,
   api: BaseQueryApi
-): Promise<FetchBaseQueryError | null> {
+): Promise<QueryReturnValue<string, FetchBaseQueryError, {}>> {
   const response = await baseQuery(
     { url: "/token", method: "POST", body: credentials },
     api,
     {}
   );
   if (response.error) {
-    return response.error;
+    return response;
   }
 
   api.dispatch(
@@ -127,7 +141,7 @@ async function getAndSaveCredentials(
       time: DateTime.now().toSeconds(),
     })
   );
-  return null;
+  return response as QueryReturnValue<string, FetchBaseQueryError, {}>;
 }
 
 // This is the API abstraction.
@@ -140,11 +154,11 @@ export const apiSlice = createApi({
       (api.getState() as RootState).token.tokenTime <=
         DateTime.now().minus({ minutes: 10 }).toSeconds()
     ) {
-      const credentials = getCredentials();
+      const credentials = getCredentialsAndName();
       if (credentials !== null) {
-        const result = await getAndSaveCredentials(credentials, api);
-        if (result) {
-          return { error: result };
+        const response = await getAndSaveCredentials(credentials, api);
+        if (response.error) {
+          return response;
         }
       }
     }
@@ -206,6 +220,10 @@ export const apiSlice = createApi({
     }),
     userProtected: builder.query<UserProtected, string>({
       query: (id) => `/users/${encode(id)}/protected`,
+      transformResponse: (user: any) => ({
+        ...user,
+        SignUpDate: DateTime.fromISO(user.SignUpDate),
+      }),
     }),
     updateUser: builder.mutation<undefined, UserProtected>({
       query: (user) => ({
@@ -237,8 +255,8 @@ export const apiSlice = createApi({
     }),
     reviews: builder.query<Review[], string>({
       query: (vendorID) => `/reviews?vendorID=${encode(vendorID)}`,
-      transformResponse: (response) =>
-        (response as RawReview[]).map((review) => ({
+      transformResponse: (response: any[]) =>
+        response.map((review) => ({
           ...review,
           PostDate: DateTime.fromISO(review.DatePosted),
         })),
@@ -252,28 +270,42 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
-    // Retrieves token using stored credentials and saves it to state if token state is null.
-    getToken: builder.query<undefined, void>({
+    // Gets token using stored credentials and saves it to state. Returns null if credentials are not stored.
+    // This should be used to get the token if no query is called before the token is required. When any query is used,
+    // the token can be retrieved from the store.
+    getToken: builder.query<string | null, void>({
       queryFn: async (arg, api, extraOptions) => {
-        const credentials = getCredentials();
+        const credentials = getCredentialsAndName();
         if (credentials !== null) {
-          const result = await getAndSaveCredentials(credentials, api);
-          if (result) {
-            return { error: result };
-          }
+          return getAndSaveCredentials(credentials, api);
         }
-        return { data: undefined };
+        return { data: null };
       },
     }),
-    // Retrieves token and stores credentials to localStorage.
+    // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
-        const result = await getAndSaveCredentials(args, api);
-        if (result) {
-          return { error: result };
+        const credentialsResponse = await getAndSaveCredentials(args, api);
+        if (credentialsResponse.error) {
+          return credentialsResponse;
         }
 
-        setCredentialsState(args);
+        // Get name of user
+        const userID = getUserIDFromToken(credentialsResponse.data as string);
+        const userResponse = await baseQuery(
+          `/users/${encode(userID)}`,
+          api,
+          extraOptions
+        );
+        if (userResponse.error) {
+          return userResponse;
+        }
+        const user = userResponse.data as User;
+
+        setCredentialsAndName({
+          ...args,
+          Name: `${user.FirstName} ${user.LastName}`,
+        });
         return { data: undefined };
       },
     }),
@@ -287,22 +319,34 @@ export const apiSlice = createApi({
       query: (id) => ({
         url: `/guides/${id}`,
       }),
+      transformResponse: (guide: any) => ({
+        ...guide,
+        DatePosted: DateTime.fromISO(guide.DatePosted),
+      }),
     }),
   }),
 });
 
-function setCredentialsState(credentials: Credentials) {
+// Sets credentials and name in localStorage.
+function setCredentialsAndName(entry: CredentialsAndName) {
   console.info("set localStorage");
-  localStorage.setItem("user", JSON.stringify(credentials));
+  localStorage.setItem("user", JSON.stringify(entry));
 }
 
-function getCredentials(): Credentials | null {
+// Gets credentials from localStorage.
+export function getCredentialsAndName(): CredentialsAndName | null {
   const entry = localStorage.getItem("user");
   if (entry === null) {
     return null;
   }
 
   return JSON.parse(entry);
+}
+
+// Clears all entries in localStorage.
+export function clearLocalStorage() {
+  console.info("clear localStorage");
+  localStorage.clear();
 }
 
 export const {

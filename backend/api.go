@@ -33,15 +33,17 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(errorHandler)
 	router.Use(gin.CustomRecovery(recovery))
 
+	router.GET("/vendors", a.Vendors)
 	router.GET("/vendors/:id", a.Vendor)
 	router.PUT("/vendors/:id", GetToken, a.VendorPut)
+	router.POST("/vendors/:id", GetToken, a.VendorPost)
 
 	router.GET("/users/:id", a.User)
 	router.GET("/users/:id/protected", GetToken, a.UserProtected)
 	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
-	router.PUT("/users/:id/protected", GetToken, a.UserProtectedPut)
+	router.PUT("/users/:id/protected", a.UserProtectedPut)
 
-	router.GET("/reviews", a.ReviewsByVendorID)
+	router.GET("/reviews", a.Reviews)
 	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
 
@@ -172,6 +174,46 @@ func (a *API) VendorPut(c *gin.Context) {
 	}
 }
 
+func (a *API) VendorPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendor := &database.Vendor{}
+	if err := c.ShouldBindJSON(vendor); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != vendor.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.VendorUpdate(getTokenFromContext(c), vendor); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) Vendors(c *gin.Context) {
+	ownerID, err := uuid.Parse(c.Query("owner"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendors, err := a.Backend.VendorByOwnerID(ownerID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, vendors)
+}
+
 func (a *API) User(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -255,7 +297,7 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 }
 
-func (a *API) ReviewsByVendorID(c *gin.Context) {
+func (a *API) Reviews(c *gin.Context) {
 	vendorID, err := uuid.Parse(c.Query("vendorID"))
 	if err != nil {
 		c.Error(err)

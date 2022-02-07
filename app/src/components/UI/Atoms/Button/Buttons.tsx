@@ -13,15 +13,16 @@ interface ButtonsProps {
   signup?: boolean;
   apply?: boolean;
   getstarted?: boolean;
-  logout?: boolean;
   cancel?: boolean;
   edit?: boolean;
   save?: boolean;
   writeReview?: boolean;
   color?: ButtonProps["color"];
   create?: boolean;
-  clicked?: () => void;
+  clicked?: () => void | ((values: any) => void);
   children: React.ReactNode;
+  valid?: boolean;
+  dirty?: boolean;
 }
 
 export default function Buttons(props: ButtonsProps): React.ReactElement {
@@ -33,7 +34,6 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
   else if (props.signup) name = classes.Signup;
   else if (props.apply) name = classes.Apply;
   else if (props.getstarted) name = classes.getStarted;
-  else if (props.logout) name = classes.Logout;
   else if (props.cancel) name = classes.Cancel;
   else if (props.writeReview) name = classes.writeReview;
   else if (props.edit) name = classes.edit;
@@ -43,13 +43,24 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
 
   return (
     <>
-      <Button
-        className={classes.Button + " " + name}
-        color={props.color}
-        onClick={props.clicked}
-      >
-        <span>{props.children}</span>
-      </Button>
+      {props.valid === undefined || props.dirty === undefined ? (
+        <Button
+          className={classes.Button + " " + name}
+          color={props.color}
+          onClick={props.clicked}
+        >
+          <span>{props.children}</span>
+        </Button>
+      ) : (
+        <Button
+          className={classes.Button + " " + name}
+          color={props.color}
+          onClick={props.clicked}
+          disabled={!props.valid || !props.dirty}
+        >
+          <span>{props.children}</span>
+        </Button>
+      )}
     </>
   );
 }
