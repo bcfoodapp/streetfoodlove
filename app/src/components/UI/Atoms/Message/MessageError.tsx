@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { Container, Message } from "semantic-ui-react";
 import styles from "./msgerror.module.css";
-import { useAppSelector } from "../../../../store";
+import { hideError, useAppDispatch, useAppSelector } from "../../../../store";
 
 const MessageError: React.FC = () => {
   const error = useAppSelector((state) => state.root.error);
-  const [visibleMsg, setVisibleMsg] = useState(true);
+  const showError = useAppSelector((state) => state.root.showError);
+  const dispatch = useAppDispatch();
 
   const dismissHandler = () => {
-    setVisibleMsg(false);
+    dispatch(hideError());
   };
 
   return (
     <Container className={styles.wrapper}>
-      {visibleMsg ? (
+      {showError ? (
         <Message negative className={styles.msg} onDismiss={dismissHandler}>
           <Message.Header>Error</Message.Header>
           <Message.List>
