@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Container, Message } from "semantic-ui-react";
 import styles from "./msgerror.module.css";
 import { hideError, useAppDispatch, useAppSelector } from "../../../../store";
+import { useLocation } from "react-router-dom";
 
 const MessageError: React.FC = () => {
   const error = useAppSelector((state) => state.root.error);
   const showError = useAppSelector((state) => state.root.showError);
   const dispatch = useAppDispatch();
+  const location = useLocation();
+
+  useEffect(() => {
+    dispatch(hideError());
+  }, [location]);
 
   const dismissHandler = () => {
     dispatch(hideError());

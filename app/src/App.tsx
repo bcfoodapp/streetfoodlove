@@ -20,8 +20,8 @@ import LoginWrapper from "./components/UI/Pages/Login";
 function App(): React.ReactElement {
   return (
     <ErrorBoundary>
-      <MessageError />
       <BrowserRouter basename="/streetfoodlove">
+        <MessageError />
         <HeaderBar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
