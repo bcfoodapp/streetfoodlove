@@ -241,7 +241,7 @@ const CreateVendorPage: React.FC = () => {
                 placeholder="Vendor Description"
               />
 
-              <Buttons edit color="green" dirty={true} valid={isValid}>
+              <Buttons edit color="green" dirty valid={isValid}>
                 Edit
               </Buttons>
             </Form>

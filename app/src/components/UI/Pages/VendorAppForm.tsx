@@ -29,15 +29,15 @@ export default function VendorAppForm(): React.ReactElement {
   const [createVendor] = useCreateVendorMutation();
   const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
 
-  if (tokenIsSuccess && token === null) {
+  if (!tokenIsSuccess || token === null) {
     return <p>Not logged in</p>;
   }
 
   const onSubmit = async (data: inputValues) => {
-    let userID = "";
-    if (tokenIsSuccess && token !== null) {
-      userID = getUserIDFromToken(token as string);
+    if (!tokenIsSuccess || token === null) {
+      throw new Error("unexpected");
     }
+    const userID = getUserIDFromToken(token as string);
     const vendor: Vendor = {
       ID: uuid(),
       Name: data.name,
@@ -149,8 +149,8 @@ export default function VendorAppForm(): React.ReactElement {
             >
               <Form.Input
                 fluid
-                label="Name"
-                placeholder="Name"
+                label="Vendor Name"
+                placeholder="Vendor Name"
                 name={"name"}
                 required
                 width={5}
