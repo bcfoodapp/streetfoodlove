@@ -1,21 +1,30 @@
-import React, { useState, MouseEvent } from "react";
-import { Container, Message, MessageProps } from "semantic-ui-react";
+import React, { useEffect } from "react";
+import { Container, Message } from "semantic-ui-react";
 import styles from "./msgerror.module.css";
+import { hideError, useAppDispatch, useAppSelector } from "../../../../store";
+import { useLocation } from "react-router-dom";
 
-const MessageError: React.FC<{ errorMsg: string }> = ({ errorMsg }) => {
-  const [visibleMsg, setVisibleMsg] = useState<boolean>(true);
+const MessageError: React.FC = () => {
+  const error = useAppSelector((state) => state.root.error);
+  const showError = useAppSelector((state) => state.root.showError);
+  const dispatch = useAppDispatch();
+  const location = useLocation();
 
-  const dismissHandler = (e: MouseEvent<HTMLElement>, data: MessageProps) => {
-    setVisibleMsg(false);
+  useEffect(() => {
+    dispatch(hideError());
+  }, [location]);
+
+  const dismissHandler = () => {
+    dispatch(hideError());
   };
 
   return (
     <Container className={styles.wrapper}>
-      {visibleMsg ? (
+      {showError ? (
         <Message negative className={styles.msg} onDismiss={dismissHandler}>
           <Message.Header>Error</Message.Header>
           <Message.List>
-            <Message.Item>{errorMsg}</Message.Item>
+            <Message.Item>{error}</Message.Item>
           </Message.List>
         </Message>
       ) : null}
