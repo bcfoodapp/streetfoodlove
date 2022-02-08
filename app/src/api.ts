@@ -108,6 +108,9 @@ export function getUserIDFromToken(token: string) {
   return jwtDecode<{ UserID: string }>(token).UserID;
 }
 
+const PUT = "PUT";
+const POST = "POST";
+
 const encode = encodeURIComponent;
 
 const baseQuery = fetchBaseQuery({
@@ -127,7 +130,7 @@ async function getAndSaveCredentials(
   api: BaseQueryApi
 ): Promise<QueryReturnValue<string, FetchBaseQueryError, {}>> {
   const response = await baseQuery(
-    { url: "/token", method: "POST", body: credentials },
+    { url: "/token", method: POST, body: credentials },
     api,
     {}
   );
@@ -189,10 +192,21 @@ export const apiSlice = createApi({
         return { data: vendors };
       },
     }),
+    // Returns vendors with given owner ID. There should only be zero or one vendor associated with a user.
+    vendorByOwnerID: builder.query<Vendor[], string>({
+      query: (ownerID) => `/vendors?owner=${encode(ownerID)}`,
+    }),
     createVendor: builder.mutation<undefined, Vendor>({
       query: (vendor) => ({
         url: `/vendors/${encode(vendor.ID)}`,
-        method: "PUT",
+        method: PUT,
+        body: vendor,
+      }),
+    }),
+    updateVendor: builder.mutation<undefined, Vendor>({
+      query: (vendor) => ({
+        url: `/vendors/${encode(vendor.ID)}`,
+        method: POST,
         body: vendor,
       }),
     }),
@@ -228,7 +242,7 @@ export const apiSlice = createApi({
     updateUser: builder.mutation<undefined, UserProtected>({
       query: (user) => ({
         url: `/users/${encode(user.ID)}/protected`,
-        method: "POST",
+        method: POST,
         body: user,
       }),
     }),
@@ -238,7 +252,7 @@ export const apiSlice = createApi({
     >({
       query: (payload) => ({
         url: `/users/${encode(payload.ID)}/protected`,
-        method: "PUT",
+        method: PUT,
         body: payload,
       }),
     }),
@@ -249,7 +263,7 @@ export const apiSlice = createApi({
     >({
       query: ({ userID, password }) => ({
         url: `/users/${encode(userID)}/password`,
-        method: "POST",
+        method: POST,
         body: password,
       }),
     }),
@@ -265,7 +279,7 @@ export const apiSlice = createApi({
     submitReview: builder.mutation<undefined, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
-        method: "PUT",
+        method: PUT,
         body: review,
       }),
       invalidatesTags: ["Review"],
@@ -352,7 +366,9 @@ export function clearLocalStorage() {
 export const {
   useVendorQuery,
   useVendorsMultipleQuery,
+  useVendorByOwnerIDQuery,
   useCreateVendorMutation,
+  useUpdateVendorMutation,
   useUserQuery,
   useLazyUsersMultipleQuery,
   useUserProtectedQuery,
