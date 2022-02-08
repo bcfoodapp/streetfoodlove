@@ -28,7 +28,6 @@ const AccountSettingsFormGroup: React.FC<{
 
   const [updateUser, { isLoading: updateUserIsLoading }] =
     useUpdateUserMutation();
-  console.log(updateUserIsLoading);
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
