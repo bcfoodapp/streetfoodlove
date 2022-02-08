@@ -32,6 +32,7 @@ const AccountSettingsFormGroup: React.FC<{
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (userQueryIsSuccess) {
@@ -53,7 +54,8 @@ const AccountSettingsFormGroup: React.FC<{
       SignUpDate: user!.SignUpDate,
     });
     if ((response as any).error === undefined) {
-      alert("Updated User Settings!");
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
     }
   };
 
@@ -103,6 +105,9 @@ const AccountSettingsFormGroup: React.FC<{
           ) : null}
         </Container>
       </Form>
+      <br />
+      <br />
+      {showSuccess ? <p>Updated profile</p> : null}
     </Container>
   );
 };

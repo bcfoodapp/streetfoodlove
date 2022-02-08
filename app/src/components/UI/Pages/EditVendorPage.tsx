@@ -64,6 +64,8 @@ const EditVendorPage: React.FC = () => {
     website: "",
   } as inputValues);
 
+  const [showSuccess, setShowSuccess] = useState(false);
+
   useEffect(() => {
     if (vendorQueryIsSuccess && vendors!.length > 0) {
       const vendor = vendors![0];
@@ -94,7 +96,7 @@ const EditVendorPage: React.FC = () => {
     website: Yup.string(),
   });
 
-  const onSubmit = (data: inputValues) => {
+  const onSubmit = async (data: inputValues) => {
     const vendor: Vendor = {
       ID: data.ID,
       Name: data.name,
@@ -107,7 +109,11 @@ const EditVendorPage: React.FC = () => {
       Longitude: 0,
       Owner: userID,
     };
-    updateVendor(vendor);
+    const response = await updateVendor(vendor);
+    if ((response as any).error === undefined) {
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
   };
 
   return (
@@ -252,6 +258,7 @@ const EditVendorPage: React.FC = () => {
               >
                 Edit
               </Buttons>
+              {showSuccess ? <p>Updated vendor page</p> : null}
             </Form>
           );
         }}
