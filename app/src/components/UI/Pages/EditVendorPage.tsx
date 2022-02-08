@@ -37,8 +37,10 @@ const businessHours = [
   { key: "9AM", text: "9AM-6PM", value: "9AM-6PM" },
   { key: "10AM", text: "10AM-7PM", value: "10AM-7PM" },
 ];
-const CreateVendorPage: React.FC = () => {
-  const [updateVendor] = useUpdateVendorMutation();
+
+const EditVendorPage: React.FC = () => {
+  const [updateVendor, { isLoading: updateVendorIsLoading }] =
+    useUpdateVendorMutation();
   const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
 
   let userID = "";
@@ -241,7 +243,13 @@ const CreateVendorPage: React.FC = () => {
                 placeholder="Vendor Description"
               />
 
-              <Buttons edit color="green" dirty valid={isValid}>
+              <Buttons
+                edit
+                color="green"
+                dirty
+                valid={isValid}
+                loading={updateVendorIsLoading}
+              >
                 Edit
               </Buttons>
             </Form>
@@ -252,4 +260,4 @@ const CreateVendorPage: React.FC = () => {
   );
 };
 
-export default CreateVendorPage;
+export default EditVendorPage;
