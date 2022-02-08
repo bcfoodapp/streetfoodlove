@@ -23,16 +23,21 @@ export const rootSlice = createSlice({
   name: "root",
   initialState: {
     error: null as string | null,
+    showError: false,
   },
   reducers: {
     setError: (state, { payload }: PayloadAction<string>) => {
       console.error(payload);
       state.error = payload;
+      state.showError = true;
+    },
+    hideError: (state) => {
+      state.showError = false;
     },
   },
 });
 
-export const { setError } = rootSlice.actions;
+export const { setError, hideError } = rootSlice.actions;
 
 export const store = configureStore({
   reducer: {

@@ -18,11 +18,10 @@ import MessageError from "./components/UI/Atoms/Message/MessageError";
 import LoginWrapper from "./components/UI/Pages/Login";
 
 function App(): React.ReactElement {
-  const error = useAppSelector((state) => state.root.error);
   return (
     <ErrorBoundary>
-      {error ? <MessageError errorMsg={error.toString()} /> : null}
       <BrowserRouter basename="/streetfoodlove">
+        <MessageError />
         <HeaderBar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
