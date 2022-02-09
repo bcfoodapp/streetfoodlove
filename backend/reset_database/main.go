@@ -41,13 +41,8 @@ func main() {
 		}
 	}()
 
-	config := mysql.Config{
-		User:                 "root",
-		AllowNativePasswords: true,
-		DBName:               "streetfoodlove",
-		ParseTime:            true,
-	}
-	db, err := sqlx.Connect("mysql", config.FormatDSN())
+	config := database.Development()
+	db, err := sqlx.Connect("mysql", config.MySQLConfig.FormatDSN())
 	if err != nil {
 		panic(err)
 	}
