@@ -34,9 +34,10 @@
 |------backend
 ```
 
-1. As shown in the directory tree above, place the `.crt` and `.key` certificate files in a directory.
+1. As shown in the directory tree above, place the `.crt` and `.key` certificate files in the parent directory of `backend`.
 2. Create a file named `secrets.json` with the schema given in `backend/database.Secrets`.
-3. Run the `backend` package, passing the environment variable `SECRETS_FILE` containing the path to the `secrets.json` file. For example:
+3. Clone just the `backend` directory to the same directory where the certificates are located.
+4. Run the `backend` package, passing the environment variable `SECRETS_FILE` containing the path to the `secrets.json` file. For example:
   ```
   SECRETS_FILE=~/secrets.json sudo -E go run .
   ```
