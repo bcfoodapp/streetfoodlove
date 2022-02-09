@@ -52,14 +52,16 @@ func Production(secretsPath string) *Configuration {
 	mysqlConfig.User = "admin"
 	mysqlConfig.Passwd = secrets.MySQLPassword
 
-	certificate, err := tls.LoadX509KeyPair("./cert.crt", "./cert.key")
+	certificate, err := tls.LoadX509KeyPair("../cert.crt", "../cert.key")
 	if err != nil {
 		panic(err)
 	}
 
 	server := commonServer()
 	server.Addr = ":443"
-	server.TLSConfig.Certificates = []tls.Certificate{certificate}
+	server.TLSConfig = &tls.Config{
+		Certificates: []tls.Certificate{certificate},
+	}
 
 	//goland:noinspection GoVetCopyLock
 	return &Configuration{
