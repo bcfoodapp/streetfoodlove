@@ -11,6 +11,7 @@ import {
   QueryReturnValue,
 } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 import jwtDecode from "jwt-decode";
+import config from "./config.json";
 
 export interface Vendor {
   ID: string;
@@ -114,7 +115,7 @@ const POST = "POST";
 const encode = encodeURIComponent;
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8080",
+  baseUrl: config.apiBaseURL,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).token.token;
     if (token) {
