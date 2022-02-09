@@ -5,9 +5,7 @@ import (
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
-	"net/http"
 	"os"
-	"time"
 )
 
 func main() {
@@ -34,20 +32,17 @@ func main() {
 	router := gin.Default()
 	api.AddRoutes(router)
 
-	server := http.Server{
-		Addr:         ":8080",
-		Handler:      router,
-		ReadTimeout:  time.Second * 10,
-		WriteTimeout: time.Second * 10,
-	}
+	configuration.Server.Handler = router
+
 	defer func() {
-		if err := server.Close(); err != nil {
+		if err := configuration.Server.Close(); err != nil {
 			panic(err)
 		}
 	}()
 
 	fmt.Println("serving at localhost:8080")
-	if err := server.ListenAndServe(); err != nil {
+
+	if err := configuration.Server.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }

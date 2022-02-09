@@ -1,15 +1,19 @@
 package database
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"github.com/go-sql-driver/mysql"
+	"net/http"
 	"os"
+	"time"
 )
 
 // Configuration contains configuration variables that are different from production vs development
 // environments.
 type Configuration struct {
 	MySQLConfig mysql.Config
+	Server      http.Server
 }
 
 func commonMySQLConfig() *mysql.Config {
@@ -18,6 +22,13 @@ func commonMySQLConfig() *mysql.Config {
 	mysqlConfig.DBName = "streetfoodlove"
 	mysqlConfig.ParseTime = true
 	return mysqlConfig
+}
+
+func commonServer() http.Server {
+	return http.Server{
+		ReadTimeout:  time.Second * 10,
+		WriteTimeout: time.Second * 10,
+	}
 }
 
 func Production() *Configuration {
@@ -41,11 +52,32 @@ func Production() *Configuration {
 	mysqlConfig.User = "admin"
 	mysqlConfig.Passwd = secrets.MySQLPassword
 
-	return &Configuration{MySQLConfig: *mysqlConfig}
+	certificate, err := tls.LoadX509KeyPair("./cert.crt", "./cert.key")
+	if err != nil {
+		panic(err)
+	}
+
+	server := commonServer()
+	server.Addr = ":443"
+	server.TLSConfig.Certificates = []tls.Certificate{certificate}
+
+	//goland:noinspection GoVetCopyLock
+	return &Configuration{
+		MySQLConfig: *mysqlConfig,
+		Server:      server,
+	}
 }
 
 func Development() *Configuration {
 	mysqlConfig := commonMySQLConfig()
 	mysqlConfig.User = "root"
-	return &Configuration{MySQLConfig: *mysqlConfig}
+
+	server := commonServer()
+	server.Addr = ":8080"
+
+	//goland:noinspection GoVetCopyLock
+	return &Configuration{
+		MySQLConfig: *mysqlConfig,
+		Server:      server,
+	}
 }
