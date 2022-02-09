@@ -1,4 +1,4 @@
-package main
+package database
 
 import (
 	"encoding/json"
@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+// Configuration contains configuration variables that are different from production vs development
+// environments.
 type Configuration struct {
 	MySQLConfig mysql.Config
 }
@@ -18,7 +20,7 @@ func commonMySQLConfig() *mysql.Config {
 	return mysqlConfig
 }
 
-func production() *Configuration {
+func Production() *Configuration {
 	type Secrets struct {
 		MySQLPassword string
 	}
@@ -42,7 +44,7 @@ func production() *Configuration {
 	return &Configuration{MySQLConfig: *mysqlConfig}
 }
 
-func development() *Configuration {
+func Development() *Configuration {
 	mysqlConfig := commonMySQLConfig()
 	mysqlConfig.User = "root"
 	return &Configuration{MySQLConfig: *mysqlConfig}

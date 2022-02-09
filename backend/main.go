@@ -11,12 +11,12 @@ import (
 )
 
 func main() {
-	var configuration *Configuration
+	var configuration *database.Configuration
 
 	if _, isProduction := os.LookupEnv("PRODUCTION"); isProduction {
-		configuration = production()
+		configuration = database.Production()
 	} else {
-		configuration = development()
+		configuration = database.Development()
 	}
 
 	db, err := sqlx.Connect("mysql", configuration.MySQLConfig.FormatDSN())
