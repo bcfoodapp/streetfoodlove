@@ -26,10 +26,12 @@ const AccountSettingsFormGroup: React.FC<{
     isLoading: userQueryIsLoading,
   } = useUserProtectedQuery(userID, { skip: userID === "" });
 
-  const [updateSetting] = useUpdateUserMutation();
+  const [updateUser, { isLoading: updateUserIsLoading }] =
+    useUpdateUserMutation();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (userQueryIsSuccess) {
@@ -40,7 +42,7 @@ const AccountSettingsFormGroup: React.FC<{
   }, [userQueryIsSuccess]);
 
   const handleSubmit = async () => {
-    const response = await updateSetting({
+    const response = await updateUser({
       ID: userID,
       Photo: user!.Photo,
       Username: user!.Username,
@@ -51,7 +53,8 @@ const AccountSettingsFormGroup: React.FC<{
       SignUpDate: user!.SignUpDate,
     });
     if ((response as any).error === undefined) {
-      alert("Updated User Settings!");
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
     }
   };
 
@@ -90,12 +93,20 @@ const AccountSettingsFormGroup: React.FC<{
         </Form.Group>
         <Container className={styles.saveBtn}>
           {userQueryIsSuccess ? (
-            <Buttons submit color="green" clicked={() => setDisabledForm(true)}>
+            <Buttons
+              submit
+              color="green"
+              clicked={() => setDisabledForm(true)}
+              loading={updateUserIsLoading}
+            >
               Save
             </Buttons>
           ) : null}
         </Container>
       </Form>
+      <br />
+      <br />
+      {showSuccess ? <p>Updated profile</p> : null}
     </Container>
   );
 };
