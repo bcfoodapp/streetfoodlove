@@ -32,6 +32,7 @@ func commonServer() http.Server {
 }
 
 type Secrets struct {
+	// Password for MySQL connection
 	MySQLPassword string
 }
 
