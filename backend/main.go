@@ -4,20 +4,22 @@ import (
 	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"net/http"
+	"os"
 	"time"
 )
 
 func main() {
-	config := mysql.Config{
-		User:                 "root",
-		AllowNativePasswords: true,
-		DBName:               "streetfoodlove",
-		ParseTime:            true,
+	var configuration *Configuration
+
+	if _, isProduction := os.LookupEnv("PRODUCTION"); isProduction {
+		configuration = production()
+	} else {
+		configuration = development()
 	}
-	db, err := sqlx.Connect("mysql", config.FormatDSN())
+
+	db, err := sqlx.Connect("mysql", configuration.MySQLConfig.FormatDSN())
 	if err != nil {
 		panic(err)
 	}
