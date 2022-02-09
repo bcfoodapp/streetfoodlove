@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"os"
+	"time"
 )
 
 func main() {
@@ -22,6 +23,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	db.SetConnMaxLifetime(time.Minute * 4)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
 
 	api := API{&Backend{database.NewDatabase(db)}}
 	defer func() {
