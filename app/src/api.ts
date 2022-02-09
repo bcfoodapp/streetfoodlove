@@ -11,7 +11,7 @@ import {
   QueryReturnValue,
 } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 import jwtDecode from "jwt-decode";
-import config from "./config.json";
+import config from "./configuration.json";
 
 export interface Vendor {
   ID: string;
