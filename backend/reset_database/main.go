@@ -5,14 +5,23 @@ import (
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"github.com/jmoiron/sqlx"
+	"os"
 	"time"
 )
 
 func main() {
+	var config *database.Configuration
+
+	if _, isProduction := os.LookupEnv("PRODUCTION"); isProduction {
+		config = database.Production()
+	} else {
+		config = database.Development()
+	}
+
 	func() {
-		config := database.Development()
-		config.MySQLConfig.DBName = ""
-		db, err := sqlx.Connect("mysql", config.MySQLConfig.FormatDSN())
+		mysqlConfig := config.MySQLConfig
+		mysqlConfig.DBName = ""
+		db, err := sqlx.Connect("mysql", mysqlConfig.FormatDSN())
 		if err != nil {
 			panic(err)
 		}
@@ -38,7 +47,6 @@ func main() {
 		}
 	}()
 
-	config := database.Development()
 	db, err := sqlx.Connect("mysql", config.MySQLConfig.FormatDSN())
 	if err != nil {
 		panic(err)
