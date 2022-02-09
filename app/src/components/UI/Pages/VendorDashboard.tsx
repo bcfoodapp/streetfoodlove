@@ -5,7 +5,6 @@ import styles from "./vendordashboard.module.css";
 const VendorDashBoard: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
-      <HeaderBar logout />
       <Header as={"h2"} className={styles.header}>
         Vendor Dashboard
       </Header>

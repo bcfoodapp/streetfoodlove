@@ -33,25 +33,36 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(errorHandler)
 	router.Use(gin.CustomRecovery(recovery))
 
+	router.GET("/vendors", a.Vendors)
 	router.GET("/vendors/:id", a.Vendor)
+	router.PUT("/vendors/:id", GetToken, a.VendorPut)
+	router.POST("/vendors/:id", GetToken, a.VendorPost)
+
 	router.GET("/users/:id", a.User)
-	router.GET("/users/:id/protected", a.UserProtected)
-	router.POST("/users/:id/protected", a.UserProtectedPost)
+	router.GET("/users/:id/protected", GetToken, a.UserProtected)
+	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
 	router.PUT("/users/:id/protected", a.UserProtectedPut)
-	router.GET("/reviews", a.ReviewsByVendorID)
-	router.PUT("/reviews/:id", Auth, a.ReviewPut)
+
+	router.GET("/reviews", a.Reviews)
+	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
+
 	router.POST("/token", a.TokenPost)
+
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 
+	//create, add, delete favorite
+	router.PUT("/favorite/:id", a.FavoritePut)
+	router.GET("/favorite/:id", a.Favorite)
+
 	router.GET("/photos/:id", a.Photo)
-	router.POST("/photos/:id", a.PhotoPost)
+	router.POST("/photos/:id", GetToken, a.PhotoPost)
 
 	router.GET("/guides/:id", a.Guide)
-	router.POST("/guides/:id", a.GuidePost)
+	router.POST("/guides/:id", GetToken, a.GuidePost)
 
 	router.GET("/links/:id", a.Link)
-	router.POST("/links/:id", a.LinkPost)
+	router.POST("/links/:id", GetToken, a.LinkPost)
 }
 
 // errorHandler writes any errors to response.
@@ -83,9 +94,9 @@ type TokenClaims struct {
 	jwt.StandardClaims
 }
 
-// Auth is a middleware to validate token and get user ID. The user ID is retrieved with
+// GetToken is a middleware to validate token and get user ID. The user ID is retrieved with
 // c.MustGet(userIDKey).(uuid.UUID).
-func Auth(c *gin.Context) {
+func GetToken(c *gin.Context) {
 	headerValue := c.GetHeader("Authorization")
 	const bearer = "Bearer "
 	if !strings.HasPrefix(headerValue, bearer) {
@@ -137,6 +148,70 @@ func (a *API) Vendor(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, vendor)
+}
+
+func (a *API) VendorPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendor := &database.Vendor{}
+	if err := c.ShouldBindJSON(vendor); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != vendor.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.VendorCreate(getTokenFromContext(c), vendor); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) VendorPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendor := &database.Vendor{}
+	if err := c.ShouldBindJSON(vendor); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != vendor.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.VendorUpdate(getTokenFromContext(c), vendor); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) Vendors(c *gin.Context) {
+	ownerID, err := uuid.Parse(c.Query("owner"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendors, err := a.Backend.VendorByOwnerID(ownerID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, vendors)
 }
 
 func (a *API) User(c *gin.Context) {
@@ -222,7 +297,7 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 }
 
-func (a *API) ReviewsByVendorID(c *gin.Context) {
+func (a *API) Reviews(c *gin.Context) {
 	vendorID, err := uuid.Parse(c.Query("vendorID"))
 	if err != nil {
 		c.Error(err)
@@ -256,7 +331,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.ReviewPut(getTokenFromContext(c), review); err != nil {
+	if err := a.Backend.ReviewCreate(getTokenFromContext(c), review); err != nil {
 		c.Error(err)
 		return
 	}
@@ -421,4 +496,44 @@ func (a *API) LinkPost(c *gin.Context) {
 	}
 	_ = id
 	// TODO
+}
+
+//Favorite
+func (a *API) FavoritePut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	favorite := &database.Favorite{}
+	if err := c.ShouldBindJSON(favorite); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != favorite.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.FavoriteCreate(getTokenFromContext(c), favorite); err != nil {
+		c.Error(err)
+		return
+	}
+}
+func (a *API) Favorite(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	favorite, err := a.Backend.Favorite(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, favorite)
 }

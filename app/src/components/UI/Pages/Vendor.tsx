@@ -7,19 +7,17 @@ import {
   StarRatingInteger,
   useLazyUsersMultipleQuery,
   User,
+  getUserIDFromToken,
 } from "../../../api";
 import { Container, Grid } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./vendor.module.css";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
-import { useSelector } from "react-redux";
-import { RootState, useAppSelector } from "../../../store";
+import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
-import jwtDecode from "jwt-decode";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -34,6 +32,7 @@ export function Vendor(): React.ReactElement {
   const error = useAppSelector((state) => state.root.error);
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
+
   useEffect(() => {
     if (reviewsQuery.isSuccess) {
       usersMultipleTrigger(reviewsQuery.data!.map((r) => r.UserID));
@@ -44,7 +43,7 @@ export function Vendor(): React.ReactElement {
     setOpenReviewForm(true);
   };
 
-  const cancelReviewHandler = () => {
+  const closeReviewHandler = () => {
     setOpenReviewForm(false);
   };
 
@@ -59,7 +58,7 @@ export function Vendor(): React.ReactElement {
       throw new Error("not logged in");
     }
 
-    const userID = jwtDecode<{ UserID: string }>(token).UserID;
+    const userID = getUserIDFromToken(token);
     submitReview({
       ID: uuid(),
       Text: text,
@@ -67,6 +66,7 @@ export function Vendor(): React.ReactElement {
       VendorID: vendorID,
       UserID: userID,
       StarRating: starRating,
+      ReplyTo: null,
     });
     // Add current user to users list
     usersMultipleTrigger([...reviewsQuery.data!.map((r) => r.UserID), userID]);
@@ -74,7 +74,6 @@ export function Vendor(): React.ReactElement {
 
   return (
     <>
-      <HeaderBar signUp />
       <Container className={styles.wrapper}>
         <Grid>
           <Grid.Row>
@@ -96,15 +95,24 @@ export function Vendor(): React.ReactElement {
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
-              <VendorDetailCards heading="map">Map Image</VendorDetailCards>
+              <VendorDetailCards heading="map">
+                {vendor ? (
+                  <iframe
+                    frameBorder="0"
+                    style={{ border: 0, width: "100%", height: "100%" }}
+                    src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAYGdHFH-OPCSqQkGrQygGw--zgcQWAv3Y&q=${vendor.Latitude},${vendor.Longitude}`}
+                    allowFullScreen
+                  />
+                ) : null}
+              </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
         </Grid>
       </Container>
       {openReviewForm ? (
         <ReviewForm
-          cancelFormHandler={cancelReviewHandler}
           finishedFormHandler={completedReviewHandler}
+          closeReviewHandler={closeReviewHandler}
         />
       ) : (
         <Container className={styles.textArea}>

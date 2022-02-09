@@ -27,6 +27,44 @@ func (b *Backend) Vendor(id uuid.UUID) (*database.Vendor, error) {
 	return b.Database.Vendor(id)
 }
 
+func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error {
+	user, err := b.Database.User(userID)
+	if err != nil {
+		return err
+	}
+
+	if user.UserType != database.UserTypeVendor {
+		return fmt.Errorf("you are not a vendor user type; only vendor users can create a vendor page")
+	}
+
+	if userID != vendor.Owner {
+		return fmt.Errorf("owner field does not match userID")
+	}
+
+	existingVendors, err := b.Database.VendorByOwnerID(userID)
+	if err != nil {
+		return err
+	}
+
+	if len(existingVendors) > 0 {
+		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
+	}
+
+	return b.Database.VendorCreate(vendor)
+}
+
+func (b *Backend) VendorUpdate(userID uuid.UUID, vendor *database.Vendor) error {
+	if userID != vendor.Owner {
+		return unauthorized
+	}
+
+	return b.Database.VendorUpdate(vendor)
+}
+
+func (b *Backend) VendorByOwnerID(userID uuid.UUID) ([]database.Vendor, error) {
+	return b.Database.VendorByOwnerID(userID)
+}
+
 func (b *Backend) User(id uuid.UUID) (*database.User, error) {
 	userProtected, err := b.Database.User(id)
 	if err != nil {
@@ -48,6 +86,8 @@ func (b *Backend) UserProtectedUpdate(userID uuid.UUID, user *database.UserProte
 		return unauthorized
 	}
 
+	user.SignUpDate = time.Now()
+
 	return b.Database.UserUpdate(user)
 }
 
@@ -61,7 +101,7 @@ func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {
 	return b.Database.Review(id)
 }
 
-func (b *Backend) ReviewPut(userID uuid.UUID, review *database.Review) error {
+func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) error {
 	if review.UserID != userID {
 		return unauthorized
 	}
@@ -98,4 +138,19 @@ func (b *Backend) Guide(id uuid.UUID) (*database.Guide, error) {
 
 func (b *Backend) Link(id uuid.UUID) (*database.Link, error) {
 	return b.Database.Link(id)
+}
+
+//Favorite
+func (b *Backend) Favorite(id uuid.UUID) (*database.Favorite, error) {
+	return b.Database.Favorite(id)
+}
+
+func (b *Backend) FavoriteCreate(userID uuid.UUID, favorite *database.Favorite) error {
+	if favorite.UserID != userID {
+		return unauthorized
+	}
+
+	favorite.DatePosted = time.Now()
+
+	return b.Database.FavoriteCreate(favorite)
 }

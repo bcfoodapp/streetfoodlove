@@ -16,9 +16,10 @@
   - https://nodejs.org/en/download/current/
 
 # How to run
-1. Go to the `backend` folder in PowerShell and run the command `go run .`
+1. To initialize the database, go to `backend/reset_database` and run `go run .`
+2. Go to the `backend` folder in PowerShell and run the command `go run .`
   - Open your browser and go to http://localhost:8080/. If it says "404 page not found", it's working.
-2. Go to the `app` folder, and install dependencies with `npm i`
-3. Do `npm start` and wait for it to compile
-4. With the backend server still running, go to http://localhost:3000/streetfoodlove/
+3. Go to the `app` folder, and install dependencies with `npm i`
+4. Do `npm start` and wait for it to compile
+5. With the backend server still running, go to http://localhost:3000/streetfoodlove/
   - Press ctrl-c to stop the server and npm

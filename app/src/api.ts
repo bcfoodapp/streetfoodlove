@@ -1,7 +1,16 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import {
+  createApi,
+  fetchBaseQuery,
+  FetchBaseQueryError,
+} from "@reduxjs/toolkit/dist/query/react";
 import { RootState } from "./store";
 import { DateTime } from "luxon";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  BaseQueryApi,
+  QueryReturnValue,
+} from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import jwtDecode from "jwt-decode";
 
 export interface Vendor {
   ID: string;
@@ -13,6 +22,7 @@ export interface Vendor {
   BusinessLogo: string;
   Latitude: number;
   Longitude: number;
+  Owner: string;
 }
 
 export enum UserType {
@@ -35,7 +45,7 @@ export interface UserProtected extends User {
   SignUpDate: DateTime;
 }
 
-export type StarRatingInteger = 1 | 2 | 3 | 4 | 5;
+export type StarRatingInteger = 1 | 2 | 3 | 4 | 5 | null;
 
 export interface Review {
   ID: string;
@@ -44,13 +54,17 @@ export interface Review {
   VendorID: string;
   UserID: string;
   StarRating: StarRatingInteger;
+  // Contains the ID of the parent review, or null if there is no parent.
+  ReplyTo: string | null;
 }
-
-type RawReview = Review & { DatePosted: string };
 
 export interface Credentials {
   Username: string;
   Password: string;
+}
+
+export interface CredentialsAndName extends Credentials {
+  Name: string;
 }
 
 export interface GeoRectangle {
@@ -58,6 +72,13 @@ export interface GeoRectangle {
   northWestLng: number;
   southEastLat: number;
   southEastLng: number;
+}
+
+export interface Guide {
+  ID: string;
+  Guide: string;
+  DatePosted: DateTime;
+  ArticleAuthor: string;
 }
 
 export const tokenSlice = createSlice({
@@ -82,6 +103,14 @@ export const tokenSlice = createSlice({
 
 const { setTokenAndTime } = tokenSlice.actions;
 
+// Returns userID inside token.
+export function getUserIDFromToken(token: string) {
+  return jwtDecode<{ UserID: string }>(token).UserID;
+}
+
+const PUT = "PUT";
+const POST = "POST";
+
 const encode = encodeURIComponent;
 
 const baseQuery = fetchBaseQuery({
@@ -95,6 +124,30 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+// Gets token and saves it to localStorage if successful. Returns response.
+async function getAndSaveCredentials(
+  credentials: Credentials,
+  api: BaseQueryApi
+): Promise<QueryReturnValue<string, FetchBaseQueryError, {}>> {
+  const response = await baseQuery(
+    { url: "/token", method: POST, body: credentials },
+    api,
+    {}
+  );
+  if (response.error) {
+    return response;
+  }
+
+  api.dispatch(
+    setTokenAndTime({
+      token: response.data as string,
+      time: DateTime.now().toSeconds(),
+    })
+  );
+  return response as QueryReturnValue<string, FetchBaseQueryError, {}>;
+}
+
+// This is the API abstraction.
 // API doc: https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1
 export const apiSlice = createApi({
   baseQuery: async (args, api, extraOptions) => {
@@ -104,23 +157,12 @@ export const apiSlice = createApi({
       (api.getState() as RootState).token.tokenTime <=
         DateTime.now().minus({ minutes: 10 }).toSeconds()
     ) {
-      const credentials = getCredentials();
+      const credentials = getCredentialsAndName();
       if (credentials !== null) {
-        const response = await baseQuery(
-          { url: "/token", method: "POST", body: credentials },
-          api,
-          extraOptions
-        );
+        const response = await getAndSaveCredentials(credentials, api);
         if (response.error) {
           return response;
         }
-
-        api.dispatch(
-          setTokenAndTime({
-            token: response.data as string,
-            time: DateTime.now().toSeconds(),
-          })
-        );
       }
     }
 
@@ -150,6 +192,24 @@ export const apiSlice = createApi({
         return { data: vendors };
       },
     }),
+    // Returns vendors with given owner ID. There should only be zero or one vendor associated with a user.
+    vendorByOwnerID: builder.query<Vendor[], string>({
+      query: (ownerID) => `/vendors?owner=${encode(ownerID)}`,
+    }),
+    createVendor: builder.mutation<undefined, Vendor>({
+      query: (vendor) => ({
+        url: `/vendors/${encode(vendor.ID)}`,
+        method: PUT,
+        body: vendor,
+      }),
+    }),
+    updateVendor: builder.mutation<undefined, Vendor>({
+      query: (vendor) => ({
+        url: `/vendors/${encode(vendor.ID)}`,
+        method: POST,
+        body: vendor,
+      }),
+    }),
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
     }),
@@ -174,11 +234,15 @@ export const apiSlice = createApi({
     }),
     userProtected: builder.query<UserProtected, string>({
       query: (id) => `/users/${encode(id)}/protected`,
+      transformResponse: (user: any) => ({
+        ...user,
+        SignUpDate: DateTime.fromISO(user.SignUpDate),
+      }),
     }),
     updateUser: builder.mutation<undefined, UserProtected>({
       query: (user) => ({
         url: `/users/${encode(user.ID)}/protected`,
-        method: "POST",
+        method: POST,
         body: user,
       }),
     }),
@@ -188,7 +252,7 @@ export const apiSlice = createApi({
     >({
       query: (payload) => ({
         url: `/users/${encode(payload.ID)}/protected`,
-        method: "PUT",
+        method: PUT,
         body: payload,
       }),
     }),
@@ -199,14 +263,14 @@ export const apiSlice = createApi({
     >({
       query: ({ userID, password }) => ({
         url: `/users/${encode(userID)}/password`,
-        method: "POST",
+        method: POST,
         body: password,
       }),
     }),
     reviews: builder.query<Review[], string>({
       query: (vendorID) => `/reviews?vendorID=${encode(vendorID)}`,
-      transformResponse: (response) =>
-        (response as RawReview[]).map((review) => ({
+      transformResponse: (response: any[]) =>
+        response.map((review) => ({
           ...review,
           PostDate: DateTime.fromISO(review.DatePosted),
         })),
@@ -215,31 +279,47 @@ export const apiSlice = createApi({
     submitReview: builder.mutation<undefined, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
-        method: "PUT",
+        method: PUT,
         body: review,
       }),
       invalidatesTags: ["Review"],
     }),
+    // Gets token using stored credentials and saves it to state. Returns null if credentials are not stored.
+    // This should be used to get the token if no query is called before the token is required. When any query is used,
+    // the token can be retrieved from the store.
+    getToken: builder.query<string | null, void>({
+      queryFn: async (arg, api, extraOptions) => {
+        const credentials = getCredentialsAndName();
+        if (credentials !== null) {
+          return getAndSaveCredentials(credentials, api);
+        }
+        return { data: null };
+      },
+    }),
+    // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
-        const response = await baseQuery(
-          { url: "/token", method: "POST", body: args },
+        const credentialsResponse = await getAndSaveCredentials(args, api);
+        if (credentialsResponse.error) {
+          return credentialsResponse;
+        }
+
+        // Get name of user
+        const userID = getUserIDFromToken(credentialsResponse.data as string);
+        const userResponse = await baseQuery(
+          `/users/${encode(userID)}`,
           api,
           extraOptions
         );
-        if (response.error) {
-          return response;
+        if (userResponse.error) {
+          return userResponse;
         }
+        const user = userResponse.data as User;
 
-        api.dispatch(
-          setTokenAndTime({
-            token: response.data as string,
-            time: DateTime.now().toSeconds(),
-          })
-        );
-
-        setCredentialsState(args);
-
+        setCredentialsAndName({
+          ...args,
+          Name: `${user.FirstName} ${user.LastName}`,
+        });
         return { data: undefined };
       },
     }),
@@ -249,15 +329,26 @@ export const apiSlice = createApi({
         url: `/map/view/${rectangle.northWestLat}/${rectangle.northWestLng}/${rectangle.southEastLat}/${rectangle.southEastLng}`,
       }),
     }),
+    guide: builder.query<Guide, string>({
+      query: (id) => ({
+        url: `/guides/${id}`,
+      }),
+      transformResponse: (guide: any) => ({
+        ...guide,
+        DatePosted: DateTime.fromISO(guide.DatePosted),
+      }),
+    }),
   }),
 });
 
-function setCredentialsState(credentials: Credentials) {
+// Sets credentials and name in localStorage.
+function setCredentialsAndName(entry: CredentialsAndName) {
   console.info("set localStorage");
-  localStorage.setItem("user", JSON.stringify(credentials));
+  localStorage.setItem("user", JSON.stringify(entry));
 }
 
-function getCredentials(): Credentials | null {
+// Gets credentials from localStorage.
+export function getCredentialsAndName(): CredentialsAndName | null {
   const entry = localStorage.getItem("user");
   if (entry === null) {
     return null;
@@ -266,9 +357,18 @@ function getCredentials(): Credentials | null {
   return JSON.parse(entry);
 }
 
+// Clears all entries in localStorage.
+export function clearLocalStorage() {
+  console.info("clear localStorage");
+  localStorage.clear();
+}
+
 export const {
   useVendorQuery,
   useVendorsMultipleQuery,
+  useVendorByOwnerIDQuery,
+  useCreateVendorMutation,
+  useUpdateVendorMutation,
   useUserQuery,
   useLazyUsersMultipleQuery,
   useUserProtectedQuery,
@@ -277,6 +377,8 @@ export const {
   useUpdatePasswordMutation,
   useReviewsQuery,
   useSubmitReviewMutation,
+  useGetTokenQuery,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
+  useGuideQuery,
 } = apiSlice;
