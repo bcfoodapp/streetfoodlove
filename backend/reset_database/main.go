@@ -4,18 +4,15 @@ package main
 import (
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
-	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"time"
 )
 
 func main() {
 	func() {
-		config := mysql.Config{
-			User:                 "root",
-			AllowNativePasswords: true,
-		}
-		db, err := sqlx.Connect("mysql", config.FormatDSN())
+		config := database.Development()
+		config.MySQLConfig.DBName = ""
+		db, err := sqlx.Connect("mysql", config.MySQLConfig.FormatDSN())
 		if err != nil {
 			panic(err)
 		}
