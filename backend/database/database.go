@@ -4,10 +4,11 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"fmt"
+	"time"
+
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"time"
 )
 
 // Database abstraction layer
@@ -285,6 +286,7 @@ type Review struct {
 	UserID     uuid.UUID
 	DatePosted time.Time
 	StarRating *int
+	ReviewTo   uuid.UUID
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -295,14 +297,16 @@ func (d *Database) ReviewCreate(review *Review) error {
 			VendorID,
 			UserID,
 			DatePosted,
-			StarRating
+			StarRating,
+			ReplyTo
 		) VALUES (
 			:ID,
 			:Text,
 			:VendorID,
 			:UserID,
 			:DatePosted,
-			:StarRating
+			:StarRating,
+			:ReplyTo
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
