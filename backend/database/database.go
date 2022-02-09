@@ -286,7 +286,7 @@ type Review struct {
 	UserID     uuid.UUID
 	DatePosted time.Time
 	StarRating *int
-	ReviewTo   uuid.UUID
+	ReplyTo    *uuid.UUID
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
