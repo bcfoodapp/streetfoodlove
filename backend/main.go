@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	"log"
 	"os"
 	"time"
 )
@@ -14,6 +14,7 @@ func main() {
 
 	secretsFile, isProduction := os.LookupEnv("SECRETS_FILE")
 	if isProduction {
+		log.Println("using production configuration")
 		config = database.Production(secretsFile)
 	} else {
 		config = database.Development()
@@ -46,9 +47,15 @@ func main() {
 		}
 	}()
 
-	fmt.Println("serving at localhost:8080")
-
-	if err := config.Server.ListenAndServe(); err != nil {
-		panic(err)
+	if isProduction {
+		log.Println("serving at localhost:443")
+		if err := config.Server.ListenAndServeTLS("", ""); err != nil {
+			panic(err)
+		}
+	} else {
+		log.Println("serving at localhost:8080")
+		if err := config.Server.ListenAndServe(); err != nil {
+			panic(err)
+		}
 	}
 }
