@@ -12,8 +12,9 @@ import (
 func main() {
 	var config *database.Configuration
 
-	if _, isProduction := os.LookupEnv("PRODUCTION"); isProduction {
-		config = database.Production()
+	secretsFile, isProduction := os.LookupEnv("SECRETS_FILE")
+	if isProduction {
+		config = database.Production(secretsFile)
 	} else {
 		config = database.Development()
 	}

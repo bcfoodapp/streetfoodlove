@@ -31,12 +31,12 @@ func commonServer() http.Server {
 	}
 }
 
-func Production() *Configuration {
-	type Secrets struct {
-		MySQLPassword string
-	}
+type Secrets struct {
+	MySQLPassword string
+}
 
-	file, err := os.Open("secrets.json")
+func Production(secretsPath string) *Configuration {
+	file, err := os.Open(secretsPath)
 	if err != nil {
 		panic(err)
 	}

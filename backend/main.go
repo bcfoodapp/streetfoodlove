@@ -9,15 +9,16 @@ import (
 )
 
 func main() {
-	var configuration *database.Configuration
+	var config *database.Configuration
 
-	if _, isProduction := os.LookupEnv("PRODUCTION"); isProduction {
-		configuration = database.Production()
+	secretsFile, isProduction := os.LookupEnv("SECRETS_FILE")
+	if isProduction {
+		config = database.Production(secretsFile)
 	} else {
-		configuration = database.Development()
+		config = database.Development()
 	}
 
-	db, err := sqlx.Connect("mysql", configuration.MySQLConfig.FormatDSN())
+	db, err := sqlx.Connect("mysql", config.MySQLConfig.FormatDSN())
 	if err != nil {
 		panic(err)
 	}
@@ -32,17 +33,17 @@ func main() {
 	router := gin.Default()
 	api.AddRoutes(router)
 
-	configuration.Server.Handler = router
+	config.Server.Handler = router
 
 	defer func() {
-		if err := configuration.Server.Close(); err != nil {
+		if err := config.Server.Close(); err != nil {
 			panic(err)
 		}
 	}()
 
 	fmt.Println("serving at localhost:8080")
 
-	if err := configuration.Server.ListenAndServe(); err != nil {
+	if err := config.Server.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }
