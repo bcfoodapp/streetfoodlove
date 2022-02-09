@@ -10,6 +10,14 @@ type Configuration struct {
 	MySQLConfig mysql.Config
 }
 
+func commonMySQLConfig() *mysql.Config {
+	mysqlConfig := mysql.NewConfig()
+	mysqlConfig.AllowNativePasswords = true
+	mysqlConfig.DBName = "streetfoodlove"
+	mysqlConfig.ParseTime = true
+	return mysqlConfig
+}
+
 func production() *Configuration {
 	type Secrets struct {
 		MySQLPassword string
@@ -25,7 +33,7 @@ func production() *Configuration {
 		panic(err)
 	}
 
-	mysqlConfig := mysql.NewConfig()
+	mysqlConfig := commonMySQLConfig()
 	mysqlConfig.Net = "tcp"
 	mysqlConfig.Addr = "sfl-database.cyacnjr02zgl.us-west-2.rds.amazonaws.com"
 	mysqlConfig.User = "admin"
@@ -35,7 +43,7 @@ func production() *Configuration {
 }
 
 func development() *Configuration {
-	mysqlConfig := mysql.NewConfig()
+	mysqlConfig := commonMySQLConfig()
 	mysqlConfig.User = "root"
 	return &Configuration{MySQLConfig: *mysqlConfig}
 }
