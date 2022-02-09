@@ -67,7 +67,8 @@ func Production(secretsPath string) *Configuration {
 	//goland:noinspection GoVetCopyLock
 	return &Configuration{
 		MySQLConfig: *mysqlConfig,
-		Server:      server,
+		// nolint:govet
+		Server: server,
 	}
 }
 
@@ -81,6 +82,7 @@ func Development() *Configuration {
 	//goland:noinspection GoVetCopyLock
 	return &Configuration{
 		MySQLConfig: *mysqlConfig,
-		Server:      server,
+		// nolint:govet
+		Server: server,
 	}
 }
