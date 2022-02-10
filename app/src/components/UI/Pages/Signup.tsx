@@ -92,12 +92,10 @@ export default function Signup(): React.ReactElement {
   return (
     <Container className={styles.signUpWrapper}>
       <h1>Sign Up Form (user account)</h1>
-
-      <div className={styles.formWrapper}>
-        <div className={styles.googleButtonWrapper}>
+      <Container className={styles.formWrapper}>
+        <Container className={styles.googleButtonWrapper}>
           <div ref={googleButton} />
-        </div>
-
+        </Container>
         <Formik
           enableReinitialize
           initialValues={initialValues}
@@ -120,7 +118,11 @@ export default function Signup(): React.ReactElement {
             } = formProps;
 
             return (
-              <Form onSubmit={handleSubmit} onReset={handleReset}>
+              <Form
+                onSubmit={handleSubmit}
+                onReset={handleReset}
+                className={styles.form}
+              >
                 <Form.Input
                   value={values.email}
                   onChange={handleChange}
@@ -241,7 +243,7 @@ export default function Signup(): React.ReactElement {
             );
           }}
         </Formik>
-      </div>
+      </Container>
     </Container>
   );
 }
