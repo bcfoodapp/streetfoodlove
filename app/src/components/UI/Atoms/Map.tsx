@@ -70,8 +70,6 @@ export default function Map(): React.ReactElement {
         width: "100%",
         marginTop: 2.9,
         zIndex: 0,
-        overflow: "hidden",
-        position:'absolute'
       }}
     >
       <MapContent />
