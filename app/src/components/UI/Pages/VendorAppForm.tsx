@@ -43,7 +43,7 @@ export default function VendorAppForm(): React.ReactElement {
       // Button is inaccessible when token is null
       throw new Error("unexpected");
     }
-    const userID = getUserIDFromToken(token as unknown as string);
+    const userID = getUserIDFromToken(token);
     const vendor: Vendor = {
       ID: uuid(),
       Name: data.name,
