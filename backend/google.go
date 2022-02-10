@@ -1,0 +1,71 @@
+package main
+
+import (
+	"encoding/json"
+	"errors"
+	"github.com/golang-jwt/jwt"
+	"log"
+	"net/http"
+	"time"
+)
+
+var client = http.Client{
+	Timeout: time.Second * 20,
+}
+
+func getGooglePublicKey(keyID string) (string, error) {
+	resp, err := client.Get("https://www.googleapis.com/oauth2/v1/certs")
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	response := map[string]string{}
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return "", err
+	}
+	key, ok := response[keyID]
+	if !ok {
+		return "", errors.New("key not found")
+	}
+	return key, nil
+}
+
+func validateGoogleToken(tokenString string) (jwt.StandardClaims, error) {
+	keyFunc := func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+
+		pem, err := getGooglePublicKey(token.Header["kid"].(string))
+		if err != nil {
+			return nil, err
+		}
+		key, err := jwt.ParseRSAPublicKeyFromPEM([]byte(pem))
+		if err != nil {
+			return nil, err
+		}
+		return key, nil
+	}
+
+	token, err := jwt.Parse(tokenString, keyFunc)
+	if err != nil {
+		return jwt.StandardClaims{}, err
+	}
+
+	claims := token.Claims.(jwt.StandardClaims)
+
+	if claims.Issuer != "accounts.google.com" && claims.Issuer != "https://accounts.google.com" {
+		return jwt.StandardClaims{}, errors.New("iss is invalid")
+	}
+
+	if claims.Audience != "194003030221-3lnvcnh6ec0a96hu62jpii7ojv2hets6.apps.googleusercontent.com" {
+		return jwt.StandardClaims{}, errors.New("aud is invalid")
+	}
+
+	return claims, nil
+}

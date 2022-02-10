@@ -403,7 +403,13 @@ func (a *API) TokenGooglePost(c *gin.Context) {
 		return
 	}
 
-	userID, err := a.Backend.Database.UserIDByGoogleID(request.GoogleToken)
+	claims, err := validateGoogleToken(request.GoogleToken)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	userID, err := a.Backend.Database.UserIDByGoogleID(claims.Subject)
 	if err != nil {
 		c.Error(err)
 		return
