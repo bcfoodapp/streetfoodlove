@@ -1,3 +1,7 @@
+# Link to app
+
+https://bcfoodapp.github.io/streetfoodlove/
+
 # Document links
 
 - [API doc](https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1)
