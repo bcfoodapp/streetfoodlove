@@ -87,14 +87,18 @@ export default function Signup(): React.ReactElement {
     google.accounts.id.initialize({
       client_id:
         "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
-      callback: async (data) =>
-        console.log(
-          await signInWithGoogle(
-            data.credential,
-            getTokenWithGoogle,
-            createUser
-          )
-        ),
+      callback: async (data) => {
+        const response = await signInWithGoogle(
+          data.credential,
+          getTokenWithGoogle,
+          createUser
+        );
+        if ((response as any).error === undefined) {
+          if (userType === UserType.Customer) {
+            navigate("/");
+          }
+        }
+      },
     });
     google.accounts.id.renderButton(googleButton.current, {});
   }, []);
