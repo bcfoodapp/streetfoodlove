@@ -62,6 +62,7 @@ export default function Signup(): React.ReactElement {
       LastName: data.lastName,
       Password: data.password,
       SignUpDate: DateTime.now(),
+      GoogleID: null,
     });
 
     if ((result as any).error === undefined) {
