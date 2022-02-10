@@ -5,7 +5,7 @@ import styles from "./landingpage.module.css";
 export const LandingPage = () => {
   return (
     <>
-      <Container>
+      <Container className={styles.container}>
         <Map />
       </Container>
     </>
