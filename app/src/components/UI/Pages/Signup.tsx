@@ -118,7 +118,11 @@ export default function Signup(): React.ReactElement {
             } = formProps;
 
             return (
-              <Form onSubmit={handleSubmit} onReset={handleReset}>
+              <Form
+                onSubmit={handleSubmit}
+                onReset={handleReset}
+                className={styles.form}
+              >
                 <Form.Input
                   value={values.email}
                   onChange={handleChange}
