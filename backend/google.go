@@ -52,12 +52,11 @@ func validateGoogleToken(tokenString string) (*jwt.StandardClaims, error) {
 		return key, nil
 	}
 
-	token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, keyFunc)
-	if err != nil {
+	claims := &jwt.StandardClaims{}
+
+	if _, err := jwt.ParseWithClaims(tokenString, claims, keyFunc); err != nil {
 		return &jwt.StandardClaims{}, err
 	}
-
-	claims := token.Claims.(*jwt.StandardClaims)
 
 	if claims.Issuer != "accounts.google.com" && claims.Issuer != "https://accounts.google.com" {
 		return &jwt.StandardClaims{}, errors.New("iss is invalid")
