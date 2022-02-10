@@ -14,7 +14,7 @@ export const LandingPage = () => {
           Version {config.version}, server version {version}
         </p>
       </Container>
-      <Container className={styles.mapWrap}>
+      <Container className={styles.container}>
         <Map />
       </Container>
     </>
