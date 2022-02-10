@@ -33,6 +33,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(errorHandler)
 	router.Use(gin.CustomRecovery(recovery))
 
+	router.GET("/", root)
+
 	router.GET("/vendors", a.Vendors)
 	router.GET("/vendors/:id", a.Vendor)
 	router.PUT("/vendors/:id", GetToken, a.VendorPut)
@@ -132,6 +134,10 @@ func getTokenFromContext(c *gin.Context) uuid.UUID {
 }
 
 var idsDoNotMatch = fmt.Errorf("ids do not match")
+
+func root(c *gin.Context) {
+	c.JSON(http.StatusOK, "StreetFoodLove API")
+}
 
 func (a *API) Vendor(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
