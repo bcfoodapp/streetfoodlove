@@ -2,21 +2,27 @@
 package main
 
 import (
-	"time"
-
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
-	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"os"
+	"time"
 )
 
 func main() {
+	var config *database.Configuration
+
+	secretsFile, isProduction := os.LookupEnv("SECRETS_FILE")
+	if isProduction {
+		config = database.Production(secretsFile)
+	} else {
+		config = database.Development()
+	}
+
 	func() {
-		config := mysql.Config{
-			User:                 "root",
-			AllowNativePasswords: true,
-		}
-		db, err := sqlx.Connect("mysql", config.FormatDSN())
+		mysqlConfig := config.MySQLConfig
+		mysqlConfig.DBName = ""
+		db, err := sqlx.Connect("mysql", mysqlConfig.FormatDSN())
 		if err != nil {
 			panic(err)
 		}
@@ -42,13 +48,7 @@ func main() {
 		}
 	}()
 
-	config := mysql.Config{
-		User:                 "root",
-		AllowNativePasswords: true,
-		DBName:               "streetfoodlove",
-		ParseTime:            true,
-	}
-	db, err := sqlx.Connect("mysql", config.FormatDSN())
+	db, err := sqlx.Connect("mysql", config.MySQLConfig.FormatDSN())
 	if err != nil {
 		panic(err)
 	}
@@ -74,7 +74,8 @@ func SetupTables(db *sqlx.DB) error {
 			SignUpDate DATETIME NULL,
 			LoginPassword BINARY(32) NULL,
 			UserType TINYINT NULL,
-			Photo CHAR(36),
+			Photo CHAR(36) NOT NULL,
+			GoogleID VARCHAR(50) NULL,
 			PRIMARY KEY (ID)
 		)
 		`,
