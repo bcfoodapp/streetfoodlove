@@ -9,7 +9,6 @@ import {
 } from "react-leaflet";
 import PopupInfo from "./PopupInfo/PopupInfo";
 import { useMapViewVendorsQuery, useVendorsMultipleQuery } from "../../../api";
-import styles from "./map.module.css";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({
@@ -67,11 +66,10 @@ export default function Map(): React.ReactElement {
       center={[47.584401, -122.14819]}
       zoom={14}
       style={{
-        height: "100vh",
-        width: "160vw",
-        marginLeft: -425,
-        marginTop: -11,
-        zIndex: -1,
+        height: "92.3vh",
+        width: "100%",
+        marginTop: 2.9,
+        zIndex: 0,
       }}
     >
       <MapContent />
