@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Container } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import { Dropdown } from "semantic-ui-react";
@@ -8,11 +8,12 @@ import * as Yup from "yup";
 import {
   getUserIDFromToken,
   useCreateVendorMutation,
-  useGetTokenQuery,
+  useGetTokenMutation,
   Vendor,
 } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../../store";
 
 interface inputValues {
   name: string;
@@ -27,7 +28,11 @@ interface inputValues {
 export default function VendorAppForm(): React.ReactElement {
   const navigate = useNavigate();
   const [createVendor] = useCreateVendorMutation();
-  const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
+  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  useEffect(() => {
+    getToken();
+  }, []);
+  const token = useAppSelector((state) => state.token.token);
 
   if (!tokenIsSuccess || token === null) {
     return <p>Not logged in</p>;
@@ -35,9 +40,10 @@ export default function VendorAppForm(): React.ReactElement {
 
   const onSubmit = async (data: inputValues) => {
     if (!tokenIsSuccess || token === null) {
+      // Button is inaccessible when token is null
       throw new Error("unexpected");
     }
-    const userID = getUserIDFromToken(token as string);
+    const userID = getUserIDFromToken(token as unknown as string);
     const vendor: Vendor = {
       ID: uuid(),
       Name: data.name,
