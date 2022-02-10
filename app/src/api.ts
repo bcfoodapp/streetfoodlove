@@ -286,9 +286,9 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
-    // Gets token using stored credentials and saves it to state. Returns null if credentials are not stored.
-    // This should be used to get the token if no query is called before the token is required. When any query is used,
-    // the token can be retrieved from the store.
+    // Gets token using stored credentials and saves it to state.
+    // This endpoint should be used to get the token if no query is called before the token is required. When any query
+    // is called, the token can be retrieved from the store without calling getToken.
     getToken: builder.mutation<undefined, void>({
       queryFn: async (arg, api, extraOptions) => {
         const credentials = getCredentialsAndName();
