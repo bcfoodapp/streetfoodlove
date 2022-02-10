@@ -139,6 +139,24 @@ func getTokenFromContext(c *gin.Context) uuid.UUID {
 
 var idsDoNotMatch = fmt.Errorf("ids do not match")
 
+func root(c *gin.Context) {
+	c.JSON(http.StatusOK, "StreetFoodLove API")
+}
+
+// version outputs the backend version.
+func version(c *gin.Context) {
+	file, err := os.Open("./version.json")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if _, err := io.Copy(c.Writer, file); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
 func (a *API) Vendor(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
