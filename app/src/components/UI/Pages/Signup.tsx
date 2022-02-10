@@ -87,7 +87,14 @@ export default function Signup(): React.ReactElement {
     google.accounts.id.initialize({
       client_id:
         "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
-      callback: (data) => signInWithGoogle(data.credential, getTokenWithGoogle),
+      callback: async (data) =>
+        console.log(
+          await signInWithGoogle(
+            data.credential,
+            getTokenWithGoogle,
+            createUser
+          )
+        ),
     });
     google.accounts.id.renderButton(googleButton.current, {});
   }, []);
@@ -96,9 +103,11 @@ export default function Signup(): React.ReactElement {
     <Container className={styles.signUpWrapper}>
       <h1>Sign Up Form (user account)</h1>
       <Container className={styles.formWrapper}>
-        <Container className={styles.googleButtonWrapper}>
-          <div ref={googleButton} />
-        </Container>
+        {userType === UserType.Customer ? (
+          <Container className={styles.googleButtonWrapper}>
+            <div ref={googleButton} />
+          </Container>
+        ) : null}
         <Formik
           enableReinitialize
           initialValues={initialValues}
