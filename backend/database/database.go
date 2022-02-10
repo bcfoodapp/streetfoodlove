@@ -179,6 +179,7 @@ type UserProtected struct {
 	*User
 	Email      string
 	SignUpDate time.Time
+	GoogleID   *string
 }
 
 func (d *Database) UserCreate(user *UserProtected, password string) error {
@@ -192,7 +193,8 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 			SignUpDate,
 			LoginPassword,
 			UserType,
-			Photo
+			Photo,
+		  	GoogleID
 		) VALUES (
 			:ID,
 			:Email,
@@ -202,7 +204,8 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 			:SignUpDate,
 			:LoginPassword,
 			:UserType,
-			:Photo
+			:Photo,
+			:GoogleID
 		)
 	`
 	hash := sha256.Sum256([]byte(password))
@@ -226,7 +229,8 @@ func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
 			LastName,
 			SignUpDate,
 			UserType,
-			Photo
+			Photo,
+			GoogleID
 		FROM User
 		WHERE ID=?
 	`
@@ -245,7 +249,8 @@ func (d *Database) UserUpdate(user *UserProtected) error {
 			FirstName = :FirstName,
 			LastName = :LastName,
 			UserType = :UserType,
-			Photo = :Photo
+			Photo = :Photo,
+			GoogleID = :GoogleID
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &user)
@@ -286,7 +291,7 @@ type Review struct {
 	UserID     uuid.UUID
 	DatePosted time.Time
 	StarRating *int
-	ReviewTo   uuid.UUID
+	ReplyTo    *uuid.UUID
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
