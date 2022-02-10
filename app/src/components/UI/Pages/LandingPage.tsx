@@ -11,7 +11,7 @@ export const LandingPage = () => {
     <>
       <Container textAlign="center">
         <p>
-          Version {config.version}, backend version {version}
+          Version {config.version}, server version {version}
         </p>
       </Container>
       <Container className={styles.mapWrap}>
