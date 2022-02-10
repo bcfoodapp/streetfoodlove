@@ -2,6 +2,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
@@ -9,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -32,6 +34,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
 	router.Use(gin.CustomRecovery(recovery))
+
+	router.GET("/version", version)
 
 	router.GET("/vendors", a.Vendors)
 	router.GET("/vendors/:id", a.Vendor)
@@ -132,6 +136,23 @@ func getTokenFromContext(c *gin.Context) uuid.UUID {
 }
 
 var idsDoNotMatch = fmt.Errorf("ids do not match")
+
+// version outputs the backend version.
+func version(c *gin.Context) {
+	file, err := os.Open("./version.json")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	version := ""
+	if err := json.NewDecoder(file).Decode(&version); err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, &version)
+}
 
 func (a *API) Vendor(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
