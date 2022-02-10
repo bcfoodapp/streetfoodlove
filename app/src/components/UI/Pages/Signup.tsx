@@ -4,6 +4,7 @@ import Buttons from "../Atoms/Button/Buttons";
 import styles from "./signup.module.css";
 import {
   useCreateUserMutation,
+  useGetTokenWithGoogleMutation,
   UserType,
   useSetCredentialsAndGetTokenMutation,
 } from "../../../api";
@@ -26,6 +27,7 @@ interface inputValues {
 export default function Signup(): React.ReactElement {
   const [createUser] = useCreateUserMutation();
   const [setCredentials] = useSetCredentialsAndGetTokenMutation();
+  const [getTokenWithGoogle] = useGetTokenWithGoogleMutation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   let userType = UserType.Customer;
@@ -85,7 +87,7 @@ export default function Signup(): React.ReactElement {
     google.accounts.id.initialize({
       client_id:
         "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
-      callback: (data) => signInWithGoogle(data.credential),
+      callback: (data) => signInWithGoogle(data.credential, getTokenWithGoogle),
     });
     google.accounts.id.renderButton(googleButton.current, {});
   }, []);

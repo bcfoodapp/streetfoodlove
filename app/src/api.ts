@@ -298,6 +298,33 @@ export const apiSlice = createApi({
         return { data: null };
       },
     }),
+    // Returns app token using given Google token. Saves token to store on success.
+    getTokenWithGoogle: builder.mutation<string, string>({
+      queryFn: async (arg, api, extraOptions) => {
+        const body = {
+          GoogleToken: arg,
+        };
+        const response = await baseQuery(
+          { url: "/token/google", method: POST, body },
+          api,
+          {}
+        );
+        if (response.error) {
+          return response;
+        }
+
+        const token = response.data as string;
+
+        api.dispatch(
+          setTokenAndTime({
+            token,
+            time: DateTime.now().toSeconds(),
+          })
+        );
+
+        return { data: token };
+      },
+    }),
     // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
@@ -380,6 +407,7 @@ export const {
   useReviewsQuery,
   useSubmitReviewMutation,
   useGetTokenQuery,
+  useGetTokenWithGoogleMutation,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
   useGuideQuery,
