@@ -2,13 +2,13 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -145,13 +145,10 @@ func version(c *gin.Context) {
 		return
 	}
 
-	version := ""
-	if err := json.NewDecoder(file).Decode(&version); err != nil {
+	if _, err := io.Copy(c.Writer, file); err != nil {
 		c.Error(err)
 		return
 	}
-
-	c.JSON(http.StatusOK, &version)
 }
 
 func (a *API) Vendor(c *gin.Context) {
