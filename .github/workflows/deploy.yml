@@ -1,6 +1,8 @@
 name: Deploy
 on:
   push:
+    branches:
+      - 'ci'
     tags:
       - '*'
 
@@ -14,6 +16,10 @@ jobs:
           node-version: '17.1'
           cache: 'npm'
           cache-dependency-path: app/package-lock.json
+      - run: |
+          echo "{\"version\":\"${GITHUB_REF_NAME}\",\"apiBaseURL\":\"https://ec2-52-24-163-172.us-west-2.compute.amazonaws.com/\"}" \
+            > configuration.json
+        working-directory: app/src
       - run: |
           npm ci
           npm run build
