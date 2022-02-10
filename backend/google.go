@@ -35,7 +35,7 @@ func getGooglePublicKey(keyID string) (string, error) {
 	return key, nil
 }
 
-func validateGoogleToken(tokenString string) (jwt.StandardClaims, error) {
+func validateGoogleToken(tokenString string) (*jwt.StandardClaims, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, errors.New("unexpected signing method")
@@ -52,19 +52,18 @@ func validateGoogleToken(tokenString string) (jwt.StandardClaims, error) {
 		return key, nil
 	}
 
-	token, err := jwt.Parse(tokenString, keyFunc)
-	if err != nil {
-		return jwt.StandardClaims{}, err
-	}
+	claims := &jwt.StandardClaims{}
 
-	claims := token.Claims.(jwt.StandardClaims)
+	if _, err := jwt.ParseWithClaims(tokenString, claims, keyFunc); err != nil {
+		return &jwt.StandardClaims{}, err
+	}
 
 	if claims.Issuer != "accounts.google.com" && claims.Issuer != "https://accounts.google.com" {
-		return jwt.StandardClaims{}, errors.New("iss is invalid")
+		return &jwt.StandardClaims{}, errors.New("iss is invalid")
 	}
 
-	if claims.Audience != "194003030221-3lnvcnh6ec0a96hu62jpii7ojv2hets6.apps.googleusercontent.com" {
-		return jwt.StandardClaims{}, errors.New("aud is invalid")
+	if claims.Audience != "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com" {
+		return &jwt.StandardClaims{}, errors.New("aud is invalid")
 	}
 
 	return claims, nil
