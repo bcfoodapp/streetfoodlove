@@ -44,7 +44,7 @@ export default function Login(): React.ReactElement {
   return (
     <>
       <Container className={styles.wrapper}>
-        <Grid centered relaxed={"very"}>
+        <Grid centered>
           <Grid.Column className={styles.test}>
             <Grid.Row centered>
               <h1 className={styles.header}>Login</h1>
@@ -107,7 +107,7 @@ export default function Login(): React.ReactElement {
                           className={styles.error}
                         />
                       </Form.Field>
-                      <Container>
+                      <Container className={styles.btnContainer}>
                         <Buttons
                           login
                           color="green"

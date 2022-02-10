@@ -57,14 +57,13 @@ export default function HeaderBar(): React.ReactElement {
   ];
 
   return (
-    <Menu size="massive">
+    <Menu size="massive" className={styles.menu}>
       <Link to="/">
         <Menu.Item>
           <h2>StreetFoodLove</h2>
         </Menu.Item>
       </Link>
       <SearchBox />
-
       <Menu.Menu position="right">
         {name ? (
           <Dropdown
