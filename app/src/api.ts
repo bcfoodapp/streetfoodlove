@@ -172,6 +172,9 @@ export const apiSlice = createApi({
   },
   tagTypes: ["Review"],
   endpoints: (builder) => ({
+    version: builder.query<string, void>({
+      query: () => `/version`,
+    }),
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
     }),
@@ -343,6 +346,27 @@ export const apiSlice = createApi({
   }),
 });
 
+export const {
+  useVersionQuery,
+  useVendorQuery,
+  useVendorsMultipleQuery,
+  useVendorByOwnerIDQuery,
+  useCreateVendorMutation,
+  useUpdateVendorMutation,
+  useUserQuery,
+  useLazyUsersMultipleQuery,
+  useUserProtectedQuery,
+  useUpdateUserMutation,
+  useCreateUserMutation,
+  useUpdatePasswordMutation,
+  useReviewsQuery,
+  useSubmitReviewMutation,
+  useGetTokenMutation,
+  useSetCredentialsAndGetTokenMutation,
+  useMapViewVendorsQuery,
+  useGuideQuery,
+} = apiSlice;
+
 // Sets credentials and name in localStorage.
 function setCredentialsAndName(entry: CredentialsAndName) {
   console.info("set localStorage");
@@ -364,23 +388,3 @@ export function clearLocalStorage() {
   console.info("clear localStorage");
   localStorage.clear();
 }
-
-export const {
-  useVendorQuery,
-  useVendorsMultipleQuery,
-  useVendorByOwnerIDQuery,
-  useCreateVendorMutation,
-  useUpdateVendorMutation,
-  useUserQuery,
-  useLazyUsersMultipleQuery,
-  useUserProtectedQuery,
-  useUpdateUserMutation,
-  useCreateUserMutation,
-  useUpdatePasswordMutation,
-  useReviewsQuery,
-  useSubmitReviewMutation,
-  useGetTokenMutation,
-  useSetCredentialsAndGetTokenMutation,
-  useMapViewVendorsQuery,
-  useGuideQuery,
-} = apiSlice;
