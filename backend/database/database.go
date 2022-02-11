@@ -264,7 +264,9 @@ type Credentials struct {
 
 func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, error) {
 	const command = `
-		SELECT ID, LoginPassword FROM User WHERE Username=?
+		SELECT ID, LoginPassword
+		FROM User
+		WHERE Username=?
 	`
 	row := d.db.QueryRowx(command, &credentials.Username)
 
@@ -282,6 +284,20 @@ func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, err
 	}
 
 	return userID, nil
+}
+
+func (d *Database) UserIDByGoogleID(googleID string) (uuid.UUID, error) {
+	const command = `
+		SELECT ID
+		FROM User
+		WHERE GoogleID=?
+	`
+
+	row := d.db.QueryRowx(command, &googleID)
+
+	userID := uuid.UUID{}
+	err := row.Scan(&userID)
+	return userID, err
 }
 
 type Review struct {
