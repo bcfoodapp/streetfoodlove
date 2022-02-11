@@ -8,7 +8,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -34,6 +36,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(gin.CustomRecovery(recovery))
 
 	router.GET("/", root)
+
+	router.GET("/version", version)
 
 	router.GET("/vendors", a.Vendors)
 	router.GET("/vendors/:id", a.Vendor)
@@ -138,6 +142,20 @@ var idsDoNotMatch = fmt.Errorf("ids do not match")
 
 func root(c *gin.Context) {
 	c.JSON(http.StatusOK, "StreetFoodLove API")
+}
+
+// version outputs the backend version.
+func version(c *gin.Context) {
+	file, err := os.Open("./version.json")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if _, err := io.Copy(c.Writer, file); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) Vendor(c *gin.Context) {
