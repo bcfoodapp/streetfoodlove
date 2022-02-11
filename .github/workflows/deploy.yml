@@ -3,22 +3,35 @@ on:
   push:
     tags:
       - '*'
+    branches:
+      - 'deployment'
 
 jobs:
   deploy_gh_pages:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+#      - uses: actions/checkout@v2
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: '17.1'
+#          cache: 'npm'
+#          cache-dependency-path: app/package-lock.json
+#      - run: |
+#          npm ci
+#          npm run build
+#        working-directory: app
+#      - uses: JamesIves/github-pages-deploy-action@4.1.4
+#        with:
+#          BRANCH: gh-pages
+#          FOLDER: app/dist
+      - uses: aws-actions/configure-aws-credentials@v1
         with:
-          node-version: '17.1'
-          cache: 'npm'
-          cache-dependency-path: app/package-lock.json
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
       - run: |
-          npm ci
-          npm run build
-        working-directory: app
-      - uses: JamesIves/github-pages-deploy-action@4.1.4
-        with:
-          BRANCH: gh-pages
-          FOLDER: app/dist
+          aws deploy create-deployment \
+            --application-name sfl-codedeploy-app \
+            --deployment-group-name sfl-codedeploy-group \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}

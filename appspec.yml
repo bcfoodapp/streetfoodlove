@@ -1,0 +1,9 @@
+version: 0.0
+os: linux
+files:
+  - source: backend
+    destination: /home/ec2-user/backend
+hooks:
+  ApplicationStart:
+    - location: backend/start_server
+      timeout: 300
