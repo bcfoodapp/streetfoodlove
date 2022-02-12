@@ -75,7 +75,7 @@ func SetupTables(db *sqlx.DB) error {
 			LoginPassword BINARY(32) NULL,
 			UserType TINYINT NULL,
 			Photo CHAR(36) NOT NULL,
-			GoogleID VARCHAR(50) NULL,
+			GoogleID VARCHAR(50) UNIQUE NULL,
 			PRIMARY KEY (ID)
 		)
 		`,

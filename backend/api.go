@@ -8,7 +8,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -35,6 +37,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/", root)
 
+	router.GET("/version", version)
+
 	router.GET("/vendors", a.Vendors)
 	router.GET("/vendors/:id", a.Vendor)
 	router.PUT("/vendors/:id", GetToken, a.VendorPut)
@@ -50,6 +54,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/reviews/:id", a.Review)
 
 	router.POST("/token", a.TokenPost)
+	router.POST("/token/google", a.TokenGooglePost)
 
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 
@@ -137,6 +142,20 @@ var idsDoNotMatch = fmt.Errorf("ids do not match")
 
 func root(c *gin.Context) {
 	c.JSON(http.StatusOK, "StreetFoodLove API")
+}
+
+// version outputs the backend version.
+func version(c *gin.Context) {
+	file, err := os.Open("./version.json")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if _, err := io.Copy(c.Writer, file); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) Vendor(c *gin.Context) {
@@ -358,6 +377,23 @@ func (a *API) Review(c *gin.Context) {
 	c.JSON(http.StatusOK, review)
 }
 
+func generateToken(userID uuid.UUID) string {
+	claims := TokenClaims{
+		UserID: userID,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: (time.Now().Add(time.Minute*10 + time.Second*5)).Unix(),
+		},
+	}
+
+	tokenStr, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(tokenSecret)
+	if err != nil {
+		// SignedString() should not fail
+		panic(err)
+	}
+
+	return tokenStr
+}
+
 func (a *API) TokenPost(c *gin.Context) {
 	credentials := &database.Credentials{}
 	if err := c.ShouldBindJSON(credentials); err != nil {
@@ -371,18 +407,33 @@ func (a *API) TokenPost(c *gin.Context) {
 		return
 	}
 
-	claims := TokenClaims{
-		UserID: userID,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: (time.Now().Add(time.Minute*10 + time.Second*5)).Unix(),
-		},
+	c.JSON(http.StatusOK, generateToken(userID))
+}
+
+func (a *API) TokenGooglePost(c *gin.Context) {
+	type TokenGooglePostRequest struct {
+		GoogleToken string
 	}
 
-	tokenStr, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(tokenSecret)
-	if err != nil {
-		panic(err)
+	request := &TokenGooglePostRequest{}
+	if err := c.ShouldBindJSON(request); err != nil {
+		c.Error(err)
+		return
 	}
-	c.JSON(http.StatusOK, tokenStr)
+
+	claims, err := validateGoogleToken(request.GoogleToken)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	userID, err := a.Backend.Database.UserIDByGoogleID(claims.Subject)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, generateToken(userID))
 }
 
 func (a *API) MapView(c *gin.Context) {

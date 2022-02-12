@@ -4,17 +4,22 @@ import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
 import {
   getUserIDFromToken,
-  useGetTokenQuery,
+  useGetTokenMutation,
   useUpdateUserMutation,
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
+import { useAppSelector } from "../../../../store";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
-  const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
+  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  useEffect(() => {
+    getToken();
+  }, []);
+  const token = useAppSelector((state) => state.token.token);
 
   let userID = "";
   if (tokenIsSuccess && token !== null) {
