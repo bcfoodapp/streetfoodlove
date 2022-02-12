@@ -1,5 +1,0 @@
-#!/bin/bash
-# Script to run the server in EC2 instance
-cd backend
-pwd
-SECRETS_FILE=~/secrets.json sudo -E go run . &

@@ -3,7 +3,8 @@ os: linux
 files:
   - source: backend
     destination: /home/ec2-user/backend
+file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStart:
-    - location: backend/start_server
+    - location: backend/start_server.sh
       timeout: 300
