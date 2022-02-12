@@ -5,8 +5,8 @@ files:
     destination: /home/ec2-user/backend
 file_exists_behavior: OVERWRITE
 hooks:
-  ApplicationStop:
-    - location: backend/scripts/stop_server.sh
   ApplicationStart:
     - location: backend/scripts/start_server.sh
       timeout: 300
+  ApplicationStop:
+    - location: backend/scripts/stop_server.sh
