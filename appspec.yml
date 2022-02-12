@@ -10,3 +10,4 @@ hooks:
       timeout: 300
   ApplicationStop:
     - location: backend/scripts/stop_server.sh
+      timeout: 300
