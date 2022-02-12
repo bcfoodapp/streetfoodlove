@@ -29,7 +29,10 @@ func (a *API) Close() error {
 // AddRoutes adds all API routes.
 func (a *API) AddRoutes(router *gin.Engine) {
 	corsOptions := cors.DefaultConfig()
-	corsOptions.AllowOrigins = []string{"http://localhost:3000"}
+	corsOptions.AllowOrigins = []string{
+		"http://localhost:3000",
+		"https://bcfoodapp.github.io",
+	}
 	corsOptions.AddAllowHeaders("Authorization")
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
