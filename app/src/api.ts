@@ -12,6 +12,7 @@ import {
 } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 import jwtDecode from "jwt-decode";
 import config from "./configuration.json";
+import { v4 as uuid } from "uuid";
 
 export interface Vendor {
   ID: string;
@@ -81,6 +82,15 @@ export interface Guide {
   Guide: string;
   DatePosted: DateTime;
   ArticleAuthor: string;
+}
+
+// https://developers.google.com/identity/gsi/web/reference/js-reference#credential
+interface GoogleClaims {
+  family_name: string;
+  given_name: string;
+  email: string;
+  // Google ID
+  sub: string;
 }
 
 export const tokenSlice = createSlice({
@@ -301,33 +311,6 @@ export const apiSlice = createApi({
         return { data: undefined };
       },
     }),
-    // Returns app token using given Google token. Saves token to store on success.
-    getTokenWithGoogle: builder.mutation<string, string>({
-      queryFn: async (arg, api, extraOptions) => {
-        const body = {
-          GoogleToken: arg,
-        };
-        const response = await baseQuery(
-          { url: "/token/google", method: POST, body },
-          api,
-          {}
-        );
-        if (response.error) {
-          return response;
-        }
-
-        const token = response.data as string;
-
-        api.dispatch(
-          setTokenAndTime({
-            token,
-            time: DateTime.now().toSeconds(),
-          })
-        );
-
-        return { data: token };
-      },
-    }),
     // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
@@ -370,6 +353,67 @@ export const apiSlice = createApi({
         DatePosted: DateTime.fromISO(guide.DatePosted),
       }),
     }),
+    // Signs in with Google account, creating an account if necessary. The passed token is the one provided by Google
+    // using OAuth. On success, token in store is set.
+    signInWithGoogle: builder.mutation<string, string>({
+      queryFn: async (arg, api, extraOptions) => {
+        const body = {
+          GoogleToken: arg,
+        };
+        let response = await baseQuery(
+          { url: "/token/google", method: POST, body },
+          api,
+          {}
+        );
+        if (response.error && response.error.status === 400) {
+          // Account does not exist so we need to make one
+          const tokenPayload = jwtDecode<GoogleClaims>(arg);
+          const username = tokenPayload.given_name + tokenPayload.family_name;
+          const password = uuid();
+          const newUser: UserProtected & { Password: string } = {
+            ID: uuid(),
+            Username: username,
+            Photo: uuid(),
+            UserType: UserType.Customer,
+            Email: tokenPayload.email,
+            FirstName: tokenPayload.given_name,
+            LastName: tokenPayload.family_name,
+            Password: password,
+            SignUpDate: DateTime.now(),
+            GoogleID: tokenPayload.sub,
+          };
+          const createUserResponse = await baseQuery(
+            {
+              url: `/users/${encode(newUser.ID)}/protected`,
+              method: PUT,
+              body: newUser,
+            },
+            api,
+            {}
+          );
+          if (createUserResponse.error) {
+            return createUserResponse;
+          }
+
+          response = await baseQuery(
+            { url: "/token/google", method: POST, body },
+            api,
+            {}
+          );
+        }
+
+        const token = response.data as string;
+
+        api.dispatch(
+          setTokenAndTime({
+            token,
+            time: DateTime.now().toSeconds(),
+          })
+        );
+
+        return { data: token };
+      },
+    }),
   }),
 });
 
@@ -389,10 +433,10 @@ export const {
   useReviewsQuery,
   useSubmitReviewMutation,
   useGetTokenMutation,
-  useGetTokenWithGoogleMutation,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
   useGuideQuery,
+  useSignInWithGoogleMutation,
 } = apiSlice;
 
 // Sets credentials and name in localStorage.

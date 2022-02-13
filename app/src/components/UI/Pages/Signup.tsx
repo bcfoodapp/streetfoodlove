@@ -4,16 +4,15 @@ import Buttons from "../Atoms/Button/Buttons";
 import styles from "./signup.module.css";
 import {
   useCreateUserMutation,
-  useGetTokenWithGoogleMutation,
   UserType,
   useSetCredentialsAndGetTokenMutation,
+  useSignInWithGoogleMutation,
 } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
 import { ErrorMessage, Field, Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { signInWithGoogle } from "../../../googleSignIn";
 
 interface inputValues {
   firstName: string;
@@ -27,7 +26,7 @@ interface inputValues {
 export default function Signup(): React.ReactElement {
   const [createUser] = useCreateUserMutation();
   const [setCredentials] = useSetCredentialsAndGetTokenMutation();
-  const [getTokenWithGoogle] = useGetTokenWithGoogleMutation();
+  const [signInWithGoogle] = useSignInWithGoogleMutation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   let userType = UserType.Customer;
@@ -88,11 +87,7 @@ export default function Signup(): React.ReactElement {
       client_id:
         "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
       callback: async (data) => {
-        const response = await signInWithGoogle(
-          data.credential,
-          getTokenWithGoogle,
-          createUser
-        );
+        const response = await signInWithGoogle(data.credential);
         if ((response as any).error === undefined) {
           if (userType === UserType.Customer) {
             navigate("/");
