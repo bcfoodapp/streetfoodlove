@@ -29,9 +29,10 @@ func TestServer(t *testing.T) {
 
 	for {
 		time.Sleep(time.Second)
-		_, err := client.Get("http://localhost:8080")
+		resp, err := client.Get("http://localhost:8080")
 		if err == nil {
 			return
 		}
+		resp.Body.Close()
 	}
 }
