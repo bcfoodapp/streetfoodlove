@@ -66,11 +66,14 @@ export interface Credentials {
   Password: string;
 }
 
-export interface CredentialsStorageEntry {
+interface CredentialsAndToken {
   // Credentials are stored if username and password is used to log in. If sign-in with Google is used, this is null.
   Credentials: Credentials | null;
   // Refresh token is used if sign-in with Google is used. Otherwise, this is null.
   RefreshToken: string | null;
+}
+
+export interface CredentialsStorageEntry extends CredentialsAndToken {
   Name: string;
 }
 
@@ -141,27 +144,48 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// Gets token and saves it to localStorage if successful. Returns response.
+// Gets token and saves it to localStorage if successful. Returns response with access token in the data.
 async function getAndSaveCredentials(
-  credentials: Credentials,
+  credentials: CredentialsAndToken,
   api: BaseQueryApi
 ): Promise<QueryReturnValue<string, FetchBaseQueryError, {}>> {
-  const response = await baseQuery(
-    { url: "/token", method: POST, body: credentials },
-    api,
-    {}
-  );
-  if (response.error) {
-    return response;
+  let accessToken = "";
+
+  if (credentials.Credentials) {
+    const response = await baseQuery(
+      { url: "/token", method: POST, body: credentials.Credentials },
+      api,
+      {}
+    );
+    if (response.error) {
+      return response;
+    }
+
+    accessToken = response.data as string;
+  } else {
+    if (!credentials.RefreshToken) {
+      throw new Error("Credentials and RefreshToken are both null");
+    }
+
+    const response = await baseQuery(
+      { url: "/token/google", method: POST, body: credentials.RefreshToken },
+      api,
+      {}
+    );
+    if (response.error) {
+      return response;
+    }
+
+    accessToken = response.data as string;
   }
 
   api.dispatch(
     setTokenAndTime({
-      token: response.data as string,
+      token: accessToken as string,
       time: DateTime.now().toSeconds(),
     })
   );
-  return response as QueryReturnValue<string, FetchBaseQueryError, {}>;
+  return { data: accessToken };
 }
 
 // This is the API abstraction.
@@ -319,7 +343,10 @@ export const apiSlice = createApi({
     // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
-        const credentialsResponse = await getAndSaveCredentials(args, api);
+        const credentialsResponse = await getAndSaveCredentials(
+          { Credentials: args, RefreshToken: null },
+          api
+        );
         if (credentialsResponse.error) {
           return credentialsResponse;
         }
