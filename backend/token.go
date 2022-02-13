@@ -100,6 +100,9 @@ func validateRefreshToken(refreshToken string) (*RefreshTokenClaims, error) {
 func generateRefreshToken(googleID string) string {
 	claims := RefreshTokenClaims{
 		GoogleID: googleID,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: (time.Now().Add(time.Hour * 24 * 365)).Unix(),
+		},
 	}
 
 	tokenStr, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(tokenSecret)
