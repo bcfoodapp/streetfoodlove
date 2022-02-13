@@ -13,6 +13,7 @@ import {
 import jwtDecode from "jwt-decode";
 import config from "./configuration.json";
 import { v4 as uuid } from "uuid";
+import { ref } from "yup";
 
 export interface Vendor {
   ID: string;
@@ -393,12 +394,15 @@ export const apiSlice = createApi({
         const body = {
           GoogleToken: arg,
         };
-        let response = await baseQuery(
+        let refreshTokenResponse = await baseQuery(
           { url: "/token/google/refresh", method: POST, body },
           api,
           {}
         );
-        if (response.error && response.error.status === 400) {
+        if (
+          refreshTokenResponse.error &&
+          refreshTokenResponse.error.status === 400
+        ) {
           // Account does not exist so we need to make one
           const tokenPayload = jwtDecode<GoogleClaims>(arg);
           const newUser: UserProtected & { Password: string } = {
@@ -426,24 +430,45 @@ export const apiSlice = createApi({
             return createUserResponse;
           }
 
-          response = await baseQuery(
+          refreshTokenResponse = await baseQuery(
             { url: "/token/google/refresh", method: POST, body },
             api,
             {}
           );
-          if (response.error) {
-            return response;
+          if (refreshTokenResponse.error) {
+            return refreshTokenResponse;
           }
         }
 
-        const refreshToken = response.data as string;
+        const refreshToken = refreshTokenResponse.data as string;
 
-        // Get user
+        const accessTokenResponse = await getAndSaveCredentials(
+          {
+            Credentials: null,
+            RefreshToken: refreshToken,
+          },
+          api
+        );
+        if (accessTokenResponse.error) {
+          return accessTokenResponse;
+        }
+
+        // Get name of user
+        const userID = getUserIDFromToken(accessTokenResponse.data as string);
+        const userResponse = await baseQuery(
+          `/users/${encode(userID)}`,
+          api,
+          extraOptions
+        );
+        if (userResponse.error) {
+          return userResponse;
+        }
+        const user = userResponse.data as User;
 
         setCredentialsAndName({
           Credentials: null,
           RefreshToken: refreshToken,
-          Name: "", // TODO
+          Name: `${user.FirstName} ${user.LastName}`,
         });
 
         return { data: null };
