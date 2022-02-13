@@ -59,8 +59,9 @@ func (b *BackendTestSuite) SetupTest() {
 
 func (b *BackendTestSuite) TestVendor() {
 	vendor := &database.Vendor{
-		ID:   uuid.MustParse("25aa0170-2746-424b-8f22-4c27ea528402"),
-		Name: "new vendor",
+		ID:    uuid.MustParse("25aa0170-2746-424b-8f22-4c27ea528402"),
+		Name:  "new vendor",
+		Owner: uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 	}
 	{
 		// Vendor does not exist
@@ -77,16 +78,6 @@ func (b *BackendTestSuite) TestVendor() {
 		notVendor := uuid.MustParse("02c353e2-e0f5-4730-89c7-b0a0610232e4")
 		err := b.backend.VendorCreate(notVendor, vendor)
 		b.Error(err)
-	}
-	{
-		// Create vendor
-		vendorUser := uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a")
-		err := b.backend.VendorCreate(vendorUser, vendor)
-		b.NoError(err)
-
-		result, err := b.backend.Vendor(vendor.ID)
-		b.NoError(err)
-		b.Equal(vendor, result)
 	}
 }
 
