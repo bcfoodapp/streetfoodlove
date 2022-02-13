@@ -360,14 +360,14 @@ export const apiSlice = createApi({
       }),
     }),
     // Signs in with Google account, creating an account if necessary. The passed token is the one provided by Google
-    // using OAuth. On success, token in store is set.
-    signInWithGoogle: builder.mutation<string, string>({
+    // using OAuth. On success, access token and refresh token in store is set.
+    signInWithGoogle: builder.mutation<null, string>({
       queryFn: async (arg, api, extraOptions) => {
         const body = {
           GoogleToken: arg,
         };
         let response = await baseQuery(
-          { url: "/token/google", method: POST, body },
+          { url: "/token/google/refresh", method: POST, body },
           api,
           {}
         );
@@ -400,7 +400,7 @@ export const apiSlice = createApi({
           }
 
           response = await baseQuery(
-            { url: "/token/google", method: POST, body },
+            { url: "/token/google/refresh", method: POST, body },
             api,
             {}
           );
@@ -409,16 +409,17 @@ export const apiSlice = createApi({
           }
         }
 
-        const token = response.data as string;
+        const refreshToken = response.data as string;
 
-        api.dispatch(
-          setTokenAndTime({
-            token,
-            time: DateTime.now().toSeconds(),
-          })
-        );
+        // Get user
 
-        return { data: token };
+        setCredentialsAndName({
+          Credentials: null,
+          RefreshToken: refreshToken,
+          Name: "", // TODO
+        });
+
+        return { data: null };
       },
     }),
   }),
