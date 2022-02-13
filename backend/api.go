@@ -13,7 +13,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // API is the backend interface.
@@ -57,6 +56,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/reviews/:id", a.Review)
 
 	router.POST("/token", a.TokenPost)
+	router.PUT("/token/google/refresh", a.TokenGoogleRefreshPut)
 	router.POST("/token/google", a.TokenGooglePost)
 
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
@@ -97,12 +97,6 @@ var tokenSecret = []byte("key")
 
 var userIDKey = "userID"
 
-// TokenClaims is the token payload.
-type TokenClaims struct {
-	UserID uuid.UUID
-	jwt.StandardClaims
-}
-
 // GetToken is a middleware to validate token and get user ID. The user ID is retrieved with
 // c.MustGet(userIDKey).(uuid.UUID).
 func GetToken(c *gin.Context) {
@@ -115,7 +109,7 @@ func GetToken(c *gin.Context) {
 
 	tokenStr := strings.TrimPrefix(headerValue, bearer)
 
-	claims := &TokenClaims{}
+	claims := &AccessTokenClaims{}
 	_, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("invalid signing method")
@@ -380,23 +374,6 @@ func (a *API) Review(c *gin.Context) {
 	c.JSON(http.StatusOK, review)
 }
 
-func generateToken(userID uuid.UUID) string {
-	claims := TokenClaims{
-		UserID: userID,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: (time.Now().Add(time.Minute*10 + time.Second*5)).Unix(),
-		},
-	}
-
-	tokenStr, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(tokenSecret)
-	if err != nil {
-		// SignedString() should not fail
-		panic(err)
-	}
-
-	return tokenStr
-}
-
 func (a *API) TokenPost(c *gin.Context) {
 	credentials := &database.Credentials{}
 	if err := c.ShouldBindJSON(credentials); err != nil {
@@ -410,10 +387,10 @@ func (a *API) TokenPost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, generateToken(userID))
+	c.JSON(http.StatusOK, generateAccessToken(userID))
 }
 
-func (a *API) TokenGooglePost(c *gin.Context) {
+func (a *API) TokenGoogleRefreshPut(c *gin.Context) {
 	type TokenGooglePostRequest struct {
 		GoogleToken string
 	}
@@ -430,13 +407,7 @@ func (a *API) TokenGooglePost(c *gin.Context) {
 		return
 	}
 
-	userID, err := a.Backend.Database.UserIDByGoogleID(claims.Subject)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, generateToken(userID))
+	c.JSON(http.StatusOK, generateRefreshToken(claims.Subject))
 }
 
 func (a *API) MapView(c *gin.Context) {
