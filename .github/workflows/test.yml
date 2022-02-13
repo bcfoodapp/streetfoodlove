@@ -73,12 +73,12 @@ jobs:
         run: |
           sudo systemctl start mysql.service
           mysql --user=root --password=root --execute="ALTER USER 'root'@'localhost' IDENTIFIED BY ''"
+      - name: reset_database
+        run: go run .
+        working-directory: backend/reset_database
       - name: Server test
         run: go test -run ^TestServer$
         working-directory: backend
-      - name: reset_database test
-        run: go test
-        working-directory: backend/reset_database
   golint:
     name: Lint Go
     runs-on: ubuntu-20.04
