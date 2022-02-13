@@ -84,6 +84,7 @@ export interface Guide {
   ArticleAuthor: string;
 }
 
+// Payload of Google token.
 // https://developers.google.com/identity/gsi/web/reference/js-reference#credential
 interface GoogleClaims {
   family_name: string;
@@ -443,7 +444,7 @@ export const {
 } = apiSlice;
 
 // Sets credentials and name in localStorage.
-export function setCredentialsAndName(entry: CredentialsAndName) {
+function setCredentialsAndName(entry: CredentialsAndName) {
   console.info("set localStorage");
   localStorage.setItem("user", JSON.stringify(entry));
 }
