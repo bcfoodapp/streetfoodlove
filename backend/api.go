@@ -7,12 +7,10 @@ import (
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 )
 
 // API is the backend interface.
@@ -91,48 +89,6 @@ func recovery(c *gin.Context, err interface{}) {
 	} else {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
-}
-
-var tokenSecret = []byte("key")
-
-var userIDKey = "userID"
-
-// GetToken is a middleware to validate token and get user ID. The user ID is retrieved with
-// c.MustGet(userIDKey).(uuid.UUID).
-func GetToken(c *gin.Context) {
-	headerValue := c.GetHeader("Authorization")
-	const bearer = "Bearer "
-	if !strings.HasPrefix(headerValue, bearer) {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("token not in bearer field"))
-		return
-	}
-
-	tokenStr := strings.TrimPrefix(headerValue, bearer)
-
-	claims := &AccessTokenClaims{}
-	_, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("invalid signing method")
-		}
-
-		return tokenSecret, nil
-	})
-
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	if claims.Valid() != nil {
-		c.AbortWithError(http.StatusUnauthorized, claims.Valid())
-		return
-	}
-
-	c.Set(userIDKey, claims.UserID)
-}
-
-func getTokenFromContext(c *gin.Context) uuid.UUID {
-	return c.MustGet(userIDKey).(uuid.UUID)
 }
 
 var idsDoNotMatch = fmt.Errorf("ids do not match")
@@ -391,11 +347,11 @@ func (a *API) TokenPost(c *gin.Context) {
 }
 
 func (a *API) TokenGoogleRefreshPut(c *gin.Context) {
-	type TokenGooglePostRequest struct {
+	type TokenGoogleRefreshPutRequest struct {
 		GoogleToken string
 	}
 
-	request := &TokenGooglePostRequest{}
+	request := &TokenGoogleRefreshPutRequest{}
 	if err := c.ShouldBindJSON(request); err != nil {
 		c.Error(err)
 		return
@@ -408,6 +364,32 @@ func (a *API) TokenGoogleRefreshPut(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, generateRefreshToken(claims.Subject))
+}
+
+func (a *API) TokenGooglePost(c *gin.Context) {
+	type TokenGooglePostRequest struct {
+		RefreshToken string
+	}
+
+	request := &TokenGooglePostRequest{}
+	if err := c.ShouldBindJSON(request); err != nil {
+		c.Error(err)
+		return
+	}
+
+	claims, err := validateRefreshToken(request.RefreshToken)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	userID, err := a.Backend.Database.UserIDByGoogleID(claims.GoogleID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, generateAccessToken(userID))
 }
 
 func (a *API) MapView(c *gin.Context) {

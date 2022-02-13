@@ -55,15 +55,19 @@ func validateGoogleToken(tokenString string) (*jwt.StandardClaims, error) {
 	claims := &jwt.StandardClaims{}
 
 	if _, err := jwt.ParseWithClaims(tokenString, claims, keyFunc); err != nil {
-		return &jwt.StandardClaims{}, err
+		return nil, err
+	}
+
+	if claims.Valid() != nil {
+		return nil, claims.Valid()
 	}
 
 	if claims.Issuer != "accounts.google.com" && claims.Issuer != "https://accounts.google.com" {
-		return &jwt.StandardClaims{}, errors.New("iss is invalid")
+		return nil, errors.New("iss is invalid")
 	}
 
 	if claims.Audience != "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com" {
-		return &jwt.StandardClaims{}, errors.New("aud is invalid")
+		return nil, errors.New("aud is invalid")
 	}
 
 	return claims, nil
