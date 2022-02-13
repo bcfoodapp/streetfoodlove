@@ -396,7 +396,7 @@ export const {
 } = apiSlice;
 
 // Sets credentials and name in localStorage.
-function setCredentialsAndName(entry: CredentialsAndName) {
+export function setCredentialsAndName(entry: CredentialsAndName) {
   console.info("set localStorage");
   localStorage.setItem("user", JSON.stringify(entry));
 }

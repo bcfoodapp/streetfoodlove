@@ -1,5 +1,6 @@
 import jwtDecode from "jwt-decode";
 import {
+  setCredentialsAndName,
   useCreateUserMutation,
   useGetTokenWithGoogleMutation,
   UserType,
@@ -24,35 +25,45 @@ export async function signInWithGoogle(
   token: string,
   getTokenWithGoogle: ReturnType<typeof useGetTokenWithGoogleMutation>[0],
   createUser: ReturnType<typeof useCreateUserMutation>[0]
-): Promise<QueryReturnValue<string, FetchBaseQueryError, {}>> {
+): Promise<QueryReturnValue<undefined, FetchBaseQueryError, {}>> {
   const response = await getTokenWithGoogle(token);
   if ((response as any).error && (response as any).error.status === 400) {
+    // temporary
+    console.warn("ignore the last error!");
+    // Account does not exist so we need to make one
     const tokenPayload = jwtDecode<GoogleClaims>(token);
+    const username = tokenPayload.given_name + tokenPayload.family_name;
+    const password = uuid();
     const createUserResponse = await createUser({
       ID: uuid(),
-      Username: tokenPayload.given_name,
+      Username: username,
       Photo: uuid(),
       UserType: UserType.Customer,
       Email: tokenPayload.email,
       FirstName: tokenPayload.given_name,
       LastName: tokenPayload.family_name,
-      Password: uuid(),
+      Password: password,
       SignUpDate: DateTime.now(),
       GoogleID: tokenPayload.sub,
     });
-    if ((createUserResponse as any).error !== undefined) {
+    if ((createUserResponse as any).error) {
       return createUserResponse as QueryReturnValue<
-        string,
+        undefined,
         FetchBaseQueryError,
         {}
       >;
     }
 
-    return (await getTokenWithGoogle(token)) as QueryReturnValue<
-      string,
-      FetchBaseQueryError,
-      {}
-    >;
+    setCredentialsAndName({
+      Username: username,
+      Password: password,
+      Name: `${tokenPayload.given_name} + ${tokenPayload.family_name}`,
+    });
+
+    return { data: undefined };
   }
-  return response as QueryReturnValue<string, FetchBaseQueryError, {}>;
+
+  // Account exists
+  // Need to get name
+  return { data: undefined };
 }
