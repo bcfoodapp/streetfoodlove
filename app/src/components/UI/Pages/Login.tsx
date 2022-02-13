@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Container, Form, Header } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
-import { useSetCredentialsAndGetTokenMutation } from "../../../api";
+import {
+  UserType,
+  useSetCredentialsAndGetTokenMutation,
+  useSignInWithGoogleMutation,
+} from "../../../api";
 import { useNavigate } from "react-router-dom";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -18,7 +22,24 @@ interface inputValues {
  */
 export default function Login(): React.ReactElement {
   const [setCredentials] = useSetCredentialsAndGetTokenMutation();
+  const [signInWithGoogle] = useSignInWithGoogleMutation();
   const navigate = useNavigate();
+
+  const googleButton = useRef(null);
+
+  useEffect(() => {
+    google.accounts.id.initialize({
+      client_id:
+        "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
+      callback: async (data) => {
+        const response = await signInWithGoogle(data.credential);
+        if ((response as any).error === undefined) {
+          navigate("/");
+        }
+      },
+    });
+    google.accounts.id.renderButton(googleButton.current, {});
+  }, []);
 
   const initialValues: inputValues = {
     Username: "",
@@ -48,6 +69,10 @@ export default function Login(): React.ReactElement {
           <Grid.Column className={styles.test}>
             <Grid.Row centered>
               <h1 className={styles.header}>Login</h1>
+            </Grid.Row>
+            <Grid.Row>
+              <div ref={googleButton} />
+              <br />
             </Grid.Row>
             <Grid.Row>
               <Formik
