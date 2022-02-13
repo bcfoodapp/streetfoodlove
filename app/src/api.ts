@@ -400,6 +400,9 @@ export const apiSlice = createApi({
             api,
             {}
           );
+          if (response.error) {
+            return response;
+          }
         }
 
         const token = response.data as string;
