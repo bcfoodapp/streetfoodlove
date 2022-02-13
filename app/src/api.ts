@@ -369,17 +369,15 @@ export const apiSlice = createApi({
         if (response.error && response.error.status === 400) {
           // Account does not exist so we need to make one
           const tokenPayload = jwtDecode<GoogleClaims>(arg);
-          const username = tokenPayload.given_name + tokenPayload.family_name;
-          const password = uuid();
           const newUser: UserProtected & { Password: string } = {
             ID: uuid(),
-            Username: username,
+            Username: tokenPayload.given_name + tokenPayload.family_name,
             Photo: uuid(),
             UserType: UserType.Customer,
             Email: tokenPayload.email,
             FirstName: tokenPayload.given_name,
             LastName: tokenPayload.family_name,
-            Password: password,
+            Password: uuid(),
             SignUpDate: DateTime.now(),
             GoogleID: tokenPayload.sub,
           };
