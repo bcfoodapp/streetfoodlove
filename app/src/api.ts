@@ -168,8 +168,12 @@ async function getAndSaveCredentials(
       throw new Error("Credentials and RefreshToken are both null");
     }
 
+    const body = {
+      RefreshToken: credentials.RefreshToken,
+    };
+
     const response = await baseQuery(
-      { url: "/token/google", method: POST, body: credentials.RefreshToken },
+      { url: "/token/google", method: POST, body },
       api,
       {}
     );
@@ -395,14 +399,17 @@ export const apiSlice = createApi({
           GoogleToken: arg,
         };
         let refreshTokenResponse = await baseQuery(
-          { url: "/token/google/refresh", method: POST, body },
+          { url: "/token/google/refresh", method: PUT, body },
           api,
           {}
         );
-        if (
-          refreshTokenResponse.error &&
-          refreshTokenResponse.error.status === 400
-        ) {
+        if (refreshTokenResponse.error) {
+          if (refreshTokenResponse.error.status !== 404) {
+            return refreshTokenResponse;
+          }
+
+          console.info("ignore the last error!");
+
           // Account does not exist so we need to make one
           const tokenPayload = jwtDecode<GoogleClaims>(arg);
           const newUser: UserProtected & { Password: string } = {
@@ -431,7 +438,7 @@ export const apiSlice = createApi({
           }
 
           refreshTokenResponse = await baseQuery(
-            { url: "/token/google/refresh", method: POST, body },
+            { url: "/token/google/refresh", method: PUT, body },
             api,
             {}
           );
