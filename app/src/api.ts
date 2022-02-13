@@ -66,7 +66,11 @@ export interface Credentials {
   Password: string;
 }
 
-export interface CredentialsAndName extends Credentials {
+export interface CredentialsStorageEntry {
+  // Credentials are stored if username and password is used to log in. If sign-in with Google is used, this is null.
+  Credentials: Credentials | null;
+  // Refresh token is used if sign-in with Google is used. Otherwise, this is null.
+  RefreshToken: string | null;
   Name: string;
 }
 
@@ -170,7 +174,7 @@ export const apiSlice = createApi({
       (api.getState() as RootState).token.tokenTime <=
         DateTime.now().minus({ minutes: 10 }).toSeconds()
     ) {
-      const credentials = getCredentialsAndName();
+      const credentials = getCredentialsEntry();
       if (credentials !== null) {
         const response = await getAndSaveCredentials(credentials, api);
         if (response.error) {
@@ -305,7 +309,7 @@ export const apiSlice = createApi({
     // is called, the token can be retrieved from the store without calling getToken.
     getToken: builder.mutation<undefined, void>({
       queryFn: async (arg, api, extraOptions) => {
-        const credentials = getCredentialsAndName();
+        const credentials = getCredentialsEntry();
         if (credentials !== null) {
           await getAndSaveCredentials(credentials, api);
         }
@@ -333,7 +337,8 @@ export const apiSlice = createApi({
         const user = userResponse.data as User;
 
         setCredentialsAndName({
-          ...args,
+          Credentials: args,
+          RefreshToken: null,
           Name: `${user.FirstName} ${user.LastName}`,
         });
         return { data: undefined };
@@ -442,13 +447,13 @@ export const {
 } = apiSlice;
 
 // Sets credentials and name in localStorage.
-function setCredentialsAndName(entry: CredentialsAndName) {
+function setCredentialsAndName(entry: CredentialsStorageEntry) {
   console.info("set localStorage");
   localStorage.setItem("user", JSON.stringify(entry));
 }
 
 // Gets credentials from localStorage.
-export function getCredentialsAndName(): CredentialsAndName | null {
+export function getCredentialsEntry(): CredentialsStorageEntry | null {
   const entry = localStorage.getItem("user");
   if (entry === null) {
     return null;
