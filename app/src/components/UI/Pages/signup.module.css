@@ -51,7 +51,7 @@
 }
 
 .googleButtonWrapper {
-  display: flex;
+  display: flex !important;
   justify-content: center;
   margin-bottom: 30px;
 }

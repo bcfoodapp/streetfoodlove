@@ -6,13 +6,13 @@ import {
   useCreateUserMutation,
   UserType,
   useSetCredentialsAndGetTokenMutation,
+  useSignInWithGoogleMutation,
 } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
 import { ErrorMessage, Field, Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { signInWithGoogle } from "../../../googleSignIn";
 
 interface inputValues {
   firstName: string;
@@ -26,6 +26,7 @@ interface inputValues {
 export default function Signup(): React.ReactElement {
   const [createUser] = useCreateUserMutation();
   const [setCredentials] = useSetCredentialsAndGetTokenMutation();
+  const [signInWithGoogle] = useSignInWithGoogleMutation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   let userType = UserType.Customer;
@@ -85,7 +86,14 @@ export default function Signup(): React.ReactElement {
     google.accounts.id.initialize({
       client_id:
         "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
-      callback: (data) => signInWithGoogle(data.credential),
+      callback: async (data) => {
+        const response = await signInWithGoogle(data.credential);
+        if ((response as any).error === undefined) {
+          if (userType === UserType.Customer) {
+            navigate("/");
+          }
+        }
+      },
     });
     google.accounts.id.renderButton(googleButton.current, {});
   }, []);
@@ -94,9 +102,11 @@ export default function Signup(): React.ReactElement {
     <Container className={styles.signUpWrapper}>
       <h1>Sign Up Form (user account)</h1>
       <Container className={styles.formWrapper}>
-        <Container className={styles.googleButtonWrapper}>
-          <div ref={googleButton} />
-        </Container>
+        {userType === UserType.Customer ? (
+          <Container className={styles.googleButtonWrapper}>
+            <div ref={googleButton} />
+          </Container>
+        ) : null}
         <Formik
           enableReinitialize
           initialValues={initialValues}
