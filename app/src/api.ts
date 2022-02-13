@@ -172,6 +172,9 @@ export const apiSlice = createApi({
   },
   tagTypes: ["Review"],
   endpoints: (builder) => ({
+    version: builder.query<string, void>({
+      query: () => `/version`,
+    }),
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
     }),
@@ -286,16 +289,16 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
-    // Gets token using stored credentials and saves it to state. Returns null if credentials are not stored.
-    // This should be used to get the token if no query is called before the token is required. When any query is used,
-    // the token can be retrieved from the store.
-    getToken: builder.query<string | null, void>({
+    // Gets token using stored credentials and saves it to state.
+    // This endpoint should be used to get the token if no query is called before the token is required. When any query
+    // is called, the token can be retrieved from the store without calling getToken.
+    getToken: builder.mutation<undefined, void>({
       queryFn: async (arg, api, extraOptions) => {
         const credentials = getCredentialsAndName();
         if (credentials !== null) {
-          return getAndSaveCredentials(credentials, api);
+          await getAndSaveCredentials(credentials, api);
         }
-        return { data: null };
+        return { data: undefined };
       },
     }),
     // Returns app token using given Google token. Saves token to store on success.
@@ -370,6 +373,28 @@ export const apiSlice = createApi({
   }),
 });
 
+export const {
+  useVersionQuery,
+  useVendorQuery,
+  useVendorsMultipleQuery,
+  useVendorByOwnerIDQuery,
+  useCreateVendorMutation,
+  useUpdateVendorMutation,
+  useUserQuery,
+  useLazyUsersMultipleQuery,
+  useUserProtectedQuery,
+  useUpdateUserMutation,
+  useCreateUserMutation,
+  useUpdatePasswordMutation,
+  useReviewsQuery,
+  useSubmitReviewMutation,
+  useGetTokenMutation,
+  useGetTokenWithGoogleMutation,
+  useSetCredentialsAndGetTokenMutation,
+  useMapViewVendorsQuery,
+  useGuideQuery,
+} = apiSlice;
+
 // Sets credentials and name in localStorage.
 function setCredentialsAndName(entry: CredentialsAndName) {
   console.info("set localStorage");
@@ -391,24 +416,3 @@ export function clearLocalStorage() {
   console.info("clear localStorage");
   localStorage.clear();
 }
-
-export const {
-  useVendorQuery,
-  useVendorsMultipleQuery,
-  useVendorByOwnerIDQuery,
-  useCreateVendorMutation,
-  useUpdateVendorMutation,
-  useUserQuery,
-  useLazyUsersMultipleQuery,
-  useUserProtectedQuery,
-  useUpdateUserMutation,
-  useCreateUserMutation,
-  useUpdatePasswordMutation,
-  useReviewsQuery,
-  useSubmitReviewMutation,
-  useGetTokenQuery,
-  useGetTokenWithGoogleMutation,
-  useSetCredentialsAndGetTokenMutation,
-  useMapViewVendorsQuery,
-  useGuideQuery,
-} = apiSlice;

@@ -10,7 +10,7 @@ import Buttons from "../Atoms/Button/Buttons";
 import styles from "./createvendorpage.module.css";
 import {
   getUserIDFromToken,
-  useGetTokenQuery,
+  useGetTokenMutation,
   useUpdateVendorMutation,
   useVendorByOwnerIDQuery,
   Vendor,
@@ -18,6 +18,7 @@ import {
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
+import { useAppSelector } from "../../../store";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
@@ -41,7 +42,11 @@ const businessHours = [
 const EditVendorPage: React.FC = () => {
   const [updateVendor, { isLoading: updateVendorIsLoading }] =
     useUpdateVendorMutation();
-  const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
+  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  useEffect(() => {
+    getToken();
+  }, []);
+  const token = useAppSelector((state) => state.token.token);
 
   let userID = "";
   if (tokenIsSuccess && token !== null) {
