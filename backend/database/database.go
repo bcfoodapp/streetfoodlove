@@ -393,7 +393,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 
 type Photo struct {
 	ID         uuid.UUID
-	DatePosted string
+	DatePosted time.Time
 	Text       string
 	LinkID     uuid.UUID
 }
@@ -551,7 +551,7 @@ func (d *Database) FavoriteCreate(favorite *Favorite) error {
 
 func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	const command = `
-		SELECT * FROM Favorite WHERE ID=? 
+		SELECT * FROM Favorite WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
