@@ -23,6 +23,11 @@ var unauthorized = fmt.Errorf(
 	"you are unauthorized to perform this action; make sure you are logged into the correct account",
 )
 
+// Vendors returns all vendors.
+func (b *Backend) Vendors() ([]database.Vendor, error) {
+	return b.Database.Vendors()
+}
+
 func (b *Backend) Vendor(id uuid.UUID) (*database.Vendor, error) {
 	return b.Database.Vendor(id)
 }

@@ -16,13 +16,7 @@ export const FinalStarRating = ({ starRating }: Props) => {
   }
   return (
     <Container className={styles.rate}>
-      <Rating
-        maxRating={5}
-        defaultRating={rating}
-        icon="star"
-        size="huge"
-        disabled
-      />
+      <Rating maxRating={5} rating={rating} icon="star" size="huge" disabled />
     </Container>
   );
 };

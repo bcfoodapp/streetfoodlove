@@ -4,14 +4,14 @@ import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
 import { Link, useNavigate } from "react-router-dom";
-import { clearLocalStorage, getCredentialsAndName } from "../../../../api";
+import { clearLocalStorage, getCredentialsEntry } from "../../../../api";
 
 /**
  * Returns the headerbar element
  */
 
 export default function HeaderBar(): React.ReactElement {
-  const name = getCredentialsAndName()?.Name;
+  const name = getCredentialsEntry()?.Name;
 
   const navigate = useNavigate();
 
