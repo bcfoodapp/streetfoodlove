@@ -67,6 +67,27 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 	_, err := d.db.NamedExec(command, vendor)
 	return err
 }
+func (d *Database) Vendors() ([]Vendor, error) {
+	const command = `
+		SELECT * FROM Vendor;
+	`
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Vendor, 0)
+
+	for rows.Next() {
+		result = append(result, Vendor{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
 
 func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	const command = `
