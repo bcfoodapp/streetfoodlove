@@ -493,12 +493,13 @@ export const apiSlice = createApi({
       },
     }),
     // Returns all Photos with matching LinkID.
-    photosByLinkID: builder.query<Photo, string>({
+    photosByLinkID: builder.query<Photo[], string>({
       query: (linkID) => `/photos?link-id=${encode(linkID)}`,
-      transformResponse: (photo: any) => ({
-        ...photo,
-        DatePosted: DateTime.fromISO(photo.DatePosted),
-      }),
+      transformResponse: (photos: any[]) =>
+        photos.map((photo) => ({
+          ...photo,
+          DatePosted: DateTime.fromISO(photo.DatePosted),
+        })),
     }),
   }),
 });

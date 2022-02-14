@@ -10,7 +10,7 @@ import {
   getUserIDFromToken,
   usePhotosByLinkIDQuery,
 } from "../../../api";
-import { Container, Grid } from "semantic-ui-react";
+import { Container, Grid, Image } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./vendor.module.css";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
@@ -77,6 +77,13 @@ export function Vendor(): React.ReactElement {
   return (
     <>
       <Container className={styles.wrapper}>
+        <Image.Group size="small">
+          {photos?.map((photo) => (
+            <Image
+              src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`}
+            />
+          ))}
+        </Image.Group>
         <Grid>
           <Grid.Row>
             <Grid.Column width={6}>
