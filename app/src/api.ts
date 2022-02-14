@@ -218,6 +218,11 @@ export const apiSlice = createApi({
     version: builder.query<string, void>({
       query: () => `/version`,
     }),
+    // Gets all vendors.
+    vendors: builder.query<Vendor[], void>({
+      query: () => `/vendors`,
+    }),
+    // Gets vendor with specified ID.
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
     }),
@@ -485,6 +490,7 @@ export const apiSlice = createApi({
 
 export const {
   useVersionQuery,
+  useVendorsQuery,
   useVendorQuery,
   useVendorsMultipleQuery,
   useVendorByOwnerIDQuery,

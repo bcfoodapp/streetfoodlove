@@ -178,13 +178,24 @@ func (a *API) VendorPost(c *gin.Context) {
 }
 
 func (a *API) Vendors(c *gin.Context) {
-	ownerID, err := uuid.Parse(c.Query("owner"))
-	if err != nil {
-		c.Error(err)
+	if c.Query("owner") != "" {
+		ownerID, err := uuid.Parse(c.Query("owner"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		vendors, err := a.Backend.VendorByOwnerID(ownerID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, vendors)
 		return
 	}
 
-	vendors, err := a.Backend.VendorByOwnerID(ownerID)
+	vendors, err := a.Backend.Vendors()
 	if err != nil {
 		c.Error(err)
 		return
