@@ -455,7 +455,7 @@ func (a *API) MapView(c *gin.Context) {
 }
 
 func (a *API) Photos(c *gin.Context) {
-	linkID, err := uuid.Parse(c.Param("link-id"))
+	linkID, err := uuid.Parse(c.Query("link-id"))
 	if err != nil {
 		c.Error(err)
 		return
