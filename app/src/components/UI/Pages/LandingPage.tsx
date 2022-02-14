@@ -11,7 +11,7 @@ export const LandingPage = () => {
     <>
       <Container textAlign="center">
         <p>
-          Version {config.version}, server version {version}
+          Version {config.version}, server commit ID {version}
         </p>
       </Container>
       <Container className={styles.container}>

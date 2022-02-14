@@ -6,9 +6,15 @@ on:
 
 jobs:
   deploy_gh_pages:
+    name: Deploy GitHub Pages
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
+      - name: Set frontend version
+        run: |
+          echo "{\"version\":\"${GITHUB_REF_NAME}\",\"apiBaseURL\":\"https://ec2-52-24-163-172.us-west-2.compute.amazonaws.com/\"}" \
+            > configuration.json
+        working-directory: app/src
       - uses: actions/setup-node@v2
         with:
           node-version: '17.1'
@@ -22,3 +28,20 @@ jobs:
         with:
           BRANCH: gh-pages
           FOLDER: app/dist
+  deploy_ec2:
+    name: Deploy EC2
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - name: Create deployment
+        run: |
+          aws deploy create-deployment \
+            --application-name sfl-codedeploy-app \
+            --deployment-group-name sfl-codedeploy-group \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}

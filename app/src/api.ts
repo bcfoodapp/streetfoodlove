@@ -12,6 +12,7 @@ import {
 } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
 import jwtDecode from "jwt-decode";
 import config from "./configuration.json";
+import { v4 as uuid } from "uuid";
 
 export interface Vendor {
   ID: string;
@@ -65,7 +66,14 @@ export interface Credentials {
   Password: string;
 }
 
-export interface CredentialsAndName extends Credentials {
+interface CredentialsAndToken {
+  // Credentials are stored if username and password is used to log in. If sign-in with Google is used, this is null.
+  Credentials: Credentials | null;
+  // Refresh token is used if sign-in with Google is used. Otherwise, this is null.
+  RefreshToken: string | null;
+}
+
+export interface CredentialsStorageEntry extends CredentialsAndToken {
   Name: string;
 }
 
@@ -81,6 +89,16 @@ export interface Guide {
   Guide: string;
   DatePosted: DateTime;
   ArticleAuthor: string;
+}
+
+// Payload of Google token.
+// https://developers.google.com/identity/gsi/web/reference/js-reference#credential
+interface GoogleClaims {
+  family_name: string;
+  given_name: string;
+  email: string;
+  // Google ID
+  sub: string;
 }
 
 export const tokenSlice = createSlice({
@@ -126,27 +144,52 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// Gets token and saves it to localStorage if successful. Returns response.
+// Gets token and saves it to localStorage if successful. Returns response with access token in the data.
 async function getAndSaveCredentials(
-  credentials: Credentials,
+  credentials: CredentialsAndToken,
   api: BaseQueryApi
 ): Promise<QueryReturnValue<string, FetchBaseQueryError, {}>> {
-  const response = await baseQuery(
-    { url: "/token", method: POST, body: credentials },
-    api,
-    {}
-  );
-  if (response.error) {
-    return response;
+  let accessToken = "";
+
+  if (credentials.Credentials) {
+    const response = await baseQuery(
+      { url: "/token", method: POST, body: credentials.Credentials },
+      api,
+      {}
+    );
+    if (response.error) {
+      return response;
+    }
+
+    accessToken = response.data as string;
+  } else {
+    if (!credentials.RefreshToken) {
+      throw new Error("Credentials and RefreshToken are both null");
+    }
+
+    const body = {
+      RefreshToken: credentials.RefreshToken,
+    };
+
+    const response = await baseQuery(
+      { url: "/token/google", method: POST, body },
+      api,
+      {}
+    );
+    if (response.error) {
+      return response;
+    }
+
+    accessToken = response.data as string;
   }
 
   api.dispatch(
     setTokenAndTime({
-      token: response.data as string,
+      token: accessToken as string,
       time: DateTime.now().toSeconds(),
     })
   );
-  return response as QueryReturnValue<string, FetchBaseQueryError, {}>;
+  return { data: accessToken };
 }
 
 // This is the API abstraction.
@@ -159,7 +202,7 @@ export const apiSlice = createApi({
       (api.getState() as RootState).token.tokenTime <=
         DateTime.now().minus({ minutes: 10 }).toSeconds()
     ) {
-      const credentials = getCredentialsAndName();
+      const credentials = getCredentialsEntry();
       if (credentials !== null) {
         const response = await getAndSaveCredentials(credentials, api);
         if (response.error) {
@@ -175,6 +218,11 @@ export const apiSlice = createApi({
     version: builder.query<string, void>({
       query: () => `/version`,
     }),
+    // Gets all vendors.
+    vendors: builder.query<Vendor[], void>({
+      query: () => `/vendors`,
+    }),
+    // Gets vendor with specified ID.
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
     }),
@@ -294,7 +342,7 @@ export const apiSlice = createApi({
     // is called, the token can be retrieved from the store without calling getToken.
     getToken: builder.mutation<undefined, void>({
       queryFn: async (arg, api, extraOptions) => {
-        const credentials = getCredentialsAndName();
+        const credentials = getCredentialsEntry();
         if (credentials !== null) {
           await getAndSaveCredentials(credentials, api);
         }
@@ -304,7 +352,10 @@ export const apiSlice = createApi({
     // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
       queryFn: async (args, api, extraOptions) => {
-        const credentialsResponse = await getAndSaveCredentials(args, api);
+        const credentialsResponse = await getAndSaveCredentials(
+          { Credentials: args, RefreshToken: null },
+          api
+        );
         if (credentialsResponse.error) {
           return credentialsResponse;
         }
@@ -322,7 +373,8 @@ export const apiSlice = createApi({
         const user = userResponse.data as User;
 
         setCredentialsAndName({
-          ...args,
+          Credentials: args,
+          RefreshToken: null,
           Name: `${user.FirstName} ${user.LastName}`,
         });
         return { data: undefined };
@@ -343,11 +395,102 @@ export const apiSlice = createApi({
         DatePosted: DateTime.fromISO(guide.DatePosted),
       }),
     }),
+    // Signs in with Google account, creating an account if necessary. The passed token is the one provided by Google
+    // using OAuth. On success, access token and refresh token in store is set.
+    signInWithGoogle: builder.mutation<null, string>({
+      queryFn: async (arg, api, extraOptions) => {
+        const body = {
+          GoogleToken: arg,
+        };
+        let refreshTokenResponse = await baseQuery(
+          { url: "/token/google/refresh", method: PUT, body },
+          api,
+          {}
+        );
+        if (refreshTokenResponse.error) {
+          if (refreshTokenResponse.error.status !== 404) {
+            return refreshTokenResponse;
+          }
+
+          console.info("ignore the last error!");
+
+          // Account does not exist so we need to make one
+          const tokenPayload = jwtDecode<GoogleClaims>(arg);
+          const newUser: UserProtected & { Password: string } = {
+            ID: uuid(),
+            Username: tokenPayload.given_name + tokenPayload.family_name,
+            Photo: uuid(),
+            UserType: UserType.Customer,
+            Email: tokenPayload.email,
+            FirstName: tokenPayload.given_name,
+            LastName: tokenPayload.family_name,
+            Password: uuid(),
+            SignUpDate: DateTime.now(),
+            GoogleID: tokenPayload.sub,
+          };
+          const createUserResponse = await baseQuery(
+            {
+              url: `/users/${encode(newUser.ID)}/protected`,
+              method: PUT,
+              body: newUser,
+            },
+            api,
+            {}
+          );
+          if (createUserResponse.error) {
+            return createUserResponse;
+          }
+
+          refreshTokenResponse = await baseQuery(
+            { url: "/token/google/refresh", method: PUT, body },
+            api,
+            {}
+          );
+          if (refreshTokenResponse.error) {
+            return refreshTokenResponse;
+          }
+        }
+
+        const refreshToken = refreshTokenResponse.data as string;
+
+        const accessTokenResponse = await getAndSaveCredentials(
+          {
+            Credentials: null,
+            RefreshToken: refreshToken,
+          },
+          api
+        );
+        if (accessTokenResponse.error) {
+          return accessTokenResponse;
+        }
+
+        // Get name of user
+        const userID = getUserIDFromToken(accessTokenResponse.data as string);
+        const userResponse = await baseQuery(
+          `/users/${encode(userID)}`,
+          api,
+          extraOptions
+        );
+        if (userResponse.error) {
+          return userResponse;
+        }
+        const user = userResponse.data as User;
+
+        setCredentialsAndName({
+          Credentials: null,
+          RefreshToken: refreshToken,
+          Name: `${user.FirstName} ${user.LastName}`,
+        });
+
+        return { data: null };
+      },
+    }),
   }),
 });
 
 export const {
   useVersionQuery,
+  useVendorsQuery,
   useVendorQuery,
   useVendorsMultipleQuery,
   useVendorByOwnerIDQuery,
@@ -365,16 +508,17 @@ export const {
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
   useGuideQuery,
+  useSignInWithGoogleMutation,
 } = apiSlice;
 
 // Sets credentials and name in localStorage.
-function setCredentialsAndName(entry: CredentialsAndName) {
+function setCredentialsAndName(entry: CredentialsStorageEntry) {
   console.info("set localStorage");
   localStorage.setItem("user", JSON.stringify(entry));
 }
 
 // Gets credentials from localStorage.
-export function getCredentialsAndName(): CredentialsAndName | null {
+export function getCredentialsEntry(): CredentialsStorageEntry | null {
   const entry = localStorage.getItem("user");
   if (entry === null) {
     return null;
