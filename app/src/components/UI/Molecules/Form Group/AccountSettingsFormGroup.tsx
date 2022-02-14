@@ -3,53 +3,71 @@ import { Container, Form } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
 import {
-  useGetTokenQuery,
+  getUserIDFromToken,
+  useGetTokenMutation,
   useUpdateUserMutation,
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
 import { useAppSelector } from "../../../../store";
-import jwtDecode from "jwt-decode";
 
-const AccountSettings: React.FC<{
-  token: string;
+const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
-}> = ({ token, disabled, setDisabledForm }) => {
-  const userID = jwtDecode<{ UserID: string }>(token).UserID;
-  const userQuery = useUserProtectedQuery(userID);
-  const user = userQuery.data;
+}> = ({ disabled, setDisabledForm }) => {
+  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  useEffect(() => {
+    getToken();
+  }, []);
+  const token = useAppSelector((state) => state.token.token);
 
+  let userID = "";
+  if (tokenIsSuccess && token !== null) {
+    userID = getUserIDFromToken(token as string);
+  }
+  const {
+    data: user,
+    isSuccess: userQueryIsSuccess,
+    isLoading: userQueryIsLoading,
+  } = useUserProtectedQuery(userID, { skip: userID === "" });
+
+  const [updateUser, { isLoading: updateUserIsLoading }] =
+    useUpdateUserMutation();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    if (userQuery.isSuccess) {
+    if (userQueryIsSuccess) {
       setEmail(user!.Email);
       setFirstName(user!.FirstName);
       setLastName(user!.LastName);
-      setUsername(user!.Username);
     }
-  }, [userQuery.isSuccess]);
-
-  const [updateSetting] = useUpdateUserMutation();
+  }, [userQueryIsSuccess]);
 
   const handleSubmit = async () => {
-    // user is defined when handleSubmit is called
-    await updateSetting({
+    const response = await updateUser({
       ID: userID,
       Photo: user!.Photo,
-      Username: username,
+      Username: user!.Username,
       Email: email,
       FirstName: firstName,
       LastName: lastName,
       UserType: UserType.Customer,
       SignUpDate: user!.SignUpDate,
+      GoogleID: user!.GoogleID,
     });
-    alert("Updated User Settings!");
+    if ((response as any).error === undefined) {
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
   };
+
+  if (tokenIsSuccess && token === null) {
+    return <p>Not logged in</p>;
+  }
+
   return (
     <Container className={styles.wrapper}>
       <Form onSubmit={handleSubmit}>
@@ -60,6 +78,7 @@ const AccountSettings: React.FC<{
             disabled={disabled}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
+            loading={userQueryIsLoading}
           />
           <Form.Input
             label="Last Name"
@@ -67,6 +86,7 @@ const AccountSettings: React.FC<{
             disabled={disabled}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
+            loading={userQueryIsLoading}
           />
           <Form.Input
             label="Email"
@@ -74,45 +94,26 @@ const AccountSettings: React.FC<{
             disabled={disabled}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Input
-            label="Username"
-            placeholder="Username"
-            disabled={disabled}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            loading={userQueryIsLoading}
           />
         </Form.Group>
         <Container className={styles.saveBtn}>
-          {userQuery.isSuccess ? (
-            <Buttons submit color="green" clicked={() => setDisabledForm(true)}>
+          {userQueryIsSuccess ? (
+            <Buttons
+              submit
+              color="green"
+              clicked={() => setDisabledForm(true)}
+              loading={updateUserIsLoading}
+            >
               Save
             </Buttons>
           ) : null}
         </Container>
       </Form>
+      <br />
+      <br />
+      {showSuccess ? <p>Updated profile</p> : null}
     </Container>
-  );
-};
-
-const AccountSettingsFormGroup: React.FC<{
-  disabled: boolean;
-  setDisabledForm: (value: boolean) => void;
-}> = ({ disabled, setDisabledForm }) => {
-  useGetTokenQuery();
-  const token = useAppSelector((state) => state.token.token);
-  if (token === null) {
-    return <p>Not logged in</p>;
-  }
-
-  return (
-    <AccountSettings
-      token={token}
-      disabled={disabled}
-      setDisabledForm={setDisabledForm}
-    />
   );
 };
 

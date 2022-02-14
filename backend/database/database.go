@@ -4,10 +4,11 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"fmt"
+	"time"
+
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"time"
 )
 
 // Database abstraction layer
@@ -34,6 +35,7 @@ type Vendor struct {
 	BusinessLogo    string
 	Latitude        float64
 	Longitude       float64
+	Owner           uuid.UUID
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -47,18 +49,19 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			Phone,
 			BusinessLogo,
 			Latitude,
-			Longitude
-
-	   ) VALUES (
+			Longitude,
+			Owner
+		) VALUES (
 			:ID,
 			:Name,
-	    	:BusinessAddress,
+			:BusinessAddress,
 			:Website,
 			:BusinessHours,
 			:Phone,
 			:BusinessLogo,
 			:Latitude,
-			:Longitude
+			:Longitude,
+			:Owner
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
@@ -74,6 +77,24 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	vendor := &Vendor{}
 	err := row.StructScan(vendor)
 	return vendor, err
+}
+
+func (d *Database) VendorUpdate(vendor *Vendor) error {
+	const command = `
+		UPDATE Vendor SET
+			Name = :Name,
+			BusinessAddress = :BusinessAddress,
+			Website = :Website,
+			BusinessHours = :BusinessHours,
+			Phone = :Phone,
+			BusinessLogo = :BusinessLogo,
+			Latitude = :Latitude,
+			Longitude = :Longitude,
+			Owner = :Owner
+		WHERE ID = :ID
+	`
+	_, err := d.db.NamedExec(command, &vendor)
+	return err
 }
 
 type CoordinateBounds struct {
@@ -93,6 +114,31 @@ func (d *Database) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]Vendor
 	`
 
 	rows, err := d.db.NamedQuery(command, bounds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Vendor, 0)
+
+	for rows.Next() {
+		result = append(result, Vendor{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) VendorByOwnerID(userID uuid.UUID) ([]Vendor, error) {
+	const command = `
+		SELECT *
+		FROM Vendor
+		WHERE Owner = ?
+	`
+
+	rows, err := d.db.Queryx(command, &userID)
 	if err != nil {
 		return nil, err
 	}
@@ -133,6 +179,7 @@ type UserProtected struct {
 	*User
 	Email      string
 	SignUpDate time.Time
+	GoogleID   *string
 }
 
 func (d *Database) UserCreate(user *UserProtected, password string) error {
@@ -146,7 +193,8 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 			SignUpDate,
 			LoginPassword,
 			UserType,
-			Photo
+			Photo,
+		  	GoogleID
 		) VALUES (
 			:ID,
 			:Email,
@@ -156,7 +204,8 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 			:SignUpDate,
 			:LoginPassword,
 			:UserType,
-			:Photo
+			:Photo,
+			:GoogleID
 		)
 	`
 	hash := sha256.Sum256([]byte(password))
@@ -180,7 +229,8 @@ func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
 			LastName,
 			SignUpDate,
 			UserType,
-			Photo
+			Photo,
+			GoogleID
 		FROM User
 		WHERE ID=?
 	`
@@ -198,9 +248,9 @@ func (d *Database) UserUpdate(user *UserProtected) error {
 			Username = :Username,
 			FirstName = :FirstName,
 			LastName = :LastName,
-			SignUpDate = :SignUpDate,
 			UserType = :UserType,
-			Photo = :Photo
+			Photo = :Photo,
+			GoogleID = :GoogleID
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &user)
@@ -214,7 +264,9 @@ type Credentials struct {
 
 func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, error) {
 	const command = `
-		SELECT ID, LoginPassword FROM User WHERE Username=?
+		SELECT ID, LoginPassword
+		FROM User
+		WHERE Username=?
 	`
 	row := d.db.QueryRowx(command, &credentials.Username)
 
@@ -234,17 +286,29 @@ func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, err
 	return userID, nil
 }
 
+func (d *Database) UserIDByGoogleID(googleID string) (uuid.UUID, error) {
+	const command = `
+		SELECT ID
+		FROM User
+		WHERE GoogleID=?
+	`
+
+	row := d.db.QueryRowx(command, &googleID)
+
+	userID := uuid.UUID{}
+	err := row.Scan(&userID)
+	return userID, err
+}
+
 type Review struct {
 	ID         uuid.UUID
 	Text       string
 	VendorID   uuid.UUID
 	UserID     uuid.UUID
 	DatePosted time.Time
-	StarRating StarRating
+	StarRating *int
+	ReplyTo    *uuid.UUID
 }
-
-// StarRating is an integer from 1 to 5.
-type StarRating int
 
 func (d *Database) ReviewCreate(review *Review) error {
 	const command = `
@@ -254,14 +318,16 @@ func (d *Database) ReviewCreate(review *Review) error {
 			VendorID,
 			UserID,
 			DatePosted,
-			StarRating
+			StarRating,
+			ReplyTo
 		) VALUES (
 			:ID,
 			:Text,
 			:VendorID,
 			:UserID,
 			:DatePosted,
-			:StarRating
+			:StarRating,
+			:ReplyTo
 		)
 	`
 	_, err := d.db.NamedExec(command, review)

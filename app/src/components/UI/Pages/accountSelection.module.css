@@ -1,10 +1,11 @@
 .wrapper {
-  width: 100% !important;
+  width: 110% !important;
 }
 
 .selectBox {
   border: 2px solid black;
-  width: 25% !important;
+  width: 50% !important;
+  height: 30% !important;
   padding: 100px;
   margin-top: 200px;
 }

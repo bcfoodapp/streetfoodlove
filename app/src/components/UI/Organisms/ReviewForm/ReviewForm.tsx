@@ -14,14 +14,13 @@ interface Props {
     text: string;
     starRating: StarRatingInteger;
   }) => void;
-  cancelFormHandler: () => void;
+  // cancelFormHandler: () => void;
+  closeReviewHandler: () => void;
 }
 
 export const ReviewForm = (props: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
-  const [starRating, setStarRating] = useState(
-    null as StarRatingInteger | null
-  );
+  const [starRating, setStarRating] = useState(null as StarRatingInteger);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaInput(e.target.value);
@@ -29,6 +28,8 @@ export const ReviewForm = (props: Props) => {
 
   const handleSubmit = () => {
     // TODO make sure user selects a rating
+
+    props.closeReviewHandler();
     if (starRating === null) {
       throw new Error("starRating is null");
     }
@@ -57,7 +58,7 @@ export const ReviewForm = (props: Props) => {
           />
         </Container>
         <Container className={styles.buttons}>
-          <Buttons cancel clicked={props.cancelFormHandler}>
+          <Buttons cancel clicked={props.closeReviewHandler}>
             Cancel
           </Buttons>
           <Buttons submit color="green">

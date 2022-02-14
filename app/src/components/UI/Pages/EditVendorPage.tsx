@@ -8,16 +8,24 @@ import {
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./createvendorpage.module.css";
-import { useCreateVendorMutation, Vendor } from "../../../api";
-import { v4 as uuid } from "uuid";
+import {
+  getUserIDFromToken,
+  useGetTokenMutation,
+  useUpdateVendorMutation,
+  useVendorByOwnerIDQuery,
+  Vendor,
+} from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import React, { useEffect, useState } from "react";
+import { useAppSelector } from "../../../store";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
 };
 
 interface inputValues {
+  ID: string;
   name: string;
   businessAddress: string;
   phoneNumber: string;
@@ -30,16 +38,60 @@ const businessHours = [
   { key: "9AM", text: "9AM-6PM", value: "9AM-6PM" },
   { key: "10AM", text: "10AM-7PM", value: "10AM-7PM" },
 ];
-const CreateVendorPage: React.FC = () => {
-  const [createVendor] = useCreateVendorMutation();
 
-  const initialValues: inputValues = {
+const EditVendorPage: React.FC = () => {
+  const [updateVendor, { isLoading: updateVendorIsLoading }] =
+    useUpdateVendorMutation();
+  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  useEffect(() => {
+    getToken();
+  }, []);
+  const token = useAppSelector((state) => state.token.token);
+
+  let userID = "";
+  if (tokenIsSuccess && token !== null) {
+    userID = getUserIDFromToken(token as string);
+  }
+
+  const {
+    data: vendors,
+    isSuccess: vendorQueryIsSuccess,
+    isLoading: vendorQueryIsLoading,
+  } = useVendorByOwnerIDQuery(userID, {
+    skip: userID === "",
+  });
+
+  const [initialValues, setInitalValues] = useState({
     name: "",
     businessAddress: "",
     phoneNumber: "",
     businessHours: "",
     website: "",
-  };
+  } as inputValues);
+
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    if (vendorQueryIsSuccess && vendors!.length > 0) {
+      const vendor = vendors![0];
+      setInitalValues({
+        ID: vendor.ID,
+        name: vendor.Name,
+        businessAddress: vendor.BusinessAddress,
+        phoneNumber: vendor.Phone,
+        businessHours: vendor.BusinessHours,
+        website: vendor.Website,
+      });
+    }
+  }, [vendorQueryIsSuccess]);
+
+  if (tokenIsSuccess && token === null) {
+    return <p>Not logged in</p>;
+  }
+
+  if (vendorQueryIsSuccess && vendors!.length === 0) {
+    return <p>No vendor found with matching owner ID</p>;
+  }
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Required"),
@@ -49,10 +101,9 @@ const CreateVendorPage: React.FC = () => {
     website: Yup.string(),
   });
 
-  const onSubmit = (data: inputValues) => {
-    const id = uuid();
+  const onSubmit = async (data: inputValues) => {
     const vendor: Vendor = {
-      ID: id,
+      ID: data.ID,
       Name: data.name,
       BusinessAddress: data.businessAddress,
       Website: data.website,
@@ -61,10 +112,13 @@ const CreateVendorPage: React.FC = () => {
       BusinessLogo: "",
       Latitude: 0,
       Longitude: 0,
+      Owner: userID,
     };
-    createVendor(vendor);
-    // Temporary output
-    console.log(`vendor ID: ${id}`);
+    const response = await updateVendor(vendor);
+    if ((response as any).error === undefined) {
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
   };
 
   return (
@@ -82,7 +136,6 @@ const CreateVendorPage: React.FC = () => {
       >
         {(formProps: FormikProps<inputValues>) => {
           const {
-            dirty,
             isValid,
             handleSubmit,
             handleBlur,
@@ -108,6 +161,7 @@ const CreateVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 error={touched.name && Boolean(errors.name)}
                 value={values.name}
+                loading={vendorQueryIsLoading}
                 required
               />
               <ErrorMessage
@@ -125,6 +179,7 @@ const CreateVendorPage: React.FC = () => {
                   touched.businessAddress && Boolean(errors.businessAddress)
                 }
                 value={values.businessAddress}
+                loading={vendorQueryIsLoading}
                 required
               />
               <ErrorMessage
@@ -140,6 +195,7 @@ const CreateVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 error={touched.phoneNumber && Boolean(errors.phoneNumber)}
                 value={values.phoneNumber}
+                loading={vendorQueryIsLoading}
                 required
               />
               <ErrorMessage
@@ -160,6 +216,7 @@ const CreateVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 error={touched.businessHours && Boolean(errors.businessHours)}
                 value={values.businessHours}
+                loading={vendorQueryIsLoading}
                 required
               />
               <ErrorMessage
@@ -176,6 +233,7 @@ const CreateVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 error={touched.website && Boolean(errors.website)}
                 value={values.website}
+                loading={vendorQueryIsLoading}
                 required
               />
               <ErrorMessage
@@ -196,9 +254,16 @@ const CreateVendorPage: React.FC = () => {
                 placeholder="Vendor Description"
               />
 
-              <Buttons edit color="green" dirty={dirty} valid={isValid}>
+              <Buttons
+                edit
+                color="green"
+                dirty
+                valid={isValid}
+                loading={updateVendorIsLoading}
+              >
                 Edit
               </Buttons>
+              {showSuccess ? <p>Updated vendor page</p> : null}
             </Form>
           );
         }}
@@ -207,4 +272,4 @@ const CreateVendorPage: React.FC = () => {
   );
 };
 
-export default CreateVendorPage;
+export default EditVendorPage;

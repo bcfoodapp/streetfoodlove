@@ -23,6 +23,7 @@ interface ButtonsProps {
   children: React.ReactNode;
   valid?: boolean;
   dirty?: boolean;
+  loading?: boolean;
 }
 
 export default function Buttons(props: ButtonsProps): React.ReactElement {
@@ -48,6 +49,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
           className={classes.Button + " " + name}
           color={props.color}
           onClick={props.clicked}
+          loading={props.loading}
         >
           <span>{props.children}</span>
         </Button>
@@ -57,6 +59,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
           color={props.color}
           onClick={props.clicked}
           disabled={!props.valid || !props.dirty}
+          loading={props.loading}
         >
           <span>{props.children}</span>
         </Button>

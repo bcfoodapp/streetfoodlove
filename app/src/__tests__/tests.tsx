@@ -19,6 +19,15 @@ import App from "../App";
 const MockEnvironment: React.FC = ({
   children,
 }: React.PropsWithChildren<Record<never, never>>) => {
+  (window as any).google = {
+    accounts: {
+      id: {
+        initialize: () => {},
+        renderButton: () => {},
+      },
+    },
+  };
+
   return (
     <>
       <Provider store={store}>

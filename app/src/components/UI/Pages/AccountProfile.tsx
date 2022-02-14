@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import { Container } from "semantic-ui-react";
 import styles from "./accountprofile.module.css";
 import { Tab } from "semantic-ui-react";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import AccountSettingsFormGroup from "../Molecules/Form Group/AccountSettingsFormGroup";
 import Buttons from "../Atoms/Button/Buttons";
-import { useAppSelector } from "../../../store";
-import MessageError from "../Atoms/Message/MessageError";
 
 const AccountProfile: React.FC = () => {
   const [disabledForm, setDisabledForm] = useState<boolean>(true);

@@ -1,3 +1,7 @@
+# Link to app
+
+[https://bcfoodapp.github.io/streetfoodlove/](https://bcfoodapp.github.io/streetfoodlove/)
+
 # Document links
 
 - [API doc](https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1)
@@ -23,3 +27,21 @@
 4. Do `npm start` and wait for it to compile
 5. With the backend server still running, go to http://localhost:3000/streetfoodlove/
   - Press ctrl-c to stop the server and npm
+
+# To run in production
+
+```
+| home
+|------cert.crt
+|------cert.key
+|------secrets.json
+|------backend
+```
+
+1. As shown in the directory tree above, place the `.crt` and `.key` certificate files in the parent directory of `backend`.
+2. Create a file named `secrets.json` with the schema given in `backend/database.Secrets`.
+3. Clone just the `backend` directory to the same directory where the certificates are located.
+4. Run the `backend` package, passing the environment variable `SECRETS_FILE` containing the path to the `secrets.json` file. For example:
+  ```
+  SECRETS_FILE=~/secrets.json sudo -E go run .
+  ```

@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Container } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Dropdown } from "semantic-ui-react";
 import styles from "./vendorappform.module.css";
 import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
+import {
+  getUserIDFromToken,
+  useCreateVendorMutation,
+  useGetTokenMutation,
+  Vendor,
+} from "../../../api";
+import { v4 as uuid } from "uuid";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../store";
-import MessageError from "../Atoms/Message/MessageError";
 
 interface inputValues {
   name: string;
@@ -20,7 +26,41 @@ interface inputValues {
 }
 
 export default function VendorAppForm(): React.ReactElement {
-  const storeUserInfo = () => {};
+  const navigate = useNavigate();
+  const [createVendor] = useCreateVendorMutation();
+  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  useEffect(() => {
+    getToken();
+  }, []);
+  const token = useAppSelector((state) => state.token.token);
+
+  if (!tokenIsSuccess || token === null) {
+    return <p>Not logged in</p>;
+  }
+
+  const onSubmit = async (data: inputValues) => {
+    if (!tokenIsSuccess || token === null) {
+      // Button is inaccessible when token is null
+      throw new Error("unexpected");
+    }
+    const userID = getUserIDFromToken(token);
+    const vendor: Vendor = {
+      ID: uuid(),
+      Name: data.name,
+      BusinessAddress: data.businessAddress,
+      Website: data.website,
+      BusinessHours: `${data.fromHour}-${data.toHour}`,
+      Phone: data.phoneNumber,
+      BusinessLogo: "",
+      Latitude: 0,
+      Longitude: 0,
+      Owner: userID,
+    };
+    const result = await createVendor(vendor);
+    if ((result as any).error === undefined) {
+      navigate("/vendor-dashboard");
+    }
+  };
 
   const timeOptionsFromValues = [
     //options for business hours starting from...
@@ -88,7 +128,7 @@ export default function VendorAppForm(): React.ReactElement {
 
       <Formik
         enableReinitialize
-        onSubmit={storeUserInfo}
+        onSubmit={onSubmit}
         validateOnChange={true}
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -115,8 +155,8 @@ export default function VendorAppForm(): React.ReactElement {
             >
               <Form.Input
                 fluid
-                label="Name"
-                placeholder="Name"
+                label="Vendor Name"
+                placeholder="Vendor Name"
                 name={"name"}
                 required
                 width={5}

@@ -1,31 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Container, Form, Header } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
 import {
-  Credentials,
+  UserType,
   useSetCredentialsAndGetTokenMutation,
+  useSignInWithGoogleMutation,
 } from "../../../api";
-import { useAppSelector } from "../../../store";
 import { useNavigate } from "react-router-dom";
-import MessageError from "../Atoms/Message/MessageError";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
-
-/**
- * Displays the Login element in the login page
- */
 
 interface inputValues {
   Username: string;
   Password: string;
 }
 
+/**
+ * Displays the Login element in the login page
+ */
 export default function Login(): React.ReactElement {
-  const [setCredentialsMutation] = useSetCredentialsAndGetTokenMutation();
+  const [setCredentials] = useSetCredentialsAndGetTokenMutation();
+  const [signInWithGoogle] = useSignInWithGoogleMutation();
   const navigate = useNavigate();
+
+  const googleButton = useRef(null);
+
+  useEffect(() => {
+    google.accounts.id.initialize({
+      client_id:
+        "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
+      callback: async (data) => {
+        const response = await signInWithGoogle(data.credential);
+        if ((response as any).error === undefined) {
+          navigate("/");
+        }
+      },
+    });
+    google.accounts.id.renderButton(googleButton.current, {});
+  }, []);
 
   const initialValues: inputValues = {
     Username: "",
@@ -38,43 +52,50 @@ export default function Login(): React.ReactElement {
   });
 
   const onSubmit = async (values: inputValues) => {
-    await setCredentialsMutation({
+    const response = await setCredentials({
       Username: values.Username,
       Password: values.Password,
     });
-    // navigate("/");
+
+    if ((response as any).error === undefined) {
+      navigate("/");
+    }
   };
 
   return (
     <>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={onSubmit}
-        validationSchema={validationSchema}
-        enableReinitialize={true}
-        validateOnChange={true}
-      >
-        {(formProps: FormikProps<inputValues>) => {
-          const {
-            dirty,
-            isValid,
-            handleSubmit,
-            values,
-            handleBlur,
-            handleReset,
-            errors,
-            touched,
-            handleChange,
-          } = formProps;
+      <Container className={styles.wrapper}>
+        <Grid centered>
+          <Grid.Column className={styles.test}>
+            <Grid.Row centered>
+              <h1 className={styles.header}>Login</h1>
+            </Grid.Row>
+            <Grid.Row>
+              <div ref={googleButton} />
+              <br />
+            </Grid.Row>
+            <Grid.Row>
+              <Formik
+                initialValues={initialValues}
+                onSubmit={onSubmit}
+                validationSchema={validationSchema}
+                enableReinitialize
+                validateOnChange
+              >
+                {(formProps: FormikProps<inputValues>) => {
+                  const {
+                    dirty,
+                    isValid,
+                    handleSubmit,
+                    values,
+                    handleBlur,
+                    handleReset,
+                    errors,
+                    touched,
+                    handleChange,
+                  } = formProps;
 
-          return (
-            <Container className={styles.wrapper}>
-              <Grid centered relaxed={"very"}>
-                <Grid.Column className={styles.test}>
-                  <Grid.Row centered>
-                    <h1 className={styles.header}>Login</h1>
-                  </Grid.Row>
-                  <Grid.Row>
+                  return (
                     <Form onSubmit={handleSubmit} onReset={handleReset}>
                       <Form.Field className={styles.field1}>
                         <Header as={"h3"}>Username</Header>
@@ -111,11 +132,7 @@ export default function Login(): React.ReactElement {
                           className={styles.error}
                         />
                       </Form.Field>
-                      {/* TODO this belongs in the create account form */}
-                      {/*<Form.Field>*/}
-                      {/*  <Checkbox label="I agree to the Terms and Conditions" />*/}
-                      {/*</Form.Field>*/}
-                      <Container>
+                      <Container className={styles.btnContainer}>
                         <Buttons
                           login
                           color="green"
@@ -125,16 +142,14 @@ export default function Login(): React.ReactElement {
                           Login
                         </Buttons>
                       </Container>
-                      {/* Temporary error output */}
-                      {/* <pre>{error ? error.toString() : ""}</pre> */}
                     </Form>
-                  </Grid.Row>
-                </Grid.Column>
-              </Grid>
-            </Container>
-          );
-        }}
-      </Formik>
+                  );
+                }}
+              </Formik>
+            </Grid.Row>
+          </Grid.Column>
+        </Grid>
+      </Container>
     </>
   );
 }
