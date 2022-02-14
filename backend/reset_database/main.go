@@ -1687,14 +1687,16 @@ The bee, of course, flies anyway because bees don't care what humans think is im
 
 	photos := []database.Photo{
 		{
-			ID:     uuid.MustParse("8aa0c090-86c2-41f7-b7b7-7d4750f9c48f"),
-			Text:   "Tots-in-a-Blanket Burrito",
-			LinkID: uuid.MustParse("e72ac985-3d7e-47eb-9f0c-f8e52621a708"),
+			ID:         uuid.MustParse("8aa0c090-86c2-41f7-b7b7-7d4750f9c48f"),
+			Text:       "Tots-in-a-Blanket Burrito",
+			DatePosted: time.Date(2022, 2, 14, 0, 0, 0, 0, time.UTC),
+			LinkID:     uuid.MustParse("e72ac985-3d7e-47eb-9f0c-f8e52621a708"),
 		},
 		{
-			ID:     uuid.MustParse("e313a731-0228-4b01-ac98-8e2f9c2f2e9e"),
-			Text:   "French Toast",
-			LinkID: uuid.MustParse("e72ac985-3d7e-47eb-9f0c-f8e52621a708"),
+			ID:         uuid.MustParse("e313a731-0228-4b01-ac98-8e2f9c2f2e9e"),
+			Text:       "French Toast",
+			DatePosted: time.Date(2022, 2, 14, 0, 0, 0, 0, time.UTC),
+			LinkID:     uuid.MustParse("e72ac985-3d7e-47eb-9f0c-f8e52621a708"),
 		},
 	}
 
