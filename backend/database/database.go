@@ -69,7 +69,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 }
 func (d *Database) Vendors() ([]Vendor, error) {
 	const command = `
-		SELECT * FROM Vendor;
+		SELECT * FROM Vendor
 	`
 	rows, err := d.db.Queryx(command)
 	if err != nil {
