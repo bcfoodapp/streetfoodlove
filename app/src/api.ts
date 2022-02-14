@@ -13,7 +13,6 @@ import {
 import jwtDecode from "jwt-decode";
 import config from "./configuration.json";
 import { v4 as uuid } from "uuid";
-import { ref } from "yup";
 
 export interface Vendor {
   ID: string;
