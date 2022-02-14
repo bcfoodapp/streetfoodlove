@@ -393,7 +393,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 
 type Photo struct {
 	ID         uuid.UUID
-	DatePosted string
+	DatePosted time.Time
 	Text       string
 	LinkID     uuid.UUID
 }
