@@ -407,6 +407,29 @@ func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
 	return photo, err
 }
 
+func (d *Database) PhotosByLinkID(linkID uuid.UUID) ([]Photo, error) {
+	const command = `
+		SELECT * FROM Photos WHERE LinkID=?
+	`
+
+	rows, err := d.db.Queryx(command, linkID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Photo, 0)
+
+	for rows.Next() {
+		result = append(result, Photo{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
 type Guide struct {
 	ID            uuid.UUID
 	Guide         string
