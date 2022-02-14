@@ -1685,5 +1685,15 @@ The bee, of course, flies anyway because bees don't care what humans think is im
 		return err
 	}
 
+	photo := &database.Photo{
+		ID:     uuid.MustParse("8aa0c090-86c2-41f7-b7b7-7d4750f9c48f"),
+		Text:   "Tots-in-a-Blanket Burrito",
+		LinkID: uuid.MustParse("e72ac985-3d7e-47eb-9f0c-f8e52621a708"),
+	}
+
+	if err := db.PhotoCreate(photo); err != nil {
+		return err
+	}
+
 	return nil
 }

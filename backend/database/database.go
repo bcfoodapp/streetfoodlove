@@ -374,7 +374,7 @@ type Photo struct {
 	ID         uuid.UUID
 	DatePosted string
 	Text       string
-	LinkID     string
+	LinkID     uuid.UUID
 }
 
 func (d *Database) PhotoCreate(photo *Photo) error {
