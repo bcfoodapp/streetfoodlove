@@ -8,6 +8,7 @@ import {
   useLazyUsersMultipleQuery,
   User,
   getUserIDFromToken,
+  usePhotosByLinkIDQuery,
 } from "../../../api";
 import { Container, Grid } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
@@ -32,6 +33,7 @@ export function Vendor(): React.ReactElement {
   const error = useAppSelector((state) => state.root.error);
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
+  const { data: photos } = usePhotosByLinkIDQuery(vendorID);
 
   useEffect(() => {
     if (reviewsQuery.isSuccess) {

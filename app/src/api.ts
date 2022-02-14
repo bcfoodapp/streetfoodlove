@@ -524,6 +524,7 @@ export const {
   useMapViewVendorsQuery,
   useGuideQuery,
   useSignInWithGoogleMutation,
+  usePhotosByLinkIDQuery,
 } = apiSlice;
 
 // Sets credentials and name in localStorage.
