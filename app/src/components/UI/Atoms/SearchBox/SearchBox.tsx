@@ -38,23 +38,25 @@ export const SearchBox: React.FC = () => {
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     data: SearchProps
   ) => {
-    // setSearchValue(data.value as SetStateAction<string>);
+    if (data.value?.length === 0) {
+      setSearchResult([]);
+      return;
+    }
 
     if (vendorsList) {
       for (let i = 0; i < vendorsList.length; i++) {
         if (data.value === vendorsList[i].Name) {
-          let newResult = [...searchResult, vendorsList[i]];
+          let tempObject = {
+            title: vendorsList[i].Name,
+            description: vendorsList[i].BusinessAddress,
+            ...vendorsList[i],
+          };
+          let newResult = [tempObject];
           setSearchResult(newResult);
-          console.log("found: " + JSON.stringify(vendorsList[i]));
         }
       }
     }
-
-    // console.log(vendorsList);
   };
-
-  const searchEnterHandler = () => {};
-  //name, address, and picture
 
   return (
     <Menu.Item className={styles.searchBox}>
@@ -62,12 +64,8 @@ export const SearchBox: React.FC = () => {
         input={inputBox}
         size={"small"}
         onSearchChange={onSearchChange}
-        results={[
-          {
-            title: searchResult[0]?.Name,
-            description: searchResult[0]?.BusinessAddress,
-          },
-        ]}
+        results={searchResult}
+        showNoResults
       />
       {/* <Field>
         {({ form: {dirty, valid } }) => (
