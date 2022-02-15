@@ -2,13 +2,17 @@ import React, { useEffect, useRef } from "react";
 import { Container, Form } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./signup.module.css";
-import { useCreateUserMutation, UserType } from "../../../api";
+import {
+  useCreateUserMutation,
+  UserType,
+  useSetCredentialsAndGetTokenMutation,
+  useSignInWithGoogleMutation,
+} from "../../../api";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
 import { ErrorMessage, Field, Formik, FormikProps } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { signInWithGoogle } from "../../../googleSignIn";
 
 interface inputValues {
   firstName: string;
@@ -21,6 +25,8 @@ interface inputValues {
 
 export default function Signup(): React.ReactElement {
   const [createUser] = useCreateUserMutation();
+  const [setCredentials] = useSetCredentialsAndGetTokenMutation();
+  const [signInWithGoogle] = useSignInWithGoogleMutation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   let userType = UserType.Customer;
@@ -57,9 +63,15 @@ export default function Signup(): React.ReactElement {
       LastName: data.lastName,
       Password: data.password,
       SignUpDate: DateTime.now(),
+      GoogleID: null,
     });
 
     if ((result as any).error === undefined) {
+      await setCredentials({
+        Username: data.username,
+        Password: data.password,
+      });
+
       if (userType === UserType.Customer) {
         navigate("/");
       } else {
@@ -74,7 +86,14 @@ export default function Signup(): React.ReactElement {
     google.accounts.id.initialize({
       client_id:
         "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
-      callback: (data) => signInWithGoogle(data.credential),
+      callback: async (data) => {
+        const response = await signInWithGoogle(data.credential);
+        if ((response as any).error === undefined) {
+          if (userType === UserType.Customer) {
+            navigate("/");
+          }
+        }
+      },
     });
     google.accounts.id.renderButton(googleButton.current, {});
   }, []);
@@ -82,12 +101,12 @@ export default function Signup(): React.ReactElement {
   return (
     <Container className={styles.signUpWrapper}>
       <h1>Sign Up Form (user account)</h1>
-
-      <div className={styles.formWrapper}>
-        <div className={styles.googleButtonWrapper}>
-          <div ref={googleButton} />
-        </div>
-
+      <Container className={styles.formWrapper}>
+        {userType === UserType.Customer ? (
+          <Container className={styles.googleButtonWrapper}>
+            <div ref={googleButton} />
+          </Container>
+        ) : null}
         <Formik
           enableReinitialize
           initialValues={initialValues}
@@ -110,7 +129,11 @@ export default function Signup(): React.ReactElement {
             } = formProps;
 
             return (
-              <Form onSubmit={handleSubmit} onReset={handleReset}>
+              <Form
+                onSubmit={handleSubmit}
+                onReset={handleReset}
+                className={styles.form}
+              >
                 <Form.Input
                   value={values.email}
                   onChange={handleChange}
@@ -231,7 +254,7 @@ export default function Signup(): React.ReactElement {
             );
           }}
         </Formik>
-      </div>
+      </Container>
     </Container>
   );
 }

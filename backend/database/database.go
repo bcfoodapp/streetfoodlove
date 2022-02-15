@@ -4,10 +4,11 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"fmt"
+	"time"
+
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"time"
 )
 
 // Database abstraction layer
@@ -65,6 +66,27 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 	`
 	_, err := d.db.NamedExec(command, vendor)
 	return err
+}
+func (d *Database) Vendors() ([]Vendor, error) {
+	const command = `
+		SELECT * FROM Vendor
+	`
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Vendor, 0)
+
+	for rows.Next() {
+		result = append(result, Vendor{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
 }
 
 func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
@@ -178,6 +200,7 @@ type UserProtected struct {
 	*User
 	Email      string
 	SignUpDate time.Time
+	GoogleID   *string
 }
 
 func (d *Database) UserCreate(user *UserProtected, password string) error {
@@ -191,7 +214,8 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 			SignUpDate,
 			LoginPassword,
 			UserType,
-			Photo
+			Photo,
+		  	GoogleID
 		) VALUES (
 			:ID,
 			:Email,
@@ -201,7 +225,8 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 			:SignUpDate,
 			:LoginPassword,
 			:UserType,
-			:Photo
+			:Photo,
+			:GoogleID
 		)
 	`
 	hash := sha256.Sum256([]byte(password))
@@ -225,7 +250,8 @@ func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
 			LastName,
 			SignUpDate,
 			UserType,
-			Photo
+			Photo,
+			GoogleID
 		FROM User
 		WHERE ID=?
 	`
@@ -244,7 +270,8 @@ func (d *Database) UserUpdate(user *UserProtected) error {
 			FirstName = :FirstName,
 			LastName = :LastName,
 			UserType = :UserType,
-			Photo = :Photo
+			Photo = :Photo,
+			GoogleID = :GoogleID
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &user)
@@ -258,7 +285,9 @@ type Credentials struct {
 
 func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, error) {
 	const command = `
-		SELECT ID, LoginPassword FROM User WHERE Username=?
+		SELECT ID, LoginPassword
+		FROM User
+		WHERE Username=?
 	`
 	row := d.db.QueryRowx(command, &credentials.Username)
 
@@ -276,6 +305,20 @@ func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, err
 	}
 
 	return userID, nil
+}
+
+func (d *Database) UserIDByGoogleID(googleID string) (uuid.UUID, error) {
+	const command = `
+		SELECT ID
+		FROM User
+		WHERE GoogleID=?
+	`
+
+	row := d.db.QueryRowx(command, &googleID)
+
+	userID := uuid.UUID{}
+	err := row.Scan(&userID)
+	return userID, err
 }
 
 type Review struct {
@@ -298,6 +341,7 @@ func (d *Database) ReviewCreate(review *Review) error {
 			DatePosted,
 			StarRating,
 			FavoriteReview
+			ReplyTo
 		) VALUES (
 			:ID,
 			:Text,
@@ -306,6 +350,7 @@ func (d *Database) ReviewCreate(review *Review) error {
 			:DatePosted,
 			:StarRating,
 			:FavoriteReview
+			:ReplyTo
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
@@ -350,9 +395,9 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 
 type Photo struct {
 	ID         uuid.UUID
-	DatePosted string
+	DatePosted time.Time
 	Text       string
-	LinkID     string
+	LinkID     uuid.UUID
 }
 
 func (d *Database) PhotoCreate(photo *Photo) error {
@@ -383,6 +428,29 @@ func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
 	err := row.StructScan(photo)
 
 	return photo, err
+}
+
+func (d *Database) PhotosByLinkID(linkID uuid.UUID) ([]Photo, error) {
+	const command = `
+		SELECT * FROM Photos WHERE LinkID=?
+	`
+
+	rows, err := d.db.Queryx(command, linkID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Photo, 0)
+
+	for rows.Next() {
+		result = append(result, Photo{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
 }
 
 type Guide struct {
@@ -485,7 +553,7 @@ func (d *Database) FavoriteCreate(favorite *Favorite) error {
 
 func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	const command = `
-		SELECT * FROM Favorite WHERE ID=? 
+		SELECT * FROM Favorite WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 

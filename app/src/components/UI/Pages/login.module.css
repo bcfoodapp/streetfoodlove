@@ -4,8 +4,8 @@
   border: 1px solid black;
   margin-left: 36%;
   margin-top: 220px;
-  width: 500px !important;
-  padding: 2rem 1rem;
+  width: 40% !important;
+  min-width: 30% !important;
 }
 
 .ui.center.container {
@@ -20,8 +20,8 @@
 .test {
   position: absolute;
   left: 30%;
-  padding-bottom: 30px !important;
-  padding-top: 20px !important;
+  padding-bottom: 70px !important;
+  padding-top: 70px !important;
 }
 
 .header {
@@ -36,4 +36,10 @@
 
 .field1 {
   margin-bottom: 20px !important;
+}
+
+.btnContainer {
+  width: 50% !important;
+  display: inline-block !important;
+  margin-right: 30% !important;
 }

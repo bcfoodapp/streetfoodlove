@@ -23,6 +23,11 @@ var unauthorized = fmt.Errorf(
 	"you are unauthorized to perform this action; make sure you are logged into the correct account",
 )
 
+// Vendors returns all vendors.
+func (b *Backend) Vendors() ([]database.Vendor, error) {
+	return b.Database.Vendors()
+}
+
 func (b *Backend) Vendor(id uuid.UUID) (*database.Vendor, error) {
 	return b.Database.Vendor(id)
 }
@@ -126,6 +131,10 @@ func (b *Backend) VendorsByCoordinateBounds(bounds *database.CoordinateBounds) (
 		result = append(result, vendor.ID)
 	}
 	return result, nil
+}
+
+func (b *Backend) PhotosByLinkID(linkID uuid.UUID) ([]database.Photo, error) {
+	return b.Database.PhotosByLinkID(linkID)
 }
 
 func (b *Backend) Photo(id uuid.UUID) (*database.Photo, error) {
