@@ -45,28 +45,26 @@ export const SearchBox: React.FC = () => {
     }
 
     if (vendorsList) {
-
-      let search = data.value
-      let condition = new RegExp(search as string)
+      let search = data.value;
+      let condition = new RegExp(search as string);
 
       let result = vendorsList.filter((element) => {
-        return condition.test(element.Name)
-      })
+        return condition.test(element.Name);
+      });
 
-      let resultArray: Vendor[] = []
+      let resultArray: Vendor[] = [];
 
       for (let obj of result) {
         let tempObject = {
           title: obj.Name,
           description: obj.BusinessAddress,
-          ...obj
-        }
+          ...obj,
+        };
 
-        resultArray.push(tempObject)
+        resultArray.push(tempObject);
       }
 
-      setSearchResult(resultArray)
-
+      setSearchResult(resultArray);
     }
   };
 
