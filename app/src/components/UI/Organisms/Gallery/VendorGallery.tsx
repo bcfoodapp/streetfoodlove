@@ -36,12 +36,13 @@ export default ({ photos }): React.ReactElement<Props> => {
   }, [photos]);
 
   return (
-    <Segment style={{ height: 150 + 14 * 2 + 3 * 2, width: "100%" }}>
+    <Segment style={{ height: 150 + 14 * 2, width: "100%" }}>
       <GalleryComponent
         images={images}
         rowHeight={150}
         enableImageSelection={false}
         maxRows={1}
+        margin={0}
       />
     </Segment>
   );
