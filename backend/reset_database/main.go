@@ -102,6 +102,7 @@ func SetupTables(db *sqlx.DB) error {
 			UserID CHAR(36) NOT NULL,
 			DatePosted DATETIME NULL,
 			StarRating TINYINT NULL,
+			FavoriteReview TINYINT,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
 			ON DELETE CASCADE ON UPDATE CASCADE,

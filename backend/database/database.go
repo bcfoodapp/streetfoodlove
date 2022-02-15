@@ -279,12 +279,13 @@ func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, err
 }
 
 type Review struct {
-	ID         uuid.UUID
-	Text       string
-	VendorID   uuid.UUID
-	UserID     uuid.UUID
-	DatePosted time.Time
-	StarRating *int
+	ID             uuid.UUID
+	Text           string
+	VendorID       uuid.UUID
+	UserID         uuid.UUID
+	DatePosted     time.Time
+	StarRating     *int
+	FavoriteReview int
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -295,14 +296,16 @@ func (d *Database) ReviewCreate(review *Review) error {
 			VendorID,
 			UserID,
 			DatePosted,
-			StarRating
+			StarRating,
+			FavoriteReview
 		) VALUES (
 			:ID,
 			:Text,
 			:VendorID,
 			:UserID,
 			:DatePosted,
-			:StarRating
+			:StarRating,
+			:FavoriteReview
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
@@ -490,3 +493,18 @@ func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	err := row.StructScan(favorite)
 	return favorite, err
 }
+
+//func (d *Database) CountFavorite(id uuid.UUID) (*Favorite, error) {
+//	var count int
+//	const command = `
+//		SELECT count(VendorID) cnt FROM Favorite WHERE UserID=? AND VendorID=?
+
+//	`
+
+//row := d.db.QueryRowx(command, &id)
+//favorite := &Favorite{}
+//_ = row.StructScan(favorite)
+////return count, err
+//fmt.Println("count", count)
+//return count, err
+//}

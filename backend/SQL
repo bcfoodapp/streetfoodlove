@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `streetfoodlove`.`Review` (
   `Text` VARCHAR(500) NOT NULL,
   `VendorVendorID` CHAR(36) NOT NULL,
   `UserUserID` CHAR(36) NOT NULL,
+  'FavoriteReview' TINYINT,
   PRIMARY KEY (`ReviewID`),
   INDEX `fk_Review_Vendor1_idx` (`VendorVendorID` ASC) VISIBLE,
   INDEX `fk_Review_User1_idx` (`UserUserID` ASC) VISIBLE,
