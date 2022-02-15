@@ -127,6 +127,21 @@ CREATE TABLE IF NOT EXISTS `streetfoodlove`.`Link` (
   PRIMARY KEY (`Link_ID`))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `streetfoodlove`.`Favorite`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `streetfoodlove`.`Favorite` ;
+
+CREATE TABLE IF NOT EXISTS `streetfoodlove`.`Favorite` (
+    `Favorite_ID` CHAR NOT NULL,
+     `DatePosted` DATETIME NOT NULL,
+    `VendorVendorID` CHAR(36) NOT NULL,
+    `UserUserID` CHAR(36) NOT NULL,
+    PRIMARY KEY (`Favorite_ID`),
+    INDEX `fk_Favorite_Vendor1_idx` (`VendorVendorID` ASC) VISIBLE,
+    INDEX `fk_Favorite_User1_idx` (`UserUserID` ASC) VISIBLE,
+ENGINE = InnoDB;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
