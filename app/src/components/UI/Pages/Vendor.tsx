@@ -71,9 +71,8 @@ export function Vendor(): React.ReactElement {
       <Container textAlign="center">
         <Grid centered>
           <Grid.Row>
-            <Divider hidden />
+            {photosIsSuccess ? <Gallery photos={photos!} /> : null}
           </Grid.Row>
-          {photosIsSuccess ? <Gallery photos={photos!} /> : null}
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
