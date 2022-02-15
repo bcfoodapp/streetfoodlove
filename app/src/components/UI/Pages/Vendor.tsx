@@ -30,7 +30,9 @@ export function Vendor(): React.ReactElement {
   const [submitReview] = useSubmitReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
-  const { data: photos } = usePhotosByLinkIDQuery(vendorID);
+  const { data: photos } = usePhotosByLinkIDQuery(vendorID, {
+    selectFromResult: ({ data }) => (data ? { data } : { data: [] }),
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export function Vendor(): React.ReactElement {
     <>
       <Container textAlign="center">
         <Image.Group size="small">
-          {photos?.map((photo, i) => (
+          {photos.map((photo, i) => (
             <Image
               key={i}
               src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`}
