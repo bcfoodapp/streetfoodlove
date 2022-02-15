@@ -101,13 +101,6 @@ interface GoogleClaims {
   sub: string;
 }
 
-export interface Photo {
-  ID: string;
-  DatePosted: DateTime;
-  Text: string;
-  LinkID: string;
-}
-
 export const tokenSlice = createSlice({
   name: "token",
   initialState: {
@@ -492,15 +485,6 @@ export const apiSlice = createApi({
         return { data: null };
       },
     }),
-    // Returns all Photos with matching LinkID.
-    photosByLinkID: builder.query<Photo[], string>({
-      query: (linkID) => `/photos?link-id=${encode(linkID)}`,
-      transformResponse: (photos: any[]) =>
-        photos.map((photo) => ({
-          ...photo,
-          DatePosted: DateTime.fromISO(photo.DatePosted),
-        })),
-    }),
   }),
 });
 
@@ -525,7 +509,6 @@ export const {
   useMapViewVendorsQuery,
   useGuideQuery,
   useSignInWithGoogleMutation,
-  usePhotosByLinkIDQuery,
 } = apiSlice;
 
 // Sets credentials and name in localStorage.

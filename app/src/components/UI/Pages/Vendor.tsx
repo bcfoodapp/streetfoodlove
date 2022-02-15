@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
@@ -8,7 +8,6 @@ import {
   useLazyUsersMultipleQuery,
   User,
   getUserIDFromToken,
-  usePhotosByLinkIDQuery,
 } from "../../../api";
 import { Container, Divider, Grid, Header, Image } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
@@ -30,7 +29,6 @@ export function Vendor(): React.ReactElement {
   const [submitReview] = useSubmitReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
-  const { data: photos } = usePhotosByLinkIDQuery(vendorID);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,14 +65,6 @@ export function Vendor(): React.ReactElement {
   return (
     <>
       <Container textAlign="center">
-        <Image.Group size="small">
-          {photos?.map((photo, i) => (
-            <Image
-              key={i}
-              src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`}
-            />
-          ))}
-        </Image.Group>
         <Divider hidden />
         <Grid centered>
           <Grid.Row>
