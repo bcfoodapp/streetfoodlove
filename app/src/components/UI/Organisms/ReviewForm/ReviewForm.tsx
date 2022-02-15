@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Form, TextArea } from "semantic-ui-react";
+import { Container, Form, Header, TextArea } from "semantic-ui-react";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./reviewForm.module.css";
@@ -40,7 +40,7 @@ export const ReviewForm = (props: Props) => {
   return (
     <Container>
       <Container>
-        <h4>Write a review</h4>
+        <Header as="h4">Write a review</Header>
         <Container>
           <StarRating starRating={starRating} setStarRating={setStarRating} />
         </Container>

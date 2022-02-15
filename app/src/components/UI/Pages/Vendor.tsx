@@ -17,6 +17,7 @@ import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
+import Buttons from "../Atoms/Button/Buttons";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -46,8 +47,7 @@ export function Vendor(): React.ReactElement {
     starRating: StarRatingInteger;
   }) => {
     if (token === null) {
-      navigate("/signup");
-      return;
+      throw new Error("token is null");
     }
 
     const userID = getUserIDFromToken(token);
@@ -124,7 +124,19 @@ export function Vendor(): React.ReactElement {
             return <Review key={i} review={review} user={user} />;
           })
         )}
-        <ReviewForm finishedFormHandler={completedReviewHandler} />
+        {token === null ? (
+          <Buttons
+            color="orange"
+            writeReview
+            clicked={() => {
+              navigate("/signup");
+            }}
+          >
+            Sign up to write a review
+          </Buttons>
+        ) : (
+          <ReviewForm finishedFormHandler={completedReviewHandler} />
+        )}
       </Container>
     </>
   );
