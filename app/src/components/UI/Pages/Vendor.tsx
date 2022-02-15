@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
@@ -137,6 +137,7 @@ export function Vendor(): React.ReactElement {
         ) : (
           <ReviewForm finishedFormHandler={completedReviewHandler} />
         )}
+        <Divider hidden />
       </Container>
     </>
   );
