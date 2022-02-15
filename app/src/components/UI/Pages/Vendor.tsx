@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
@@ -10,7 +10,7 @@ import {
   getUserIDFromToken,
   usePhotosByLinkIDQuery,
 } from "../../../api";
-import { Container, Divider, Grid, Header, Image } from "semantic-ui-react";
+import { Container, Divider, Grid, Header } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
@@ -18,6 +18,7 @@ import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
+import Gallery from "react-grid-gallery";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -30,9 +31,8 @@ export function Vendor(): React.ReactElement {
   const [submitReview] = useSubmitReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
-  const { data: photos } = usePhotosByLinkIDQuery(vendorID, {
-    selectFromResult: ({ data }) => (data ? { data } : { data: [] }),
-  });
+  const { data: photos, isSuccess: photosIsSuccess } =
+    usePhotosByLinkIDQuery(vendorID);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +40,30 @@ export function Vendor(): React.ReactElement {
       usersMultipleTrigger(reviewsQuery.data!.map((r) => r.UserID));
     }
   }, [reviewsQuery.isSuccess]);
+
+  // TODO create wrapper component
+  const [images, setImages] = useState([] as Record<string, any>[]);
+
+  useEffect(() => {
+    if (photosIsSuccess && photos && images.length === 0) {
+      for (const photo of photos) {
+        const img = new Image();
+        img.onload = () => {
+          setImages((state) => [
+            ...state,
+            {
+              src: `https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`,
+              thumbnail: `https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`,
+              thumbnailWidth: img.width,
+              thumbnailHeight: img.height,
+              alt: photo.Text,
+            },
+          ]);
+        };
+        img.src = `https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`;
+      }
+    }
+  }, [photosIsSuccess]);
 
   const completedReviewHandler = ({
     text,
@@ -69,16 +93,13 @@ export function Vendor(): React.ReactElement {
   return (
     <>
       <Container textAlign="center">
-        <Image.Group size="small">
-          {photos.map((photo, i) => (
-            <Image
-              key={i}
-              src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`}
-            />
-          ))}
-        </Image.Group>
-        <Divider hidden />
         <Grid centered>
+          <Gallery
+            images={images}
+            rowHeight={200}
+            enableImageSelection={false}
+            maxRows={1}
+          />
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
