@@ -8,8 +8,9 @@ import {
   useLazyUsersMultipleQuery,
   User,
   getUserIDFromToken,
+  usePhotosByLinkIDQuery,
 } from "../../../api";
-import { Container, Divider, Grid, Header, Image } from "semantic-ui-react";
+import { Container, Divider, Grid, Header } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
@@ -17,6 +18,7 @@ import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
+import Gallery from "../Organisms/VendorGallery/VendorGallery";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -29,6 +31,8 @@ export function Vendor(): React.ReactElement {
   const [submitReview] = useSubmitReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
+  const { data: photos, isSuccess: photosIsSuccess } =
+    usePhotosByLinkIDQuery(vendorID);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,8 +69,10 @@ export function Vendor(): React.ReactElement {
   return (
     <>
       <Container textAlign="center">
-        <Divider hidden />
         <Grid centered>
+          <Grid.Row>
+            {photosIsSuccess ? <Gallery photos={photos!} /> : null}
+          </Grid.Row>
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
