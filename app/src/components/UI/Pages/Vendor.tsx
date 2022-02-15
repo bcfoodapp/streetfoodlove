@@ -18,7 +18,7 @@ import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
-import Gallery from "../Organisms/Gallery/VendorGallery";
+import Gallery from "../Organisms/VendorGallery/VendorGallery";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -73,7 +73,7 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             <Divider hidden />
           </Grid.Row>
-          {photosIsSuccess ? <Gallery photos={photos} /> : null}
+          {photosIsSuccess ? <Gallery photos={photos!} /> : null}
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
