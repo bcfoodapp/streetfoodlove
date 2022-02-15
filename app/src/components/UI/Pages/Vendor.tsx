@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
   useVendorQuery,
@@ -10,9 +10,7 @@ import {
   getUserIDFromToken,
   usePhotosByLinkIDQuery,
 } from "../../../api";
-import { Container, Grid, Image } from "semantic-ui-react";
-import Buttons from "../Atoms/Button/Buttons";
-import styles from "./vendor.module.css";
+import { Container, Divider, Grid, Header, Image } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
@@ -29,25 +27,16 @@ export function Vendor(): React.ReactElement {
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;
   const [submitReview] = useSubmitReviewMutation();
-  const [openReviewForm, setOpenReviewForm] = useState(false);
-  const error = useAppSelector((state) => state.root.error);
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
   const { data: photos } = usePhotosByLinkIDQuery(vendorID);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (reviewsQuery.isSuccess) {
       usersMultipleTrigger(reviewsQuery.data!.map((r) => r.UserID));
     }
   }, [reviewsQuery.isSuccess]);
-
-  const openReviewHandler = () => {
-    setOpenReviewForm(true);
-  };
-
-  const closeReviewHandler = () => {
-    setOpenReviewForm(false);
-  };
 
   const completedReviewHandler = ({
     text,
@@ -57,7 +46,8 @@ export function Vendor(): React.ReactElement {
     starRating: StarRatingInteger;
   }) => {
     if (token === null) {
-      throw new Error("not logged in");
+      navigate("/signup");
+      return;
     }
 
     const userID = getUserIDFromToken(token);
@@ -78,12 +68,14 @@ export function Vendor(): React.ReactElement {
     <>
       <Container textAlign="center">
         <Image.Group size="small">
-          {photos?.map((photo) => (
+          {photos?.map((photo, i) => (
             <Image
+              key={i}
               src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`}
             />
           ))}
         </Image.Group>
+        <Divider hidden />
         <Grid centered>
           <Grid.Row>
             <Grid.Column width={6}>
@@ -118,31 +110,21 @@ export function Vendor(): React.ReactElement {
           </Grid.Row>
         </Grid>
       </Container>
-      {openReviewForm ? (
-        <>
-          <div style={{ height: "20px" }} />
-          <ReviewForm
-            finishedFormHandler={completedReviewHandler}
-            closeReviewHandler={closeReviewHandler}
-          />
-        </>
-      ) : (
-        <Container className={styles.textArea}>
-          <Buttons color="orange" writeReview clicked={openReviewHandler}>
-            Write Review
-          </Buttons>
-        </Container>
-      )}
-      {/* Temporary error output */}
-      <pre>{error ? error.toString() : ""}</pre>
-      <Container className={styles.reviews}>
-        {reviews?.map((review, i) => {
-          let user = null as User | null;
-          if (users && review.UserID in users) {
-            user = users[review.UserID];
-          }
-          return <Review key={i} review={review} user={user} />;
-        })}
+      <Divider hidden />
+      <Container>
+        <Header as="h1">Reviews for {vendor?.Name}</Header>
+        {reviews?.length === 0 ? (
+          <p>No one has posted a review for this vendor. Yet...</p>
+        ) : (
+          reviews?.map((review, i) => {
+            let user = null as User | null;
+            if (users && review.UserID in users) {
+              user = users[review.UserID];
+            }
+            return <Review key={i} review={review} user={user} />;
+          })
+        )}
+        <ReviewForm finishedFormHandler={completedReviewHandler} />
       </Container>
     </>
   );
