@@ -393,9 +393,9 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 
 type Photo struct {
 	ID         uuid.UUID
-	DatePosted string
+	DatePosted time.Time
 	Text       string
-	LinkID     string
+	LinkID     uuid.UUID
 }
 
 func (d *Database) PhotoCreate(photo *Photo) error {
@@ -426,6 +426,29 @@ func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
 	err := row.StructScan(photo)
 
 	return photo, err
+}
+
+func (d *Database) PhotosByLinkID(linkID uuid.UUID) ([]Photo, error) {
+	const command = `
+		SELECT * FROM Photos WHERE LinkID=?
+	`
+
+	rows, err := d.db.Queryx(command, linkID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Photo, 0)
+
+	for rows.Next() {
+		result = append(result, Photo{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
 }
 
 type Guide struct {
@@ -528,7 +551,7 @@ func (d *Database) FavoriteCreate(favorite *Favorite) error {
 
 func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	const command = `
-		SELECT * FROM Favorite WHERE ID=? 
+		SELECT * FROM Favorite WHERE ID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 

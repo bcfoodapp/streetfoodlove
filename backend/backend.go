@@ -133,6 +133,10 @@ func (b *Backend) VendorsByCoordinateBounds(bounds *database.CoordinateBounds) (
 	return result, nil
 }
 
+func (b *Backend) PhotosByLinkID(linkID uuid.UUID) ([]database.Photo, error) {
+	return b.Database.PhotosByLinkID(linkID)
+}
+
 func (b *Backend) Photo(id uuid.UUID) (*database.Photo, error) {
 	return b.Database.Photo(id)
 }
