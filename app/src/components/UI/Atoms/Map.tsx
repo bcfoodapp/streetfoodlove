@@ -9,6 +9,8 @@ import {
 } from "react-leaflet";
 import PopupInfo from "./PopupInfo/PopupInfo";
 import { useMapViewVendorsQuery, useVendorsMultipleQuery } from "../../../api";
+import { Icon } from "semantic-ui-react";
+import styles from "./map.module.css";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({

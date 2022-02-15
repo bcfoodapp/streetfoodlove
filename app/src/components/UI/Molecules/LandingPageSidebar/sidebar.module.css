@@ -1,0 +1,7 @@
+.sidebar {
+  z-index: 1000 !important;
+  background-color: black !important;
+  /* position: relative !important; */
+  /* top: 600px; */
+  /* left: 500px !important; */
+}
