@@ -485,7 +485,7 @@ func addTestData(db *database.Database) error {
 			Latitude:        45.328053,
 			Longitude:       -121.322161,
 			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
-		},	
+		},
 		{
 			ID:              uuid.MustParse("06e92326-2f79-4b39-8690-de04314e5d25"),
 			Name:            "Cosun Zhou",
@@ -509,7 +509,7 @@ func addTestData(db *database.Database) error {
 			Latitude:        45.322013,
 			Longitude:       -121.322161,
 			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
-		},	
+		},
 		{
 			ID:              uuid.MustParse("f4d8a290-da16-4a83-a4b6-2db613887f23"),
 			Name:            "vendor2",
