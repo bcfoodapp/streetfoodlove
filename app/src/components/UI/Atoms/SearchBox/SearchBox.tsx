@@ -33,6 +33,7 @@ const inputBox = (
 export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
   const { data: vendorsList } = useVendorsQuery();
+  console.log(vendorsList);
 
   const onSearchChange = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -44,17 +45,28 @@ export const SearchBox: React.FC = () => {
     }
 
     if (vendorsList) {
-      for (let i = 0; i < vendorsList.length; i++) {
-        if (data.value === vendorsList[i].Name) {
-          let tempObject = {
-            title: vendorsList[i].Name,
-            description: vendorsList[i].BusinessAddress,
-            ...vendorsList[i],
-          };
-          let newResult = [tempObject];
-          setSearchResult(newResult);
+
+      let search = data.value
+      let condition = new RegExp(search as string)
+
+      let result = vendorsList.filter((element) => {
+        return condition.test(element.Name)
+      })
+
+      let resultArray: Vendor[] = []
+
+      for (let obj of result) {
+        let tempObject = {
+          title: obj.Name,
+          description: obj.BusinessAddress,
+          ...obj
         }
+
+        resultArray.push(tempObject)
       }
+
+      setSearchResult(resultArray)
+
     }
   };
 
