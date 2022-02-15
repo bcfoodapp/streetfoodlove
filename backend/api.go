@@ -63,6 +63,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/favorite/:id", a.FavoritePut)
 	router.GET("/favorite/:id", a.Favorite)
 
+	router.GET("/photos", a.Photos)
 	router.GET("/photos/:id", a.Photo)
 	router.POST("/photos/:id", GetToken, a.PhotoPost)
 
@@ -451,6 +452,22 @@ func (a *API) MapView(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, vendors)
+}
+
+func (a *API) Photos(c *gin.Context) {
+	linkID, err := uuid.Parse(c.Query("link-id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	photos, err := a.Backend.PhotosByLinkID(linkID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, photos)
 }
 
 func (a *API) Photo(c *gin.Context) {

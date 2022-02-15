@@ -2,6 +2,8 @@
 
 [https://bcfoodapp.github.io/streetfoodlove/](https://bcfoodapp.github.io/streetfoodlove/)
 
+Use an alternate Google account if you want to sign-in with Google! Do not use your main Google account as the app is not guaranteed to be secure.
+
 # Document links
 
 - [API doc](https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1)
