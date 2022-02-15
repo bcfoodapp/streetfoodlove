@@ -25,8 +25,6 @@ export const ReviewForm = (props: Props) => {
   };
 
   const handleSubmit = () => {
-    // TODO make sure user selects a rating
-
     if (starRating === null) {
       throw new Error("starRating is null");
     }
@@ -46,16 +44,14 @@ export const ReviewForm = (props: Props) => {
         </Container>
       </Container>
       <Form onSubmit={handleSubmit}>
-        <Container>
-          <TextArea
-            placeholder="Write your review here..."
-            style={{ minHeight: 60, maxWidth: 700 }}
-            value={textAreaInput}
-            onChange={handleChange}
-          />
-        </Container>
+        <TextArea
+          placeholder="Write your review here..."
+          style={{ minHeight: 60, maxWidth: 700 }}
+          value={textAreaInput}
+          onChange={handleChange}
+        />
         <Container className={styles.buttons}>
-          <Buttons submit color="green">
+          <Buttons submit color="green" valid={starRating !== null}>
             Submit Review
           </Buttons>
         </Container>

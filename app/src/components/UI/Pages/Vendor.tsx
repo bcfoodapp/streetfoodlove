@@ -127,6 +127,7 @@ export function Vendor(): React.ReactElement {
         ) : (
           <ReviewForm finishedFormHandler={completedReviewHandler} />
         )}
+        <Divider hidden />
       </Container>
     </>
   );
