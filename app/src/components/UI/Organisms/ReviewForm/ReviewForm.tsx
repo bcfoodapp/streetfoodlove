@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Form, TextArea } from "semantic-ui-react";
+import { Container, Form, Header, TextArea } from "semantic-ui-react";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./reviewForm.module.css";
@@ -14,8 +14,6 @@ interface Props {
     text: string;
     starRating: StarRatingInteger;
   }) => void;
-  // cancelFormHandler: () => void;
-  closeReviewHandler: () => void;
 }
 
 export const ReviewForm = (props: Props) => {
@@ -27,9 +25,6 @@ export const ReviewForm = (props: Props) => {
   };
 
   const handleSubmit = () => {
-    // TODO make sure user selects a rating
-
-    props.closeReviewHandler();
     if (starRating === null) {
       throw new Error("starRating is null");
     }
@@ -41,27 +36,22 @@ export const ReviewForm = (props: Props) => {
   };
 
   return (
-    <Container className={styles.wrapper}>
+    <Container>
       <Container>
-        <h4>Select a Rating</h4>
-        <Container className={styles.starrating}>
+        <Header as="h4">Write a review</Header>
+        <Container>
           <StarRating starRating={starRating} setStarRating={setStarRating} />
         </Container>
       </Container>
       <Form onSubmit={handleSubmit}>
-        <Container>
-          <TextArea
-            placeholder="Write Review here..."
-            style={{ minHeight: 60, maxWidth: 700 }}
-            value={textAreaInput}
-            onChange={handleChange}
-          />
-        </Container>
+        <TextArea
+          placeholder="Write your review here..."
+          style={{ minHeight: 60, maxWidth: 700 }}
+          value={textAreaInput}
+          onChange={handleChange}
+        />
         <Container className={styles.buttons}>
-          <Buttons cancel clicked={props.closeReviewHandler}>
-            Cancel
-          </Buttons>
-          <Buttons submit color="green">
+          <Buttons submit color="green" valid={starRating !== null}>
             Submit Review
           </Buttons>
         </Container>
