@@ -1,4 +1,4 @@
-import { Container, Icon, Sidebar } from "semantic-ui-react";
+import { Button, Container, Icon, Sidebar } from "semantic-ui-react";
 import Map from "../Atoms/Map";
 import styles from "./landingpage.module.css";
 import config from "../../../configuration.json";
@@ -21,7 +21,9 @@ export const LandingPage = () => {
         <LandingPageSidebar setVisible={setVisible} visible={visible}/>
         <Sidebar.Pusher>
           <Container className={styles.container}>
-            <Icon name="options" size="big" className={styles.icon} />
+            <Button icon className={styles.icon} onClick={() => setVisible(true)}>
+              <Icon name="options" size="big"/>
+            </Button>
             <Map />
           </Container>
         </Sidebar.Pusher>

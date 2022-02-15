@@ -5,3 +5,10 @@
   /* top: 600px; */
   /* left: 500px !important; */
 }
+
+.closeIcon {
+  background: transparent !important;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
