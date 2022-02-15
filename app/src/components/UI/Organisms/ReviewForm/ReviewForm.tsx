@@ -41,17 +41,17 @@ export const ReviewForm = (props: Props) => {
   };
 
   return (
-    <Container className={styles.wrapper}>
+    <Container>
       <Container>
         <h4>Select a Rating</h4>
-        <Container className={styles.starrating}>
+        <Container>
           <StarRating starRating={starRating} setStarRating={setStarRating} />
         </Container>
       </Container>
       <Form onSubmit={handleSubmit}>
         <Container>
           <TextArea
-            placeholder="Write Review here..."
+            placeholder="Write your review here..."
             style={{ minHeight: 60, maxWidth: 700 }}
             value={textAreaInput}
             onChange={handleChange}

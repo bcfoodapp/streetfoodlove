@@ -76,7 +76,7 @@ export function Vendor(): React.ReactElement {
 
   return (
     <>
-      <Container className={styles.wrapper}>
+      <Container textAlign="center">
         <Image.Group size="small">
           {photos?.map((photo) => (
             <Image
@@ -84,7 +84,7 @@ export function Vendor(): React.ReactElement {
             />
           ))}
         </Image.Group>
-        <Grid>
+        <Grid centered>
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
@@ -119,10 +119,13 @@ export function Vendor(): React.ReactElement {
         </Grid>
       </Container>
       {openReviewForm ? (
-        <ReviewForm
-          finishedFormHandler={completedReviewHandler}
-          closeReviewHandler={closeReviewHandler}
-        />
+        <>
+          <div style={{ height: "20px" }} />
+          <ReviewForm
+            finishedFormHandler={completedReviewHandler}
+            closeReviewHandler={closeReviewHandler}
+          />
+        </>
       ) : (
         <Container className={styles.textArea}>
           <Buttons color="orange" writeReview clicked={openReviewHandler}>
