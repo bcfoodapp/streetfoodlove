@@ -19,7 +19,7 @@ import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/VendorGallery";
-import styles from './vendor.module.css'
+import styles from "./vendor.module.css";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
