@@ -16,7 +16,7 @@ import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/Bus
 import HeaderBar from "./components/UI/Molecules/HeaderBar/HeaderBar";
 import MessageError from "./components/UI/Atoms/Message/MessageError";
 import LoginWrapper from "./components/UI/Pages/Login";
-import VendorPhotosEditor from "./components/UI/Pages/VendorPhotosEditor";
+import VendorPhotosEditor from "./components/UI/Pages/VendorPhotosUploader";
 
 function App(): React.ReactElement {
   return (
