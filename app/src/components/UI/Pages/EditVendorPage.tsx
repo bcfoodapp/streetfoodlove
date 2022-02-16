@@ -3,6 +3,7 @@ import {
   Form,
   Header,
   Input,
+  Segment,
   Select,
   TextArea,
 } from "semantic-ui-react";
@@ -19,6 +20,7 @@ import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../../store";
+import Dropzone from "react-dropzone";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
@@ -123,9 +125,9 @@ const EditVendorPage: React.FC = () => {
 
   return (
     <Container className={styles.wrapper}>
-      <Header as={"h2"} className={styles.header}>
-        Edit Vendor Page
-      </Header>
+      <Container textAlign="center">
+        <Header as="h2">Edit Vendor Page</Header>
+      </Container>
 
       <Formik
         enableReinitialize
@@ -169,6 +171,13 @@ const EditVendorPage: React.FC = () => {
                 component="span"
                 className={styles.error}
               />
+
+              <Form.Field
+                control={fileInput}
+                label="Upload Business Logo"
+                width={8}
+              />
+
               <Form.Input
                 name="businessAddress"
                 onChange={handleChange}
@@ -240,12 +249,6 @@ const EditVendorPage: React.FC = () => {
                 name="website"
                 component="span"
                 className={styles.error}
-              />
-
-              <Form.Field
-                control={fileInput}
-                label="Upload Business Logo"
-                width={8}
               />
 
               <Form.Field
