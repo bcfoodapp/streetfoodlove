@@ -169,6 +169,13 @@ const EditVendorPage: React.FC = () => {
                 component="span"
                 className={styles.error}
               />
+
+              <Form.Field
+                control={fileInput}
+                label="Upload Business Logo"
+                width={8}
+              />
+
               <Form.Input
                 name="businessAddress"
                 onChange={handleChange}
@@ -240,12 +247,6 @@ const EditVendorPage: React.FC = () => {
                 name="website"
                 component="span"
                 className={styles.error}
-              />
-
-              <Form.Field
-                control={fileInput}
-                label="Upload Business Logo"
-                width={8}
               />
 
               <Form.Field
