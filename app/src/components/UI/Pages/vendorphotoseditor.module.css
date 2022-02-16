@@ -18,3 +18,9 @@
 .dragAndDrop.accept {
     border-color: #00e676;
 }
+
+.error {
+    color: #e63946 !important;
+    font-size: 1rem;
+    padding-bottom: -12px !important;
+}
