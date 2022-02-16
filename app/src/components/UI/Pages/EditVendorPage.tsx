@@ -3,6 +3,7 @@ import {
   Form,
   Header,
   Input,
+  Segment,
   Select,
   TextArea,
 } from "semantic-ui-react";
@@ -19,6 +20,7 @@ import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "../../../store";
+import Dropzone from "react-dropzone";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
