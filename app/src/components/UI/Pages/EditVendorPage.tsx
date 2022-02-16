@@ -126,7 +126,7 @@ const EditVendorPage: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
       <Container textAlign="center">
-        <Header as={"h2"}>Edit Vendor Page</Header>
+        <Header as="h2">Edit Vendor Page</Header>
       </Container>
 
       <Formik

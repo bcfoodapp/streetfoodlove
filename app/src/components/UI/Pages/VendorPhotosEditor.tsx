@@ -11,7 +11,7 @@ export default (): React.ReactElement => {
       <Header as="h1">Vendor photos</Header>
       <Header as="h3">Image upload</Header>
       <p>
-        Upload photos you want to add to your vendor page here.
+        Upload photos that you want to add to your vendor page here.
         <br />
         We only accept .jpg files. Please resize your image to be smaller than
         500x500 pixels to minimize our AWS bills.

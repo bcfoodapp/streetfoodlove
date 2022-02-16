@@ -26,28 +26,31 @@ const VendorDashBoard: React.FC = () => {
             <Card.Content className={styles.content}>
               <Card.Header>Upload Pictures</Card.Header>
               <Card.Description>
-                Upload pictures to your page or update previously uploaded
-                pictures
+                Upload pictures to your page or update current pictures
               </Card.Description>
             </Card.Content>
           </Card>
         </Link>
-        <Card className={styles.card}>
-          <Icon name="line graph" size="huge" className={styles.icon} />
-          <Card.Content className={styles.content}>
-            <Card.Header>Trends</Card.Header>
-            <Card.Description>
-              Analyze your business performance
-            </Card.Description>
-          </Card.Content>
-        </Card>
-        <Card className={styles.card}>
-          <Icon name="write" size="huge" className={styles.icon} />
-          <Card.Content className={styles.content}>
-            <Card.Header>New Reviews</Card.Header>
-            <Card.Description>Look at recent reviews</Card.Description>
-          </Card.Content>
-        </Card>
+        <Link to="">
+          <Card className={styles.card}>
+            <Icon name="line graph" size="huge" className={styles.icon} />
+            <Card.Content className={styles.content}>
+              <Card.Header>Trends</Card.Header>
+              <Card.Description>
+                Analyze your business performance
+              </Card.Description>
+            </Card.Content>
+          </Card>
+        </Link>
+        <Link to="">
+          <Card className={styles.card}>
+            <Icon name="write" size="huge" className={styles.icon} />
+            <Card.Content className={styles.content}>
+              <Card.Header>New Reviews</Card.Header>
+              <Card.Description>Look at recent reviews</Card.Description>
+            </Card.Content>
+          </Card>
+        </Link>
       </Card.Group>
     </Container>
   );
