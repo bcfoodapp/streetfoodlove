@@ -1,6 +1,7 @@
 import { Container, Grid, Comment } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./commentCard.module.css";
+import { useSubmitReviewMutation, useReviewsQuery } from "../../../../api";
 
 const CommentCardContainer: React.FC<{ commentArray: Comment[] }> = ({
   commentArray,
