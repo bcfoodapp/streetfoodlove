@@ -1,24 +1,35 @@
 .sidebar {
   z-index: 1000 !important;
   background-color: black !important;
-  /* position: relative !important; */
-  /* top: 600px; */
-  /* left: 500px !important; */
+}
+
+.search {
+  position: absolute;
+  left: 0px;
+  top: 30px;
+  width: 100%;
 }
 
 .closeIcon {
   background: transparent !important;
   position: absolute;
-  top: 0px;
+  top: 2px;
   right: 2px;
   cursor: pointer;
   z-index: 2;
 }
 
 .closeIcon:hover {
-  background: white;
+  color: white;
 }
 
 .menuItem {
   display: flex !important;
+  position: relative;
+  margin-bottom: 20px !important;
+  margin-top: 20px !important;
+}
+
+.header {
+  margin-bottom: 15px !important;
 }

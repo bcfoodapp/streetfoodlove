@@ -18,11 +18,15 @@ export const LandingPage = () => {
         </p>
       </Container>
       <Sidebar.Pushable as={Container} className={styles.container}>
-        <LandingPageSidebar setVisible={setVisible} visible={visible}/>
+        <LandingPageSidebar setVisible={setVisible} visible={visible} />
         <Sidebar.Pusher>
           <Container>
-            <Button icon className={styles.icon} onClick={() => setVisible(true)}>
-              <Icon name="options" size="big"/>
+            <Button
+              icon
+              className={styles.icon}
+              onClick={() => setVisible(true)}
+            >
+              <Icon name="options" size="big" />
             </Button>
             <Map />
           </Container>
