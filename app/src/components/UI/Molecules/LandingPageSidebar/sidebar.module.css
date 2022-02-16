@@ -10,7 +10,15 @@
   background: transparent !important;
   position: absolute;
   top: 0px;
-  right: 0px;
+  right: 2px;
   cursor: pointer;
   z-index: 2;
+}
+
+.closeIcon:hover {
+  background: white;
+}
+
+.menuItem {
+  display: flex !important;
 }

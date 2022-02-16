@@ -19,11 +19,14 @@ const LandingPageSidebar: React.FC<{setVisible: (param) => void, visible: boolea
       <Button icon onClick={() => setVisible(false)} className={styles.closeIcon}>
         <Icon name="close" size="big" color="grey"/>
       </Button>
-      <Menu.Item as="div">
-        <Icon name='search' />
-        <h3>
-        Search
-        </h3>
+      <Menu.Item as="div" className={styles.menuItem}>
+          <Icon name='search' />
+          <h3>Search</h3>
+          
+        {/* <Container>
+        </Container>
+        <Container>
+        </Container> */}
       </Menu.Item>
       <Menu.Item as="div">
         <Icon name='filter' />
