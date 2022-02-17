@@ -117,7 +117,7 @@ export function Vendor(): React.ReactElement {
             if (users && review.UserID in users) {
               user = users[review.UserID];
             }
-            return <Review key={i} review={review} user={user} />;
+            return <Review key={i} review={review} user={user} reviewID={review.ID}/>;
           })
         )}
         {token === null ? (

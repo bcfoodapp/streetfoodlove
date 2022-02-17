@@ -23,12 +23,13 @@ interface Props {
   review: ReviewObj;
   // user is null if it has not loaded yet.
   user: User | null;
+  reviewID: string
 }
 
 /**
  * Displays a review card that contains the information from a completed review of a vendor
  */
-export const Review: React.FC<Props> = ({ review, user }) => {
+export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [submitReview] = useSubmitReviewMutation();
   const token = useAppSelector((state) => state.token.token);
@@ -50,15 +51,14 @@ export const Review: React.FC<Props> = ({ review, user }) => {
       VendorID: "",
       UserID: userID,
       StarRating: null,
-      ReplyTo: 
-
+      ReplyTo: ""
 
     })
   }
 
   const openComment = () => {
-    setOpenCommentForm(false)
-
+    setOpenCommentForm(true)
+    console.log(reviewID);
   }
 
   return (
@@ -93,7 +93,7 @@ export const Review: React.FC<Props> = ({ review, user }) => {
             </Grid.Row>
             <Grid.Row>
               <Comment.Actions>
-                <Label id="test" onClick={() => setOpenCommentForm(true)}>
+                <Label id="test" onClick={openComment}>
                   <Comment.Action className={styles.reply} active>
                     Reply
                   </Comment.Action>
