@@ -31,6 +31,7 @@ interface Props {
  */
 export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
+  const [CommentInput, setCommentInput] = useState("")
   const [submitReview] = useSubmitReviewMutation();
   const token = useAppSelector((state) => state.token.token);
 
@@ -38,7 +39,8 @@ export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
     styleComments();
   }, []);
 
-  const completedCommentHandler = ({text}) => {
+  const completedCommentHandler = () => {
+    setOpenCommentForm(false)
     if (token === null) {
       throw new Error("token is null");
     }
@@ -46,19 +48,18 @@ export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
 
     submitReview({
       ID: uuid(),
-      Text: text,
+      Text: CommentInput,
       DatePosted: DateTime.now(),
       VendorID: "",
       UserID: userID,
       StarRating: null,
-      ReplyTo: ""
+      ReplyTo: reviewID
 
     })
   }
 
-  const openComment = () => {
-    setOpenCommentForm(true)
-    console.log(reviewID);
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentInput(e.target.value)
   }
 
   return (
@@ -93,7 +94,7 @@ export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
             </Grid.Row>
             <Grid.Row>
               <Comment.Actions>
-                <Label id="test" onClick={openComment}>
+                <Label id="test" onClick={() => setOpenCommentForm(true)}>
                   <Comment.Action className={styles.reply} active>
                     Reply
                   </Comment.Action>
@@ -105,19 +106,18 @@ export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
       </Grid>
       <Container>
         {openCommentForm ? (
-          <Form reply className={styles.replyForm}>
-            <Form.TextArea className={styles.replyFormArea} />
+          <Form reply className={styles.replyForm} onSubmit={completedCommentHandler}>
+            <Form.TextArea className={styles.replyFormArea} onChange={handleChange}/>
             <Buttons
               color="green"
               submit
-              clicked={() => setOpenCommentForm(false)}
             >
               Comment
             </Buttons>
           </Form>
         ) : null}
       </Container>
-      {/* <Container><CommentCardContainer /></Container> */}
+      <Container><CommentCardContainer review={review}/></Container>
     </Container>
   );
 };

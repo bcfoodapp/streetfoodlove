@@ -1,13 +1,15 @@
 import { Container, Grid, Comment } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./commentCard.module.css";
-import { useSubmitReviewMutation, useReviewsQuery, Review } from "../../../../api";
+// import { useSubmitReviewMutation, useReviewsQuery, Review } from "../../../../api";
+import { getUserIDFromToken, Review as ReviewObj, useGuideQuery, User, useSubmitReviewMutation } from "../../../../api";
 
-const CommentCardContainer: React.FC<{ commentArray: Review[] }> = ({
-  commentArray,
+const CommentCardContainer: React.FC<{ review: ReviewObj }> = ({
+  review,
 }) => {
   // let filterParentComment = commentArray.filter(comment => comment.id !== comment.parent.id)
-
+  console.log(review);
+  
   return (
     <>
       {/* {filterParentComment.map((element, key) => {
