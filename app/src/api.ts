@@ -108,6 +108,12 @@ export interface Photo {
   LinkID: string;
 }
 
+export interface AWSCredentials {
+  AccessKeyId: string;
+  SecretAccessKey: string;
+  SessionToken: string;
+}
+
 export const tokenSlice = createSlice({
   name: "token",
   initialState: {
