@@ -6,6 +6,7 @@ import {
   Menu,
   Icon,
   Button,
+  Checkbox,
 } from "semantic-ui-react";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
@@ -34,14 +35,14 @@ const LandingPageSidebar: React.FC<{
         <Icon name="close" size="big" color="grey" />
       </Button>
       <Menu.Item as="div" className={styles.menuItem}>
-        <h3 className={styles.header}>Search</h3>
-        <Container className={styles.search}>
-          <SearchBox />
-        </Container>
-      </Menu.Item>
-      <Menu.Item as="div" className={styles.menuItem}>
         <h3 className={styles.header}>Filters</h3>
+        <h3 className={styles.header}>Cuisine</h3>
         <SelectFilter />
+        <h3 className={styles.header}>Prices</h3>
+        <Checkbox label="0~5$" className={styles.checkbox} />
+        <Checkbox label="5~10$" className={styles.checkbox} />
+        <Checkbox label="10~15$" className={styles.checkbox} />
+        <Checkbox label="20+$" className={styles.checkbox} />
       </Menu.Item>
     </Sidebar>
   );

@@ -1,6 +1,6 @@
 .sidebar {
   z-index: 1000 !important;
-  background-color: black !important;
+  background-color: rgb(180, 159, 159) !important;
 }
 
 .search {
@@ -30,6 +30,20 @@
   margin-top: 20px !important;
 }
 
+.header:nth-child(1) {
+  color: black;
+  font-size: 2rem;
+  margin-left: -40px !important;
+}
+
 .header {
   margin-bottom: 15px !important;
+  margin-right: 60% !important;
+}
+
+.checkbox {
+  margin-top: 10px;
+  color: white;
+  width: 40px;
+  margin-left: 7%;
 }
