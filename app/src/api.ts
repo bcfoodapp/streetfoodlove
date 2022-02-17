@@ -509,7 +509,10 @@ export const apiSlice = createApi({
     }),
     // Returns temporary credentials for given user which can be used to upload photos.
     s3Credentials: builder.mutation<AWSCredentials, string>({
-      query: (userID) => `/users/${encode(userID)}/s3-credentials`,
+      query: (userID) => ({
+        url: `/users/${encode(userID)}/s3-credentials`,
+        method: POST,
+      }),
     }),
   }),
 });
@@ -536,6 +539,7 @@ export const {
   useGuideQuery,
   useSignInWithGoogleMutation,
   usePhotosByLinkIDQuery,
+  useS3CredentialsMutation,
 } = apiSlice;
 
 // Sets credentials and name in localStorage.
