@@ -16,6 +16,7 @@ import BusinessGuideArticle from "./components/UI/Molecules/BusinessGuideGUI/Bus
 import HeaderBar from "./components/UI/Molecules/HeaderBar/HeaderBar";
 import MessageError from "./components/UI/Atoms/Message/MessageError";
 import LoginWrapper from "./components/UI/Pages/Login";
+import VendorPhotosUploader from "./components/UI/Pages/VendorPhotosUploader";
 
 function App(): React.ReactElement {
   return (
@@ -35,6 +36,10 @@ function App(): React.ReactElement {
           <Route path="/your-acct-user" element={<YourAccountUser />} />
           <Route path="/business-guide" element={<BusinessGuides />} />
           <Route path="/vendor-dashboard" element={<VendorDashBoard />} />
+          <Route
+            path="/vendor-dashboard/photos"
+            element={<VendorPhotosUploader />}
+          />
           <Route path="/edit-vendor-page" element={<EditVendorPage />} />
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
         </Routes>
