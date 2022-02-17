@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/service/sts/types"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"time"
@@ -13,6 +15,7 @@ import (
 // before executing the command.
 type Backend struct {
 	Database *database.Database
+	AWS      *AWS
 }
 
 func (b *Backend) Close() error {
@@ -100,6 +103,17 @@ func (b *Backend) UserProtectedCreate(user *database.UserProtected, password str
 	user.SignUpDate = time.Now()
 
 	return b.Database.UserCreate(user, password)
+}
+
+// UserS3Credentials returns temporary credentials which can be used to upload photos to the
+// streetfoodlove S3 bucket.
+func (b *Backend) UserS3Credentials(ctx context.Context, userID uuid.UUID) (*types.Credentials, error) {
+	// Check if user exists
+	if _, err := b.Database.User(userID); err != nil {
+		return nil, err
+	}
+
+	return b.AWS.GetS3Role(ctx)
 }
 
 func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {

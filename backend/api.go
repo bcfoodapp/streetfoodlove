@@ -49,6 +49,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/users/:id/protected", GetToken, a.UserProtected)
 	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
 	router.PUT("/users/:id/protected", a.UserProtectedPut)
+	router.POST("/users/:id/s3-credentials", GetToken, a.UserS3CredentialsPost)
 
 	router.GET("/reviews", a.Reviews)
 	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
@@ -285,6 +286,16 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+}
+
+func (a *API) UserS3CredentialsPost(c *gin.Context) {
+	credentials, err := a.Backend.UserS3Credentials(c, getTokenFromContext(c))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, credentials)
 }
 
 func (a *API) Reviews(c *gin.Context) {

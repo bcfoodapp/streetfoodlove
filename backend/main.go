@@ -29,7 +29,19 @@ func main() {
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 
-	api := API{&Backend{database.NewDatabase(db)}}
+	aws, err := NewAWS()
+	if err != nil {
+		if isProduction {
+			panic(err)
+		} else {
+			log.Println("AWS credentials could not be loaded. AWS functions are disabled.")
+		}
+	}
+
+	api := API{&Backend{
+		AWS:      aws,
+		Database: database.NewDatabase(db),
+	}}
 	defer func() {
 		if err := api.Close(); err != nil {
 			panic(err)
