@@ -69,9 +69,8 @@ export default function Map(): React.ReactElement {
       zoom={14}
       style={{
         height: "90.3vh",
-        width: "100vw",
+        width: "100%",
         marginTop: 2.9,
-        marginLeft: -425,
         zIndex: 0,
       }}
     >

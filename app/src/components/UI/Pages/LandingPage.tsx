@@ -17,10 +17,10 @@ export const LandingPage = () => {
           Version {config.version}, server commit ID {version}
         </p>
       </Container>
-      <Sidebar.Pushable as={Container} className={styles.container}>
+      <Sidebar.Pushable as={Container} fluid>
         <LandingPageSidebar setVisible={setVisible} visible={visible} />
         <Sidebar.Pusher>
-          <Container>
+          <Container fluid>
             <Button
               icon
               className={styles.icon}
