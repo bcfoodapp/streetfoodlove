@@ -31,11 +31,7 @@ func main() {
 
 	aws, err := NewAWS()
 	if err != nil {
-		if isProduction {
-			panic(err)
-		} else {
-			log.Println("AWS credentials could not be loaded. AWS functions are disabled.")
-		}
+		panic(err)
 	}
 
 	api := API{&Backend{
