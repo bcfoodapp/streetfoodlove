@@ -8,7 +8,7 @@ import React from "react";
 
 export const LandingPage = () => {
   const { data: version } = useVersionQuery();
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = React.useState(true);
 
   return (
     <>
@@ -21,13 +21,6 @@ export const LandingPage = () => {
         <LandingPageSidebar setVisible={setVisible} visible={visible} />
         <Sidebar.Pusher>
           <Container fluid>
-            <Button
-              icon
-              className={styles.icon}
-              onClick={() => setVisible(true)}
-            >
-              <Icon name="options" size="big" />
-            </Button>
             <Map />
           </Container>
         </Sidebar.Pusher>
