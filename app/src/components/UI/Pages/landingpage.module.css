@@ -1,6 +1,3 @@
-.container {
-  width: 100% !important;
-}
 
 .icon {
   position: absolute;
@@ -12,4 +9,5 @@
 
 .container {
   width: 150% !important;
+  /* margin-left: 425px !important; */
 }
