@@ -507,6 +507,10 @@ export const apiSlice = createApi({
           DatePosted: DateTime.fromISO(photo.DatePosted),
         })),
     }),
+    // Returns temporary credentials for given user which can be used to upload photos.
+    s3Credentials: builder.mutation<AWSCredentials, string>({
+      query: (userID) => `/users/${encode(userID)}/s3-credentials`,
+    }),
   }),
 });
 
