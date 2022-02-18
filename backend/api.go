@@ -191,13 +191,13 @@ func (a *API) Vendors(c *gin.Context) {
 			return
 		}
 
-		vendors, err := a.Backend.VendorByOwnerID(ownerID)
+		vendor, err := a.Backend.VendorByOwnerID(ownerID)
 		if err != nil {
 			c.Error(err)
 			return
 		}
 
-		c.JSON(http.StatusOK, vendors)
+		c.JSON(http.StatusOK, vendor)
 		return
 	}
 
