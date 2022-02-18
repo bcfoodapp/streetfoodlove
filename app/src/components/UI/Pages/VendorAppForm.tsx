@@ -13,7 +13,6 @@ import useEffectAsync, {
 } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../../store";
 
 interface inputValues {
   name: string;

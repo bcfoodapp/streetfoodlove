@@ -9,7 +9,7 @@ import {
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./createvendorpage.module.css";
-import {
+import useEffectAsync, {
   getUserIDFromToken,
   useGetTokenMutation,
   useUpdateVendorMutation,
@@ -19,8 +19,6 @@ import {
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
-import { useAppSelector } from "../../../store";
-import Dropzone from "react-dropzone";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
@@ -45,23 +43,25 @@ const EditVendorPage: React.FC = () => {
   const [updateVendor, { isLoading: updateVendorIsLoading }] =
     useUpdateVendorMutation();
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  useEffect(() => {
-    getToken();
-  }, []);
-  const token = useAppSelector((state) => state.token.token);
+  const [token, setToken] = useState(null as string | null);
 
-  let userID = "";
-  if (tokenIsSuccess && token !== null) {
-    userID = getUserIDFromToken(token as string);
+  useEffectAsync(async () => {
+    const response = await getToken();
+    if ("data" in response) {
+      setToken(response.data);
+    }
+  }, []);
+
+  let userID = null as string | null;
+  if (tokenIsSuccess && token) {
+    userID = getUserIDFromToken(token);
   }
 
   const {
     data: vendors,
     isSuccess: vendorQueryIsSuccess,
     isLoading: vendorQueryIsLoading,
-  } = useVendorByOwnerIDQuery(userID, {
-    skip: userID === "",
-  });
+  } = useVendorByOwnerIDQuery(userID as string, { skip: !userID });
 
   const [initialValues, setInitalValues] = useState({
     name: "",
@@ -87,7 +87,7 @@ const EditVendorPage: React.FC = () => {
     }
   }, [vendorQueryIsSuccess]);
 
-  if (tokenIsSuccess && token === null) {
+  if (tokenIsSuccess && !token) {
     return <p>Not logged in</p>;
   }
 
@@ -114,7 +114,8 @@ const EditVendorPage: React.FC = () => {
       BusinessLogo: "",
       Latitude: 0,
       Longitude: 0,
-      Owner: userID,
+      // userID is defined at this point
+      Owner: userID as string,
     };
     const response = await updateVendor(vendor);
     if ((response as any).error === undefined) {
