@@ -2,25 +2,54 @@ import { Container, Header, Icon } from "semantic-ui-react";
 import Dropzone from "react-dropzone";
 import React, { useEffect, useState } from "react";
 import styles from "./vendorphotoseditor.module.css";
-import { useGetTokenMutation, useS3CredentialsMutation } from "../../../api";
-import { useAppSelector } from "../../../store";
+import useEffectAsync, {
+  getUserIDFromToken,
+  useGetTokenMutation,
+  useS3CredentialsMutation,
+  useVendorByOwnerIDQuery,
+} from "../../../api";
 
 export default (): React.ReactElement => {
   const [showUploadError, setShowUploadError] = useState(false);
   const [s3Credentials] = useS3CredentialsMutation();
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  useEffect(() => {
-    getToken();
+  const [token, setToken] = useState(null as string | null);
+
+  useEffectAsync(async () => {
+    const response = await getToken();
+    if ("data" in response) {
+      setToken(response.data);
+    }
   }, []);
-  const token = useAppSelector((state) => state.token.token);
+
+  let userID = null as string | null;
+  if (tokenIsSuccess && token) {
+    userID = getUserIDFromToken(token);
+  }
+
+  const {
+    data: vendors,
+    isSuccess: vendorQueryIsSuccess,
+    isLoading: vendorQueryIsLoading,
+  } = useVendorByOwnerIDQuery(userID as string, { skip: !userID });
 
   if (!tokenIsSuccess || token === null) {
     return <p>Not logged in</p>;
   }
 
+  if (vendorQueryIsSuccess && vendors!.length === 0) {
+    return <p>No vendor found with matching owner ID</p>;
+  }
+
+  let vendorID = null as string | null;
+  if (vendorQueryIsSuccess) {
+    vendorID = vendors![0].ID;
+  }
+
   return (
     <Container>
       <Header as="h1">Vendor photos</Header>
+      {vendorQueryIsLoading ? <p>Loading</p> : <div>{vendorID}</div>}
       <Header as="h3">Image upload</Header>
       <p>
         Upload photos that you want to add to your vendor page here. We only
@@ -53,7 +82,7 @@ export default (): React.ReactElement => {
               <Container textAlign="center">
                 <p>
                   <Icon name="upload" />
-                  Drag-and-drop image files or click to browse
+                  Drag-and-drop .jpg files or click to browse
                 </p>
               </Container>
             </div>
