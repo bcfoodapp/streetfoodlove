@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS `streetfoodlove`.`Review` (
   `Text` VARCHAR(500) NOT NULL,
   `VendorVendorID` CHAR(36) NOT NULL,
   `UserUserID` CHAR(36) NOT NULL,
+  'FavoriteReview' TINYINT,
   PRIMARY KEY (`ReviewID`),
   INDEX `fk_Review_Vendor1_idx` (`VendorVendorID` ASC) VISIBLE,
   INDEX `fk_Review_User1_idx` (`UserUserID` ASC) VISIBLE,
@@ -125,6 +126,21 @@ CREATE TABLE IF NOT EXISTS `streetfoodlove`.`Link` (
   `Title` VARCHAR(45) NULL,
   `url` VARCHAR(255) NULL,
   PRIMARY KEY (`Link_ID`))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `streetfoodlove`.`Favorite`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `streetfoodlove`.`Favorite` ;
+
+CREATE TABLE IF NOT EXISTS `streetfoodlove`.`Favorite` (
+    `Favorite_ID` CHAR NOT NULL,
+     `DatePosted` DATETIME NOT NULL,
+    `VendorVendorID` CHAR(36) NOT NULL,
+    `UserUserID` CHAR(36) NOT NULL,
+    PRIMARY KEY (`Favorite_ID`),
+    INDEX `fk_Favorite_Vendor1_idx` (`VendorVendorID` ASC) VISIBLE,
+    INDEX `fk_Favorite_User1_idx` (`UserUserID` ASC) VISIBLE,
 ENGINE = InnoDB;
 
 
