@@ -55,8 +55,8 @@ export default function VendorAppForm(): React.ReactElement {
       Longitude: 0,
       Owner: userID,
     };
-    const result = await createVendor(vendor);
-    if ((result as any).error === undefined) {
+    const response = await createVendor(vendor);
+    if ("data" in response) {
       navigate("/vendor-dashboard");
     }
   };

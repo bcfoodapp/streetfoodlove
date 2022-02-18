@@ -61,7 +61,7 @@ const AccountSettingsFormGroup: React.FC<{
       SignUpDate: user!.SignUpDate,
       GoogleID: user!.GoogleID,
     });
-    if ((response as any).error === undefined) {
+    if ("data" in response) {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }

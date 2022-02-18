@@ -118,7 +118,7 @@ const EditVendorPage: React.FC = () => {
       Owner: userID as string,
     };
     const response = await updateVendor(vendor);
-    if ((response as any).error === undefined) {
+    if ("data" in response) {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
