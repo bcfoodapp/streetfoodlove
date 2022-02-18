@@ -58,7 +58,7 @@ const EditVendorPage: React.FC = () => {
   }
 
   const {
-    data: vendors,
+    data: vendor,
     isSuccess: vendorQueryIsSuccess,
     isLoading: vendorQueryIsLoading,
   } = useVendorByOwnerIDQuery(userID as string, { skip: !userID });
@@ -74,25 +74,20 @@ const EditVendorPage: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    if (vendorQueryIsSuccess && vendors!.length > 0) {
-      const vendor = vendors![0];
+    if (vendorQueryIsSuccess) {
       setInitalValues({
-        ID: vendor.ID,
-        name: vendor.Name,
-        businessAddress: vendor.BusinessAddress,
-        phoneNumber: vendor.Phone,
-        businessHours: vendor.BusinessHours,
-        website: vendor.Website,
+        ID: vendor!.ID,
+        name: vendor!.Name,
+        businessAddress: vendor!.BusinessAddress,
+        phoneNumber: vendor!.Phone,
+        businessHours: vendor!.BusinessHours,
+        website: vendor!.Website,
       });
     }
   }, [vendorQueryIsSuccess]);
 
   if (tokenIsSuccess && !token) {
     return <p>Not logged in</p>;
-  }
-
-  if (vendorQueryIsSuccess && vendors!.length === 0) {
-    return <p>No vendor found with matching owner ID</p>;
   }
 
   const validationSchema = Yup.object({

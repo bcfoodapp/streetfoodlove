@@ -93,10 +93,9 @@ func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	const command = `
 		SELECT * FROM Vendor WHERE ID=?;
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	vendor := &Vendor{}
-	err := row.StructScan(vendor)
+	err := d.db.QueryRowx(command, &id).StructScan(vendor)
 	return vendor, err
 }
 
@@ -152,29 +151,16 @@ func (d *Database) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]Vendor
 	return result, rows.Err()
 }
 
-func (d *Database) VendorByOwnerID(userID uuid.UUID) ([]Vendor, error) {
+func (d *Database) VendorByOwnerID(userID uuid.UUID) (*Vendor, error) {
 	const command = `
 		SELECT *
 		FROM Vendor
 		WHERE Owner = ?
 	`
 
-	rows, err := d.db.Queryx(command, &userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	result := make([]Vendor, 0)
-
-	for rows.Next() {
-		result = append(result, Vendor{})
-		if err := rows.StructScan(&result[len(result)-1]); err != nil {
-			return nil, err
-		}
-	}
-
-	return result, rows.Err()
+	vendor := &Vendor{}
+	err := d.db.QueryRowx(command, &userID).StructScan(vendor)
+	return vendor, err
 }
 
 type UserType int
@@ -255,10 +241,9 @@ func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
 		FROM User
 		WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	user := &UserProtected{}
-	err := row.StructScan(user)
+	err := d.db.QueryRowx(command, &id).StructScan(user)
 	return user, err
 }
 
@@ -289,11 +274,10 @@ func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, err
 		FROM User
 		WHERE Username=?
 	`
-	row := d.db.QueryRowx(command, &credentials.Username)
 
 	userID := uuid.UUID{}
 	var passwordHash []byte
-	err := row.Scan(&userID, &passwordHash)
+	err := d.db.QueryRowx(command, &credentials.Username).Scan(&userID, &passwordHash)
 	if err != nil {
 		return [16]byte{}, err
 	}
@@ -314,10 +298,8 @@ func (d *Database) UserIDByGoogleID(googleID string) (uuid.UUID, error) {
 		WHERE GoogleID=?
 	`
 
-	row := d.db.QueryRowx(command, &googleID)
-
 	userID := uuid.UUID{}
-	err := row.Scan(&userID)
+	err := d.db.QueryRowx(command, &googleID).Scan(&userID)
 	return userID, err
 }
 
@@ -362,10 +344,9 @@ func (d *Database) Review(id uuid.UUID) (*Review, error) {
 	const command = `
 		SELECT * FROM Reviews WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	review := &Review{}
-	err := row.StructScan(review)
+	err := d.db.QueryRowx(command, &id).StructScan(review)
 	return review, err
 }
 
@@ -423,10 +404,9 @@ func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
 	const command = `
 		SELECT * FROM Photos WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	photo := &Photo{}
-	err := row.StructScan(photo)
+	err := d.db.QueryRowx(command, &id).StructScan(photo)
 
 	return photo, err
 }
@@ -483,10 +463,9 @@ func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
 	const command = `
 		SELECT * FROM Guide WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	guide := &Guide{}
-	err := row.StructScan(guide)
+	err := d.db.QueryRowx(command, &id).StructScan(guide)
 
 	return guide, err
 }
@@ -517,10 +496,9 @@ func (d *Database) Link(id uuid.UUID) (*Link, error) {
 	const command = `
 		SELECT * FROM Link WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	link := &Link{}
-	err := row.StructScan(link)
+	err := d.db.QueryRowx(command, &id).StructScan(link)
 
 	return link, err
 
@@ -556,9 +534,8 @@ func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	const command = `
 		SELECT * FROM Favorite WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	favorite := &Favorite{}
-	err := row.StructScan(favorite)
+	err := d.db.QueryRowx(command, &id).StructScan(favorite)
 	return favorite, err
 }
