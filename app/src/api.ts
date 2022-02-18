@@ -253,7 +253,7 @@ export const apiSlice = createApi({
         return { data: vendors };
       },
     }),
-    // Returns vendors with given owner ID.
+    // Returns vendor with given owner ID.
     vendorByOwnerID: builder.query<Vendor, string>({
       query: (ownerID) => `/vendors?owner=${encode(ownerID)}`,
     }),

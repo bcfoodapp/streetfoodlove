@@ -51,13 +51,14 @@ func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error 
 	}
 
 	_, err = b.Database.VendorByOwnerID(userID)
-	// Check that vendor for owner does not exist. It should return sql.ErrNoRows if there is no owner.
+	// Check that vendor for owner does not exist. We are expecting sql.ErrNoRows if there is no
+	// owner.
+	if err == nil {
+		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
+	}
+
 	if err != sql.ErrNoRows {
-		if err != nil {
-			return err
-		} else {
-			return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
-		}
+		return err
 	}
 
 	return b.Database.VendorCreate(vendor)
