@@ -4,17 +4,22 @@ import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
 import {
   getUserIDFromToken,
-  useGetTokenQuery,
+  useGetTokenMutation,
   useUpdateUserMutation,
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
+import { useAppSelector } from "../../../../store";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
-  const { data: token, isSuccess: tokenIsSuccess } = useGetTokenQuery();
+  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  useEffect(() => {
+    getToken();
+  }, []);
+  const token = useAppSelector((state) => state.token.token);
 
   let userID = "";
   if (tokenIsSuccess && token !== null) {
@@ -26,10 +31,12 @@ const AccountSettingsFormGroup: React.FC<{
     isLoading: userQueryIsLoading,
   } = useUserProtectedQuery(userID, { skip: userID === "" });
 
-  const [updateSetting] = useUpdateUserMutation();
+  const [updateUser, { isLoading: updateUserIsLoading }] =
+    useUpdateUserMutation();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     if (userQueryIsSuccess) {
@@ -40,7 +47,7 @@ const AccountSettingsFormGroup: React.FC<{
   }, [userQueryIsSuccess]);
 
   const handleSubmit = async () => {
-    const response = await updateSetting({
+    const response = await updateUser({
       ID: userID,
       Photo: user!.Photo,
       Username: user!.Username,
@@ -49,9 +56,11 @@ const AccountSettingsFormGroup: React.FC<{
       LastName: lastName,
       UserType: UserType.Customer,
       SignUpDate: user!.SignUpDate,
+      GoogleID: user!.GoogleID,
     });
     if ((response as any).error === undefined) {
-      alert("Updated User Settings!");
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
     }
   };
 
@@ -90,12 +99,20 @@ const AccountSettingsFormGroup: React.FC<{
         </Form.Group>
         <Container className={styles.saveBtn}>
           {userQueryIsSuccess ? (
-            <Buttons submit color="green" clicked={() => setDisabledForm(true)}>
+            <Buttons
+              submit
+              color="green"
+              clicked={() => setDisabledForm(true)}
+              loading={updateUserIsLoading}
+            >
               Save
             </Buttons>
           ) : null}
         </Container>
       </Form>
+      <br />
+      <br />
+      {showSuccess ? <p>Updated profile</p> : null}
     </Container>
   );
 };

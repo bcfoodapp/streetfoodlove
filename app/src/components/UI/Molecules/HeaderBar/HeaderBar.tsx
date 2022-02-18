@@ -4,14 +4,14 @@ import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
 import { Link, useNavigate } from "react-router-dom";
-import { clearLocalStorage, getCredentialsAndName } from "../../../../api";
+import { clearLocalStorage, getCredentialsEntry } from "../../../../api";
 
 /**
  * Returns the headerbar element
  */
 
 export default function HeaderBar(): React.ReactElement {
-  const name = getCredentialsAndName()?.Name;
+  const name = getCredentialsEntry()?.Name;
 
   const navigate = useNavigate();
 
@@ -57,16 +57,21 @@ export default function HeaderBar(): React.ReactElement {
   ];
 
   return (
-    <Menu size="massive">
+    <Menu size="massive" className={styles.menu}>
       <Link to="/">
         <Menu.Item>
           <h2>StreetFoodLove</h2>
         </Menu.Item>
       </Link>
       <SearchBox />
-
       <Menu.Menu position="right">
-        {name === null ? (
+        {name ? (
+          <Dropdown
+            trigger={ProfileIcon}
+            options={options}
+            className={styles.dropdown}
+          />
+        ) : (
           <Menu.Item>
             <Link to="/account-selection">
               <Buttons signup>Sign Up</Buttons>
@@ -77,12 +82,6 @@ export default function HeaderBar(): React.ReactElement {
               </Buttons>
             </Link>
           </Menu.Item>
-        ) : (
-          <Dropdown
-            trigger={ProfileIcon}
-            options={options}
-            className={styles.dropdown}
-          />
         )}
       </Menu.Menu>
     </Menu>

@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Container } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import { Dropdown } from "semantic-ui-react";
 import styles from "./vendorappform.module.css";
 import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
-import { useAppSelector } from "../../../store";
-import MessageError from "../Atoms/Message/MessageError";
-import { useCreateVendorMutation, Vendor } from "../../../api";
+import {
+  getUserIDFromToken,
+  useCreateVendorMutation,
+  useGetTokenMutation,
+  Vendor,
+} from "../../../api";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../../store";
 
 interface inputValues {
   name: string;
@@ -25,8 +28,22 @@ interface inputValues {
 export default function VendorAppForm(): React.ReactElement {
   const navigate = useNavigate();
   const [createVendor] = useCreateVendorMutation();
+  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  useEffect(() => {
+    getToken();
+  }, []);
+  const token = useAppSelector((state) => state.token.token);
+
+  if (!tokenIsSuccess || token === null) {
+    return <p>Not logged in</p>;
+  }
 
   const onSubmit = async (data: inputValues) => {
+    if (!tokenIsSuccess || token === null) {
+      // Button is inaccessible when token is null
+      throw new Error("unexpected");
+    }
+    const userID = getUserIDFromToken(token);
     const vendor: Vendor = {
       ID: uuid(),
       Name: data.name,
@@ -37,8 +54,7 @@ export default function VendorAppForm(): React.ReactElement {
       BusinessLogo: "",
       Latitude: 0,
       Longitude: 0,
-      // TODO get user ID
-      Owner: uuid(),
+      Owner: userID,
     };
     const result = await createVendor(vendor);
     if ((result as any).error === undefined) {
@@ -139,8 +155,8 @@ export default function VendorAppForm(): React.ReactElement {
             >
               <Form.Input
                 fluid
-                label="Name"
-                placeholder="Name"
+                label="Vendor Name"
+                placeholder="Vendor Name"
                 name={"name"}
                 required
                 width={5}
