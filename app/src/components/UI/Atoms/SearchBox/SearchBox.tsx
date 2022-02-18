@@ -1,8 +1,6 @@
 import React, { ChangeEvent, SetStateAction, useState } from "react";
 import {
-  Container,
   Input,
-  InputOnChangeData,
   Menu,
   Search,
   SearchProps,
@@ -33,7 +31,6 @@ const inputBox = (
 export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
   const { data: vendorsList } = useVendorsQuery();
-  console.log(vendorsList);
 
   const onSearchChange = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,

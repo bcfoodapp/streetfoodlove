@@ -23,6 +23,12 @@
   color: white;
 }
 
+.downIcon {
+  position: absolute;
+  left: 20px;
+  top: 35px;
+}
+
 .menuItem {
   display: flex !important;
   position: relative;
@@ -30,7 +36,7 @@
   margin-top: 20px !important;
 }
 
-.header:nth-child(1) {
+.menuItem .header:nth-child(1) {
   color: black;
   font-size: 2rem;
   margin-left: -40px !important;
@@ -38,7 +44,7 @@
 
 .header {
   margin-bottom: 15px !important;
-  margin-right: 60% !important;
+  margin-right: 65% !important;
 }
 
 .checkbox {
