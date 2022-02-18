@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
   useVendorQuery,
@@ -8,16 +8,17 @@ import {
   useLazyUsersMultipleQuery,
   User,
   getUserIDFromToken,
+  usePhotosByLinkIDQuery,
 } from "../../../api";
-import { Container, Grid } from "semantic-ui-react";
-import Buttons from "../Atoms/Button/Buttons";
-import styles from "./vendor.module.css";
+import { Container, Divider, Grid, Header } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
+import Buttons from "../Atoms/Button/Buttons";
+import Gallery from "../Organisms/VendorGallery/VendorGallery";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -28,24 +29,17 @@ export function Vendor(): React.ReactElement {
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;
   const [submitReview] = useSubmitReviewMutation();
-  const [openReviewForm, setOpenReviewForm] = useState(false);
-  const error = useAppSelector((state) => state.root.error);
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
+  const { data: photos, isSuccess: photosIsSuccess } =
+    usePhotosByLinkIDQuery(vendorID);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (reviewsQuery.isSuccess) {
       usersMultipleTrigger(reviewsQuery.data!.map((r) => r.UserID));
     }
   }, [reviewsQuery.isSuccess]);
-
-  const openReviewHandler = () => {
-    setOpenReviewForm(true);
-  };
-
-  const closeReviewHandler = () => {
-    setOpenReviewForm(false);
-  };
 
   const completedReviewHandler = ({
     text,
@@ -55,7 +49,7 @@ export function Vendor(): React.ReactElement {
     starRating: StarRatingInteger;
   }) => {
     if (token === null) {
-      throw new Error("not logged in");
+      throw new Error("token is null");
     }
 
     const userID = getUserIDFromToken(token);
@@ -74,8 +68,11 @@ export function Vendor(): React.ReactElement {
 
   return (
     <>
-      <Container className={styles.wrapper}>
-        <Grid>
+      <Container textAlign="center">
+        <Grid centered>
+          <Grid.Row>
+            {photosIsSuccess ? <Gallery photos={photos!} /> : null}
+          </Grid.Row>
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
@@ -109,28 +106,34 @@ export function Vendor(): React.ReactElement {
           </Grid.Row>
         </Grid>
       </Container>
-      {openReviewForm ? (
-        <ReviewForm
-          finishedFormHandler={completedReviewHandler}
-          closeReviewHandler={closeReviewHandler}
-        />
-      ) : (
-        <Container className={styles.textArea}>
-          <Buttons color="orange" writeReview clicked={openReviewHandler}>
-            Write Review
+      <Divider hidden />
+      <Container>
+        <Header as="h1">Reviews for {vendor?.Name}</Header>
+        {reviews?.length === 0 ? (
+          <p>No one has posted a review for this vendor. Yet...</p>
+        ) : (
+          reviews?.map((review, i) => {
+            let user = null as User | null;
+            if (users && review.UserID in users) {
+              user = users[review.UserID];
+            }
+            return <Review key={i} review={review} user={user} />;
+          })
+        )}
+        {token === null ? (
+          <Buttons
+            color="orange"
+            writeReview
+            clicked={() => {
+              navigate("/signup");
+            }}
+          >
+            Sign up to write a review
           </Buttons>
-        </Container>
-      )}
-      {/* Temporary error output */}
-      <pre>{error ? error.toString() : ""}</pre>
-      <Container className={styles.reviews}>
-        {reviews?.map((review, i) => {
-          let user = null as User | null;
-          if (users && review.UserID in users) {
-            user = users[review.UserID];
-          }
-          return <Review key={i} review={review} user={user} />;
-        })}
+        ) : (
+          <ReviewForm finishedFormHandler={completedReviewHandler} />
+        )}
+        <Divider hidden />
       </Container>
     </>
   );

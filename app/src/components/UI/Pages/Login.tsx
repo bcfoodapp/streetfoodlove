@@ -33,7 +33,7 @@ export default function Login(): React.ReactElement {
         "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
       callback: async (data) => {
         const response = await signInWithGoogle(data.credential);
-        if ((response as any).error === undefined) {
+        if ("data" in response) {
           navigate("/");
         }
       },
@@ -57,7 +57,7 @@ export default function Login(): React.ReactElement {
       Password: values.Password,
     });
 
-    if ((response as any).error === undefined) {
+    if ("data" in response) {
       navigate("/");
     }
   };
