@@ -2,21 +2,25 @@ import { Container, Grid, Comment } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./commentCard.module.css";
 // import { useSubmitReviewMutation, useReviewsQuery, Review } from "../../../../api";
-import { getUserIDFromToken, Review as ReviewObj, useGuideQuery, User, useSubmitReviewMutation } from "../../../../api";
+import { getUserIDFromToken, Review as ReviewObj, useGuideQuery, User, useReviewsQuery, useSubmitReviewMutation } from "../../../../api";
 
-const CommentCardContainer: React.FC<{ review: ReviewObj }> = ({
+const CommentCardContainer: React.FC<{ review: ReviewObj, vendorID: string }> = ({
   review,
+  vendorID
 }) => {
-  console.log(review);
-  
+  const reviewsQuery = useReviewsQuery(vendorID);
+  const reviews = reviewsQuery.data;
+
   return (
-    <>
-      {/* {filterParentComment.map((element, key) => {
-        return (
-          <CommentCard />
-        )
-      })} */}
-    </>
+    <Container className={styles.wrapper}>
+      {reviews?.map((element, key) => {
+        if (element.ReplyTo === review.ID) {
+          return (
+            <CommentCard comment={element.Text} key={key}/>
+          )
+        }
+      })}
+    </Container>
   );
 };
 
@@ -25,14 +29,14 @@ export default CommentCardContainer;
 //Comment type is from backend
 
 const CommentCard: React.FC<{
-  comment: object;
-  allComments: typeof Comment[];
-}> = (comment, allComments) => {
+  comment: string;
+  // allComments: typeof Comment[];
+}> = ({comment}) => {
   // const childComments = () => allComments.filter(c => c.parent_id === comment.id)
 
   return (
     <>
-      <Grid divided celled columns={4} className={styles.row}>
+      <Grid divided celled columns={8} className={styles.row}>
         <Grid.Row>
           <Grid.Column width={1}>
             <ReviewLabel />
@@ -43,7 +47,7 @@ const CommentCard: React.FC<{
               {<b>Colin Zhou</b>}
             </Grid.Row>
             <Grid.Row>
-              <pre>This is a comment</pre>
+              <pre>{comment}</pre>
             </Grid.Row>
             <Grid.Row>
               <Comment.Actions>

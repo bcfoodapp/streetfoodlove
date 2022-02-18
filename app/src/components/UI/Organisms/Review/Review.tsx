@@ -23,13 +23,14 @@ interface Props {
   review: ReviewObj;
   // user is null if it has not loaded yet.
   user: User | null;
-  reviewID: string
+  reviewID: string //id of the specific root review
+  vendorID: string
 }
 
 /**
  * Displays a review card that contains the information from a completed review of a vendor
  */
-export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
+export const Review: React.FC<Props> = ({ review, user, reviewID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("")
   const [submitReview] = useSubmitReviewMutation();
@@ -46,11 +47,11 @@ export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
     }
     const userID = getUserIDFromToken(token)
 
-    submitReview({
+    submitReview({  //submitting comment, a subtype of review
       ID: uuid(),
       Text: CommentInput,
       DatePosted: DateTime.now(),
-      VendorID: "",
+      VendorID: vendorID,
       UserID: userID,
       StarRating: null,
       ReplyTo: reviewID
@@ -117,7 +118,7 @@ export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
           </Form>
         ) : null}
       </Container>
-      <Container> <CommentCardContainer review={review} /></Container>
+      <Container> <CommentCardContainer review={review} vendorID={review.VendorID}/></Container>
     </Container>
   );
 };
