@@ -117,7 +117,7 @@ export const Review: React.FC<Props> = ({ review, user, reviewID }) => {
           </Form>
         ) : null}
       </Container>
-      <Container><CommentCardContainer review={review}/></Container>
+      <Container> <CommentCardContainer review={review} /></Container>
     </Container>
   );
 };

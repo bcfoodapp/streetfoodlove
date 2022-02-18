@@ -7,7 +7,6 @@ import { getUserIDFromToken, Review as ReviewObj, useGuideQuery, User, useSubmit
 const CommentCardContainer: React.FC<{ review: ReviewObj }> = ({
   review,
 }) => {
-  // let filterParentComment = commentArray.filter(comment => comment.id !== comment.parent.id)
   console.log(review);
   
   return (
