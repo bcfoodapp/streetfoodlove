@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Container } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import { Dropdown } from "semantic-ui-react";
 import styles from "./vendorappform.module.css";
 import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
-import {
+import useEffectAsync, {
   getUserIDFromToken,
   useCreateVendorMutation,
   useGetTokenMutation,
@@ -29,20 +29,20 @@ export default function VendorAppForm(): React.ReactElement {
   const navigate = useNavigate();
   const [createVendor] = useCreateVendorMutation();
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  useEffect(() => {
-    getToken();
+  const [token, setToken] = useState(null as string | null);
+
+  useEffectAsync(async () => {
+    const response = await getToken();
+    if ("data" in response) {
+      setToken(response.data);
+    }
   }, []);
-  const token = useAppSelector((state) => state.token.token);
 
   if (!tokenIsSuccess || token === null) {
     return <p>Not logged in</p>;
   }
 
   const onSubmit = async (data: inputValues) => {
-    if (!tokenIsSuccess || token === null) {
-      // Button is inaccessible when token is null
-      throw new Error("unexpected");
-    }
     const userID = getUserIDFromToken(token);
     const vendor: Vendor = {
       ID: uuid(),
