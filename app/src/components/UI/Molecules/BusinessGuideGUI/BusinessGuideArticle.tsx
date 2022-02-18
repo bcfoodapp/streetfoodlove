@@ -1,5 +1,4 @@
 import { Container, Header } from "semantic-ui-react";
-import HeaderBar from "../HeaderBar/HeaderBar";
 import styles from "./article.module.css";
 import { useGuideQuery } from "../../../../api";
 import { useParams } from "react-router-dom";

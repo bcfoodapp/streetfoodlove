@@ -1,12 +1,5 @@
 import React, { ChangeEvent, SetStateAction, useState } from "react";
-import {
-  Container,
-  Input,
-  InputOnChangeData,
-  Menu,
-  Search,
-  SearchProps,
-} from "semantic-ui-react";
+import { Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
 import Buttons from "../Button/Buttons";
 import { useVendorsQuery, Vendor } from "../../../../api";
@@ -33,7 +26,6 @@ const inputBox = (
 export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
   const { data: vendorsList } = useVendorsQuery();
-  console.log(vendorsList);
 
   const onSearchChange = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,

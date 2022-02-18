@@ -53,7 +53,7 @@ export default function Signup(): React.ReactElement {
   });
 
   const onSubmit = async (data: inputValues) => {
-    const result = await createUser({
+    const response = await createUser({
       ID: uuid(),
       Username: data.username,
       Photo: uuid(),
@@ -66,7 +66,7 @@ export default function Signup(): React.ReactElement {
       GoogleID: null,
     });
 
-    if ((result as any).error === undefined) {
+    if ("data" in response) {
       await setCredentials({
         Username: data.username,
         Password: data.password,
@@ -88,7 +88,7 @@ export default function Signup(): React.ReactElement {
         "194003030221-uf763jqlstob3kof9c8du4j869lcd4f4.apps.googleusercontent.com",
       callback: async (data) => {
         const response = await signInWithGoogle(data.credential);
-        if ((response as any).error === undefined) {
+        if ("data" in response) {
           if (userType === UserType.Customer) {
             navigate("/");
           }

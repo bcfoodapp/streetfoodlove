@@ -35,6 +35,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
 	router.Use(gin.CustomRecovery(recovery))
+	router.NoRoute(noRoute)
 
 	router.GET("/", root)
 
@@ -92,6 +93,10 @@ func recovery(c *gin.Context, err interface{}) {
 	} else {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
+}
+
+func noRoute(c *gin.Context) {
+	c.JSON(http.StatusNotFound, "page not found")
 }
 
 var idsDoNotMatch = fmt.Errorf("ids do not match")

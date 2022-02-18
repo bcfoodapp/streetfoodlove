@@ -13,6 +13,7 @@ import {
 import jwtDecode from "jwt-decode";
 import config from "./configuration.json";
 import { v4 as uuid } from "uuid";
+import { DependencyList, useEffect } from "react";
 
 export interface Vendor {
   ID: string;
@@ -350,16 +351,16 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Review"],
     }),
-    // Gets token using stored credentials and saves it to state.
-    // This endpoint should be used to get the token if no query is called before the token is required. When any query
-    // is called, the token can be retrieved from the store without calling getToken.
-    getToken: builder.mutation<undefined, void>({
+    // Gets token using stored credentials and saves it to state. Returns token if credentials are stored, otherwise
+    // returns null. This endpoint should be used to get the token if no query is called before the token is required.
+    // When any query is called, the token can be retrieved from the store without calling getToken.
+    getToken: builder.mutation<string | null, void>({
       queryFn: async (arg, api, extraOptions) => {
         const credentials = getCredentialsEntry();
-        if (credentials !== null) {
-          await getAndSaveCredentials(credentials, api);
+        if (credentials === null) {
+          return { data: null };
         }
-        return { data: undefined };
+        return await getAndSaveCredentials(credentials, api);
       },
     }),
     // Retrieves token and stores credentials and name in localStorage.
@@ -562,4 +563,15 @@ export function getCredentialsEntry(): CredentialsStorageEntry | null {
 export function clearLocalStorage() {
   console.info("clear localStorage");
   localStorage.clear();
+}
+
+// This is to make it easier to write async functions inside useEffect.
+export default function useEffectAsync(
+  effect: () => Promise<any>,
+  inputs: DependencyList
+) {
+  useEffect(() => {
+    // noinspection JSIgnoredPromiseFromCall
+    effect();
+  }, inputs);
 }

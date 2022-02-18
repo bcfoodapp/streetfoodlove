@@ -322,13 +322,14 @@ func (d *Database) UserIDByGoogleID(googleID string) (uuid.UUID, error) {
 }
 
 type Review struct {
-	ID         uuid.UUID
-	Text       string
-	VendorID   uuid.UUID
-	UserID     uuid.UUID
-	DatePosted time.Time
-	StarRating *int
-	ReplyTo    *uuid.UUID
+	ID             uuid.UUID
+	Text           string
+	VendorID       uuid.UUID
+	UserID         uuid.UUID
+	DatePosted     time.Time
+	StarRating     *int
+	ReplyTo        *uuid.UUID
+	VendorFavorite *int
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -340,7 +341,8 @@ func (d *Database) ReviewCreate(review *Review) error {
 			UserID,
 			DatePosted,
 			StarRating,
-			ReplyTo
+			ReplyTo,
+		    VendorFavorite
 		) VALUES (
 			:ID,
 			:Text,
@@ -348,7 +350,8 @@ func (d *Database) ReviewCreate(review *Review) error {
 			:UserID,
 			:DatePosted,
 			:StarRating,
-			:ReplyTo
+			:ReplyTo,
+			:VendorFavorite
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
