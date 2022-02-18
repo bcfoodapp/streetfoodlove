@@ -474,7 +474,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image2_url",
 			Latitude:        47.1930432,
 			Longitude:       -122.739274,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("06e92326-2f79-4b39-8690-de04314e5d23"),
@@ -486,7 +486,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image2_url",
 			Latitude:        45.328053,
 			Longitude:       -121.322161,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("06e92326-2f79-4b39-8690-de04314e5d25"),
@@ -498,7 +498,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image2_url",
 			Latitude:        45.328013,
 			Longitude:       -111.322161,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("06e92326-2f79-4b39-8690-de04314e5d28"),
@@ -510,7 +510,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image2_url",
 			Latitude:        45.322013,
 			Longitude:       -121.322161,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("f4d8a290-da16-4a83-a4b6-2db613887f23"),
@@ -522,7 +522,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image2_url",
 			Latitude:        47.121113,
 			Longitude:       -122.2394023,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("30f15697-8c12-41cf-83d9-a9ccfe07c43e"),
@@ -534,7 +534,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image3_url",
 			Latitude:        47.329042,
 			Longitude:       -122.4927201,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("3531910e-e3e9-4b8b-9a31-d9a55448b956"),
@@ -546,7 +546,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image4_url",
 			Latitude:        47.0940252,
 			Longitude:       -122.3093485,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("da1e30f8-f47f-4520-985c-f88d07690337"),
@@ -558,7 +558,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image5_url",
 			Latitude:        47.84283582,
 			Longitude:       -122.19438594,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("21e0878a-3378-449f-abce-82dbf1145ab6"),
@@ -570,7 +570,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image6_url",
 			Latitude:        47.7382940,
 			Longitude:       -122.849274,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("0cfa988f-eae6-4e28-a4ed-d6df56f23776"),
@@ -582,7 +582,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image7_url",
 			Latitude:        47.284924,
 			Longitude:       -122.4849585,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("da700177-e738-4651-9889-3025bf634ee0"),
@@ -594,7 +594,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image8_url",
 			Latitude:        47.020385,
 			Longitude:       -122.457294,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("6fe864a4-3de8-4ca4-9f10-38bceb3a8d52"),
@@ -606,7 +606,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image9_url",
 			Latitude:        47.58590294,
 			Longitude:       -122.1930859,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("29b074e4-f335-4787-b798-dc832056e16f"),
@@ -618,7 +618,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image10_url",
 			Latitude:        47.383958,
 			Longitude:       -122.848595,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("c28c2a93-36af-44dc-a90d-c01090a09836"),
@@ -630,7 +630,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image11_url",
 			Latitude:        47.938592,
 			Longitude:       -122.385952,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("3becace8-89f5-4bc6-9379-8f84e891cd1d"),
@@ -642,7 +642,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image12_url",
 			Latitude:        47.839572,
 			Longitude:       -122.9502853,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("ec54fe44-f045-4f89-bbb2-e65278032a78"),
@@ -654,7 +654,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image13_url",
 			Latitude:        47.3940285,
 			Longitude:       -122.248574,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("105fab9b-dc74-44b0-baea-c6cb2fdddd77"),
@@ -666,7 +666,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image14_url",
 			Latitude:        47.738592,
 			Longitude:       -122.584954,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("eb52a586-9bf9-49b8-ab53-66b1622d4c16"),
@@ -678,7 +678,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image15_url",
 			Latitude:        47.9308953,
 			Longitude:       -122.8495849,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("8ee2c22e-6379-4954-b004-d747652ea755"),
@@ -690,7 +690,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image16_url",
 			Latitude:        47.930582,
 			Longitude:       -122.859473,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("17dbed88-4248-4453-a32b-e1a3a8361740"),
@@ -702,7 +702,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image17_url",
 			Latitude:        47.39038594,
 			Longitude:       -122.34558294,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("ae72ac38-df76-4f0b-a7b2-3942c24482aa"),
@@ -714,7 +714,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image18_url",
 			Latitude:        47.395025,
 			Longitude:       -122.4748954,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("613bc5c5-a3b3-4db4-b1c1-fc7bd5ff119f"),
@@ -726,7 +726,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image19_url",
 			Latitude:        47.7838593,
 			Longitude:       -122.3758395,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("94ba0158-df11-4a8a-a3c7-60f7d022c2db"),
@@ -738,7 +738,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image20_url",
 			Latitude:        47.8392748,
 			Longitude:       -122.3895955,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("4b77070b-a507-4a63-90b1-115fa3f6d658"),
@@ -750,7 +750,7 @@ func addTestData(db *database.Database) error {
 			BusinessLogo:    "image21_url",
 			Latitude:        47.139328945,
 			Longitude:       -122.782963758,
-			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
+			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
 			ID:              uuid.MustParse("09d8b204-1b5c-4203-b174-d44eda838a0e"),
