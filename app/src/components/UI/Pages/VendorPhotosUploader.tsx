@@ -5,9 +5,11 @@ import styles from "./vendorphotoseditor.module.css";
 import useEffectAsync, {
   getUserIDFromToken,
   useGetTokenMutation,
+  usePhotosByLinkIDQuery,
   useS3CredentialsMutation,
   useVendorByOwnerIDQuery,
 } from "../../../api";
+import Gallery from "../Organisms/VendorGallery/VendorGallery";
 
 export default (): React.ReactElement => {
   const [showUploadError, setShowUploadError] = useState(false);
@@ -27,29 +29,27 @@ export default (): React.ReactElement => {
     userID = getUserIDFromToken(token);
   }
 
+  const { data: vendor, isLoading: vendorQueryIsLoading } =
+    useVendorByOwnerIDQuery(userID as string, { skip: !userID });
+
   const {
-    data: vendors,
-    isSuccess: vendorQueryIsSuccess,
-    isLoading: vendorQueryIsLoading,
-  } = useVendorByOwnerIDQuery(userID as string, { skip: !userID });
+    data: photos,
+    isSuccess: photosIsSuccess,
+    isLoading: photosIsLoading,
+  } = usePhotosByLinkIDQuery(vendor ? vendor.ID : "", { skip: !vendor });
 
   if (!tokenIsSuccess || token === null) {
     return <p>Not logged in</p>;
   }
 
-  if (vendorQueryIsSuccess && vendors!.length === 0) {
-    return <p>No vendor found with matching owner ID</p>;
-  }
-
-  let vendorID = null as string | null;
-  if (vendorQueryIsSuccess) {
-    vendorID = vendors![0].ID;
-  }
-
   return (
     <Container>
       <Header as="h1">Vendor photos</Header>
-      {vendorQueryIsLoading ? <p>Loading</p> : <div>{vendorID}</div>}
+      {vendorQueryIsLoading || photosIsLoading ? (
+        <p>Loading</p>
+      ) : photosIsSuccess ? (
+        <Gallery photos={photos!} />
+      ) : null}
       <Header as="h3">Image upload</Header>
       <p>
         Upload photos that you want to add to your vendor page here. We only
