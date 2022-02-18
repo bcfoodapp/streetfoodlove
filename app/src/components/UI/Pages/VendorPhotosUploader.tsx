@@ -23,10 +23,13 @@ export default (): React.ReactElement => {
       <Header as="h1">Vendor photos</Header>
       <Header as="h3">Image upload</Header>
       <p>
-        Upload photos that you want to add to your vendor page here.
+        Upload photos that you want to add to your vendor page here. We only
+        accept .jpg files.
         <br />
-        We only accept .jpg files. Please resize your image to be smaller than
-        500x500 pixels to minimize our AWS bills.
+        <strong>
+          Please resize your image to be smaller than 500x500 pixels to minimize
+          our AWS bills.
+        </strong>
       </p>
       <Dropzone
         accept="image/jpeg"
@@ -37,6 +40,7 @@ export default (): React.ReactElement => {
           await s3Credentials(token);
         }}
         onDropRejected={() => setShowUploadError(true)}
+        maxSize={1_000_000}
       >
         {({ getRootProps, getInputProps, isDragAccept }) => {
           let dragAndDropStyles = styles.dragAndDrop;
