@@ -35,7 +35,12 @@ const LandingPageSidebar: React.FC<{
         <Icon name="close" size="big" color="grey" />
       </Button>
       <Menu.Item as="div" className={styles.menuItem}>
-        <Icon name="caret down" size="big" color="black" className={styles.downIcon}/>
+        <Icon
+          name="caret down"
+          size="big"
+          color="black"
+          className={styles.downIcon}
+        />
         <h3 className={styles.header}>Filters</h3>
         <h3 className={styles.header}>Cuisine</h3>
         <SelectFilter />
