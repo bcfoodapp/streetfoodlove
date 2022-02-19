@@ -126,12 +126,15 @@ export const Review: React.FC<Props> = ({
             <Form.TextArea
               className={styles.replyFormArea}
               onChange={handleChange}
-              
             />
             <Buttons color="green" submit>
               Comment
             </Buttons>
-            <Buttons color="orange" cancel clicked={() => setOpenCommentForm(false)}>
+            <Buttons
+              color="orange"
+              cancel
+              clicked={() => setOpenCommentForm(false)}
+            >
               Cancel
             </Buttons>
           </Form>

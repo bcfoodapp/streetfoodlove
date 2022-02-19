@@ -127,7 +127,11 @@ const CommentCard: React.FC<{
             <Buttons color="green" submit>
               Comment
             </Buttons>
-            <Buttons color="orange" cancel clicked={() => setOpenCommentForm(false)}>
+            <Buttons
+              color="orange"
+              cancel
+              clicked={() => setOpenCommentForm(false)}
+            >
               Cancel
             </Buttons>
           </Form>
