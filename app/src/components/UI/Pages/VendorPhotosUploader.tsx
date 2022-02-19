@@ -16,6 +16,7 @@ import { v4 as uuid } from "uuid";
 
 export default (): React.ReactElement => {
   const [showUploadError, setShowUploadError] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
 
@@ -85,7 +86,10 @@ export default (): React.ReactElement => {
           onDropAccepted={async (files) => {
             setShowUploadError(false);
             for (const file of files) {
+              setUploading(true);
               await uploadToS3(s3Credentials!, `${uuid()}.jpg`, file);
+              setUploading(false);
+              // TODO create photo record
             }
           }}
           onDropRejected={() => setShowUploadError(true)}
@@ -115,6 +119,7 @@ export default (): React.ReactElement => {
           This is not a jpg file. Only .jpg files are accepted.
         </p>
       ) : null}
+      {uploading ? <p>Uploading</p> : null}
     </Container>
   );
 };
