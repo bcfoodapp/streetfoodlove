@@ -21,13 +21,16 @@ const CommentCardContainer: React.FC<{
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;
 
-  console.log('reviews: ' + JSON.stringify(reviews, null, 2));
+  console.log("reviews: " + JSON.stringify(reviews, null, 2));
 
   return (
     <Container className={styles.wrapper}>
       {reviews
         ? reviews?.map((element, key) => {
-            if (element.ReplyTo === review?.ID || element.ReplyTo === commentID) {
+            if (
+              element.ReplyTo === review?.ID ||
+              element.ReplyTo === commentID
+            ) {
               return (
                 <CommentCard
                   comment={element.Text}
@@ -37,7 +40,7 @@ const CommentCardContainer: React.FC<{
                 />
               );
             } else {
-              return null
+              return null;
             }
           })
         : null}
@@ -127,7 +130,10 @@ const CommentCard: React.FC<{
           </Form>
         ) : null}
       </Container>
-      <Container> <CommentCardContainer commentID={commentID} vendorID={vendorID}/></Container>
+      <Container>
+        {" "}
+        <CommentCardContainer commentID={commentID} vendorID={vendorID} />
+      </Container>
     </>
   );
 };
