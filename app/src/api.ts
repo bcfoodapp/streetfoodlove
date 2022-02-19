@@ -109,6 +109,12 @@ export interface Photo {
   LinkID: string;
 }
 
+export interface AWSCredentials {
+  AccessKeyId: string;
+  SecretAccessKey: string;
+  SessionToken: string;
+}
+
 export const tokenSlice = createSlice({
   name: "token",
   initialState: {
@@ -502,6 +508,13 @@ export const apiSlice = createApi({
           DatePosted: DateTime.fromISO(photo.DatePosted),
         })),
     }),
+    // Returns temporary credentials for given user which can be used to upload photos.
+    s3Credentials: builder.mutation<AWSCredentials, string>({
+      query: (userID) => ({
+        url: `/users/${encode(userID)}/s3-credentials`,
+        method: POST,
+      }),
+    }),
   }),
 });
 
@@ -527,6 +540,7 @@ export const {
   useGuideQuery,
   useSignInWithGoogleMutation,
   usePhotosByLinkIDQuery,
+  useS3CredentialsMutation,
 } = apiSlice;
 
 // Sets credentials and name in localStorage.
