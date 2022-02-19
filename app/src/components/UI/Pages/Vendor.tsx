@@ -119,9 +119,16 @@ export function Vendor(): React.ReactElement {
             }
 
             if (review.ReplyTo === null) {
-              return <Review key={i} review={review} user={user} reviewID={review.ID} vendorID={review.VendorID}/>;
+              return (
+                <Review
+                  key={i}
+                  review={review}
+                  user={user}
+                  reviewID={review.ID}
+                  vendorID={review.VendorID}
+                />
+              );
             }
-
           })
         )}
         {token === null ? (

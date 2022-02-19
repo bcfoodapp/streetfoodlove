@@ -1,25 +1,46 @@
-import { Container, Grid, Comment } from "semantic-ui-react";
+import { Container, Grid, Comment, Label, Form } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./commentCard.module.css";
-// import { useSubmitReviewMutation, useReviewsQuery, Review } from "../../../../api";
-import { getUserIDFromToken, Review as ReviewObj, useGuideQuery, User, useReviewsQuery, useSubmitReviewMutation } from "../../../../api";
+import { useState } from "react";
+import { useAppSelector } from "../../../../store";
+import {
+  getUserIDFromToken,
+  Review as ReviewObj,
+  useReviewsQuery,
+  useSubmitReviewMutation,
+} from "../../../../api";
+import { v4 as uuid } from "uuid";
+import { DateTime } from "luxon";
+import Buttons from "../../Atoms/Button/Buttons";
 
-const CommentCardContainer: React.FC<{ review: ReviewObj, vendorID: string }> = ({
-  review,
-  vendorID
-}) => {
+const CommentCardContainer: React.FC<{
+  review?: ReviewObj;
+  vendorID: string;
+  commentID?: string;
+}> = ({ review, vendorID, commentID }) => {
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;
 
+  console.log('reviews: ' + reviews);
+
   return (
     <Container className={styles.wrapper}>
-      {reviews?.map((element, key) => {
-        if (element.ReplyTo === review.ID) {
-          return (
-            <CommentCard comment={element.Text} key={key}/>
-          )
-        }
-      })}
+      {reviews
+        ? reviews?.map((element, key) => {
+            if (element.ReplyTo === review?.ID) {
+              return (
+                <CommentCard
+                  comment={element.Text}
+                  key={key}
+                  commentID={element.ID}
+                  vendorID={vendorID}
+                  review={review}
+                />
+              );
+            }
+          })
+        : null}
+        {/* {commentID ? } */}
     </Container>
   );
 };
@@ -30,9 +51,37 @@ export default CommentCardContainer;
 
 const CommentCard: React.FC<{
   comment: string;
-  // allComments: typeof Comment[];
-}> = ({comment}) => {
-  // const childComments = () => allComments.filter(c => c.parent_id === comment.id)
+  commentID: string; // id of current comment
+  vendorID: string;
+  review: ReviewObj;
+}> = ({ comment, commentID, vendorID, review }) => {
+  const [openCommentForm, setOpenCommentForm] = useState(false);
+  const [CommentInput, setCommentInput] = useState("");
+  const [submitReview] = useSubmitReviewMutation();
+  const token = useAppSelector((state) => state.token.token);
+
+  const completedCommentHandler = () => {
+    setOpenCommentForm(false);
+    if (token === null) {
+      throw new Error("token is null");
+    }
+    const userID = getUserIDFromToken(token);
+
+    submitReview({
+      //submitting a new comment, a subtype of review
+      ID: uuid(),
+      Text: CommentInput,
+      DatePosted: DateTime.now(),
+      VendorID: vendorID,
+      UserID: userID,
+      StarRating: null,
+      ReplyTo: commentID,
+    });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentInput(e.target.value);
+  };
 
   return (
     <>
@@ -51,17 +100,34 @@ const CommentCard: React.FC<{
             </Grid.Row>
             <Grid.Row>
               <Comment.Actions>
-                <Comment.Action className={styles.reply}>Reply</Comment.Action>
+                <Label id="test" onClick={() => setOpenCommentForm(true)}>
+                  <Comment.Action className={styles.reply} active>
+                    Reply
+                  </Comment.Action>
+                </Label>
               </Comment.Actions>
             </Grid.Row>
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      {/* {childComments.map((element, key) => {
-        return (
-          <CommentCard />
-        )
-      })} */}
+      <Container>
+        {openCommentForm ? (
+          <Form
+            reply
+            className={styles.replyForm}
+            onSubmit={completedCommentHandler}
+          >
+            <Form.TextArea
+              className={styles.replyFormArea}
+              onChange={handleChange}
+            />
+            <Buttons color="green" submit>
+              Comment
+            </Buttons>
+          </Form>
+        ) : null}
+      </Container>
+      {/* <Container> <CommentCardContainer commentID={commentID} vendorID={review.VendorID}/></Container> */}
     </>
   );
 };

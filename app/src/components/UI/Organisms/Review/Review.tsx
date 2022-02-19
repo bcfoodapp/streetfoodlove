@@ -8,14 +8,20 @@ import {
 } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./review.module.css";
-import { getUserIDFromToken, Review as ReviewObj, useGuideQuery, User, useSubmitReviewMutation } from "../../../../api";
+import {
+  getUserIDFromToken,
+  Review as ReviewObj,
+  useGuideQuery,
+  User,
+  useSubmitReviewMutation,
+} from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 import React, { useEffect, useState } from "react";
 import Buttons from "../../Atoms/Button/Buttons";
 import CommentCard from "../CommentCard/CommentCard";
 import styleComments from "./script.js";
 import CommentCardContainer from "../CommentCard/CommentCard";
-import {v4 as uuid } from "uuid"
+import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
 import { useAppSelector } from "../../../../store";
 
@@ -23,16 +29,21 @@ interface Props {
   review: ReviewObj;
   // user is null if it has not loaded yet.
   user: User | null;
-  reviewID: string //id of the specific root review
-  vendorID: string
+  reviewID: string; //id of the specific root review
+  vendorID: string;
 }
 
 /**
  * Displays a review card that contains the information from a completed review of a vendor
  */
-export const Review: React.FC<Props> = ({ review, user, reviewID, vendorID }) => {
+export const Review: React.FC<Props> = ({
+  review,
+  user,
+  reviewID,
+  vendorID,
+}) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
-  const [CommentInput, setCommentInput] = useState("")
+  const [CommentInput, setCommentInput] = useState("");
   const [submitReview] = useSubmitReviewMutation();
   const token = useAppSelector((state) => state.token.token);
 
@@ -41,27 +52,27 @@ export const Review: React.FC<Props> = ({ review, user, reviewID, vendorID }) =>
   }, []);
 
   const completedCommentHandler = () => {
-    setOpenCommentForm(false)
+    setOpenCommentForm(false);
     if (token === null) {
       throw new Error("token is null");
     }
-    const userID = getUserIDFromToken(token)
+    const userID = getUserIDFromToken(token);
 
-    submitReview({  //submitting comment, a subtype of review
+    submitReview({
+      //submitting comment, a subtype of review
       ID: uuid(),
       Text: CommentInput,
       DatePosted: DateTime.now(),
       VendorID: vendorID,
       UserID: userID,
       StarRating: null,
-      ReplyTo: reviewID
-
-    })
-  }
+      ReplyTo: reviewID,
+    });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCommentInput(e.target.value)
-  }
+    setCommentInput(e.target.value);
+  };
 
   return (
     <Container className={styles.wrap}>
@@ -107,18 +118,25 @@ export const Review: React.FC<Props> = ({ review, user, reviewID, vendorID }) =>
       </Grid>
       <Container>
         {openCommentForm ? (
-          <Form reply className={styles.replyForm} onSubmit={completedCommentHandler}>
-            <Form.TextArea className={styles.replyFormArea} onChange={handleChange}/>
-            <Buttons
-              color="green"
-              submit
-            >
+          <Form
+            reply
+            className={styles.replyForm}
+            onSubmit={completedCommentHandler}
+          >
+            <Form.TextArea
+              className={styles.replyFormArea}
+              onChange={handleChange}
+            />
+            <Buttons color="green" submit>
               Comment
             </Buttons>
           </Form>
         ) : null}
       </Container>
-      <Container> <CommentCardContainer review={review} vendorID={review.VendorID}/></Container>
+      <Container>
+        {" "}
+        <CommentCardContainer review={review} vendorID={review.VendorID} />
+      </Container>
     </Container>
   );
 };
