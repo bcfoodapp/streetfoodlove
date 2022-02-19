@@ -2,24 +2,27 @@ import React, { useEffect, useState } from "react";
 import { Container, Form } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
-import {
+import useEffectAsync, {
   getUserIDFromToken,
   useGetTokenMutation,
   useUpdateUserMutation,
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
-import { useAppSelector } from "../../../../store";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  useEffect(() => {
-    getToken();
+  const [token, setToken] = useState(null as string | null);
+
+  useEffectAsync(async () => {
+    const response = await getToken();
+    if ("data" in response) {
+      setToken(response.data);
+    }
   }, []);
-  const token = useAppSelector((state) => state.token.token);
 
   let userID = "";
   if (tokenIsSuccess && token !== null) {
@@ -58,7 +61,7 @@ const AccountSettingsFormGroup: React.FC<{
       SignUpDate: user!.SignUpDate,
       GoogleID: user!.GoogleID,
     });
-    if ((response as any).error === undefined) {
+    if ("data" in response) {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }

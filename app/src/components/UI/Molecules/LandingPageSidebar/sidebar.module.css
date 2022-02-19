@@ -1,0 +1,55 @@
+.sidebar {
+  z-index: 1000 !important;
+  background-color: rgb(180, 159, 159) !important;
+}
+
+.search {
+  position: absolute;
+  left: 0px;
+  top: 30px;
+  width: 100%;
+}
+
+.closeIcon {
+  background: transparent !important;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.closeIcon:hover {
+  color: white;
+}
+
+.downIcon {
+  position: absolute;
+  left: 20px;
+  top: 35px;
+}
+
+.menuItem {
+  display: flex !important;
+  position: relative;
+  margin-bottom: 20px !important;
+  margin-top: 20px !important;
+}
+
+.menuItem .header:nth-child(1) {
+  color: black;
+  font-size: 2rem;
+  margin-left: -40px !important;
+}
+
+.header {
+  margin-bottom: 15px !important;
+  margin-right: 65% !important;
+}
+
+.checkbox {
+  margin-top: 10px;
+  color: white;
+  width: 40px;
+  margin-left: 7%;
+}

@@ -19,6 +19,7 @@ import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/VendorGallery";
+import styles from "./vendor.module.css";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -70,6 +71,9 @@ export function Vendor(): React.ReactElement {
     <>
       <Container textAlign="center">
         <Grid centered>
+          <Grid.Row>
+            <h1 className={styles.name}>{vendor?.Name}</h1>
+          </Grid.Row>
           <Grid.Row>
             {photosIsSuccess ? <Gallery photos={photos!} /> : null}
           </Grid.Row>

@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/service/sts/types"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"time"
@@ -13,6 +16,7 @@ import (
 // before executing the command.
 type Backend struct {
 	Database *database.Database
+	AWS      *AWS
 }
 
 func (b *Backend) Close() error {
@@ -46,13 +50,15 @@ func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error 
 		return fmt.Errorf("owner field does not match userID")
 	}
 
-	existingVendors, err := b.Database.VendorByOwnerID(userID)
-	if err != nil {
-		return err
+	_, err = b.Database.VendorByOwnerID(userID)
+	// Check that vendor for owner does not exist. We are expecting sql.ErrNoRows if there is no
+	// owner.
+	if err == nil {
+		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
 	}
 
-	if len(existingVendors) > 0 {
-		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
+	if err != sql.ErrNoRows {
+		return err
 	}
 
 	return b.Database.VendorCreate(vendor)
@@ -66,7 +72,7 @@ func (b *Backend) VendorUpdate(userID uuid.UUID, vendor *database.Vendor) error 
 	return b.Database.VendorUpdate(vendor)
 }
 
-func (b *Backend) VendorByOwnerID(userID uuid.UUID) ([]database.Vendor, error) {
+func (b *Backend) VendorByOwnerID(userID uuid.UUID) (*database.Vendor, error) {
 	return b.Database.VendorByOwnerID(userID)
 }
 
@@ -100,6 +106,17 @@ func (b *Backend) UserProtectedCreate(user *database.UserProtected, password str
 	user.SignUpDate = time.Now()
 
 	return b.Database.UserCreate(user, password)
+}
+
+// UserS3Credentials returns temporary credentials which can be used to upload photos to the
+// streetfoodlove S3 bucket.
+func (b *Backend) UserS3Credentials(ctx context.Context, userID uuid.UUID) (*types.Credentials, error) {
+	// Check if user exists
+	if _, err := b.Database.User(userID); err != nil {
+		return nil, err
+	}
+
+	return b.AWS.GetS3Role(ctx)
 }
 
 func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {

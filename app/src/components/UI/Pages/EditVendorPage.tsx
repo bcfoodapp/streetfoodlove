@@ -3,12 +3,13 @@ import {
   Form,
   Header,
   Input,
+  Segment,
   Select,
   TextArea,
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./createvendorpage.module.css";
-import {
+import useEffectAsync, {
   getUserIDFromToken,
   useGetTokenMutation,
   useUpdateVendorMutation,
@@ -18,7 +19,6 @@ import {
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
-import { useAppSelector } from "../../../store";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;
@@ -43,23 +43,25 @@ const EditVendorPage: React.FC = () => {
   const [updateVendor, { isLoading: updateVendorIsLoading }] =
     useUpdateVendorMutation();
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  useEffect(() => {
-    getToken();
-  }, []);
-  const token = useAppSelector((state) => state.token.token);
+  const [token, setToken] = useState(null as string | null);
 
-  let userID = "";
-  if (tokenIsSuccess && token !== null) {
-    userID = getUserIDFromToken(token as string);
+  useEffectAsync(async () => {
+    const response = await getToken();
+    if ("data" in response) {
+      setToken(response.data);
+    }
+  }, []);
+
+  let userID = null as string | null;
+  if (tokenIsSuccess && token) {
+    userID = getUserIDFromToken(token);
   }
 
   const {
-    data: vendors,
+    data: vendor,
     isSuccess: vendorQueryIsSuccess,
     isLoading: vendorQueryIsLoading,
-  } = useVendorByOwnerIDQuery(userID, {
-    skip: userID === "",
-  });
+  } = useVendorByOwnerIDQuery(userID as string, { skip: !userID });
 
   const [initialValues, setInitalValues] = useState({
     name: "",
@@ -72,25 +74,20 @@ const EditVendorPage: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    if (vendorQueryIsSuccess && vendors!.length > 0) {
-      const vendor = vendors![0];
+    if (vendorQueryIsSuccess) {
       setInitalValues({
-        ID: vendor.ID,
-        name: vendor.Name,
-        businessAddress: vendor.BusinessAddress,
-        phoneNumber: vendor.Phone,
-        businessHours: vendor.BusinessHours,
-        website: vendor.Website,
+        ID: vendor!.ID,
+        name: vendor!.Name,
+        businessAddress: vendor!.BusinessAddress,
+        phoneNumber: vendor!.Phone,
+        businessHours: vendor!.BusinessHours,
+        website: vendor!.Website,
       });
     }
   }, [vendorQueryIsSuccess]);
 
-  if (tokenIsSuccess && token === null) {
+  if (tokenIsSuccess && !token) {
     return <p>Not logged in</p>;
-  }
-
-  if (vendorQueryIsSuccess && vendors!.length === 0) {
-    return <p>No vendor found with matching owner ID</p>;
   }
 
   const validationSchema = Yup.object({
@@ -112,10 +109,11 @@ const EditVendorPage: React.FC = () => {
       BusinessLogo: "",
       Latitude: 0,
       Longitude: 0,
-      Owner: userID,
+      // userID is defined at this point
+      Owner: userID as string,
     };
     const response = await updateVendor(vendor);
-    if ((response as any).error === undefined) {
+    if ("data" in response) {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
@@ -123,9 +121,9 @@ const EditVendorPage: React.FC = () => {
 
   return (
     <Container className={styles.wrapper}>
-      <Header as={"h2"} className={styles.header}>
-        Edit Vendor Page
-      </Header>
+      <Container textAlign="center">
+        <Header as="h2">Edit Vendor Page</Header>
+      </Container>
 
       <Formik
         enableReinitialize
@@ -169,6 +167,13 @@ const EditVendorPage: React.FC = () => {
                 component="span"
                 className={styles.error}
               />
+
+              <Form.Field
+                control={fileInput}
+                label="Upload Business Logo"
+                width={8}
+              />
+
               <Form.Input
                 name="businessAddress"
                 onChange={handleChange}
@@ -240,12 +245,6 @@ const EditVendorPage: React.FC = () => {
                 name="website"
                 component="span"
                 className={styles.error}
-              />
-
-              <Form.Field
-                control={fileInput}
-                label="Upload Business Logo"
-                width={8}
               />
 
               <Form.Field
