@@ -1,31 +1,24 @@
-import React, { ChangeEvent, SetStateAction, useState } from "react";
+import React, { useState } from "react";
 import { Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
 import Buttons from "../Button/Buttons";
 import { useVendorsQuery, Vendor } from "../../../../api";
 import { Field } from "formik";
+import { useAppDispatch } from "../../../../store";
+import { showSideBar } from "../../../../store";
 
 /**
  * This is the searchbox for the header
  */
 
-const inputBox = (
-  <Input
-    icon={
-      <Buttons enter color={"green"}>
-        Enter
-      </Buttons>
-    }
-    placeholder="Search..."
-    focus
-    size={"small"}
-    className={styles.inputBox}
-  />
-);
-
 export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
   const { data: vendorsList } = useVendorsQuery();
+  const dispatch = useAppDispatch();
+
+  const openSideBar = () => {
+    dispatch(showSideBar());
+  };
 
   const onSearchChange = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -63,7 +56,19 @@ export const SearchBox: React.FC = () => {
   return (
     <Menu.Item className={styles.searchBox}>
       <Search
-        input={inputBox}
+        input={
+          <Input
+            icon={
+              <Buttons enter color={"green"} clicked={openSideBar}>
+                Enter
+              </Buttons>
+            }
+            placeholder="Search..."
+            focus
+            size={"small"}
+            className={styles.inputBox}
+          />
+        }
         size={"small"}
         onSearchChange={onSearchChange}
         results={searchResult}

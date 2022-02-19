@@ -8,7 +8,6 @@ import React from "react";
 
 export const LandingPage = () => {
   const { data: version } = useVersionQuery();
-  const [visible, setVisible] = React.useState(true);
 
   return (
     <>
@@ -18,7 +17,7 @@ export const LandingPage = () => {
         </p>
       </Container>
       <Sidebar.Pushable as={Container} fluid>
-        <LandingPageSidebar setVisible={setVisible} visible={visible} />
+        <LandingPageSidebar />
         <Sidebar.Pusher>
           <Container fluid>
             <Map />
