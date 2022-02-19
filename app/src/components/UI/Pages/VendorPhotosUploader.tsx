@@ -1,8 +1,9 @@
 import { Container, Header, Icon } from "semantic-ui-react";
 import Dropzone from "react-dropzone";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./vendorphotoseditor.module.css";
 import useEffectAsync, {
+  AWSCredentials,
   getUserIDFromToken,
   useGetTokenMutation,
   usePhotosByLinkIDQuery,
@@ -13,7 +14,6 @@ import Gallery from "../Organisms/VendorGallery/VendorGallery";
 
 export default (): React.ReactElement => {
   const [showUploadError, setShowUploadError] = useState(false);
-  const [s3Credentials] = useS3CredentialsMutation();
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
 
@@ -38,6 +38,21 @@ export default (): React.ReactElement => {
     isLoading: photosIsLoading,
   } = usePhotosByLinkIDQuery(vendor ? vendor.ID : "", { skip: !vendor });
 
+  const [getS3Credentials, { isLoading: s3CredentialsIsLoading }] =
+    useS3CredentialsMutation();
+  const [s3Credentials, setS3Credentials] = useState(
+    null as AWSCredentials | null
+  );
+
+  useEffectAsync(async () => {
+    if (userID) {
+      const response = await getS3Credentials(userID);
+      if ("data" in response) {
+        setS3Credentials(response.data);
+      }
+    }
+  }, [userID]);
+
   if (!tokenIsSuccess || token === null) {
     return <p>Not logged in</p>;
   }
@@ -60,35 +75,37 @@ export default (): React.ReactElement => {
           our AWS bills.
         </strong>
       </p>
-      <Dropzone
-        accept="image/jpeg"
-        onDropAccepted={async (files) => {
-          console.log(files);
-          setShowUploadError(false);
-
-          await s3Credentials(token);
-        }}
-        onDropRejected={() => setShowUploadError(true)}
-        maxSize={1_000_000}
-      >
-        {({ getRootProps, getInputProps, isDragAccept }) => {
-          let dragAndDropStyles = styles.dragAndDrop;
-          if (isDragAccept) {
-            dragAndDropStyles += " " + styles.accept;
-          }
-          return (
-            <div className={dragAndDropStyles} {...getRootProps()}>
-              <input {...getInputProps()} />
-              <Container textAlign="center">
-                <p>
-                  <Icon name="upload" />
-                  Drag-and-drop .jpg files or click to browse
-                </p>
-              </Container>
-            </div>
-          );
-        }}
-      </Dropzone>
+      {s3CredentialsIsLoading ? (
+        <p>Getting AWS credentials</p>
+      ) : (
+        <Dropzone
+          accept="image/jpeg"
+          onDropAccepted={async (files) => {
+            console.log(files);
+            setShowUploadError(false);
+          }}
+          onDropRejected={() => setShowUploadError(true)}
+          maxSize={1_000_000}
+        >
+          {({ getRootProps, getInputProps, isDragAccept }) => {
+            let dragAndDropStyles = styles.dragAndDrop;
+            if (isDragAccept) {
+              dragAndDropStyles += " " + styles.accept;
+            }
+            return (
+              <div className={dragAndDropStyles} {...getRootProps()}>
+                <input {...getInputProps()} />
+                <Container textAlign="center">
+                  <p>
+                    <Icon name="upload" />
+                    Drag-and-drop .jpg files or click to browse
+                  </p>
+                </Container>
+              </div>
+            );
+          }}
+        </Dropzone>
+      )}
       {showUploadError ? (
         <p className={styles.error}>
           This is not a jpg file. Only .jpg files are accepted.
