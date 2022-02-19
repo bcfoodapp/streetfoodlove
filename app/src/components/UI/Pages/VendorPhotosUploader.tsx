@@ -11,6 +11,8 @@ import useEffectAsync, {
   useVendorByOwnerIDQuery,
 } from "../../../api";
 import Gallery from "../Organisms/VendorGallery/VendorGallery";
+import { uploadToS3 } from "../../../aws";
+import { v4 as uuid } from "uuid";
 
 export default (): React.ReactElement => {
   const [showUploadError, setShowUploadError] = useState(false);
@@ -81,8 +83,10 @@ export default (): React.ReactElement => {
         <Dropzone
           accept="image/jpeg"
           onDropAccepted={async (files) => {
-            console.log(files);
             setShowUploadError(false);
+            for (const file of files) {
+              await uploadToS3(s3Credentials!, `${uuid()}.jpg`, file);
+            }
           }}
           onDropRejected={() => setShowUploadError(true)}
           maxSize={1_000_000}
