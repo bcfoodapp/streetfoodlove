@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/sts/types"
 	"github.com/bcfoodapp/streetfoodlove/database"
@@ -49,13 +50,15 @@ func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error 
 		return fmt.Errorf("owner field does not match userID")
 	}
 
-	existingVendors, err := b.Database.VendorByOwnerID(userID)
-	if err != nil {
-		return err
+	_, err = b.Database.VendorByOwnerID(userID)
+	// Check that vendor for owner does not exist. We are expecting sql.ErrNoRows if there is no
+	// owner.
+	if err == nil {
+		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
 	}
 
-	if len(existingVendors) > 0 {
-		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
+	if err != sql.ErrNoRows {
+		return err
 	}
 
 	return b.Database.VendorCreate(vendor)
@@ -69,7 +72,7 @@ func (b *Backend) VendorUpdate(userID uuid.UUID, vendor *database.Vendor) error 
 	return b.Database.VendorUpdate(vendor)
 }
 
-func (b *Backend) VendorByOwnerID(userID uuid.UUID) ([]database.Vendor, error) {
+func (b *Backend) VendorByOwnerID(userID uuid.UUID) (*database.Vendor, error) {
 	return b.Database.VendorByOwnerID(userID)
 }
 
