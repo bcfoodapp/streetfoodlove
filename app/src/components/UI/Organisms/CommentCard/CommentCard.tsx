@@ -21,26 +21,26 @@ const CommentCardContainer: React.FC<{
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;
 
-  console.log('reviews: ' + reviews);
+  console.log('reviews: ' + JSON.stringify(reviews, null, 2));
 
   return (
     <Container className={styles.wrapper}>
       {reviews
         ? reviews?.map((element, key) => {
-            if (element.ReplyTo === review?.ID) {
+            if (element.ReplyTo === review?.ID || element.ReplyTo === commentID) {
               return (
                 <CommentCard
                   comment={element.Text}
                   key={key}
                   commentID={element.ID}
                   vendorID={vendorID}
-                  review={review}
                 />
               );
+            } else {
+              return null
             }
           })
         : null}
-        {/* {commentID ? } */}
     </Container>
   );
 };
@@ -53,8 +53,8 @@ const CommentCard: React.FC<{
   comment: string;
   commentID: string; // id of current comment
   vendorID: string;
-  review: ReviewObj;
-}> = ({ comment, commentID, vendorID, review }) => {
+  // review: ReviewObj;
+}> = ({ comment, commentID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
   const [submitReview] = useSubmitReviewMutation();
@@ -127,7 +127,7 @@ const CommentCard: React.FC<{
           </Form>
         ) : null}
       </Container>
-      {/* <Container> <CommentCardContainer commentID={commentID} vendorID={review.VendorID}/></Container> */}
+      <Container> <CommentCardContainer commentID={commentID} vendorID={vendorID}/></Container>
     </>
   );
 };
