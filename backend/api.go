@@ -3,6 +3,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
@@ -393,7 +394,7 @@ func (a *API) TokenGoogleRefreshPut(c *gin.Context) {
 	}
 
 	if _, err := a.Backend.Database.UserIDByGoogleID(claims.Subject); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			c.AbortWithStatusJSON(http.StatusNotFound, "user with Google ID does not exist")
 		} else {
 			c.Error(err)

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/sts/types"
 	"github.com/bcfoodapp/streetfoodlove/database"
@@ -57,7 +58,7 @@ func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error 
 		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
 	}
 
-	if err != sql.ErrNoRows {
+	if !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
 
@@ -159,6 +160,14 @@ func (b *Backend) Photo(id uuid.UUID) (*database.Photo, error) {
 }
 
 func (b *Backend) PhotoCreate(userID uuid.UUID, photo *database.Photo) error {
+	owner, err := b.Database.GetOwnerOfLink(photo.LinkID)
+	if err != nil {
+		return err
+	}
+	if owner != userID {
+		return unauthorized
+	}
+
 	return b.Database.PhotoCreate(photo)
 }
 
