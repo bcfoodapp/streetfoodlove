@@ -158,6 +158,10 @@ func (b *Backend) Photo(id uuid.UUID) (*database.Photo, error) {
 	return b.Database.Photo(id)
 }
 
+func (b *Backend) PhotoCreate(userID uuid.UUID, photo *database.Photo) error {
+	return b.Database.PhotoCreate(photo)
+}
+
 func (b *Backend) Guide(id uuid.UUID) (*database.Guide, error) {
 	return b.Database.Guide(id)
 }
