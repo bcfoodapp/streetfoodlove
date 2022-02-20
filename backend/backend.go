@@ -160,6 +160,7 @@ func (b *Backend) Photo(id uuid.UUID) (*database.Photo, error) {
 }
 
 func (b *Backend) PhotoCreate(userID uuid.UUID, photo *database.Photo) error {
+	// Check that the referenced record belongs to the user
 	owner, err := b.Database.GetOwnerOfLink(photo.LinkID)
 	if err != nil {
 		return err

@@ -445,7 +445,7 @@ func (d *Database) GetOwnerOfLink(linkID uuid.UUID) (uuid.UUID, error) {
 		return vendor.Owner, nil
 	}
 
-	// Error should be ErrNoRows at this point
+	// err should be ErrNoRows at this point
 	if !errors.Is(err, sql.ErrNoRows) {
 		return uuid.UUID{}, err
 	}
