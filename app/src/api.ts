@@ -227,7 +227,7 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review"],
+  tagTypes: ["Review", "VendorPhotos"],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -507,6 +507,7 @@ export const apiSlice = createApi({
           ...photo,
           DatePosted: DateTime.fromISO(photo.DatePosted),
         })),
+      providesTags: ["VendorPhotos"],
     }),
     createPhoto: builder.mutation<void, Photo>({
       query: (photo) => ({
@@ -514,6 +515,7 @@ export const apiSlice = createApi({
         method: PUT,
         body: photo,
       }),
+      invalidatesTags: ["VendorPhotos"],
     }),
     // Returns temporary credentials for given user which can be used to upload photos.
     s3Credentials: builder.mutation<AWSCredentials, string>({
