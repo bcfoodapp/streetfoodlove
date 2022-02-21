@@ -3,6 +3,8 @@ package database
 import (
 	"crypto/sha256"
 	"crypto/subtle"
+	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -379,7 +381,8 @@ type Photo struct {
 	ID         uuid.UUID
 	DatePosted time.Time
 	Text       string
-	LinkID     uuid.UUID
+	// LinkID references either a Vendor or Review.
+	LinkID uuid.UUID
 }
 
 func (d *Database) PhotoCreate(photo *Photo) error {
@@ -432,6 +435,27 @@ func (d *Database) PhotosByLinkID(linkID uuid.UUID) ([]Photo, error) {
 	}
 
 	return result, rows.Err()
+}
+
+// GetOwnerOfLink returns the owner of the referenced record. For example, if linkID references a
+// Vendor, the Owner field of that vendor is returned.
+func (d *Database) GetOwnerOfLink(linkID uuid.UUID) (uuid.UUID, error) {
+	vendor, err := d.Vendor(linkID)
+	if err == nil {
+		return vendor.Owner, nil
+	}
+
+	// err should be ErrNoRows at this point
+	if !errors.Is(err, sql.ErrNoRows) {
+		return uuid.UUID{}, err
+	}
+
+	review, err := d.Review(linkID)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+
+	return review.UserID, nil
 }
 
 type Guide struct {
@@ -504,7 +528,6 @@ func (d *Database) Link(id uuid.UUID) (*Link, error) {
 
 }
 
-//Create, Add Favorites
 type Favorite struct {
 	ID         uuid.UUID
 	DatePosted time.Time
