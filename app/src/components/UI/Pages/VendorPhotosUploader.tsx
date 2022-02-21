@@ -61,6 +61,24 @@ export default (): React.ReactElement => {
 
   const [createPhoto] = useCreatePhotoMutation();
 
+  const onDrop = async (files) => {
+    setShowUploadError(false);
+    for (const file of files) {
+      setUploading(true);
+      const photoID = uuid();
+      await uploadToS3(s3Credentials!, `${photoID}.jpg`, file);
+      const photo: Photo = {
+        ID: photoID,
+        Text: "",
+        DatePosted: DateTime.now(),
+        // Dropzone can only be used if vendor is defined
+        LinkID: vendor!.ID,
+      };
+      await createPhoto(photo);
+      setUploading(false);
+    }
+  };
+
   if (!tokenIsSuccess || token === null) {
     return <p>Not logged in</p>;
   }
@@ -88,22 +106,7 @@ export default (): React.ReactElement => {
       ) : vendor ? (
         <Dropzone
           accept="image/jpeg"
-          onDropAccepted={async (files) => {
-            setShowUploadError(false);
-            for (const file of files) {
-              setUploading(true);
-              const photoID = uuid();
-              await uploadToS3(s3Credentials!, `${photoID}.jpg`, file);
-              const photo: Photo = {
-                ID: photoID,
-                Text: "",
-                DatePosted: DateTime.now(),
-                LinkID: vendor!.ID,
-              };
-              await createPhoto(photo);
-              setUploading(false);
-            }
-          }}
+          onDropAccepted={onDrop}
           onDropRejected={() => setShowUploadError(true)}
           maxSize={1_000_000}
         >
