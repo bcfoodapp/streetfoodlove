@@ -227,7 +227,7 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review"],
+  tagTypes: ["Review", "VendorPhotos"],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -355,7 +355,7 @@ export const apiSlice = createApi({
     // returns null. This endpoint should be used to get the token if no query is called before the token is required.
     // When any query is called, the token can be retrieved from the store without calling getToken.
     getToken: builder.mutation<string | null, void>({
-      queryFn: async (arg, api, extraOptions) => {
+      queryFn: async (arg, api) => {
         const credentials = getCredentialsEntry();
         if (credentials === null) {
           return { data: null };
@@ -507,6 +507,15 @@ export const apiSlice = createApi({
           ...photo,
           DatePosted: DateTime.fromISO(photo.DatePosted),
         })),
+      providesTags: ["VendorPhotos"],
+    }),
+    createPhoto: builder.mutation<void, Photo>({
+      query: (photo) => ({
+        url: `/photos/${encode(photo.ID)}`,
+        method: PUT,
+        body: photo,
+      }),
+      invalidatesTags: ["VendorPhotos"],
     }),
     // Returns temporary credentials for given user which can be used to upload photos.
     s3Credentials: builder.mutation<AWSCredentials, string>({
@@ -540,6 +549,7 @@ export const {
   useGuideQuery,
   useSignInWithGoogleMutation,
   usePhotosByLinkIDQuery,
+  useCreatePhotoMutation,
   useS3CredentialsMutation,
 } = apiSlice;
 

@@ -5,6 +5,8 @@ import styles from "./vendorphotoseditor.module.css";
 import useEffectAsync, {
   AWSCredentials,
   getUserIDFromToken,
+  Photo,
+  useCreatePhotoMutation,
   useGetTokenMutation,
   usePhotosByLinkIDQuery,
   useS3CredentialsMutation,
@@ -13,6 +15,7 @@ import useEffectAsync, {
 import Gallery from "../Organisms/VendorGallery/VendorGallery";
 import { uploadToS3 } from "../../../aws";
 import { v4 as uuid } from "uuid";
+import { DateTime } from "luxon";
 
 export default (): React.ReactElement => {
   const [showUploadError, setShowUploadError] = useState(false);
@@ -56,6 +59,26 @@ export default (): React.ReactElement => {
     }
   }, [userID]);
 
+  const [createPhoto] = useCreatePhotoMutation();
+
+  const onDrop = async (files) => {
+    setShowUploadError(false);
+    for (const file of files) {
+      setUploading(true);
+      const photoID = uuid();
+      await uploadToS3(s3Credentials!, `${photoID}.jpg`, file);
+      const photo: Photo = {
+        ID: photoID,
+        Text: "",
+        DatePosted: DateTime.now(),
+        // Dropzone can only be used if vendor is defined
+        LinkID: vendor!.ID,
+      };
+      await createPhoto(photo);
+      setUploading(false);
+    }
+  };
+
   if (!tokenIsSuccess || token === null) {
     return <p>Not logged in</p>;
   }
@@ -80,18 +103,10 @@ export default (): React.ReactElement => {
       </p>
       {s3CredentialsIsLoading ? (
         <p>Getting AWS credentials</p>
-      ) : (
+      ) : vendor ? (
         <Dropzone
           accept="image/jpeg"
-          onDropAccepted={async (files) => {
-            setShowUploadError(false);
-            for (const file of files) {
-              setUploading(true);
-              await uploadToS3(s3Credentials!, `${uuid()}.jpg`, file);
-              setUploading(false);
-              // TODO create photo record
-            }
-          }}
+          onDropAccepted={onDrop}
           onDropRejected={() => setShowUploadError(true)}
           maxSize={1_000_000}
         >
@@ -113,6 +128,8 @@ export default (): React.ReactElement => {
             );
           }}
         </Dropzone>
+      ) : (
+        <p>Vendor loading</p>
       )}
       {showUploadError ? (
         <p className={styles.error}>

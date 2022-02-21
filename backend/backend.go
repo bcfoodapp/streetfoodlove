@@ -169,6 +169,8 @@ func (b *Backend) PhotoCreate(userID uuid.UUID, photo *database.Photo) error {
 		return unauthorized
 	}
 
+	photo.DatePosted = time.Now()
+
 	return b.Database.PhotoCreate(photo)
 }
 
