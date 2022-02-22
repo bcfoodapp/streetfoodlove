@@ -61,7 +61,7 @@ export default (): React.ReactElement => {
 
   const [createPhoto] = useCreatePhotoMutation();
 
-  const onDrop = async (files) => {
+  const onDrop = async (files: File[]) => {
     setShowUploadError(false);
     for (const file of files) {
       setUploading(true);
