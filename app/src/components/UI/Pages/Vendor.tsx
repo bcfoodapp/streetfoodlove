@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
@@ -35,6 +35,7 @@ export function Vendor(): React.ReactElement {
   const { data: photos, isSuccess: photosIsSuccess } =
     usePhotosByLinkIDQuery(vendorID);
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (reviewsQuery.isSuccess) {
@@ -42,7 +43,7 @@ export function Vendor(): React.ReactElement {
     }
   }, [reviewsQuery.isSuccess]);
 
-  const completedReviewHandler = ({
+  const completedReviewHandler = async ({
     text,
     starRating,
   }: {
@@ -53,8 +54,9 @@ export function Vendor(): React.ReactElement {
       throw new Error("token is null");
     }
 
+    setIsSubmitting(true);
     const userID = getUserIDFromToken(token);
-    submitReview({
+    await submitReview({
       ID: uuid(),
       Text: text,
       DatePosted: DateTime.now(),
@@ -63,8 +65,13 @@ export function Vendor(): React.ReactElement {
       StarRating: starRating,
       ReplyTo: null,
     });
+    setIsSubmitting(false);
+
     // Add current user to users list
-    usersMultipleTrigger([...reviewsQuery.data!.map((r) => r.UserID), userID]);
+    await usersMultipleTrigger([
+      ...reviewsQuery.data!.map((r) => r.UserID),
+      userID,
+    ]);
   };
 
   return (
@@ -148,6 +155,7 @@ export function Vendor(): React.ReactElement {
         ) : (
           <ReviewForm finishedFormHandler={completedReviewHandler} />
         )}
+        {isSubmitting ? <p>Submitting review...</p> : null}
         <Divider hidden />
       </Container>
     </>
