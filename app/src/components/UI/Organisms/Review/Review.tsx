@@ -11,14 +11,12 @@ import styles from "./review.module.css";
 import {
   getUserIDFromToken,
   Review as ReviewObj,
-  useGuideQuery,
   User,
-  useSubmitReviewMutation,
+  useCreateReviewMutation,
 } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 import React, { useEffect, useState } from "react";
 import Buttons from "../../Atoms/Button/Buttons";
-import CommentCard from "../CommentCard/CommentCard";
 import styleComments from "./script.js";
 import CommentCardContainer from "../CommentCard/CommentCard";
 import { v4 as uuid } from "uuid";
@@ -44,7 +42,7 @@ export const Review: React.FC<Props> = ({
 }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
-  const [submitReview] = useSubmitReviewMutation();
+  const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
 
   useEffect(() => {

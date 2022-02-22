@@ -343,7 +343,7 @@ export const apiSlice = createApi({
         })),
       providesTags: ["Review"],
     }),
-    submitReview: builder.mutation<undefined, Review>({
+    createReview: builder.mutation<undefined, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
         method: PUT,
@@ -542,7 +542,7 @@ export const {
   useCreateUserMutation,
   useUpdatePasswordMutation,
   useReviewsQuery,
-  useSubmitReviewMutation,
+  useCreateReviewMutation,
   useGetTokenMutation,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,

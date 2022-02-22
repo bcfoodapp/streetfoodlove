@@ -7,7 +7,7 @@ import {
   getUserIDFromToken,
   Review as ReviewObj,
   useReviewsQuery,
-  useSubmitReviewMutation,
+  useCreateReviewMutation,
 } from "../../../../api";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
@@ -58,7 +58,7 @@ const CommentCard: React.FC<{
 }> = ({ comment, commentID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
-  const [submitReview] = useSubmitReviewMutation();
+  const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
 
   const completedCommentHandler = () => {
