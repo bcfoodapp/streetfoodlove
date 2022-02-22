@@ -1,4 +1,4 @@
-import { Container, Header, Icon } from "semantic-ui-react";
+import { Container, Header, Icon, Segment } from "semantic-ui-react";
 import Dropzone from "react-dropzone";
 import React, { useState } from "react";
 import styles from "./vendorphotoseditor.module.css";
@@ -88,7 +88,9 @@ export default (): React.ReactElement => {
       {vendorQueryIsLoading || photosIsLoading ? (
         <p>Loading</p>
       ) : photos ? (
-        <Gallery photos={photos} />
+        <Segment style={{ width: "100%" }}>
+          <Gallery photos={photos} />
+        </Segment>
       ) : null}
       <Header as="h3">Image upload</Header>
       <p>
