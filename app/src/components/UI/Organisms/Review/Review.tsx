@@ -42,7 +42,7 @@ export const Review: React.FC<Props> = ({
 }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
-  const [submitReview] = useCreateReviewMutation();
+  const [createReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export const Review: React.FC<Props> = ({
     }
     const userID = getUserIDFromToken(token);
 
-    submitReview({
+    createReview({
       //submitting comment, a subtype of review
       ID: uuid(),
       Text: CommentInput,
@@ -102,6 +102,7 @@ export const Review: React.FC<Props> = ({
             <Grid.Row>
               <pre>{review.Text}</pre>
             </Grid.Row>
+            <Grid.Row></Grid.Row>
             <Grid.Row>
               <Comment.Actions>
                 <Label id="test" onClick={() => setOpenCommentForm(true)}>

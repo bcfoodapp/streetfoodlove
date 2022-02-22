@@ -21,7 +21,7 @@ import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
-import Gallery from "../Organisms/VendorGallery/VendorGallery";
+import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
 import { uploadToS3 } from "../../../aws";
 
