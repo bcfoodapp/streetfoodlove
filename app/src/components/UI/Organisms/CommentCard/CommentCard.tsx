@@ -21,8 +21,6 @@ const CommentCardContainer: React.FC<{
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;
 
-  console.log("reviews: " + JSON.stringify(reviews, null, 2));
-
   return (
     <Container className={styles.wrapper}>
       {reviews

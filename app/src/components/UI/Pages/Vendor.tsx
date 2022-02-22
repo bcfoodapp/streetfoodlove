@@ -9,6 +9,9 @@ import {
   User,
   getUserIDFromToken,
   usePhotosByLinkIDQuery,
+  useCreatePhotoMutation,
+  Photo,
+  useS3CredentialsMutation,
 } from "../../../api";
 import { Container, Divider, Grid, Header } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
@@ -20,6 +23,7 @@ import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/VendorGallery";
 import styles from "./vendor.module.css";
+import { uploadToS3 } from "../../../aws";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -36,6 +40,8 @@ export function Vendor(): React.ReactElement {
     usePhotosByLinkIDQuery(vendorID);
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createPhoto] = useCreatePhotoMutation();
+  const [getS3Credentials] = useS3CredentialsMutation();
 
   useEffect(() => {
     if (reviewsQuery.isSuccess) {
@@ -46,9 +52,11 @@ export function Vendor(): React.ReactElement {
   const completedReviewHandler = async ({
     text,
     starRating,
+    files,
   }: {
     text: string;
     starRating: StarRatingInteger;
+    files: File[];
   }) => {
     if (token === null) {
       throw new Error("token is null");
@@ -56,7 +64,7 @@ export function Vendor(): React.ReactElement {
 
     setIsSubmitting(true);
     const userID = getUserIDFromToken(token);
-    await submitReview({
+    const review = {
       ID: uuid(),
       Text: text,
       DatePosted: DateTime.now(),
@@ -64,7 +72,26 @@ export function Vendor(): React.ReactElement {
       UserID: userID,
       StarRating: starRating,
       ReplyTo: null,
-    });
+    };
+    const response = await submitReview(review);
+    if ("data" in response) {
+      const s3Response = await getS3Credentials(userID);
+      if ("error" in s3Response) {
+        throw new Error("could not get S3 credentials");
+      }
+
+      for (const file of files) {
+        const photoID = uuid();
+        await uploadToS3(s3Response.data, `${photoID}.jpg`, file);
+        const photo: Photo = {
+          ID: photoID,
+          DatePosted: DateTime.now(),
+          Text: "",
+          LinkID: review.ID,
+        };
+        await createPhoto(photo);
+      }
+    }
     setIsSubmitting(false);
 
     // Add current user to users list
