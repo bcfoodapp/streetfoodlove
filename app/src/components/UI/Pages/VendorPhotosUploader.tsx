@@ -89,7 +89,7 @@ export default (): React.ReactElement => {
         <p>Loading</p>
       ) : photos ? (
         <Segment style={{ width: "100%" }}>
-          <Gallery photos={photos} />
+          <Gallery photos={photos} photoHeight={150} />
         </Segment>
       ) : null}
       <Header as="h3">Image upload</Header>

@@ -5,12 +5,14 @@ import { Image } from "semantic-ui-react";
 
 interface Props {
   photos: Photo[];
+  // Displayed height of each photo
+  photoHeight: number;
 }
 
 /**
  * Vendor photo gallery
  */
-export default ({ photos }: Props): React.ReactElement => {
+export default ({ photos, photoHeight }: Props): React.ReactElement => {
   return (
     <SimpleReactLightbox>
       <SRLWrapper
@@ -35,7 +37,7 @@ export default ({ photos }: Props): React.ReactElement => {
                 src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`}
                 alt={photo.Text}
                 style={{
-                  height: 150,
+                  height: photoHeight,
                   margin: 0,
                   marginLeft: 2,
                   marginRight: 2,

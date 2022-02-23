@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
@@ -33,8 +33,7 @@ export function Vendor(): React.ReactElement {
   const reviews = reviewsQuery.data;
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
-  const { data: photos } =
-    usePhotosByLinkIDQuery(vendorID);
+  const { data: photos } = usePhotosByLinkIDQuery(vendorID);
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
@@ -98,7 +97,7 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             {photos ? (
               <Segment style={{ width: "100%" }}>
-                <Gallery photos={photos} />
+                <Gallery photos={photos} photoHeight={150} />
               </Segment>
             ) : null}
           </Grid.Row>
