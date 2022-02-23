@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
   useVendorQuery,
   useCreateReviewMutation,
   StarRatingInteger,
-  useLazyUsersMultipleQuery,
-  User,
   getUserIDFromToken,
   usePhotosByLinkIDQuery,
   useCreatePhotoMutation,
@@ -35,19 +33,12 @@ export function Vendor(): React.ReactElement {
   const reviews = reviewsQuery.data;
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
-  const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
   const { data: photos, isSuccess: photosIsSuccess } =
     usePhotosByLinkIDQuery(vendorID);
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
   const [getS3Credentials] = useS3CredentialsMutation();
-
-  useEffect(() => {
-    if (reviewsQuery.isSuccess) {
-      usersMultipleTrigger(reviewsQuery.data!.map((r) => r.UserID));
-    }
-  }, [reviewsQuery.isSuccess]);
 
   const completedReviewHandler = async ({
     text,
@@ -95,12 +86,6 @@ export function Vendor(): React.ReactElement {
     };
     await submitReview(review);
     setIsSubmitting(false);
-
-    // Add current user to users list
-    await usersMultipleTrigger([
-      ...reviewsQuery.data!.map((r) => r.UserID),
-      userID,
-    ]);
   };
 
   return (
@@ -153,17 +138,11 @@ export function Vendor(): React.ReactElement {
           <p>No one has posted a review for this vendor. Yet...</p>
         ) : (
           reviews?.map((review, i) => {
-            let user = null as User | null;
-            if (users && review.UserID in users) {
-              user = users[review.UserID];
-            }
-
             if (review.ReplyTo === null) {
               return (
                 <Review
                   key={i}
                   review={review}
-                  user={user}
                   reviewID={review.ID}
                   vendorID={review.VendorID}
                 />
