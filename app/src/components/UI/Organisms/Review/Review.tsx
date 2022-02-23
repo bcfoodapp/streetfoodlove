@@ -11,8 +11,8 @@ import styles from "./review.module.css";
 import {
   getUserIDFromToken,
   Review as ReviewObj,
-  User,
   useCreateReviewMutation,
+  useUserQuery,
 } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 import React, { useEffect, useState } from "react";
@@ -25,8 +25,6 @@ import { useAppSelector } from "../../../../store";
 
 interface Props {
   review: ReviewObj;
-  // user is null if it has not loaded yet.
-  user: User | null;
   reviewID: string; //id of the specific root review
   vendorID: string;
 }
@@ -34,16 +32,12 @@ interface Props {
 /**
  * Displays a review card that contains the information from a completed review of a vendor
  */
-export const Review: React.FC<Props> = ({
-  review,
-  user,
-  reviewID,
-  vendorID,
-}) => {
+export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
+  const { data: user } = useUserQuery(review.UserID);
 
   useEffect(() => {
     styleComments();
