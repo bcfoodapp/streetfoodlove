@@ -1,5 +1,11 @@
-import React, { useState } from "react";
-import { Input, Menu, Search, SearchProps } from "semantic-ui-react";
+import React, { useRef, useState } from "react";
+import {
+  Input,
+  InputProps,
+  Menu,
+  Search,
+  SearchProps,
+} from "semantic-ui-react";
 import styles from "./searchbox.module.css";
 import Buttons from "../Button/Buttons";
 import { useVendorsQuery, Vendor } from "../../../../api";
@@ -13,10 +19,16 @@ import { showSideBar } from "../../../../store";
 
 export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
+  const [recentSearchResult, setRecentSearchResult] = useState<string[]>([]);
   const { data: vendorsList } = useVendorsQuery();
+  const inputRef = useRef<any>(null);
   const dispatch = useAppDispatch();
 
-  const openSideBar = () => {
+  const enterQueryHandler = () => {
+    setRecentSearchResult([
+      inputRef.current.props.value,
+      ...recentSearchResult,
+    ]);
     dispatch(showSideBar());
   };
 
@@ -32,23 +44,36 @@ export const SearchBox: React.FC = () => {
     if (vendorsList) {
       let search = data.value;
       let condition = new RegExp(search as string);
+      let resultArray: Vendor[] = [];
 
       let result = vendorsList.filter((element) => {
         return condition.test(element.Name);
       });
 
-      let resultArray: Vendor[] = [];
+      console.log("result: " + JSON.stringify(result, null, 2));
 
-      for (let obj of result) {
+      for (let i = 0; i < result.length; i++) {
+        //loop through all vendors that pass the regex filter
+
         let tempObject = {
-          title: obj.Name,
-          description: obj.BusinessAddress,
-          ...obj,
+          title: result[i].Name,
+          description: result[i].BusinessAddress,
+          ...result[i],
         };
 
-        resultArray.push(tempObject);
+        if (recentSearchResult.includes(tempObject.Name)) {
+          // console.log('amazing');
+          // result.unshift(result.splice(i, 1)[0])
+          resultArray.unshift(tempObject);
+          // console.log(resultArray);
+          // console.log(resultArray[0]);
+          // console.log(resultArray[1]);
+        } else {
+          resultArray.push(tempObject);
+        }
       }
 
+      console.log("resultArray: " + JSON.stringify(resultArray, null, 2));
       setSearchResult(resultArray);
     }
   };
@@ -59,7 +84,7 @@ export const SearchBox: React.FC = () => {
         input={
           <Input
             icon={
-              <Buttons enter color={"green"} clicked={openSideBar}>
+              <Buttons enter color={"green"} clicked={enterQueryHandler}>
                 Enter
               </Buttons>
             }
@@ -67,6 +92,7 @@ export const SearchBox: React.FC = () => {
             focus
             size={"small"}
             className={styles.inputBox}
+            ref={inputRef}
           />
         }
         size={"small"}
