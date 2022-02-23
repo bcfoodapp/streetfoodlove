@@ -11,7 +11,7 @@ import styles from "./review.module.css";
 import {
   getUserIDFromToken,
   Review as ReviewObj,
-  useSubmitReviewMutation,
+  useCreateReviewMutation,
   useUserQuery,
 } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
@@ -35,7 +35,7 @@ interface Props {
 export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
-  const [submitReview] = useSubmitReviewMutation();
+  const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const { data: user } = useUserQuery(review.UserID);
 
