@@ -7,7 +7,7 @@ import {
   getUserIDFromToken,
   Review as ReviewObj,
   useReviewsQuery,
-  useSubmitReviewMutation,
+  useCreateReviewMutation,
 } from "../../../../api";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
@@ -20,8 +20,6 @@ const CommentCardContainer: React.FC<{
 }> = ({ review, vendorID, commentID }) => {
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;
-
-  console.log("reviews: " + JSON.stringify(reviews, null, 2));
 
   return (
     <Container className={styles.wrapper}>
@@ -60,7 +58,7 @@ const CommentCard: React.FC<{
 }> = ({ comment, commentID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
-  const [submitReview] = useSubmitReviewMutation();
+  const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
 
   const completedCommentHandler = () => {

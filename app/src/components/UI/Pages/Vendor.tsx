@@ -1,14 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
   useVendorQuery,
-  useSubmitReviewMutation,
+  useCreateReviewMutation,
   StarRatingInteger,
   useLazyUsersMultipleQuery,
   User,
   getUserIDFromToken,
   usePhotosByLinkIDQuery,
+  useCreatePhotoMutation,
+  Photo,
+  useS3CredentialsMutation,
 } from "../../../api";
 import { Container, Divider, Grid, Header } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
@@ -20,6 +23,7 @@ import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/VendorGallery";
 import styles from "./vendor.module.css";
+import { uploadToS3 } from "../../../aws";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -29,12 +33,15 @@ export function Vendor(): React.ReactElement {
   const { data: vendor } = useVendorQuery(vendorID);
   const reviewsQuery = useReviewsQuery(vendorID);
   const reviews = reviewsQuery.data;
-  const [submitReview] = useSubmitReviewMutation();
+  const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const [usersMultipleTrigger, { data: users }] = useLazyUsersMultipleQuery();
   const { data: photos, isSuccess: photosIsSuccess } =
     usePhotosByLinkIDQuery(vendorID);
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createPhoto] = useCreatePhotoMutation();
+  const [getS3Credentials] = useS3CredentialsMutation();
 
   useEffect(() => {
     if (reviewsQuery.isSuccess) {
@@ -42,29 +49,58 @@ export function Vendor(): React.ReactElement {
     }
   }, [reviewsQuery.isSuccess]);
 
-  const completedReviewHandler = ({
+  const completedReviewHandler = async ({
     text,
     starRating,
+    files,
   }: {
     text: string;
     starRating: StarRatingInteger;
+    files: File[];
   }) => {
     if (token === null) {
       throw new Error("token is null");
     }
 
+    setIsSubmitting(true);
     const userID = getUserIDFromToken(token);
-    submitReview({
-      ID: uuid(),
+    const reviewID = uuid();
+    const s3Response = await getS3Credentials(userID);
+    if ("error" in s3Response) {
+      throw new Error("could not get S3 credentials");
+    }
+
+    for (const file of files) {
+      const photoID = uuid();
+      await uploadToS3(s3Response.data, `${photoID}.jpg`, file);
+      const photo: Photo = {
+        ID: photoID,
+        DatePosted: DateTime.now(),
+        Text: "",
+        LinkID: reviewID,
+      };
+      const createPhotoResponse = await createPhoto(photo);
+      if ("error" in createPhotoResponse) {
+        return;
+      }
+    }
+    const review = {
+      ID: reviewID,
       Text: text,
       DatePosted: DateTime.now(),
       VendorID: vendorID,
       UserID: userID,
       StarRating: starRating,
       ReplyTo: null,
-    });
+    };
+    await submitReview(review);
+    setIsSubmitting(false);
+
     // Add current user to users list
-    usersMultipleTrigger([...reviewsQuery.data!.map((r) => r.UserID), userID]);
+    await usersMultipleTrigger([
+      ...reviewsQuery.data!.map((r) => r.UserID),
+      userID,
+    ]);
   };
 
   return (
@@ -148,6 +184,7 @@ export function Vendor(): React.ReactElement {
         ) : (
           <ReviewForm finishedFormHandler={completedReviewHandler} />
         )}
+        {isSubmitting ? <p>Submitting review...</p> : null}
         <Divider hidden />
       </Container>
     </>
