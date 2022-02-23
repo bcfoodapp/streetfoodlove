@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useReviewsQuery,
   useVendorQuery,
   useCreateReviewMutation,
   StarRatingInteger,
-  User,
   getUserIDFromToken,
   usePhotosByLinkIDQuery,
   useCreatePhotoMutation,
