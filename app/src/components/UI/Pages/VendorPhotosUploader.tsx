@@ -2,7 +2,7 @@ import { Container, Header, Icon } from "semantic-ui-react";
 import Dropzone from "react-dropzone";
 import React, { useState } from "react";
 import styles from "./vendorphotoseditor.module.css";
-import useEffectAsync, {
+import {
   AWSCredentials,
   getUserIDFromToken,
   Photo,
@@ -11,6 +11,8 @@ import useEffectAsync, {
   usePhotosByLinkIDQuery,
   useS3CredentialsMutation,
   useVendorByOwnerIDQuery,
+  useEffectAsync,
+  getExtension,
 } from "../../../api";
 import Gallery from "../Organisms/VendorGallery/VendorGallery";
 import { uploadToS3 } from "../../../aws";
@@ -65,8 +67,8 @@ export default (): React.ReactElement => {
     setShowUploadError(false);
     for (const file of files) {
       setUploading(true);
-      const photoID = uuid();
-      await uploadToS3(s3Credentials!, `${photoID}.jpg`, file);
+      const photoID = `${uuid()}.${getExtension(file.name)}`;
+      await uploadToS3(s3Credentials!, photoID, file);
       const photo: Photo = {
         ID: photoID,
         Text: "",
@@ -105,7 +107,7 @@ export default (): React.ReactElement => {
         <p>Getting AWS credentials</p>
       ) : vendor ? (
         <Dropzone
-          accept="image/jpeg"
+          accept={["image/jpeg", "image/png"]}
           onDropAccepted={onDrop}
           onDropRejected={() => setShowUploadError(true)}
           maxSize={1_000_000}

@@ -62,7 +62,7 @@ export const ReviewForm = (props: Props) => {
         />
         <p>Attach pictures</p>
         <Dropzone
-          accept="image/jpeg"
+          accept={["image/jpeg", "image/png"]}
           onDropAccepted={onDrop}
           onDropRejected={() => setShowUploadError(true)}
           maxSize={1_000_000}
