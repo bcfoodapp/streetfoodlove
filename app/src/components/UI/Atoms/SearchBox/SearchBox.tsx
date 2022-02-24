@@ -54,20 +54,32 @@ export const SearchBox: React.FC = () => {
         return condition.test(element.Name);
       });
 
-      for (let i = 0; i < filteredResult.length; i++) { //loop through all vendors that pass the regex filter
+      for (let i = 0; i < filteredResult.length; i++) {
+        //loop through all vendors that pass the regex filter
 
         let tempObject = {
           title: filteredResult[i].Name,
           description: filteredResult[i].BusinessAddress,
           ...filteredResult[i],
         };
-        
-        for (const name of recentSearchResult) { //loop through recent searches and add the vendor to beginning of result array if titles match.
-          if (name === tempObject.title) {
-            resultArray = [tempObject, ...resultArray];
-          }
-        }
+        // resultArray.unshift(tempObject);
+        // for (const name of recentSearchResult) {
+        //   if (name === tempObject.title) {
+        //     resultArray = [tempObject, ...resultArray];
+        //   }
+        // }
 
+        if (recentSearchResult.includes(tempObject.title)) {
+          // console.log('item to be put in front is: ' + tempObject.Name);
+          // console.log('amazing');
+          // result.unshift(result.splice(i, 1)[0])
+          resultArray.unshift(tempObject);
+          // console.log(resultArray);
+          // console.log('first element in result array is: ' + JSON.stringify(resultArray[0], null, 2));
+          // console.log(resultArray[1]);
+        } else {
+          resultArray.push(tempObject);
+        }
       }
 
       // console.log("resultArray: " + JSON.stringify(resultArray, null, 2));
