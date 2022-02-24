@@ -329,7 +329,7 @@ type Review struct {
 	DatePosted     time.Time
 	StarRating     *int
 	ReplyTo        *uuid.UUID
-	VendorFavorite *int
+	VendorFavorite bool
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -391,6 +391,43 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 		}
 	}
 
+	return result, rows.Err()
+}
+
+//query to find out if the vendor has been starred, it returns true if it is false if not
+func (d *Database) starredVendorFavorite(VendorID int, ReviewsID int) (bool, error) {
+	var starred bool
+
+	if err := d.db.QueryRow("SELECT (ID >= ?) FROM reviews WHERE VendorID = ?",
+		ReviewsID, VendorID).Scan(&starred); err != nil {
+
+		return false,
+			fmt.Errorf("starredVendorFavorite %d: No review", VendorID)
+	}
+	return false,
+		fmt.Errorf("starredVendorFavorite %d: ", ReviewsID)
+
+	return starred, nil
+}
+
+func (d *Database) vendorStarredByUser(UserID uuid.UUID) ([]Vendor, error) {
+	const command = `
+		SELECT * FROM reviews WHERE UserID=?
+`
+	rows, err := d.db.Queryx(command, UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Vendor, 0)
+
+	for rows.Next() {
+		result = append(result, Vendor{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
 	return result, rows.Err()
 }
 
@@ -554,11 +591,35 @@ func (d *Database) FavoriteCreate(favorite *Favorite) error {
 
 func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	const command = `
-		SELECT * FROM Favorite WHERE ID=?
+		SELECT * FROM Favorite WHERE VendorID=?
 	`
 	row := d.db.QueryRowx(command, &id)
 
 	favorite := &Favorite{}
-	err := row.StructScan(favorite)
+	err := row.StructScan(id)
+	fmt.Println("count", id)
 	return favorite, err
+}
+func (d *Database) favoritebyVendor(favoriteID uuid.UUID) ([]Favorite, error) {
+	rows, err := d.db.Query("SELECT * FROM favorite WHERE ID = ?", favoriteID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	//to hold data that favorite a vendor
+	var fav []Favorite
+
+	//go through rows to assign column to struct field
+	for rows.Next() {
+		var favs Favorite
+		if err := rows.Scan(&favs.ID, &favs.UserID, &favs.VendorID, &favs.DatePosted); err != nil {
+			return fav, err
+		}
+		fav = append(fav, favs)
+	}
+	if err = rows.Err(); err != nil {
+		return fav, err
+	}
+	return fav, nil
 }
