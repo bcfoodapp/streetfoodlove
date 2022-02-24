@@ -97,7 +97,7 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             {photos ? (
               <Segment style={{ width: "100%" }}>
-                <Gallery photos={photos} photoHeight={150} />
+                <Gallery photos={photos} photoHeight={250} />
               </Segment>
             ) : null}
           </Grid.Row>
