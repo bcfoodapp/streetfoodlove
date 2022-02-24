@@ -166,12 +166,16 @@ const EditVendorPage: React.FC = () => {
                 className={styles.error}
               />
 
-              <DragAndDrop
-                onDrop={(files) => {
-                  setFieldValue("logo", files[0]);
-                }}
-                multiple={false}
-              />
+              <label>
+                <strong>Logo image</strong>
+                <DragAndDrop
+                  onDrop={(files) => {
+                    setFieldValue("logo", files[0]);
+                  }}
+                  multiple={false}
+                />
+              </label>
+              <br />
 
               <Form.Input
                 name="businessAddress"
