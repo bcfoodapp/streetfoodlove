@@ -10,6 +10,7 @@ import {
   useCreatePhotoMutation,
   Photo,
   useS3CredentialsMutation,
+  getExtension,
 } from "../../../api";
 import { Container, Divider, Grid, Header, Segment } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
@@ -61,8 +62,8 @@ export function Vendor(): React.ReactElement {
     }
 
     for (const file of files) {
-      const photoID = uuid();
-      await uploadToS3(s3Response.data, `${photoID}.jpg`, file);
+      const photoID = `${uuid()}.${getExtension(file.name)}`;
+      await uploadToS3(s3Response.data, photoID, file);
       const photo: Photo = {
         ID: photoID,
         DatePosted: DateTime.now(),

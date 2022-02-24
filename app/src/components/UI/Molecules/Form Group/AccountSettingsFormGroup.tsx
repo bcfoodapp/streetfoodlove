@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Container, Form } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
-import useEffectAsync, {
+import {
+  useEffectAsync,
   getUserIDFromToken,
   useGetTokenMutation,
   useUpdateUserMutation,

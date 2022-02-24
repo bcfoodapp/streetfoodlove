@@ -378,7 +378,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 }
 
 type Photo struct {
-	ID         uuid.UUID
+	ID         string
 	DatePosted time.Time
 	Text       string
 	// LinkID references either a Vendor or Review.

@@ -64,7 +64,7 @@ export const ReviewForm = (props: Props) => {
           <strong>Attach pictures</strong>
         </p>
         <Dropzone
-          accept="image/jpeg"
+          accept={["image/jpeg", "image/png"]}
           onDropAccepted={onDrop}
           onDropRejected={() => setShowUploadError(true)}
           maxSize={1_000_000}
@@ -80,7 +80,7 @@ export const ReviewForm = (props: Props) => {
                 <Container textAlign="center">
                   <p>
                     <Icon name="upload" />
-                    Drag-and-drop .jpg files or click to browse
+                    Drag-and-drop .jpg/.png files or click to browse
                   </p>
                 </Container>
               </div>
@@ -88,9 +88,7 @@ export const ReviewForm = (props: Props) => {
           }}
         </Dropzone>
         {showUploadError ? (
-          <p className={styles.error}>
-            This is not a jpg file. Only .jpg files are accepted.
-          </p>
+          <p className={styles.error}>File was not accepted.</p>
         ) : null}
         {files.map((file, i) => (
           <p key={i}>{file.name}</p>

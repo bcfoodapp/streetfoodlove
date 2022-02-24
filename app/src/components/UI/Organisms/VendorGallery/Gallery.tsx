@@ -30,11 +30,11 @@ export default ({ photos, photoHeight }: Props): React.ReactElement => {
         <Image.Group>
           {photos.map((photo, i) => (
             <a
-              href={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`}
+              href={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}`}
               key={i}
             >
               <Image
-                src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}.jpg`}
+                src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}`}
                 alt={photo.Text}
                 style={{
                   height: photoHeight,
