@@ -34,7 +34,7 @@ type Vendor struct {
 	Website         string
 	BusinessHours   string
 	Phone           string
-	BusinessLogo    string
+	BusinessLogo    *string
 	Latitude        float64
 	Longitude       float64
 	Owner           uuid.UUID

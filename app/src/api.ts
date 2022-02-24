@@ -22,7 +22,7 @@ export interface Vendor {
   Website: string;
   BusinessHours: string;
   Phone: string;
-  BusinessLogo: string;
+  BusinessLogo: string | null;
   Latitude: number;
   Longitude: number;
   Owner: string;
