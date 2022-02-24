@@ -101,7 +101,7 @@ export function Vendor(): React.ReactElement {
         <br />
         <Grid centered>
           <Grid.Row style={{ display: "flex", alignItems: "center" }}>
-            {vendor ? (
+            {vendor && vendor.BusinessLogo ? (
               <Image
                 src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${vendor.BusinessLogo}`}
                 alt="logo"
