@@ -27,10 +27,31 @@ export const SearchBox: React.FC = () => {
   console.log("search result: " + JSON.stringify(searchResult, null, 2));
 
   const enterQueryHandler = () => {
+
     let resultSet = new Set([
       inputRef.current.props.value,
       ...recentSearchResult,
     ]);
+    
+    let array: Vendor[] = []
+
+    if (vendorsList !== undefined) {
+
+      for (const vendor of vendorsList) {
+        if (vendor.Name === inputRef.current.props.value) {
+          let obj = {
+            title: vendor.Name,
+            description: vendor.BusinessAddress,
+            ...vendor,            
+          }
+
+          array.push(obj)
+        }
+      }
+
+    }
+
+
     setRecentSearchResult([...resultSet]);
 
     dispatch(showSideBar());
@@ -62,12 +83,6 @@ export const SearchBox: React.FC = () => {
           description: filteredResult[i].BusinessAddress,
           ...filteredResult[i],
         };
-        // resultArray.unshift(tempObject);
-        // for (const name of recentSearchResult) {
-        //   if (name === tempObject.title) {
-        //     resultArray = [tempObject, ...resultArray];
-        //   }
-        // }
 
         if (recentSearchResult.includes(tempObject.title)) {
           // console.log('item to be put in front is: ' + tempObject.Name);
