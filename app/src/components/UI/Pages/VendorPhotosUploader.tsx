@@ -1,4 +1,4 @@
-import { Container, Header, Icon } from "semantic-ui-react";
+import { Container, Header, Icon, Segment } from "semantic-ui-react";
 import Dropzone from "react-dropzone";
 import React, { useState } from "react";
 import styles from "./vendorphotoseditor.module.css";
@@ -12,7 +12,7 @@ import useEffectAsync, {
   useS3CredentialsMutation,
   useVendorByOwnerIDQuery,
 } from "../../../api";
-import Gallery from "../Organisms/VendorGallery/VendorGallery";
+import Gallery from "../Organisms/VendorGallery/Gallery";
 import { uploadToS3 } from "../../../aws";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
@@ -38,11 +38,10 @@ export default (): React.ReactElement => {
   const { data: vendor, isLoading: vendorQueryIsLoading } =
     useVendorByOwnerIDQuery(userID as string, { skip: !userID });
 
-  const {
-    data: photos,
-    isSuccess: photosIsSuccess,
-    isLoading: photosIsLoading,
-  } = usePhotosByLinkIDQuery(vendor ? vendor.ID : "", { skip: !vendor });
+  const { data: photos, isLoading: photosIsLoading } = usePhotosByLinkIDQuery(
+    vendor ? vendor.ID : "",
+    { skip: !vendor }
+  );
 
   const [getS3Credentials, { isLoading: s3CredentialsIsLoading }] =
     useS3CredentialsMutation();
@@ -88,8 +87,10 @@ export default (): React.ReactElement => {
       <Header as="h1">Vendor photos</Header>
       {vendorQueryIsLoading || photosIsLoading ? (
         <p>Loading</p>
-      ) : photosIsSuccess ? (
-        <Gallery photos={photos!} />
+      ) : photos ? (
+        <Segment style={{ width: "100%" }}>
+          <Gallery photos={photos} photoHeight={150} />
+        </Segment>
       ) : null}
       <Header as="h3">Image upload</Header>
       <p>
