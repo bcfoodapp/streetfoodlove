@@ -5,6 +5,7 @@ import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./reviewForm.module.css";
 import { StarRatingInteger } from "../../../../api";
 import Dropzone from "react-dropzone";
+import DragAndDrop from "../DragAndDrop/DragAndDrop";
 
 /**
  * Renders a review form template that includes fields to be filled out
@@ -63,33 +64,7 @@ export const ReviewForm = (props: Props) => {
         <p>
           <strong>Attach pictures</strong>
         </p>
-        <Dropzone
-          accept={["image/jpeg", "image/png"]}
-          onDropAccepted={onDrop}
-          onDropRejected={() => setShowUploadError(true)}
-          maxSize={1_000_000}
-        >
-          {({ getRootProps, getInputProps, isDragAccept }) => {
-            let dragAndDropStyles = styles.dragAndDrop;
-            if (isDragAccept) {
-              dragAndDropStyles += " " + styles.accept;
-            }
-            return (
-              <div className={dragAndDropStyles} {...getRootProps()}>
-                <input {...getInputProps()} />
-                <Container textAlign="center">
-                  <p>
-                    <Icon name="upload" />
-                    Drag-and-drop .jpg/.png files or click to browse
-                  </p>
-                </Container>
-              </div>
-            );
-          }}
-        </Dropzone>
-        {showUploadError ? (
-          <p className={styles.error}>File was not accepted.</p>
-        ) : null}
+        <DragAndDrop onDrop={onDrop} />
         {files.map((file, i) => (
           <p key={i}>{file.name}</p>
         ))}
