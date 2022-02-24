@@ -178,7 +178,7 @@ type User struct {
 	ID        uuid.UUID
 	Username  string
 	UserType  UserType
-	Photo     uuid.UUID
+	Photo     string
 	FirstName string
 	LastName  string
 }
