@@ -16,11 +16,15 @@ import {
   useUpdateVendorMutation,
   useVendorByOwnerIDQuery,
   Vendor,
+  useS3CredentialsMutation,
+  getExtension,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
+import { uploadToS3 } from "../../../aws";
+import { v4 as uuid } from "uuid";
 
 interface inputValues {
   name: string;
@@ -84,6 +88,8 @@ const EditVendorPage: React.FC = () => {
     }
   }, [vendorQueryIsSuccess]);
 
+  const [getS3Credentials] = useS3CredentialsMutation();
+
   if (tokenIsSuccess && !token) {
     return <p>Not logged in</p>;
   }
@@ -97,6 +103,18 @@ const EditVendorPage: React.FC = () => {
   });
 
   const onSubmit = async (data: inputValues) => {
+    let photoID = null;
+    if (data.logo) {
+      // userID is defined at this point
+      const s3Response = await getS3Credentials(userID!);
+      if ("error" in s3Response) {
+        throw new Error("could not get S3 credentials");
+      }
+
+      const photoID = `${uuid()}.${getExtension(data.logo.name)}`;
+      await uploadToS3(s3Response.data, photoID, data.logo);
+    }
+
     const updatedVendor: Vendor = {
       ID: vendor!.ID,
       Name: data.name,
@@ -104,11 +122,10 @@ const EditVendorPage: React.FC = () => {
       Website: data.website,
       BusinessHours: data.businessHours,
       Phone: data.phoneNumber,
-      BusinessLogo: "",
+      BusinessLogo: photoID,
       Latitude: 0,
       Longitude: 0,
-      // userID is defined at this point
-      Owner: userID as string,
+      Owner: userID!,
     };
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {
@@ -175,6 +192,7 @@ const EditVendorPage: React.FC = () => {
                   multiple={false}
                 />
               </label>
+              {values.logo ? <p>{values.logo.name}</p> : null}
               <br />
 
               <Form.Input
