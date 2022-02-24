@@ -60,7 +60,7 @@ export const ReviewForm = (props: Props) => {
           value={textAreaInput}
           onChange={handleChange}
         />
-        <p>Attach pictures</p>
+        <p>Attach pictures (Must be .jpg)</p>
         <Dropzone
           accept={["image/jpeg", "image/png"]}
           onDropAccepted={onDrop}
