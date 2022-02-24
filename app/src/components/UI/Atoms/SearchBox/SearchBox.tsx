@@ -24,11 +24,15 @@ export const SearchBox: React.FC = () => {
   const inputRef = useRef<any>(null);
   const dispatch = useAppDispatch();
 
+  console.log("search result: " + JSON.stringify(searchResult, null, 2));
+
   const enterQueryHandler = () => {
-    setRecentSearchResult([
+    let resultSet = new Set([
       inputRef.current.props.value,
       ...recentSearchResult,
     ]);
+    setRecentSearchResult([...resultSet]);
+
     dispatch(showSideBar());
   };
 
@@ -46,34 +50,27 @@ export const SearchBox: React.FC = () => {
       let condition = new RegExp(search as string);
       let resultArray: Vendor[] = [];
 
-      let result = vendorsList.filter((element) => {
+      let filteredResult = vendorsList.filter((element) => {
         return condition.test(element.Name);
       });
 
-      console.log("result: " + JSON.stringify(result, null, 2));
-
-      for (let i = 0; i < result.length; i++) {
-        //loop through all vendors that pass the regex filter
+      for (let i = 0; i < filteredResult.length; i++) { //loop through all vendors that pass the regex filter
 
         let tempObject = {
-          title: result[i].Name,
-          description: result[i].BusinessAddress,
-          ...result[i],
+          title: filteredResult[i].Name,
+          description: filteredResult[i].BusinessAddress,
+          ...filteredResult[i],
         };
-
-        if (recentSearchResult.includes(tempObject.Name)) {
-          // console.log('amazing');
-          // result.unshift(result.splice(i, 1)[0])
-          resultArray.unshift(tempObject);
-          // console.log(resultArray);
-          // console.log(resultArray[0]);
-          // console.log(resultArray[1]);
-        } else {
-          resultArray.push(tempObject);
+        
+        for (const name of recentSearchResult) { //loop through recent searches and add the vendor to beginning of result array if titles match.
+          if (name === tempObject.title) {
+            resultArray = [tempObject, ...resultArray];
+          }
         }
+
       }
 
-      console.log("resultArray: " + JSON.stringify(resultArray, null, 2));
+      // console.log("resultArray: " + JSON.stringify(resultArray, null, 2));
       setSearchResult(resultArray);
     }
   };
