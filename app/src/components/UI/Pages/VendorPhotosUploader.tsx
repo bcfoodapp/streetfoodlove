@@ -95,8 +95,7 @@ export default (): React.ReactElement => {
       ) : null}
       <Header as="h3">Image upload</Header>
       <p>
-        Upload photos that you want to add to your vendor page here. We only
-        accept .jpg files.
+        Upload photos that you want to add to your vendor page here.
         <br />
         <strong>
           Please resize your image to be smaller than 500x500 pixels to minimize
@@ -123,7 +122,7 @@ export default (): React.ReactElement => {
                 <Container textAlign="center">
                   <p>
                     <Icon name="upload" />
-                    Drag-and-drop .jpg files or click to browse
+                    Drag-and-drop .jpg/.png files or click to browse
                   </p>
                 </Container>
               </div>
@@ -134,9 +133,7 @@ export default (): React.ReactElement => {
         <p>Vendor loading</p>
       )}
       {showUploadError ? (
-        <p className={styles.error}>
-          This is not a jpg file. Only .jpg files are accepted.
-        </p>
+        <p className={styles.error}>File was not accepted.</p>
       ) : null}
       {uploading ? <p>Uploading</p> : null}
     </Container>
