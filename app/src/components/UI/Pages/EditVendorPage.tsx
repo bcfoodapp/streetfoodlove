@@ -22,13 +22,9 @@ import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 
-const fileInput = () => {
-  return <Input type="file" className={styles.input} size="small" fluid />;
-};
-
 interface inputValues {
-  ID: string;
   name: string;
+  logo: File | null;
   businessAddress: string;
   phoneNumber: string;
   businessHours: string;
@@ -78,7 +74,7 @@ const EditVendorPage: React.FC = () => {
   useEffect(() => {
     if (vendorQueryIsSuccess) {
       setInitalValues({
-        ID: vendor!.ID,
+        logo: null,
         name: vendor!.Name,
         businessAddress: vendor!.BusinessAddress,
         phoneNumber: vendor!.Phone,
@@ -101,8 +97,8 @@ const EditVendorPage: React.FC = () => {
   });
 
   const onSubmit = async (data: inputValues) => {
-    const vendor: Vendor = {
-      ID: data.ID,
+    const updatedVendor: Vendor = {
+      ID: vendor!.ID,
       Name: data.name,
       BusinessAddress: data.businessAddress,
       Website: data.website,
@@ -114,7 +110,7 @@ const EditVendorPage: React.FC = () => {
       // userID is defined at this point
       Owner: userID as string,
     };
-    const response = await updateVendor(vendor);
+    const response = await updateVendor(updatedVendor);
     if ("data" in response) {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
@@ -170,10 +166,11 @@ const EditVendorPage: React.FC = () => {
                 className={styles.error}
               />
 
-              <Form.Field
-                control={fileInput}
-                label="Upload Business Logo"
-                width={8}
+              <DragAndDrop
+                onDrop={(files) => {
+                  setFieldValue("logo", files[0]);
+                }}
+                multiple={false}
               />
 
               <Form.Input
