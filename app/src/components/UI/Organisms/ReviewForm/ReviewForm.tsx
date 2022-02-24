@@ -4,7 +4,6 @@ import { StarRating } from "../../Atoms/StarRating/StarRating";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./reviewForm.module.css";
 import { StarRatingInteger } from "../../../../api";
-import Dropzone from "react-dropzone";
 import DragAndDrop from "../DragAndDrop/DragAndDrop";
 
 /**
@@ -23,7 +22,6 @@ export const ReviewForm = (props: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
   const [starRating, setStarRating] = useState(null as StarRatingInteger);
   const [files, setFiles] = useState([] as File[]);
-  const [showUploadError, setShowUploadError] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaInput(e.target.value);
@@ -39,11 +37,6 @@ export const ReviewForm = (props: Props) => {
       starRating,
       files,
     });
-  };
-
-  const onDrop = async (files: File[]) => {
-    setShowUploadError(false);
-    setFiles((state) => [...state, ...files]);
   };
 
   return (
@@ -63,7 +56,11 @@ export const ReviewForm = (props: Props) => {
         <p>
           <strong>Attach pictures</strong>
         </p>
-        <DragAndDrop onDrop={onDrop} />
+        <DragAndDrop
+          onDrop={(files: File[]) => {
+            setFiles((state) => [...state, ...files]);
+          }}
+        />
         {files.map((file, i) => (
           <p key={i}>{file.name}</p>
         ))}

@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import styles from "./draganddrop.module.css";
 
 interface Props {
-  onDrop: DropzoneProps["onDropAccepted"];
-  // true to allow multiple file selections.
+  onDrop: Exclude<DropzoneProps["onDropAccepted"], undefined>;
+  // true to allow multiple file selections. true is default.
   multiple?: boolean;
 }
 
@@ -15,7 +15,10 @@ export default ({ onDrop, multiple }: Props): React.ReactElement => {
     <>
       <Dropzone
         accept={["image/jpeg", "image/png"]}
-        onDropAccepted={onDrop}
+        onDropAccepted={(files, event) => {
+          setShowUploadError(false);
+          onDrop(files, event);
+        }}
         onDropRejected={() => setShowUploadError(true)}
         maxSize={1_000_000}
         multiple={multiple}

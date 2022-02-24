@@ -1,5 +1,4 @@
-import { Container, Header, Icon, Segment } from "semantic-ui-react";
-import Dropzone from "react-dropzone";
+import { Container, Header, Segment } from "semantic-ui-react";
 import React, { useState } from "react";
 import {
   AWSCredentials,
@@ -20,7 +19,6 @@ import { DateTime } from "luxon";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 
 export default (): React.ReactElement => {
-  const [showUploadError, setShowUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
@@ -63,7 +61,6 @@ export default (): React.ReactElement => {
   const [createPhoto] = useCreatePhotoMutation();
 
   const onDrop = async (files: File[]) => {
-    setShowUploadError(false);
     for (const file of files) {
       setUploading(true);
       const photoID = `${uuid()}.${getExtension(file.name)}`;
