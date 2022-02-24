@@ -165,7 +165,9 @@ export function Vendor(): React.ReactElement {
             Sign up to write a review
           </Buttons>
         ) : (
-          <ReviewForm finishedFormHandler={completedReviewHandler} />
+          <div style={{ maxWidth: "700px" }}>
+            <ReviewForm finishedFormHandler={completedReviewHandler} />
+          </div>
         )}
         {isSubmitting ? <p>Submitting review...</p> : null}
         <Divider hidden />

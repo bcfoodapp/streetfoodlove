@@ -57,7 +57,6 @@ export const ReviewForm = (props: Props) => {
       <Form onSubmit={handleSubmit}>
         <TextArea
           placeholder="Write your review here..."
-          style={{ minHeight: 60, maxWidth: 700 }}
           value={textAreaInput}
           onChange={handleChange}
         />
