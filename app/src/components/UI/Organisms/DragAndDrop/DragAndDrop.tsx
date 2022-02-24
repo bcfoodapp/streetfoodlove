@@ -5,9 +5,11 @@ import styles from "./draganddrop.module.css";
 
 interface Props {
   onDrop: DropzoneProps["onDropAccepted"];
+  // true to allow multiple file selections.
+  multiple?: boolean;
 }
 
-export default ({ onDrop }: Props): React.ReactElement => {
+export default ({ onDrop, multiple }: Props): React.ReactElement => {
   const [showUploadError, setShowUploadError] = useState(false);
   return (
     <>
@@ -16,6 +18,7 @@ export default ({ onDrop }: Props): React.ReactElement => {
         onDropAccepted={onDrop}
         onDropRejected={() => setShowUploadError(true)}
         maxSize={1_000_000}
+        multiple={multiple}
       >
         {({ getRootProps, getInputProps, isDragAccept }) => {
           let dragAndDropStyles = styles.dragAndDrop;
