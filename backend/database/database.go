@@ -612,7 +612,7 @@ func (d *Database) CountVendorStars(vendorID uuid.UUID) (int, error) {
 	`
 
 	result := 0
-	err := d.db.QueryRowx(command, &vendorID).StructScan(&result)
+	err := d.db.QueryRowx(command, &vendorID).Scan(&result)
 	return result, err
 }
 
