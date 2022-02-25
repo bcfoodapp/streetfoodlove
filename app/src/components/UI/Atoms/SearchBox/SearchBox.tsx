@@ -60,11 +60,20 @@ export const SearchBox: React.FC = () => {
     if (vendorsList) {
       let search = data.value;
       let condition = new RegExp(search as string);
+      // console.log(condition);
       let resultArray: Vendor[] = [];
 
       let filteredResult = vendorsList.filter((element) => {
+        //filter all vendors from vendors list who matches regex expression
         return condition.test(element.Name);
       });
+
+      let recentSearchFilteredResult = recentSearchResult.filter((element) => {
+        //filter all vendors from recent search who matches regex expr.
+        return condition.test(element.Name);
+      });
+
+      // console.table(recentSearchFilteredResult);
 
       for (let i = 0; i < filteredResult.length; i++) {
         //loop through all vendors that pass the regex filter
@@ -76,6 +85,7 @@ export const SearchBox: React.FC = () => {
         };
 
         if (
+          //if the tempobject has no matches in recentsearch result, then push to the result array
           !recentSearchResult.some(
             (element) => element.Name === tempObject.title
           )
@@ -84,8 +94,11 @@ export const SearchBox: React.FC = () => {
         }
       }
 
-      resultArray.unshift(...recentSearchResult);
+      console.log(resultArray);
 
+      if (recentSearchResult.length !== 0) {
+        resultArray.unshift(...recentSearchFilteredResult); //add filtered recentsearchresult to the front of reusltarray
+      }
       setSearchResult(resultArray);
     }
   };
