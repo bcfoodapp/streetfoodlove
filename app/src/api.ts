@@ -560,6 +560,10 @@ export const {
   usePhotosByLinkIDQuery,
   useCreatePhotoMutation,
   useS3CredentialsMutation,
+  useStarsByUserIDQuery,
+  useCreateStarMutation,
+  useCountStarsForVendorQuery,
+  useDeleteStarMutation,
 } = apiSlice;
 
 // Sets credentials and name in localStorage.
