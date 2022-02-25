@@ -404,8 +404,8 @@ func (d *Database) StarredVendorFavorite(VendorID int, ReviewsID int) (bool, err
 		return false,
 			fmt.Errorf("starredVendorFavorite %d: No review", VendorID)
 	}
-	return false,
-		fmt.Errorf("starredVendorFavorite %d: ", ReviewsID)
+	//return false,
+	//fmt.Errorf("starredVendorFavorite %d: ", ReviewsID)
 
 	return starred, nil
 }
