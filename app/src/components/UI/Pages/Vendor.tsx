@@ -12,7 +12,14 @@ import {
   useS3CredentialsMutation,
   getExtension,
 } from "../../../api";
-import { Container, Divider, Grid, Header, Segment } from "semantic-ui-react";
+import {
+  Container,
+  Divider,
+  Grid,
+  Header,
+  Image,
+  Segment,
+} from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
@@ -91,8 +98,16 @@ export function Vendor(): React.ReactElement {
   return (
     <>
       <Container textAlign="center">
+        <br />
         <Grid centered>
-          <Grid.Row>
+          <Grid.Row style={{ display: "flex", alignItems: "center" }}>
+            {vendor && vendor.BusinessLogo ? (
+              <Image
+                src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${vendor.BusinessLogo}`}
+                alt="logo"
+                style={{ width: 60, height: 60, objectFit: "cover" }}
+              />
+            ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
           </Grid.Row>
           <Grid.Row>
