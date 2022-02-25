@@ -1,28 +1,43 @@
 package main
 
 import (
-	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/gin-gonic/gin"
-	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"net/http"
+	"log"
+	"os"
 	"time"
 )
 
 func main() {
-	config := mysql.Config{
-		User:                 "root",
-		AllowNativePasswords: true,
-		DBName:               "streetfoodlove",
-		ParseTime:            true,
+	var config *database.Configuration
+
+	secretsFile, isProduction := os.LookupEnv("SECRETS_FILE")
+	if isProduction {
+		log.Println("using production configuration")
+		config = database.Production(secretsFile)
+	} else {
+		config = database.Development()
 	}
-	db, err := sqlx.Connect("mysql", config.FormatDSN())
+
+	db, err := sqlx.Connect("mysql", config.MySQLConfig.FormatDSN())
 	if err != nil {
 		panic(err)
 	}
 
-	api := API{&Backend{database.NewDatabase(db)}}
+	db.SetConnMaxLifetime(time.Minute * 4)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+
+	aws, err := NewAWS()
+	if err != nil {
+		panic(err)
+	}
+
+	api := API{&Backend{
+		AWS:      aws,
+		Database: database.NewDatabase(db),
+	}}
 	defer func() {
 		if err := api.Close(); err != nil {
 			panic(err)
@@ -32,20 +47,23 @@ func main() {
 	router := gin.Default()
 	api.AddRoutes(router)
 
-	server := http.Server{
-		Addr:         ":8080",
-		Handler:      router,
-		ReadTimeout:  time.Second * 10,
-		WriteTimeout: time.Second * 10,
-	}
+	config.Server.Handler = router
+
 	defer func() {
-		if err := server.Close(); err != nil {
+		if err := config.Server.Close(); err != nil {
 			panic(err)
 		}
 	}()
 
-	fmt.Println("serving at localhost:8080")
-	if err := server.ListenAndServe(); err != nil {
-		panic(err)
+	if isProduction {
+		log.Println("serving at localhost:443")
+		if err := config.Server.ListenAndServeTLS("", ""); err != nil {
+			panic(err)
+		}
+	} else {
+		log.Println("serving at localhost:8080")
+		if err := config.Server.ListenAndServe(); err != nil {
+			panic(err)
+		}
 	}
 }

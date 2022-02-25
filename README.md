@@ -1,3 +1,9 @@
+# Link to app
+
+[https://bcfoodapp.github.io/streetfoodlove/](https://bcfoodapp.github.io/streetfoodlove/)
+
+Use an alternate Google account if you want to sign-in with Google! Do not use your main Google account as the app is not guaranteed to be secure.
+
 # Document links
 
 - [API doc](https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1)
@@ -16,9 +22,29 @@
   - https://nodejs.org/en/download/current/
 
 # How to run
-1. Go to the `backend` folder in PowerShell and run the command `go run .`
-  - Open your browser and go to http://localhost:8080/. If it says "404 page not found", it's working.
-2. Go to the `app` folder, and install dependencies with `npm i`
-3. Do `npm start` and wait for it to compile
-4. With the backend server still running, go to http://localhost:3000/streetfoodlove/
+1. To initialize the database, go to `backend/reset_database` and run `go run .`
+2. (Optional) [Configure AWS credentials](https://aws.github.io/aws-sdk-go-v2/docs/configuring-sdk/#specifying-credentials). If you do not do this, all AWS calls will fail.
+3. Go to the `backend` folder in PowerShell and run the command `go run .`
+  - Open your browser and go to http://localhost:8080/ to make sure it is working.
+4. Go to the `app` folder, and install dependencies with `npm i`
+5. Do `npm start` and wait for it to compile
+6. With the backend server still running, go to http://localhost:3000/streetfoodlove/
   - Press ctrl-c to stop the server and npm
+
+# To run in production
+
+```
+| home
+|------cert.crt
+|------cert.key
+|------secrets.json
+|------backend
+```
+
+1. As shown in the directory tree above, place the `.crt` and `.key` certificate files in the parent directory of `backend`.
+2. Create a file named `secrets.json` with the schema given in `backend/database.Secrets`.
+3. Clone just the `backend` directory to the same directory where the certificates are located.
+4. Run the `backend` package, passing the environment variable `SECRETS_FILE` containing the path to the `secrets.json` file. For example:
+  ```
+  SECRETS_FILE=~/secrets.json sudo -E go run .
+  ```

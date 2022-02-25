@@ -1,35 +1,77 @@
-import React, { ChangeEvent, useState } from "react";
-import { Container, Form, Icon } from "semantic-ui-react";
+import React, { useEffect, useState } from "react";
+import { Container, Form } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
-import { UserProtected, useUpdateUserMutation } from "../../../../api";
-import { v4 as uuid } from "uuid";
+import {
+  useEffectAsync,
+  getUserIDFromToken,
+  useGetTokenMutation,
+  useUpdateUserMutation,
+  useUserProtectedQuery,
+} from "../../../../api";
 import { UserType } from "../../../../api";
-import { DateTime } from "luxon";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
+  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  const [token, setToken] = useState(null as string | null);
+
+  useEffectAsync(async () => {
+    const response = await getToken();
+    if ("data" in response) {
+      setToken(response.data);
+    }
+  }, []);
+
+  let userID = "";
+  if (tokenIsSuccess && token !== null) {
+    userID = getUserIDFromToken(token as string);
+  }
+  const {
+    data: user,
+    isSuccess: userQueryIsSuccess,
+    isLoading: userQueryIsLoading,
+  } = useUserProtectedQuery(userID, { skip: userID === "" });
+
+  const [updateUser, { isLoading: updateUserIsLoading }] =
+    useUpdateUserMutation();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [updateSetting] = useUpdateUserMutation();
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    if (userQueryIsSuccess) {
+      setEmail(user!.Email);
+      setFirstName(user!.FirstName);
+      setLastName(user!.LastName);
+    }
+  }, [userQueryIsSuccess]);
 
   const handleSubmit = async () => {
-    await updateSetting({
-      ID: uuid(),
-      Photo: uuid(),
-      Username: username,
+    const response = await updateUser({
+      ID: userID,
+      Photo: user!.Photo,
+      Username: user!.Username,
       Email: email,
       FirstName: firstName,
       LastName: lastName,
       UserType: UserType.Customer,
-      SignUpDate: DateTime.now(),
+      SignUpDate: user!.SignUpDate,
+      GoogleID: user!.GoogleID,
     });
-    alert("Updated User Settings!");
+    if ("data" in response) {
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
   };
+
+  if (tokenIsSuccess && token === null) {
+    return <p>Not logged in</p>;
+  }
+
   return (
     <Container className={styles.wrapper}>
       <Form onSubmit={handleSubmit}>
@@ -40,6 +82,7 @@ const AccountSettingsFormGroup: React.FC<{
             disabled={disabled}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
+            loading={userQueryIsLoading}
           />
           <Form.Input
             label="Last Name"
@@ -47,6 +90,7 @@ const AccountSettingsFormGroup: React.FC<{
             disabled={disabled}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
+            loading={userQueryIsLoading}
           />
           <Form.Input
             label="Email"
@@ -54,23 +98,25 @@ const AccountSettingsFormGroup: React.FC<{
             disabled={disabled}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Input
-            label="Username"
-            placeholder="Username"
-            disabled={disabled}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            loading={userQueryIsLoading}
           />
         </Form.Group>
         <Container className={styles.saveBtn}>
-          <Buttons submit color="green" clicked={() => setDisabledForm(true)}>
-            Save
-          </Buttons>
+          {userQueryIsSuccess ? (
+            <Buttons
+              submit
+              color="green"
+              clicked={() => setDisabledForm(true)}
+              loading={updateUserIsLoading}
+            >
+              Save
+            </Buttons>
+          ) : null}
         </Container>
       </Form>
+      <br />
+      <br />
+      {showSuccess ? <p>Updated profile</p> : null}
     </Container>
   );
 };

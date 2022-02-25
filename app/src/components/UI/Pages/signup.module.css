@@ -1,27 +1,57 @@
 .signUpWrapper {
-  width: 100% !important;
+  width: 50% !important;
+  max-width: 600px !important;
 }
 
-.header {
-  margin-left: 40% !important;
+.signUpWrapper > h1 {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 200px !important;
 }
 
-.form {
+.formWrapper {
   margin-left: 37% !important;
   margin-top: 5% !important;
   border: 2px solid rgba(0, 0, 0, 0.25);
-  width: 25%;
-  padding: 10px 0px 10px 10px;
+  width: 50% !important;
+  padding: 10px 0px 20px 10px;
   border-radius: 5px;
   background-color: lightgrey;
 }
 
+.form {
+  width: 100% !important;
+}
+
 .btnContainer {
-  width: 30% !important;
+  width: 100% !important;
   padding-top: 20px !important;
-  padding-left: 1.5% !important;
+  /* padding-left: -1.5% !important; */
 }
 
 .signUpWrapper > h1 {
   margin-left: 40%;
+}
+
+.error {
+  color: #e63946 !important;
+  font-size: 1rem;
+  padding-bottom: 2px !important;
+}
+
+.errContainer {
+  margin-left: 0% !important;
+}
+
+.field {
+  margin-right: 10px !important;
+  margin-left: 2px !important;
+  margin-top: 4px !important;
+  margin-bottom: 1rem !important;
+}
+
+.googleButtonWrapper {
+  display: flex !important;
+  justify-content: center;
+  margin-bottom: 30px;
 }

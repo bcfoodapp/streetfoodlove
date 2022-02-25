@@ -2,10 +2,6 @@
   width: 100% !important;
 }
 
-.header {
-  margin-left: 42% !important;
-}
-
 .form {
   background-color: lightgray;
   padding: 30px;
@@ -18,6 +14,12 @@
   padding-bottom: 20px !important;
 }
 
-/* .input > .ui.label.label {
-  padding: 0.15em !important;
-} */
+.error {
+  color: #e63946 !important;
+  font-size: 1rem;
+  padding-bottom: -12px !important;
+}
+
+.group {
+  margin-bottom: 30px !important;
+}

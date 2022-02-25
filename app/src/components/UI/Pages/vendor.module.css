@@ -1,15 +1,3 @@
-.wrapper {
-  padding-left: 150px;
-  margin-top: 200px !important;
-  padding-bottom: 50px;
-}
-
-.textArea {
-  margin-left: 600px;
-  margin-top: 100px;
-}
-
-.reviews {
-  margin-left: 300px;
-  padding-bottom: 200px;
+.name {
+  font-size: 2.8em !important;
 }

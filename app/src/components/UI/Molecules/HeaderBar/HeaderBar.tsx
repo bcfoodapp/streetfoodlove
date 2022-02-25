@@ -1,79 +1,88 @@
 import React from "react";
-import { Icon, Menu, Dropdown, Button } from "semantic-ui-react";
+import { Icon, Menu, Dropdown } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { clearLocalStorage, getCredentialsEntry } from "../../../../api";
 
 /**
  * Returns the headerbar element
  */
 
-interface Props {
-  signUp?: boolean;
-  login?: boolean;
-  profile?: boolean;
-  logout?: boolean;
-}
+export default function HeaderBar(): React.ReactElement {
+  const name = getCredentialsEntry()?.Name;
 
-const ProfileIcon = (
-  <span>
-    <Icon name="user circle" size="big" /> Hi Colin
-  </span>
-);
+  const navigate = useNavigate();
 
-const options = [
-  {
-    key: "user",
-    text: (
-      <span>
-        Signed in as <strong>Colin Zhou</strong>
-      </span>
-    ),
-    disabled: true,
-  },
-  { key: "profile", text: "Profile Settings" },
-  { key: "page", text: "Create Vendor Page" },
-  { key: "help", text: "Help" },
-  { key: "sign-out", text: "Log Out" },
-];
+  const ProfileIcon = (
+    <span>
+      <Icon name="user circle" size="big" /> Hi {name}
+    </span>
+  );
 
-export default function HeaderBar(props: Props): React.ReactElement {
+  const options = [
+    {
+      key: "user",
+      text: (
+        <span>
+          Signed in as <strong>{name}</strong>
+        </span>
+      ),
+      disabled: true,
+    },
+    {
+      key: "profile",
+      text: "Profile Settings",
+      onClick: () => {
+        navigate("/account-profile");
+      },
+    },
+    {
+      key: "page",
+      text: "Edit Vendor Page",
+      onClick: () => {
+        navigate("/edit-vendor-page");
+      },
+    },
+    { key: "help", text: "Help" },
+    {
+      key: "log-out",
+      text: "Log Out",
+      onClick: () => {
+        clearLocalStorage();
+        navigate("/");
+      },
+    },
+  ];
+
   return (
-    <Menu size="massive">
-      <Menu.Item>
-        <h2>StreetFoodLove</h2>
-      </Menu.Item>
-      <SearchBox />
-
-      <Menu.Menu position="right">
-        <Dropdown
-          trigger={ProfileIcon}
-          options={options}
-          className={styles.dropdown}
-          onChange={() => window.location.reload()}
-        />
+    <Menu size="massive" className={styles.menu}>
+      <Link to="/">
         <Menu.Item>
-          {props.logout ? (
-            <Link to="/login">
-              <Buttons logout color="orange">
-                Log Out
-              </Buttons>
-            </Link>
-          ) : null}
-          {props.signUp ? (
-            <Link to="/signup">
+          <h2 className={styles.title}>StreetFoodLove</h2>
+        </Menu.Item>
+      </Link>
+      <SearchBox />
+      <Menu.Menu position="right">
+        {name ? (
+          <Dropdown
+            trigger={ProfileIcon}
+            options={options}
+            className={styles.dropdown}
+          />
+        ) : (
+          <Menu.Item>
+            <Link to="/account-selection">
               <Buttons signup>Sign Up</Buttons>
             </Link>
-          ) : null}
-          {props.login ? (
             <Link to="/login">
               <Buttons login color="orange">
                 Login
               </Buttons>
             </Link>
-          ) : null}
-        </Menu.Item>
+          </Menu.Item>
+        )}
       </Menu.Menu>
     </Menu>
   );

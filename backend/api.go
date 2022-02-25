@@ -2,16 +2,17 @@
 package main
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
-	"strings"
-	"time"
 )
 
 // API is the backend interface.
@@ -27,31 +28,53 @@ func (a *API) Close() error {
 // AddRoutes adds all API routes.
 func (a *API) AddRoutes(router *gin.Engine) {
 	corsOptions := cors.DefaultConfig()
-	corsOptions.AllowOrigins = []string{"http://localhost:3000"}
+	corsOptions.AllowOrigins = []string{
+		"http://localhost:3000",
+		"https://bcfoodapp.github.io",
+	}
 	corsOptions.AddAllowHeaders("Authorization")
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
 	router.Use(gin.CustomRecovery(recovery))
+	router.NoRoute(noRoute)
 
+	router.GET("/", root)
+
+	router.GET("/version", version)
+
+	router.GET("/vendors", a.Vendors)
 	router.GET("/vendors/:id", a.Vendor)
+	router.PUT("/vendors/:id", GetToken, a.VendorPut)
+	router.POST("/vendors/:id", GetToken, a.VendorPost)
+
 	router.GET("/users/:id", a.User)
-	router.GET("/users/:id/protected", a.UserProtected)
-	router.POST("/users/:id/protected", a.UserProtectedPost)
+	router.GET("/users/:id/protected", GetToken, a.UserProtected)
+	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
 	router.PUT("/users/:id/protected", a.UserProtectedPut)
-	router.GET("/reviews", a.ReviewsByVendorID)
-	router.PUT("/reviews/:id", Auth, a.ReviewPut)
+	router.POST("/users/:id/s3-credentials", GetToken, a.UserS3CredentialsPost)
+
+	router.GET("/reviews", a.Reviews)
+	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
+
 	router.POST("/token", a.TokenPost)
+	router.PUT("/token/google/refresh", a.TokenGoogleRefreshPut)
+	router.POST("/token/google", a.TokenGooglePost)
+
 	router.GET("/map/view/:northWestLat/:northWestLng/:southEastLat/:southEastLng", a.MapView)
 
+	router.PUT("/favorite/:id", a.FavoritePut)
+	router.GET("/favorite/:id", a.Favorite)
+
+	router.GET("/photos", a.Photos)
 	router.GET("/photos/:id", a.Photo)
-	router.POST("/photos/:id", a.PhotoPost)
+	router.PUT("/photos/:id", GetToken, a.PhotoPut)
 
 	router.GET("/guides/:id", a.Guide)
-	router.POST("/guides/:id", a.GuidePost)
+	router.POST("/guides/:id", GetToken, a.GuidePost)
 
 	router.GET("/links/:id", a.Link)
-	router.POST("/links/:id", a.LinkPost)
+	router.POST("/links/:id", GetToken, a.LinkPost)
 }
 
 // errorHandler writes any errors to response.
@@ -73,55 +96,29 @@ func recovery(c *gin.Context, err interface{}) {
 	}
 }
 
-var tokenSecret = []byte("key")
-
-var userIDKey = "userID"
-
-// TokenClaims is the token payload.
-type TokenClaims struct {
-	UserID uuid.UUID
-	jwt.StandardClaims
-}
-
-// Auth is a middleware to validate token and get user ID. The user ID is retrieved with
-// c.MustGet(userIDKey).(uuid.UUID).
-func Auth(c *gin.Context) {
-	headerValue := c.GetHeader("Authorization")
-	const bearer = "Bearer "
-	if !strings.HasPrefix(headerValue, bearer) {
-		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("token not in bearer field"))
-		return
-	}
-
-	tokenStr := strings.TrimPrefix(headerValue, bearer)
-
-	claims := &TokenClaims{}
-	_, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("invalid signing method")
-		}
-
-		return tokenSecret, nil
-	})
-
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	if claims.Valid() != nil {
-		c.AbortWithError(http.StatusUnauthorized, claims.Valid())
-		return
-	}
-
-	c.Set(userIDKey, claims.UserID)
-}
-
-func getTokenFromContext(c *gin.Context) uuid.UUID {
-	return c.MustGet(userIDKey).(uuid.UUID)
+func noRoute(c *gin.Context) {
+	c.JSON(http.StatusNotFound, "page not found")
 }
 
 var idsDoNotMatch = fmt.Errorf("ids do not match")
+
+func root(c *gin.Context) {
+	c.JSON(http.StatusOK, "StreetFoodLove API")
+}
+
+// version outputs the backend version.
+func version(c *gin.Context) {
+	file, err := os.Open("./version.json")
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if _, err := io.Copy(c.Writer, file); err != nil {
+		c.Error(err)
+		return
+	}
+}
 
 func (a *API) Vendor(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
@@ -137,6 +134,81 @@ func (a *API) Vendor(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, vendor)
+}
+
+func (a *API) VendorPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendor := &database.Vendor{}
+	if err := c.ShouldBindJSON(vendor); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != vendor.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.VendorCreate(getTokenFromContext(c), vendor); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) VendorPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	vendor := &database.Vendor{}
+	if err := c.ShouldBindJSON(vendor); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != vendor.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.VendorUpdate(getTokenFromContext(c), vendor); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) Vendors(c *gin.Context) {
+	if c.Query("owner") != "" {
+		ownerID, err := uuid.Parse(c.Query("owner"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		vendor, err := a.Backend.VendorByOwnerID(ownerID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, vendor)
+		return
+	}
+
+	vendors, err := a.Backend.Vendors()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, vendors)
 }
 
 func (a *API) User(c *gin.Context) {
@@ -222,7 +294,17 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 }
 
-func (a *API) ReviewsByVendorID(c *gin.Context) {
+func (a *API) UserS3CredentialsPost(c *gin.Context) {
+	credentials, err := a.Backend.UserS3Credentials(c, getTokenFromContext(c))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, credentials)
+}
+
+func (a *API) Reviews(c *gin.Context) {
 	vendorID, err := uuid.Parse(c.Query("vendorID"))
 	if err != nil {
 		c.Error(err)
@@ -256,7 +338,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.ReviewPut(getTokenFromContext(c), review); err != nil {
+	if err := a.Backend.ReviewCreate(getTokenFromContext(c), review); err != nil {
 		c.Error(err)
 		return
 	}
@@ -291,18 +373,62 @@ func (a *API) TokenPost(c *gin.Context) {
 		return
 	}
 
-	claims := TokenClaims{
-		UserID: userID,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: (time.Now().Add(time.Minute*10 + time.Second*5)).Unix(),
-		},
+	c.JSON(http.StatusOK, generateAccessToken(userID))
+}
+
+func (a *API) TokenGoogleRefreshPut(c *gin.Context) {
+	type TokenGoogleRefreshPutRequest struct {
+		GoogleToken string
 	}
 
-	tokenStr, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(tokenSecret)
-	if err != nil {
-		panic(err)
+	request := &TokenGoogleRefreshPutRequest{}
+	if err := c.ShouldBindJSON(request); err != nil {
+		c.Error(err)
+		return
 	}
-	c.JSON(http.StatusOK, tokenStr)
+
+	claims, err := validateGoogleToken(request.GoogleToken)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if _, err := a.Backend.Database.UserIDByGoogleID(claims.Subject); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.AbortWithStatusJSON(http.StatusNotFound, "user with Google ID does not exist")
+		} else {
+			c.Error(err)
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, generateRefreshToken(claims.Subject))
+}
+
+func (a *API) TokenGooglePost(c *gin.Context) {
+	type TokenGooglePostRequest struct {
+		RefreshToken string
+	}
+
+	request := &TokenGooglePostRequest{}
+	if err := c.ShouldBindJSON(request); err != nil {
+		c.Error(err)
+		return
+	}
+
+	claims, err := validateRefreshToken(request.RefreshToken)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	userID, err := a.Backend.Database.UserIDByGoogleID(claims.GoogleID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, generateAccessToken(userID))
 }
 
 func (a *API) MapView(c *gin.Context) {
@@ -345,6 +471,22 @@ func (a *API) MapView(c *gin.Context) {
 	c.JSON(http.StatusOK, vendors)
 }
 
+func (a *API) Photos(c *gin.Context) {
+	linkID, err := uuid.Parse(c.Query("link-id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	photos, err := a.Backend.PhotosByLinkID(linkID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, photos)
+}
+
 func (a *API) Photo(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -361,14 +503,17 @@ func (a *API) Photo(c *gin.Context) {
 	c.JSON(http.StatusOK, photo)
 }
 
-func (a *API) PhotoPost(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
-	if err != nil {
+func (a *API) PhotoPut(c *gin.Context) {
+	photo := &database.Photo{}
+	if err := c.ShouldBindJSON(photo); err != nil {
 		c.Error(err)
 		return
 	}
-	_ = id
-	// TODO
+
+	if err := a.Backend.PhotoCreate(getTokenFromContext(c), photo); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) Guide(c *gin.Context) {
@@ -421,4 +566,43 @@ func (a *API) LinkPost(c *gin.Context) {
 	}
 	_ = id
 	// TODO
+}
+
+func (a *API) FavoritePut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	favorite := &database.Favorite{}
+	if err := c.ShouldBindJSON(favorite); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != favorite.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.FavoriteCreate(getTokenFromContext(c), favorite); err != nil {
+		c.Error(err)
+		return
+	}
+}
+func (a *API) Favorite(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	favorite, err := a.Backend.Favorite(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, favorite)
 }

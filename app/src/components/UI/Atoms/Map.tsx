@@ -66,10 +66,10 @@ export default function Map(): React.ReactElement {
       center={[47.584401, -122.14819]}
       zoom={14}
       style={{
-        height: "100vh",
-        width: "140vw",
-        marginLeft: -310,
-        marginTop: -11,
+        height: "90.3vh",
+        width: "100%",
+        marginTop: 2.9,
+        zIndex: 0,
       }}
     >
       <MapContent />

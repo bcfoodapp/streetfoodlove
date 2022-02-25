@@ -17,7 +17,7 @@ import (
 func TestAuth(t *testing.T) {
 	router := gin.New()
 	resultID := uuid.UUID{}
-	router.GET("/", Auth, func(c *gin.Context) {
+	router.GET("/", GetToken, func(c *gin.Context) {
 		resultID = c.MustGet(userIDKey).(uuid.UUID)
 	})
 
@@ -39,7 +39,7 @@ func TestAuth(t *testing.T) {
 	{
 		// Expired token
 		userID := uuid.MustParse("18a0f9ad-acbb-48a2-9f90-45cbcb156c5a")
-		claims := TokenClaims{
+		claims := AccessTokenClaims{
 			UserID: userID,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: 1,
@@ -57,7 +57,7 @@ func TestAuth(t *testing.T) {
 	{
 		// Success
 		userID := uuid.MustParse("18a0f9ad-acbb-48a2-9f90-45cbcb156c5a")
-		claims := TokenClaims{
+		claims := AccessTokenClaims{
 			UserID: userID,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: (time.Now().Add(time.Minute * 10)).Unix(),

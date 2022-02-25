@@ -3,11 +3,14 @@ package database
 import (
 	"crypto/sha256"
 	"crypto/subtle"
+	"database/sql"
+	"errors"
 	"fmt"
+	"time"
+
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"time"
 )
 
 // Database abstraction layer
@@ -31,9 +34,10 @@ type Vendor struct {
 	Website         string
 	BusinessHours   string
 	Phone           string
-	BusinessLogo    string
+	BusinessLogo    *string
 	Latitude        float64
 	Longitude       float64
+	Owner           uuid.UUID
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -47,33 +51,72 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			Phone,
 			BusinessLogo,
 			Latitude,
-			Longitude
-
-	   ) VALUES (
+			Longitude,
+			Owner
+		) VALUES (
 			:ID,
 			:Name,
-	    	:BusinessAddress,
+			:BusinessAddress,
 			:Website,
 			:BusinessHours,
 			:Phone,
 			:BusinessLogo,
 			:Latitude,
-			:Longitude
+			:Longitude,
+			:Owner
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
 	return err
+}
+func (d *Database) Vendors() ([]Vendor, error) {
+	const command = `
+		SELECT * FROM Vendor
+	`
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Vendor, 0)
+
+	for rows.Next() {
+		result = append(result, Vendor{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
 }
 
 func (d *Database) Vendor(id uuid.UUID) (*Vendor, error) {
 	const command = `
 		SELECT * FROM Vendor WHERE ID=?;
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	vendor := &Vendor{}
-	err := row.StructScan(vendor)
+	err := d.db.QueryRowx(command, &id).StructScan(vendor)
 	return vendor, err
+}
+
+func (d *Database) VendorUpdate(vendor *Vendor) error {
+	const command = `
+		UPDATE Vendor SET
+			Name = :Name,
+			BusinessAddress = :BusinessAddress,
+			Website = :Website,
+			BusinessHours = :BusinessHours,
+			Phone = :Phone,
+			BusinessLogo = :BusinessLogo,
+			Latitude = :Latitude,
+			Longitude = :Longitude,
+			Owner = :Owner
+		WHERE ID = :ID
+	`
+	_, err := d.db.NamedExec(command, &vendor)
+	return err
 }
 
 type CoordinateBounds struct {
@@ -110,6 +153,18 @@ func (d *Database) VendorsByCoordinateBounds(bounds *CoordinateBounds) ([]Vendor
 	return result, rows.Err()
 }
 
+func (d *Database) VendorByOwnerID(userID uuid.UUID) (*Vendor, error) {
+	const command = `
+		SELECT *
+		FROM Vendor
+		WHERE Owner = ?
+	`
+
+	vendor := &Vendor{}
+	err := d.db.QueryRowx(command, &userID).StructScan(vendor)
+	return vendor, err
+}
+
 type UserType int
 
 const (
@@ -123,7 +178,7 @@ type User struct {
 	ID        uuid.UUID
 	Username  string
 	UserType  UserType
-	Photo     uuid.UUID
+	Photo     string
 	FirstName string
 	LastName  string
 }
@@ -133,6 +188,7 @@ type UserProtected struct {
 	*User
 	Email      string
 	SignUpDate time.Time
+	GoogleID   *string
 }
 
 func (d *Database) UserCreate(user *UserProtected, password string) error {
@@ -146,7 +202,8 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 			SignUpDate,
 			LoginPassword,
 			UserType,
-			Photo
+			Photo,
+		  	GoogleID
 		) VALUES (
 			:ID,
 			:Email,
@@ -156,7 +213,8 @@ func (d *Database) UserCreate(user *UserProtected, password string) error {
 			:SignUpDate,
 			:LoginPassword,
 			:UserType,
-			:Photo
+			:Photo,
+			:GoogleID
 		)
 	`
 	hash := sha256.Sum256([]byte(password))
@@ -180,14 +238,14 @@ func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
 			LastName,
 			SignUpDate,
 			UserType,
-			Photo
+			Photo,
+			GoogleID
 		FROM User
 		WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	user := &UserProtected{}
-	err := row.StructScan(user)
+	err := d.db.QueryRowx(command, &id).StructScan(user)
 	return user, err
 }
 
@@ -198,10 +256,9 @@ func (d *Database) UserUpdate(user *UserProtected) error {
 			Username = :Username,
 			FirstName = :FirstName,
 			LastName = :LastName,
-			SignUpDate = :SignUpDate,
-			LoginPassword = :LoginPassword,
 			UserType = :UserType,
-			Photo = :Photo
+			Photo = :Photo,
+			GoogleID = :GoogleID
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &user)
@@ -215,13 +272,14 @@ type Credentials struct {
 
 func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, error) {
 	const command = `
-		SELECT ID, LoginPassword FROM User WHERE Username=?
+		SELECT ID, LoginPassword
+		FROM User
+		WHERE Username=?
 	`
-	row := d.db.QueryRowx(command, &credentials.Username)
 
 	userID := uuid.UUID{}
 	var passwordHash []byte
-	err := row.Scan(&userID, &passwordHash)
+	err := d.db.QueryRowx(command, &credentials.Username).Scan(&userID, &passwordHash)
 	if err != nil {
 		return [16]byte{}, err
 	}
@@ -235,17 +293,28 @@ func (d *Database) UserIDByCredentials(credentials *Credentials) (uuid.UUID, err
 	return userID, nil
 }
 
-type Review struct {
-	ID         uuid.UUID
-	Text       string
-	VendorID   uuid.UUID
-	UserID     uuid.UUID
-	DatePosted time.Time
-	StarRating StarRating
+func (d *Database) UserIDByGoogleID(googleID string) (uuid.UUID, error) {
+	const command = `
+		SELECT ID
+		FROM User
+		WHERE GoogleID=?
+	`
+
+	userID := uuid.UUID{}
+	err := d.db.QueryRowx(command, &googleID).Scan(&userID)
+	return userID, err
 }
 
-// StarRating is an integer from 1 to 5.
-type StarRating int
+type Review struct {
+	ID             uuid.UUID
+	Text           string
+	VendorID       uuid.UUID
+	UserID         uuid.UUID
+	DatePosted     time.Time
+	StarRating     *int
+	ReplyTo        *uuid.UUID
+	VendorFavorite *int
+}
 
 func (d *Database) ReviewCreate(review *Review) error {
 	const command = `
@@ -255,14 +324,18 @@ func (d *Database) ReviewCreate(review *Review) error {
 			VendorID,
 			UserID,
 			DatePosted,
-			StarRating
+			StarRating,
+			ReplyTo,
+		    VendorFavorite
 		) VALUES (
 			:ID,
 			:Text,
 			:VendorID,
 			:UserID,
 			:DatePosted,
-			:StarRating
+			:StarRating,
+			:ReplyTo,
+			:VendorFavorite
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
@@ -273,10 +346,9 @@ func (d *Database) Review(id uuid.UUID) (*Review, error) {
 	const command = `
 		SELECT * FROM Reviews WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	review := &Review{}
-	err := row.StructScan(review)
+	err := d.db.QueryRowx(command, &id).StructScan(review)
 	return review, err
 }
 
@@ -306,10 +378,11 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 }
 
 type Photo struct {
-	ID         uuid.UUID
-	DatePosted string
+	ID         string
+	DatePosted time.Time
 	Text       string
-	LinkID     string
+	// LinkID references either a Vendor or Review.
+	LinkID uuid.UUID
 }
 
 func (d *Database) PhotoCreate(photo *Photo) error {
@@ -334,18 +407,61 @@ func (d *Database) Photo(id uuid.UUID) (*Photo, error) {
 	const command = `
 		SELECT * FROM Photos WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	photo := &Photo{}
-	err := row.StructScan(photo)
+	err := d.db.QueryRowx(command, &id).StructScan(photo)
 
 	return photo, err
+}
+
+func (d *Database) PhotosByLinkID(linkID uuid.UUID) ([]Photo, error) {
+	const command = `
+		SELECT * FROM Photos WHERE LinkID=?
+	`
+
+	rows, err := d.db.Queryx(command, linkID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Photo, 0)
+
+	for rows.Next() {
+		result = append(result, Photo{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+// GetOwnerOfLink returns the owner of the referenced record. For example, if linkID references a
+// Vendor, the Owner field of that vendor is returned.
+func (d *Database) GetOwnerOfLink(linkID uuid.UUID) (uuid.UUID, error) {
+	vendor, err := d.Vendor(linkID)
+	if err == nil {
+		return vendor.Owner, nil
+	}
+
+	// err should be ErrNoRows at this point
+	if !errors.Is(err, sql.ErrNoRows) {
+		return uuid.UUID{}, err
+	}
+
+	review, err := d.Review(linkID)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+
+	return review.UserID, nil
 }
 
 type Guide struct {
 	ID            uuid.UUID
 	Guide         string
-	DatePosted    string
+	DatePosted    time.Time
 	ArticleAuthor string
 }
 
@@ -371,10 +487,9 @@ func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
 	const command = `
 		SELECT * FROM Guide WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	guide := &Guide{}
-	err := row.StructScan(guide)
+	err := d.db.QueryRowx(command, &id).StructScan(guide)
 
 	return guide, err
 }
@@ -405,10 +520,45 @@ func (d *Database) Link(id uuid.UUID) (*Link, error) {
 	const command = `
 		SELECT * FROM Link WHERE ID=?
 	`
-	row := d.db.QueryRowx(command, &id)
 
 	link := &Link{}
-	err := row.StructScan(link)
+	err := d.db.QueryRowx(command, &id).StructScan(link)
 
 	return link, err
+
+}
+
+type Favorite struct {
+	ID         uuid.UUID
+	DatePosted time.Time
+	VendorID   uuid.UUID
+	UserID     uuid.UUID
+}
+
+func (d *Database) FavoriteCreate(favorite *Favorite) error {
+	const command = `
+		INSERT INTO Favorite (
+			ID,
+			DatePosted,
+			VendorID,
+			UserID
+		) VALUES (
+			:ID,
+			:DatePosted,
+			:VendorID,
+			:UserID
+		)
+	`
+	_, err := d.db.NamedExec(command, favorite)
+	return err
+}
+
+func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
+	const command = `
+		SELECT * FROM Favorite WHERE ID=?
+	`
+
+	favorite := &Favorite{}
+	err := d.db.QueryRowx(command, &id).StructScan(favorite)
+	return favorite, err
 }

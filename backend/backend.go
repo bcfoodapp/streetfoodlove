@@ -1,7 +1,11 @@
 package main
 
 import (
+	"context"
+	"database/sql"
+	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/service/sts/types"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
 	"time"
@@ -13,6 +17,7 @@ import (
 // before executing the command.
 type Backend struct {
 	Database *database.Database
+	AWS      *AWS
 }
 
 func (b *Backend) Close() error {
@@ -23,8 +28,53 @@ var unauthorized = fmt.Errorf(
 	"you are unauthorized to perform this action; make sure you are logged into the correct account",
 )
 
+// Vendors returns all vendors.
+func (b *Backend) Vendors() ([]database.Vendor, error) {
+	return b.Database.Vendors()
+}
+
 func (b *Backend) Vendor(id uuid.UUID) (*database.Vendor, error) {
 	return b.Database.Vendor(id)
+}
+
+func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error {
+	user, err := b.Database.User(userID)
+	if err != nil {
+		return err
+	}
+
+	if user.UserType != database.UserTypeVendor {
+		return fmt.Errorf("you are not a vendor user type; only vendor users can create a vendor page")
+	}
+
+	if userID != vendor.Owner {
+		return fmt.Errorf("owner field does not match userID")
+	}
+
+	_, err = b.Database.VendorByOwnerID(userID)
+	// Check that vendor for owner does not exist. We are expecting sql.ErrNoRows if there is no
+	// owner.
+	if err == nil {
+		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
+	}
+
+	if !errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+
+	return b.Database.VendorCreate(vendor)
+}
+
+func (b *Backend) VendorUpdate(userID uuid.UUID, vendor *database.Vendor) error {
+	if userID != vendor.Owner {
+		return unauthorized
+	}
+
+	return b.Database.VendorUpdate(vendor)
+}
+
+func (b *Backend) VendorByOwnerID(userID uuid.UUID) (*database.Vendor, error) {
+	return b.Database.VendorByOwnerID(userID)
 }
 
 func (b *Backend) User(id uuid.UUID) (*database.User, error) {
@@ -48,6 +98,8 @@ func (b *Backend) UserProtectedUpdate(userID uuid.UUID, user *database.UserProte
 		return unauthorized
 	}
 
+	user.SignUpDate = time.Now()
+
 	return b.Database.UserUpdate(user)
 }
 
@@ -57,11 +109,22 @@ func (b *Backend) UserProtectedCreate(user *database.UserProtected, password str
 	return b.Database.UserCreate(user, password)
 }
 
+// UserS3Credentials returns temporary credentials which can be used to upload photos to the
+// streetfoodlove S3 bucket.
+func (b *Backend) UserS3Credentials(ctx context.Context, userID uuid.UUID) (*types.Credentials, error) {
+	// Check if user exists
+	if _, err := b.Database.User(userID); err != nil {
+		return nil, err
+	}
+
+	return b.AWS.GetS3Role(ctx)
+}
+
 func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {
 	return b.Database.Review(id)
 }
 
-func (b *Backend) ReviewPut(userID uuid.UUID, review *database.Review) error {
+func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) error {
 	if review.UserID != userID {
 		return unauthorized
 	}
@@ -88,8 +151,27 @@ func (b *Backend) VendorsByCoordinateBounds(bounds *database.CoordinateBounds) (
 	return result, nil
 }
 
+func (b *Backend) PhotosByLinkID(linkID uuid.UUID) ([]database.Photo, error) {
+	return b.Database.PhotosByLinkID(linkID)
+}
+
 func (b *Backend) Photo(id uuid.UUID) (*database.Photo, error) {
 	return b.Database.Photo(id)
+}
+
+func (b *Backend) PhotoCreate(userID uuid.UUID, photo *database.Photo) error {
+	// Check that the referenced record belongs to the user
+	owner, err := b.Database.GetOwnerOfLink(photo.LinkID)
+	if err != nil {
+		return err
+	}
+	if owner != userID {
+		return unauthorized
+	}
+
+	photo.DatePosted = time.Now()
+
+	return b.Database.PhotoCreate(photo)
 }
 
 func (b *Backend) Guide(id uuid.UUID) (*database.Guide, error) {
@@ -98,4 +180,19 @@ func (b *Backend) Guide(id uuid.UUID) (*database.Guide, error) {
 
 func (b *Backend) Link(id uuid.UUID) (*database.Link, error) {
 	return b.Database.Link(id)
+}
+
+//Favorite
+func (b *Backend) Favorite(id uuid.UUID) (*database.Favorite, error) {
+	return b.Database.Favorite(id)
+}
+
+func (b *Backend) FavoriteCreate(userID uuid.UUID, favorite *database.Favorite) error {
+	if favorite.UserID != userID {
+		return unauthorized
+	}
+
+	favorite.DatePosted = time.Now()
+
+	return b.Database.FavoriteCreate(favorite)
 }

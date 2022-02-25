@@ -27,6 +27,23 @@ jobs:
         npm run typescript
         npm run build
       working-directory: app
+  frontend-test:
+    name: Frontend tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '17.1'
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+      - name: Tests
+        run: |
+          npm ci
+          npm run test
+        working-directory: app
   prettier:
     name: Prettier
     runs-on: ubuntu-20.04
@@ -42,8 +59,8 @@ jobs:
     - name: Prettier
       run: npx prettier --check .
       working-directory: app
-  build:
-    name: Compile server
+  test-backend:
+    name: Run backend tests
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -52,8 +69,15 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.17'
-      - name: Compile server
-        run: go build .
+      - name: Setup MySQL
+        run: |
+          sudo systemctl start mysql.service
+          mysql --user=root --password=root --execute="ALTER USER 'root'@'localhost' IDENTIFIED BY ''"
+      - name: reset_database
+        run: go run .
+        working-directory: backend/reset_database
+      - name: Server test
+        run: go test -run ^TestServer$
         working-directory: backend
   golint:
     name: Lint Go

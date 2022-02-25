@@ -1,0 +1,10 @@
+.wrapper {
+  position: absolute !important;
+  top: 6.5% !important;
+  width: 100% !important;
+  z-index: 1 !important;
+}
+
+.msg {
+  width: 100% !important;
+}

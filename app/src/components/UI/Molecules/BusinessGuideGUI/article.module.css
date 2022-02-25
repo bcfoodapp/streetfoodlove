@@ -1,0 +1,21 @@
+.wrapper {
+  width: 100% !important;
+}
+
+.header {
+  margin-left: 45% !important;
+  font-size: 3rem !important;
+}
+
+.postInfo {
+  width: 30% !important;
+  position: absolute;
+  top: 10%;
+  left: 53%;
+}
+
+.postDate,
+.author {
+  color: darkblue !important;
+  font-weight: 350 !important;
+}

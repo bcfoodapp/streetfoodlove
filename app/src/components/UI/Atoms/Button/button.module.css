@@ -6,7 +6,6 @@
 .Create,
 .Submit,
 .Login,
-.Logout,
 .SignUp,
 .Apply,
 .Enter,
@@ -16,12 +15,17 @@
 .writeReview .Edit {
   font-family: "Bahnschrift", sans-serif !important;
   font-size: 16px;
+  cursor: pointer !important;
 }
 
-.Cancel,
-.Logout {
+.Cancel {
   border-radius: 4px;
   padding: 0.25rem 0.75rem;
+  margin-right: 10px !important;
+}
+
+.Enter {
+  margin-left: 10px !important;
 }
 
 .Enter,
@@ -30,7 +34,6 @@
 .Edit {
   color: white !important;
   border-radius: 4px !important;
-  margin-left: 10px !important;
 }
 
 .Login {
