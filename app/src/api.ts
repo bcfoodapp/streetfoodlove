@@ -115,6 +115,11 @@ export interface AWSCredentials {
   SessionToken: string;
 }
 
+export interface Star {
+  UserID: string;
+  VendorID: string;
+}
+
 export const tokenSlice = createSlice({
   name: "token",
   initialState: {
@@ -144,6 +149,7 @@ export function getUserIDFromToken(token: string) {
 
 const PUT = "PUT";
 const POST = "POST";
+const DELETE = "DELETE";
 
 const encode = encodeURIComponent;
 
@@ -503,6 +509,27 @@ export const apiSlice = createApi({
       query: (userID) => ({
         url: `/users/${encode(userID)}/s3-credentials`,
         method: POST,
+      }),
+    }),
+    // Returns stars associated with given user.
+    starsByUserID: builder.query<Star[], string>({
+      query: (userID) => `/stars/?userID=${encode(userID)}`,
+    }),
+    createStar: builder.mutation<void, Star>({
+      query: (star) => ({
+        url: `/stars/${encode(star.UserID + star.VendorID)}`,
+        method: PUT,
+        body: star,
+      }),
+    }),
+    // Returns number of stars associated with given vendor.
+    countStarsForVendor: builder.query<number, string>({
+      query: (vendorID) => `/stars/count-for-vendor/${encode(vendorID)}`,
+    }),
+    deleteStar: builder.mutation<void, Star>({
+      query: (star) => ({
+        url: `/stars/${encode(star.UserID + star.VendorID)}`,
+        method: DELETE,
       }),
     }),
   }),
