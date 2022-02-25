@@ -1,8 +1,6 @@
-import { Container, Header, Icon } from "semantic-ui-react";
-import Dropzone from "react-dropzone";
+import { Container, Header, Segment } from "semantic-ui-react";
 import React, { useState } from "react";
-import styles from "./vendorphotoseditor.module.css";
-import useEffectAsync, {
+import {
   AWSCredentials,
   getUserIDFromToken,
   Photo,
@@ -11,14 +9,16 @@ import useEffectAsync, {
   usePhotosByLinkIDQuery,
   useS3CredentialsMutation,
   useVendorByOwnerIDQuery,
+  useEffectAsync,
+  getExtension,
 } from "../../../api";
-import Gallery from "../Organisms/VendorGallery/VendorGallery";
+import Gallery from "../Organisms/VendorGallery/Gallery";
 import { uploadToS3 } from "../../../aws";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
+import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 
 export default (): React.ReactElement => {
-  const [showUploadError, setShowUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
@@ -38,11 +38,10 @@ export default (): React.ReactElement => {
   const { data: vendor, isLoading: vendorQueryIsLoading } =
     useVendorByOwnerIDQuery(userID as string, { skip: !userID });
 
-  const {
-    data: photos,
-    isSuccess: photosIsSuccess,
-    isLoading: photosIsLoading,
-  } = usePhotosByLinkIDQuery(vendor ? vendor.ID : "", { skip: !vendor });
+  const { data: photos, isLoading: photosIsLoading } = usePhotosByLinkIDQuery(
+    vendor ? vendor.ID : "",
+    { skip: !vendor }
+  );
 
   const [getS3Credentials, { isLoading: s3CredentialsIsLoading }] =
     useS3CredentialsMutation();
@@ -62,11 +61,10 @@ export default (): React.ReactElement => {
   const [createPhoto] = useCreatePhotoMutation();
 
   const onDrop = async (files: File[]) => {
-    setShowUploadError(false);
     for (const file of files) {
       setUploading(true);
-      const photoID = uuid();
-      await uploadToS3(s3Credentials!, `${photoID}.jpg`, file);
+      const photoID = `${uuid()}.${getExtension(file.name)}`;
+      await uploadToS3(s3Credentials!, photoID, file);
       const photo: Photo = {
         ID: photoID,
         Text: "",
@@ -88,13 +86,14 @@ export default (): React.ReactElement => {
       <Header as="h1">Vendor photos</Header>
       {vendorQueryIsLoading || photosIsLoading ? (
         <p>Loading</p>
-      ) : photosIsSuccess ? (
-        <Gallery photos={photos!} />
+      ) : photos ? (
+        <Segment style={{ width: "100%" }}>
+          <Gallery photos={photos} photoHeight={150} />
+        </Segment>
       ) : null}
       <Header as="h3">Image upload</Header>
       <p>
-        Upload photos that you want to add to your vendor page here. We only
-        accept .jpg files.
+        Upload photos that you want to add to your vendor page here.
         <br />
         <strong>
           Please resize your image to be smaller than 500x500 pixels to minimize
@@ -104,38 +103,10 @@ export default (): React.ReactElement => {
       {s3CredentialsIsLoading ? (
         <p>Getting AWS credentials</p>
       ) : vendor ? (
-        <Dropzone
-          accept="image/jpeg"
-          onDropAccepted={onDrop}
-          onDropRejected={() => setShowUploadError(true)}
-          maxSize={1_000_000}
-        >
-          {({ getRootProps, getInputProps, isDragAccept }) => {
-            let dragAndDropStyles = styles.dragAndDrop;
-            if (isDragAccept) {
-              dragAndDropStyles += " " + styles.accept;
-            }
-            return (
-              <div className={dragAndDropStyles} {...getRootProps()}>
-                <input {...getInputProps()} />
-                <Container textAlign="center">
-                  <p>
-                    <Icon name="upload" />
-                    Drag-and-drop .jpg files or click to browse
-                  </p>
-                </Container>
-              </div>
-            );
-          }}
-        </Dropzone>
+        <DragAndDrop onDrop={onDrop} />
       ) : (
         <p>Vendor loading</p>
       )}
-      {showUploadError ? (
-        <p className={styles.error}>
-          This is not a jpg file. Only .jpg files are accepted.
-        </p>
-      ) : null}
       {uploading ? <p>Uploading</p> : null}
     </Container>
   );

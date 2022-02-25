@@ -12,6 +12,7 @@ import {
   getUserIDFromToken,
   Review as ReviewObj,
   useCreateReviewMutation,
+  usePhotosByLinkIDQuery,
   useUserQuery,
 } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
@@ -22,6 +23,7 @@ import CommentCardContainer from "../CommentCard/CommentCard";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
 import { useAppSelector } from "../../../../store";
+import Gallery from "../VendorGallery/Gallery";
 
 interface Props {
   review: ReviewObj;
@@ -38,6 +40,7 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const { data: user } = useUserQuery(review.UserID);
+  const { data: photos } = usePhotosByLinkIDQuery(review.ID);
 
   useEffect(() => {
     styleComments();
@@ -95,6 +98,14 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
             </Grid.Row>
             <Grid.Row>
               <pre>{review.Text}</pre>
+            </Grid.Row>
+            <Grid.Row>
+              {photos ? (
+                <>
+                  <Gallery photos={photos} photoHeight={100} />
+                  <br />
+                </>
+              ) : null}
             </Grid.Row>
             <Grid.Row>
               <Comment.Actions>

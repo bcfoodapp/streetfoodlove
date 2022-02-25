@@ -9,7 +9,8 @@ import {
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./createvendorpage.module.css";
-import useEffectAsync, {
+import {
+  useEffectAsync,
   getUserIDFromToken,
   useGetTokenMutation,
   useUpdateVendorMutation,
@@ -19,6 +20,7 @@ import useEffectAsync, {
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
+import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 
 const fileInput = () => {
   return <Input type="file" className={styles.input} size="small" fluid />;

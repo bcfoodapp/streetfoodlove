@@ -34,7 +34,7 @@ type Vendor struct {
 	Website         string
 	BusinessHours   string
 	Phone           string
-	BusinessLogo    string
+	BusinessLogo    *string
 	Latitude        float64
 	Longitude       float64
 	Owner           uuid.UUID
@@ -178,7 +178,7 @@ type User struct {
 	ID        uuid.UUID
 	Username  string
 	UserType  UserType
-	Photo     uuid.UUID
+	Photo     string
 	FirstName string
 	LastName  string
 }
@@ -378,7 +378,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 }
 
 type Photo struct {
-	ID         uuid.UUID
+	ID         string
 	DatePosted time.Time
 	Text       string
 	// LinkID references either a Vendor or Review.

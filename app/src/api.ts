@@ -22,7 +22,7 @@ export interface Vendor {
   Website: string;
   BusinessHours: string;
   Phone: string;
-  BusinessLogo: string;
+  BusinessLogo: string | null;
   Latitude: number;
   Longitude: number;
   Owner: string;
@@ -556,7 +556,7 @@ export function clearLocalStorage() {
 }
 
 // This is to make it easier to write async functions inside useEffect.
-export default function useEffectAsync(
+export function useEffectAsync(
   effect: () => Promise<any>,
   inputs: DependencyList
 ) {
@@ -564,4 +564,14 @@ export default function useEffectAsync(
     // noinspection JSIgnoredPromiseFromCall
     effect();
   }, inputs);
+}
+
+// Returns extension of file, not including the dot.
+export function getExtension(filename: string): string {
+  const dotIndex = filename.lastIndexOf(".");
+  if (dotIndex === -1) {
+    return "";
+  }
+
+  return filename.substring(dotIndex + 1);
 }

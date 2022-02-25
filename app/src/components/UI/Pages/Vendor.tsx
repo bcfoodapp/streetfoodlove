@@ -10,8 +10,9 @@ import {
   useCreatePhotoMutation,
   Photo,
   useS3CredentialsMutation,
+  getExtension,
 } from "../../../api";
-import { Container, Divider, Grid, Header } from "semantic-ui-react";
+import { Container, Divider, Grid, Header, Segment } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
@@ -19,7 +20,7 @@ import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
-import Gallery from "../Organisms/VendorGallery/VendorGallery";
+import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
 import { uploadToS3 } from "../../../aws";
 
@@ -33,8 +34,7 @@ export function Vendor(): React.ReactElement {
   const reviews = reviewsQuery.data;
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
-  const { data: photos, isSuccess: photosIsSuccess } =
-    usePhotosByLinkIDQuery(vendorID);
+  const { data: photos } = usePhotosByLinkIDQuery(vendorID);
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
@@ -62,8 +62,8 @@ export function Vendor(): React.ReactElement {
     }
 
     for (const file of files) {
-      const photoID = uuid();
-      await uploadToS3(s3Response.data, `${photoID}.jpg`, file);
+      const photoID = `${uuid()}.${getExtension(file.name)}`;
+      await uploadToS3(s3Response.data, photoID, file);
       const photo: Photo = {
         ID: photoID,
         DatePosted: DateTime.now(),
@@ -96,7 +96,11 @@ export function Vendor(): React.ReactElement {
             <h1 className={styles.name}>{vendor?.Name}</h1>
           </Grid.Row>
           <Grid.Row>
-            {photosIsSuccess ? <Gallery photos={photos!} /> : null}
+            {photos ? (
+              <Segment style={{ width: "100%" }}>
+                <Gallery photos={photos} photoHeight={250} />
+              </Segment>
+            ) : null}
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={6}>
@@ -161,7 +165,9 @@ export function Vendor(): React.ReactElement {
             Sign up to write a review
           </Buttons>
         ) : (
-          <ReviewForm finishedFormHandler={completedReviewHandler} />
+          <div style={{ maxWidth: "700px" }}>
+            <ReviewForm finishedFormHandler={completedReviewHandler} />
+          </div>
         )}
         {isSubmitting ? <p>Submitting review...</p> : null}
         <Divider hidden />

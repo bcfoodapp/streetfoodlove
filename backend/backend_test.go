@@ -266,7 +266,7 @@ func (b *BackendTestSuite) TestPhotoCreate() {
 	}
 	{
 		photo := &database.Photo{
-			ID:     uuid.MustParse("c8b699a2-3335-41a8-91c2-f00ac74b3733"),
+			ID:     "c8b699a2-3335-41a8-91c2-f00ac74b3733.jpg",
 			LinkID: vendor.ID,
 		}
 		err := b.backend.PhotoCreate(uuid.UUID{}, photo)
@@ -274,7 +274,7 @@ func (b *BackendTestSuite) TestPhotoCreate() {
 	}
 	{
 		photo := &database.Photo{
-			ID:     uuid.MustParse("96702be8-48dc-4d5e-9ec5-7ea18f186871"),
+			ID:     "96702be8-48dc-4d5e-9ec5-7ea18f186871.jpg",
 			LinkID: vendor.ID,
 		}
 		err := b.backend.PhotoCreate(vendor.Owner, photo)
@@ -282,7 +282,7 @@ func (b *BackendTestSuite) TestPhotoCreate() {
 	}
 	{
 		photo := &database.Photo{
-			ID:     uuid.MustParse("f93869d3-6494-434a-adfc-0710c064a7cc"),
+			ID:     "f93869d3-6494-434a-adfc-0710c064a7cc.jpg",
 			LinkID: review.ID,
 		}
 		err := b.backend.PhotoCreate(review.UserID, photo)
