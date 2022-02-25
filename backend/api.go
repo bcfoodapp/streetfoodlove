@@ -649,7 +649,7 @@ func (a *API) StarPut(c *gin.Context) {
 		return
 	}
 
-	if key != star {
+	if *key != *star {
 		c.Error(fmt.Errorf("ID in path does not match body ID"))
 		return
 	}
