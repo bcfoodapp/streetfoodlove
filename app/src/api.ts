@@ -233,7 +233,7 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review", "VendorPhotos"],
+  tagTypes: ["Review", "VendorPhotos", "UserStars"],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -521,6 +521,7 @@ export const apiSlice = createApi({
         method: PUT,
         body: star,
       }),
+      invalidatesTags: ["UserStars"],
     }),
     // Returns number of stars associated with given vendor.
     countStarsForVendor: builder.query<number, string>({
@@ -531,6 +532,7 @@ export const apiSlice = createApi({
         url: `/stars/${encode(star.UserID + star.VendorID)}`,
         method: DELETE,
       }),
+      invalidatesTags: ["UserStars"],
     }),
   }),
 });
