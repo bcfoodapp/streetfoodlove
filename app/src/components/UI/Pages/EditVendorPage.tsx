@@ -42,8 +42,8 @@ const businessHours = [
 ];
 
 const EditVendorPage: React.FC = () => {
-  const [updateVendor, { isLoading: updateVendorIsLoading }] =
-    useUpdateVendorMutation();
+  const [updateVendor] = useUpdateVendorMutation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
 
@@ -103,6 +103,7 @@ const EditVendorPage: React.FC = () => {
   });
 
   const onSubmit = async (data: inputValues) => {
+    setIsSubmitting(true);
     let photoID = null;
     if (data.logo) {
       // userID is defined at this point
@@ -132,6 +133,7 @@ const EditVendorPage: React.FC = () => {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -184,7 +186,7 @@ const EditVendorPage: React.FC = () => {
               />
 
               <label>
-                <strong>Logo image</strong>
+                <strong>Logo image (Image must be smaller than 500x500)</strong>
                 <DragAndDrop
                   onDrop={(files) => {
                     setFieldValue("logo", files[0]);
@@ -279,7 +281,7 @@ const EditVendorPage: React.FC = () => {
                 color="green"
                 dirty
                 valid={isValid}
-                loading={updateVendorIsLoading}
+                loading={isSubmitting}
               >
                 Edit
               </Buttons>
