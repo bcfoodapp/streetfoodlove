@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import {
   Input,
-  InputProps,
   Menu,
   Search,
   SearchProps,
@@ -19,40 +18,37 @@ import { showSideBar } from "../../../../store";
 
 export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
-  const [recentSearchResult, setRecentSearchResult] = useState<string[]>([]);
+  const [recentSearchResult, setRecentSearchResult] = useState<Vendor[]>([]);
   const { data: vendorsList } = useVendorsQuery();
   const inputRef = useRef<any>(null);
   const dispatch = useAppDispatch();
 
-  console.log("search result: " + JSON.stringify(searchResult, null, 2));
-
   const enterQueryHandler = () => {
-
     let resultSet = new Set([
       inputRef.current.props.value,
       ...recentSearchResult,
     ]);
-    
-    let array: Vendor[] = []
+
+    let array: Vendor[] = [];
 
     if (vendorsList !== undefined) {
-
       for (const vendor of vendorsList) {
-        if (vendor.Name === inputRef.current.props.value) {
+        if (
+          vendor.Name === inputRef.current.props.value &&
+          resultSet.has(vendor.Name)
+        ) {
           let obj = {
             title: vendor.Name,
             description: vendor.BusinessAddress,
-            ...vendor,            
-          }
+            ...vendor,
+          };
 
-          array.push(obj)
+          array.push(obj);
         }
       }
-
     }
 
-
-    setRecentSearchResult([...resultSet]);
+    setRecentSearchResult([...array, ...recentSearchResult]);
 
     dispatch(showSideBar());
   };
@@ -84,20 +80,17 @@ export const SearchBox: React.FC = () => {
           ...filteredResult[i],
         };
 
-        if (recentSearchResult.includes(tempObject.title)) {
-          // console.log('item to be put in front is: ' + tempObject.Name);
-          // console.log('amazing');
-          // result.unshift(result.splice(i, 1)[0])
-          resultArray.unshift(tempObject);
-          // console.log(resultArray);
-          // console.log('first element in result array is: ' + JSON.stringify(resultArray[0], null, 2));
-          // console.log(resultArray[1]);
-        } else {
+        if (
+          !recentSearchResult.some(
+            (element) => element.Name === tempObject.title
+          )
+        ) {
           resultArray.push(tempObject);
         }
       }
 
-      // console.log("resultArray: " + JSON.stringify(resultArray, null, 2));
+      resultArray.unshift(...recentSearchResult);
+
       setSearchResult(resultArray);
     }
   };
