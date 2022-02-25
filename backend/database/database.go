@@ -596,8 +596,9 @@ func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	row := d.db.QueryRowx(command, &id)
 
 	favorite := &Favorite{}
-	err := row.StructScan(id)
+	err := row.StructScan(favorite)
 	return favorite, err
+
 }
 func (d *Database) FavoritebyVendor(favoriteID uuid.UUID) ([]Favorite, error) {
 	rows, err := d.db.Query("SELECT * FROM favorite WHERE ID = ?", favoriteID)
