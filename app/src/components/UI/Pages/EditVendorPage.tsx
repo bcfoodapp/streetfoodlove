@@ -2,8 +2,7 @@ import {
   Container,
   Form,
   Header,
-  Input,
-  Segment,
+  Image,
   Select,
   TextArea,
 } from "semantic-ui-react";
@@ -28,7 +27,7 @@ import { v4 as uuid } from "uuid";
 
 interface inputValues {
   name: string;
-  logo: File | null;
+  businessLogo: string | null;
   businessAddress: string;
   phoneNumber: string;
   businessHours: string;
@@ -46,6 +45,7 @@ const EditVendorPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
+  const [logoFile, setLogoFile] = useState(null as File | null);
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -78,7 +78,7 @@ const EditVendorPage: React.FC = () => {
   useEffect(() => {
     if (vendorQueryIsSuccess) {
       setInitalValues({
-        logo: null,
+        businessLogo: vendor!.BusinessLogo,
         name: vendor!.Name,
         businessAddress: vendor!.BusinessAddress,
         phoneNumber: vendor!.Phone,
@@ -104,16 +104,16 @@ const EditVendorPage: React.FC = () => {
 
   const onSubmit = async (data: inputValues) => {
     setIsSubmitting(true);
-    let photoID = null as string | null;
-    if (data.logo) {
+    let photoID = data.businessLogo;
+    if (logoFile) {
       // userID is defined at this point
       const s3Response = await getS3Credentials(userID!);
       if ("error" in s3Response) {
         throw new Error("could not get S3 credentials");
       }
 
-      photoID = `${uuid()}.${getExtension(data.logo.name)}`;
-      await uploadToS3(s3Response.data, photoID, data.logo);
+      photoID = `${uuid()}.${getExtension(logoFile.name)}`;
+      await uploadToS3(s3Response.data, photoID, logoFile);
     }
 
     const updatedVendor: Vendor = {
@@ -189,13 +189,23 @@ const EditVendorPage: React.FC = () => {
                 <strong>Logo image (Image must be smaller than 500x500)</strong>
                 <DragAndDrop
                   onDrop={(files) => {
-                    setFieldValue("logo", files[0]);
+                    setLogoFile(files[0]);
                   }}
                   multiple={false}
                 />
               </label>
-              {values.logo ? <p>{values.logo.name}</p> : null}
+              {logoFile ? <p>{logoFile.name}</p> : null}
               <br />
+              {values.businessLogo ? (
+                <>
+                  <Image
+                    src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${values.businessLogo}`}
+                    alt="logo"
+                    style={{ width: 60, height: 60, objectFit: "cover" }}
+                  />
+                  <br />
+                </>
+              ) : null}
 
               <Form.Input
                 name="businessAddress"
