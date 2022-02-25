@@ -104,7 +104,7 @@ const EditVendorPage: React.FC = () => {
 
   const onSubmit = async (data: inputValues) => {
     setIsSubmitting(true);
-    let photoID = null;
+    let photoID = null as string | null;
     if (data.logo) {
       // userID is defined at this point
       const s3Response = await getS3Credentials(userID!);
@@ -112,7 +112,7 @@ const EditVendorPage: React.FC = () => {
         throw new Error("could not get S3 credentials");
       }
 
-      const photoID = `${uuid()}.${getExtension(data.logo.name)}`;
+      photoID = `${uuid()}.${getExtension(data.logo.name)}`;
       await uploadToS3(s3Response.data, photoID, data.logo);
     }
 
