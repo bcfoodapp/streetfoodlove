@@ -395,7 +395,7 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 }
 
 //query to find out if the vendor has been starred, it returns true if it is false if not
-func (d *Database) starredVendorFavorite(VendorID int, ReviewsID int) (bool, error) {
+func (d *Database) StarredVendorFavorite(VendorID int, ReviewsID int) (bool, error) {
 	var starred bool
 
 	if err := d.db.QueryRow("SELECT (ID >= ?) FROM reviews WHERE VendorID = ?",
@@ -410,7 +410,7 @@ func (d *Database) starredVendorFavorite(VendorID int, ReviewsID int) (bool, err
 	return starred, nil
 }
 
-func (d *Database) vendorStarredByUser(UserID uuid.UUID) ([]Vendor, error) {
+func (d *Database) VendorStarredByUser(UserID uuid.UUID) ([]Vendor, error) {
 	const command = `
 		SELECT * FROM reviews WHERE UserID=?
 `
@@ -600,7 +600,7 @@ func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	fmt.Println("count", id)
 	return favorite, err
 }
-func (d *Database) favoritebyVendor(favoriteID uuid.UUID) ([]Favorite, error) {
+func (d *Database) FavoritebyVendor(favoriteID uuid.UUID) ([]Favorite, error) {
 	rows, err := d.db.Query("SELECT * FROM favorite WHERE ID = ?", favoriteID)
 	if err != nil {
 		return nil, err
