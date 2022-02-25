@@ -94,11 +94,7 @@ export const SearchBox: React.FC = () => {
         }
       }
 
-      console.log(resultArray);
-
-      if (recentSearchResult.length !== 0) {
-        resultArray.unshift(...recentSearchFilteredResult); //add filtered recentsearchresult to the front of reusltarray
-      }
+      resultArray.unshift(...recentSearchFilteredResult); //add filtered recentsearchresult to the front of reusltarray
       setSearchResult(resultArray);
     }
   };
