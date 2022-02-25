@@ -597,7 +597,6 @@ func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 
 	favorite := &Favorite{}
 	err := row.StructScan(id)
-	fmt.Println(id)
 	return favorite, err
 }
 func (d *Database) FavoritebyVendor(favoriteID uuid.UUID) ([]Favorite, error) {
