@@ -1,7 +1,5 @@
-import { Container, Header, Icon, Segment } from "semantic-ui-react";
-import Dropzone from "react-dropzone";
+import { Container, Header, Segment } from "semantic-ui-react";
 import React, { useState } from "react";
-import styles from "./vendorphotoseditor.module.css";
 import {
   AWSCredentials,
   getUserIDFromToken,
@@ -18,9 +16,9 @@ import Gallery from "../Organisms/VendorGallery/Gallery";
 import { uploadToS3 } from "../../../aws";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
+import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 
 export default (): React.ReactElement => {
-  const [showUploadError, setShowUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
@@ -63,7 +61,6 @@ export default (): React.ReactElement => {
   const [createPhoto] = useCreatePhotoMutation();
 
   const onDrop = async (files: File[]) => {
-    setShowUploadError(false);
     for (const file of files) {
       setUploading(true);
       const photoID = `${uuid()}.${getExtension(file.name)}`;
@@ -106,36 +103,10 @@ export default (): React.ReactElement => {
       {s3CredentialsIsLoading ? (
         <p>Getting AWS credentials</p>
       ) : vendor ? (
-        <Dropzone
-          accept={["image/jpeg", "image/png"]}
-          onDropAccepted={onDrop}
-          onDropRejected={() => setShowUploadError(true)}
-          maxSize={1_000_000}
-        >
-          {({ getRootProps, getInputProps, isDragAccept }) => {
-            let dragAndDropStyles = styles.dragAndDrop;
-            if (isDragAccept) {
-              dragAndDropStyles += " " + styles.accept;
-            }
-            return (
-              <div className={dragAndDropStyles} {...getRootProps()}>
-                <input {...getInputProps()} />
-                <Container textAlign="center">
-                  <p>
-                    <Icon name="upload" />
-                    Drag-and-drop .jpg/.png files or click to browse
-                  </p>
-                </Container>
-              </div>
-            );
-          }}
-        </Dropzone>
+        <DragAndDrop onDrop={onDrop} />
       ) : (
         <p>Vendor loading</p>
       )}
-      {showUploadError ? (
-        <p className={styles.error}>File was not accepted.</p>
-      ) : null}
       {uploading ? <p>Uploading</p> : null}
     </Container>
   );
