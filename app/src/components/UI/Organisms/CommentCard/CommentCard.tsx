@@ -1,13 +1,14 @@
 import { Container, Grid, Comment, Label, Form } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./commentCard.module.css";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useAppSelector } from "../../../../store";
 import {
   getUserIDFromToken,
   Review as ReviewObj,
   useReviewsQuery,
   useCreateReviewMutation,
+  useUserQuery,
 } from "../../../../api";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
@@ -24,7 +25,7 @@ const CommentCardContainer: React.FC<{
   return (
     <Container className={styles.wrapper}>
       {reviews
-        ? reviews?.map((element, key) => {
+        ? reviews.map((element, key) => {
             if (
               element.ReplyTo === review?.ID ||
               element.ReplyTo === commentID
@@ -35,6 +36,7 @@ const CommentCardContainer: React.FC<{
                   key={key}
                   commentID={element.ID}
                   vendorID={vendorID}
+                  userID={element.UserID}
                 />
               );
             } else {
@@ -54,12 +56,13 @@ const CommentCard: React.FC<{
   comment: string;
   commentID: string; // id of current comment
   vendorID: string;
-  // review: ReviewObj;
-}> = ({ comment, commentID, vendorID }) => {
+  userID: string;
+}> = ({ comment, commentID, vendorID, userID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
+  const { data: user } = useUserQuery(userID);
 
   const completedCommentHandler = () => {
     setOpenCommentForm(false);
@@ -88,13 +91,16 @@ const CommentCard: React.FC<{
     <>
       <Grid divided celled columns={8} className={styles.row}>
         <Grid.Row>
-          <Grid.Column width={1}>
-            <ReviewLabel />
+          <Grid.Column width={1} style={{ padding: 0 }}>
+            {user ? <ReviewLabel imageName={user.Photo} /> : null}
           </Grid.Column>
           <Grid.Column width={8}>
             <Grid.Row>
-              {/* {user ? <b>{user.FirstName} {user.LastName}</b> : null} */}
-              {<b>Colin Zhou</b>}
+              {user ? (
+                <b>
+                  {user.FirstName} {user.LastName}
+                </b>
+              ) : null}
             </Grid.Row>
             <Grid.Row>
               <pre>{comment}</pre>

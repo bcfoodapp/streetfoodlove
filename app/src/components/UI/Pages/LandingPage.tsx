@@ -1,14 +1,11 @@
-import { Button, Container, Icon, Sidebar } from "semantic-ui-react";
+import { Container, Sidebar } from "semantic-ui-react";
 import Map from "../Atoms/Map";
-import styles from "./landingpage.module.css";
 import config from "../../../configuration.json";
 import { useVersionQuery } from "../../../api";
 import LandingPageSidebar from "../Molecules/LandingPageSidebar/LandingPageSidebar";
-import React from "react";
 
 export const LandingPage = () => {
   const { data: version } = useVersionQuery();
-  const [visible, setVisible] = React.useState(true);
 
   return (
     <>
@@ -18,7 +15,7 @@ export const LandingPage = () => {
         </p>
       </Container>
       <Sidebar.Pushable as={Container} fluid>
-        <LandingPageSidebar setVisible={setVisible} visible={visible} />
+        <LandingPageSidebar />
         <Sidebar.Pusher>
           <Container fluid>
             <Map />
