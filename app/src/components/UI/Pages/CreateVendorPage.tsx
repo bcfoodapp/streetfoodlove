@@ -23,7 +23,7 @@ const fileInput = () => {
 const CreateVendorPage: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
-      <HeaderBar logout />
+      {/* <HeaderBar logout /> */}
       <Header as={"h2"} className={styles.header}>
         Create New Vendor Page
       </Header>
