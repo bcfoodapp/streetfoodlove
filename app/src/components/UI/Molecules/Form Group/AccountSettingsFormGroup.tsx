@@ -10,6 +10,7 @@ import {
   useUserProtectedQuery,
 } from "../../../../api";
 import { UserType } from "../../../../api";
+import DragAndDrop from "../../Organisms/DragAndDrop/DragAndDrop";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
@@ -17,6 +18,7 @@ const AccountSettingsFormGroup: React.FC<{
 }> = ({ disabled, setDisabledForm }) => {
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
+  const [logoFile, setLogoFile] = useState(null as File | null);
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -101,6 +103,18 @@ const AccountSettingsFormGroup: React.FC<{
             loading={userQueryIsLoading}
           />
         </Form.Group>
+        <Form.Group>
+          <label style={{ width: "100%" }}>
+            <strong>Logo image (Image must be smaller than 500x500)</strong>
+            <DragAndDrop
+              onDrop={(files) => {
+                setLogoFile(files[0]);
+              }}
+              multiple={false}
+            />
+          </label>
+        </Form.Group>
+        {logoFile ? <p>{logoFile.name}</p> : null}
         <Container className={styles.saveBtn}>
           {userQueryIsSuccess ? (
             <Buttons
