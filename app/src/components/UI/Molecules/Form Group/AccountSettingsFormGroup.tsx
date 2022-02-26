@@ -144,7 +144,7 @@ const AccountSettingsFormGroup: React.FC<{
             <br />
           </>
         ) : null}
-        <Container className={styles.saveBtn}>
+        <Container>
           {userQueryIsSuccess ? (
             <Buttons
               submit
@@ -157,7 +157,6 @@ const AccountSettingsFormGroup: React.FC<{
           ) : null}
         </Container>
       </Form>
-      <br />
       <br />
       {showSuccess ? <p>Updated profile</p> : null}
     </Container>
