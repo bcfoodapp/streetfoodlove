@@ -124,8 +124,8 @@ const EditVendorPage: React.FC = () => {
       BusinessHours: data.businessHours,
       Phone: data.phoneNumber,
       BusinessLogo: photoID,
-      Latitude: 0,
-      Longitude: 0,
+      Latitude: vendor!.Latitude,
+      Longitude: vendor!.Longitude,
       Owner: userID!,
     };
     const response = await updateVendor(updatedVendor);
