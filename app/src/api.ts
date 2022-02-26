@@ -227,7 +227,7 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review", "VendorPhotos"],
+  tagTypes: ["Review", "VendorPhotos", "CurrentUser"],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -286,6 +286,7 @@ export const apiSlice = createApi({
         ...user,
         SignUpDate: DateTime.fromISO(user.SignUpDate),
       }),
+      providesTags: ["CurrentUser"],
     }),
     updateUser: builder.mutation<undefined, UserProtected>({
       query: (user) => ({
@@ -293,6 +294,7 @@ export const apiSlice = createApi({
         method: POST,
         body: user,
       }),
+      invalidatesTags: ["CurrentUser"],
     }),
     createUser: builder.mutation<
       undefined,
@@ -303,6 +305,7 @@ export const apiSlice = createApi({
         method: PUT,
         body: payload,
       }),
+      invalidatesTags: ["CurrentUser"],
     }),
     // Changes password for given user.
     updatePassword: builder.mutation<
