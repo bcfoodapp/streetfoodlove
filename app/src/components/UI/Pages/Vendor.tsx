@@ -11,6 +11,7 @@ import {
   Photo,
   useS3CredentialsMutation,
   getExtension,
+  AWSCredentials,
 } from "../../../api";
 import {
   Container,
@@ -63,14 +64,20 @@ export function Vendor(): React.ReactElement {
     setIsSubmitting(true);
     const userID = getUserIDFromToken(token);
     const reviewID = uuid();
-    const s3Response = await getS3Credentials(userID);
-    if ("error" in s3Response) {
-      throw new Error("could not get S3 credentials");
+
+    let s3Credentials = {} as AWSCredentials;
+
+    if (files.length > 0) {
+      const s3Response = await getS3Credentials(userID);
+      if ("error" in s3Response) {
+        throw new Error("could not get S3 credentials");
+      }
+      s3Credentials = s3Response.data;
     }
 
     for (const file of files) {
       const photoID = `${uuid()}.${getExtension(file.name)}`;
-      await uploadToS3(s3Response.data, photoID, file);
+      await uploadToS3(s3Credentials, photoID, file);
       const photo: Photo = {
         ID: photoID,
         DatePosted: DateTime.now(),

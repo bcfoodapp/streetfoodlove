@@ -66,7 +66,7 @@ func main() {
 func SetupTables(db *sqlx.DB) error {
 	commands := [...]string{
 		`
-		CREATE TABLE IF NOT EXISTS User (
+		CREATE TABLE User (
 			ID CHAR(36) NOT NULL,
 			Email VARCHAR(100) NULL,
 			Username VARCHAR(100) UNIQUE NULL,
@@ -81,7 +81,7 @@ func SetupTables(db *sqlx.DB) error {
 		)
 		`,
 		`
-		CREATE TABLE IF NOT EXISTS Vendor (
+		CREATE TABLE Vendor (
 			ID CHAR(36) NOT NULL,
 			Name VARCHAR(100) NOT NULL,
 			BusinessAddress VARCHAR(500) NULL,
@@ -98,7 +98,7 @@ func SetupTables(db *sqlx.DB) error {
 		)
 		`,
 		`
-		CREATE TABLE IF NOT EXISTS Reviews (
+		CREATE TABLE Reviews (
 			ID CHAR(36) NOT NULL,
 			Text text(500) NULL,
 			VendorID CHAR(36) NOT NULL,
@@ -151,6 +151,15 @@ func SetupTables(db *sqlx.DB) error {
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
 			PRIMARY KEY (ID)
+		)
+		`,
+		`
+		CREATE TABLE Stars (
+			UserID CHAR(36) NOT NULL,
+			VendorID CHAR(36) NOT NULL,
+			PRIMARY KEY (UserID, VendorID),
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 	}

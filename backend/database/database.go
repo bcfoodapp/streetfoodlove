@@ -562,3 +562,8 @@ func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	err := d.db.QueryRowx(command, &id).StructScan(favorite)
 	return favorite, err
 }
+
+type Star struct {
+	UserID   uuid.UUID
+	VendorID uuid.UUID
+}

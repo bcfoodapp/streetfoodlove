@@ -1,21 +1,17 @@
 import React from "react";
-import {
-  Container,
-  Sidebar,
-  Grid,
-  Menu,
-  Icon,
-  Button,
-  Checkbox,
-} from "semantic-ui-react";
-import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
+import { Sidebar, Menu, Icon, Button, Checkbox } from "semantic-ui-react";
+import { hideSideBar, useAppDispatch, useAppSelector } from "../../../../store";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
 
-const LandingPageSidebar: React.FC<{
-  setVisible: (param) => void;
-  visible: boolean;
-}> = ({ setVisible, visible }) => {
+const LandingPageSidebar: React.FC = () => {
+  const showSideBarState = useAppSelector((state) => state.root.sideBarShowing);
+  const dispatch = useAppDispatch();
+
+  const closeSidebar = () => {
+    dispatch(hideSideBar());
+  };
+
   return (
     <Sidebar
       as={Menu}
@@ -23,15 +19,11 @@ const LandingPageSidebar: React.FC<{
       icon="labeled"
       inverted
       vertical
-      visible={visible}
+      visible={showSideBarState}
       width="very wide"
       className={styles.sidebar}
     >
-      <Button
-        icon
-        onClick={() => setVisible(false)}
-        className={styles.closeIcon}
-      >
+      <Button icon onClick={closeSidebar} className={styles.closeIcon}>
         <Icon name="close" size="big" color="grey" />
       </Button>
       <Menu.Item as="div" className={styles.menuItem}>
