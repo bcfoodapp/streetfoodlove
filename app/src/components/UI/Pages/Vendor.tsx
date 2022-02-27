@@ -14,6 +14,7 @@ import {
   AWSCredentials,
 } from "../../../api";
 import {
+  Button,
   Container,
   Divider,
   Grid,
@@ -116,6 +117,10 @@ export function Vendor(): React.ReactElement {
               />
             ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
+            <Button className={styles.starButton}>
+              <span style={{ color: "#000000" }}>⭐️</span>
+              &nbsp;10
+            </Button>
           </Grid.Row>
           <Grid.Row>
             {photos ? (

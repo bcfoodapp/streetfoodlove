@@ -1,5 +1,15 @@
 .name {
   font-size: 2.8em !important;
-  margin-left: 10px;
+  margin-left: 40px;
   margin-top: 0;
+}
+
+.starButton {
+  margin-left: 40px !important;
+  background: none !important;
+  box-shadow: 0 0 0 1pt #808080 !important;
+}
+
+.starButton:hover {
+  box-shadow: 0 0 0 1pt #f3d05b !important;
 }
