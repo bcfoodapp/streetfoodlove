@@ -1,6 +1,7 @@
 import {
   configureStore,
   createSlice,
+  isRejected,
   isRejectedWithValue,
   Middleware,
   MiddlewareAPI,
@@ -14,7 +15,17 @@ const apiErrorHandler: Middleware =
   (next) =>
   (action) => {
     if (isRejectedWithValue(action)) {
-      api.dispatch(setError(`api error: ${JSON.stringify(action.payload)}`));
+      let requestDetail = "";
+      if ("meta" in action) {
+        requestDetail = `method: ${action.meta.baseQueryMeta.request.method}, url: ${action.meta.baseQueryMeta.request.url}`;
+      }
+      api.dispatch(
+        setError(
+          `api error: ${JSON.stringify(action.payload)}, ${requestDetail}`
+        )
+      );
+    } else if (isRejected(action)) {
+      api.dispatch(setError(`api error occurred with no value`));
     }
     return next(action);
   };
