@@ -3,8 +3,18 @@ import {
   useEffectAsync,
   useGetTokenMutation,
   useStarsByUserIDQuery,
+  useVendorQuery,
 } from "../../../../api";
 import React, { useState } from "react";
+
+interface VendorNameProps {
+  vendorID: string;
+}
+
+function VendorName({ vendorID }: VendorNameProps): React.ReactElement {
+  const { data: vendor } = useVendorQuery(vendorID);
+  return <p>{vendor?.Name}</p>;
+}
 
 export default (): React.ReactElement => {
   const [getToken] = useGetTokenMutation();
@@ -33,7 +43,7 @@ export default (): React.ReactElement => {
   return (
     <>
       {stars?.map((star) => (
-        <p>{star.VendorID}</p>
+        <VendorName vendorID={star.VendorID} />
       ))}
     </>
   );
