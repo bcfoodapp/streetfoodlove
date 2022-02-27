@@ -11,8 +11,16 @@ import {
   Photo,
   useS3CredentialsMutation,
   getExtension,
+  AWSCredentials,
 } from "../../../api";
-import { Container, Divider, Grid, Header, Segment } from "semantic-ui-react";
+import {
+  Container,
+  Divider,
+  Grid,
+  Header,
+  Image,
+  Segment,
+} from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
@@ -56,14 +64,20 @@ export function Vendor(): React.ReactElement {
     setIsSubmitting(true);
     const userID = getUserIDFromToken(token);
     const reviewID = uuid();
-    const s3Response = await getS3Credentials(userID);
-    if ("error" in s3Response) {
-      throw new Error("could not get S3 credentials");
+
+    let s3Credentials = {} as AWSCredentials;
+
+    if (files.length > 0) {
+      const s3Response = await getS3Credentials(userID);
+      if ("error" in s3Response) {
+        throw new Error("could not get S3 credentials");
+      }
+      s3Credentials = s3Response.data;
     }
 
     for (const file of files) {
       const photoID = `${uuid()}.${getExtension(file.name)}`;
-      await uploadToS3(s3Response.data, photoID, file);
+      await uploadToS3(s3Credentials, photoID, file);
       const photo: Photo = {
         ID: photoID,
         DatePosted: DateTime.now(),
@@ -91,8 +105,16 @@ export function Vendor(): React.ReactElement {
   return (
     <>
       <Container textAlign="center">
+        <br />
         <Grid centered>
-          <Grid.Row>
+          <Grid.Row style={{ display: "flex", alignItems: "center" }}>
+            {vendor && vendor.BusinessLogo ? (
+              <Image
+                src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${vendor.BusinessLogo}`}
+                alt="logo"
+                style={{ width: 60, height: 60, objectFit: "cover" }}
+              />
+            ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
           </Grid.Row>
           <Grid.Row>

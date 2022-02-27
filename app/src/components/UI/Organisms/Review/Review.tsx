@@ -73,8 +73,8 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
     <Container className={styles.wrap}>
       <Grid divided celled columns={4} className={styles.row}>
         <Grid.Row>
-          <Grid.Column width={1}>
-            <ReviewLabel />
+          <Grid.Column width={1} style={{ padding: 0 }}>
+            {user ? <ReviewLabel imageName={user.Photo} /> : null}
           </Grid.Column>
           <Grid.Column width={8}>
             <Grid.Row>
