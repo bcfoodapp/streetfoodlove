@@ -12,6 +12,8 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
+  useCreateStarMutation,
+  useCountStarsForVendorQuery,
 } from "../../../api";
 import {
   Button,
@@ -48,6 +50,8 @@ export function Vendor(): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
   const [getS3Credentials] = useS3CredentialsMutation();
+  const [createStar] = useCreateStarMutation();
+  const { data: starCount } = useCountStarsForVendorQuery(vendorID);
 
   const completedReviewHandler = async ({
     text,
@@ -58,12 +62,8 @@ export function Vendor(): React.ReactElement {
     starRating: StarRatingInteger;
     files: File[];
   }) => {
-    if (token === null) {
-      throw new Error("token is null");
-    }
-
     setIsSubmitting(true);
-    const userID = getUserIDFromToken(token);
+    const userID = getUserIDFromToken(token!);
     const reviewID = uuid();
 
     let s3Credentials = {} as AWSCredentials;
@@ -117,9 +117,17 @@ export function Vendor(): React.ReactElement {
               />
             ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
-            <Button className={styles.starButton}>
+            <Button
+              onClick={() =>
+                createStar({
+                  UserID: getUserIDFromToken(token!),
+                  VendorID: vendorID,
+                })
+              }
+              className={styles.starButton}
+            >
               <span style={{ color: "#000000" }}>⭐️</span>
-              &nbsp;10
+              &nbsp;{starCount}
             </Button>
           </Grid.Row>
           <Grid.Row>
