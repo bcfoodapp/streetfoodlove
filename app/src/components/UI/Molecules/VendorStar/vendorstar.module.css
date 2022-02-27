@@ -1,13 +1,14 @@
 .starButton {
-    margin-left: 40px !important;
-    background: none !important;
-    box-shadow: 0 0 0 1pt #808080 !important;
+  margin-left: 40px !important;
+  background: none !important;
+  box-shadow: 0 0 0 1pt #808080 !important;
 }
 
 .starButton.highlight {
-    background-color: #fffaeb !important;
+  background-color: #fffaeb !important;
 }
 
-.starButton.highlight, .starButton:hover {
-    box-shadow: 0 0 0 1pt #f3d05b !important;
+.starButton.highlight,
+.starButton:hover {
+  box-shadow: 0 0 0 1pt #f3d05b !important;
 }
