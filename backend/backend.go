@@ -209,6 +209,10 @@ func (b *Backend) StarsByUserID(userID uuid.UUID) ([]database.Star, error) {
 	return b.Database.StarsByUserID(userID)
 }
 
+func (b *Backend) Star(userID uuid.UUID, vendorID uuid.UUID) (*database.Star, error) {
+	return b.Database.Star(userID, vendorID)
+}
+
 func (b *Backend) CountVendorStars(vendorID uuid.UUID) (int, error) {
 	return b.Database.CountVendorStars(vendorID)
 }
