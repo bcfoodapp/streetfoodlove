@@ -514,6 +514,7 @@ export const apiSlice = createApi({
     // Returns stars associated with given user.
     starsByUserID: builder.query<Star[], string>({
       query: (userID) => `/stars/?userID=${encode(userID)}`,
+      providesTags: ["UserStars"],
     }),
     createStar: builder.mutation<void, Star>({
       query: (star) => ({
@@ -526,6 +527,7 @@ export const apiSlice = createApi({
     // Returns number of stars associated with given vendor.
     countStarsForVendor: builder.query<number, string>({
       query: (vendorID) => `/stars/count-for-vendor/${encode(vendorID)}`,
+      providesTags: ["UserStars"],
     }),
     deleteStar: builder.mutation<void, Star>({
       query: (star) => ({
