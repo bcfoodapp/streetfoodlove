@@ -77,6 +77,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.POST("/links/:id", GetToken, a.LinkPost)
 
 	router.GET("/stars/", a.Stars)
+	router.GET("/stars/:id", a.Star)
 	router.PUT("/stars/:id", GetToken, a.StarPut)
 	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
 	router.DELETE("/stars/:id", a.StarsDelete)
@@ -674,6 +675,22 @@ func (a *API) Stars(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, stars)
+}
+
+func (a *API) Star(c *gin.Context) {
+	key, err := ParseStarKey(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	star, err := a.Backend.Star(key.UserID, key.VendorID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, star)
 }
 
 func (a *API) StarsCountForVendor(c *gin.Context) {
