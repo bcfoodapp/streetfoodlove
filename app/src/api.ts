@@ -115,6 +115,11 @@ export interface AWSCredentials {
   SessionToken: string;
 }
 
+export interface Star {
+  UserID: string;
+  VendorID: string;
+}
+
 export const tokenSlice = createSlice({
   name: "token",
   initialState: {
@@ -144,6 +149,7 @@ export function getUserIDFromToken(token: string) {
 
 const PUT = "PUT";
 const POST = "POST";
+const DELETE = "DELETE";
 
 const encode = encodeURIComponent;
 
@@ -227,7 +233,7 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review", "VendorPhotos", "CurrentUser"],
+  tagTypes: ["Review", "VendorPhotos", "UserStars", "CurrentUser"],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -508,6 +514,51 @@ export const apiSlice = createApi({
         method: POST,
       }),
     }),
+    // Returns true if star exists
+    starExists: builder.query<boolean, Star>({
+      queryFn: async (star, api) => {
+        let response = await baseQuery(
+          { url: `/stars/${encode(star.UserID + star.VendorID)}` },
+          api,
+          {}
+        );
+        if ("error" in response && response.error) {
+          if (response.error.status === 404) {
+            return { data: false };
+          } else {
+            return response;
+          }
+        }
+
+        return { data: true };
+      },
+      providesTags: ["UserStars"],
+    }),
+    // Returns stars associated with given user.
+    starsByUserID: builder.query<Star[], string>({
+      query: (userID) => `/stars/?userID=${encode(userID)}`,
+      providesTags: ["UserStars"],
+    }),
+    createStar: builder.mutation<void, Star>({
+      query: (star) => ({
+        url: `/stars/${encode(star.UserID + star.VendorID)}`,
+        method: PUT,
+        body: star,
+      }),
+      invalidatesTags: ["UserStars"],
+    }),
+    // Returns number of stars associated with given vendor.
+    countStarsForVendor: builder.query<number, string>({
+      query: (vendorID) => `/stars/count-for-vendor/${encode(vendorID)}`,
+      providesTags: ["UserStars"],
+    }),
+    deleteStar: builder.mutation<void, Star>({
+      query: (star) => ({
+        url: `/stars/${encode(star.UserID + star.VendorID)}`,
+        method: DELETE,
+      }),
+      invalidatesTags: ["UserStars"],
+    }),
   }),
 });
 
@@ -534,6 +585,11 @@ export const {
   usePhotosByLinkIDQuery,
   useCreatePhotoMutation,
   useS3CredentialsMutation,
+  useStarExistsQuery,
+  useStarsByUserIDQuery,
+  useCreateStarMutation,
+  useCountStarsForVendorQuery,
+  useDeleteStarMutation,
 } = apiSlice;
 
 // Sets credentials and name in localStorage.

@@ -606,6 +606,16 @@ func (d *Database) StarsByUserID(userID uuid.UUID) ([]Star, error) {
 	return result, rows.Err()
 }
 
+func (d *Database) Star(userID uuid.UUID, vendorID uuid.UUID) (*Star, error) {
+	const command = `
+		SELECT * FROM Stars WHERE UserID=? AND VendorID=?
+	`
+
+	star := &Star{}
+	err := d.db.QueryRowx(command, &userID, &vendorID).StructScan(star)
+	return star, err
+}
+
 func (d *Database) CountVendorStars(vendorID uuid.UUID) (int, error) {
 	const command = `
 		SELECT count(*) FROM Stars WHERE VendorID=?
