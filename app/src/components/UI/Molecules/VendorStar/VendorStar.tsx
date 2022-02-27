@@ -2,6 +2,7 @@ import {
   getUserIDFromToken,
   useCountStarsForVendorQuery,
   useCreateStarMutation,
+  useDeleteStarMutation,
   useStarExistsQuery,
 } from "../../../../api";
 import styles from "./vendorstar.module.css";
@@ -26,6 +27,7 @@ export default ({ vendorID }: Props): React.ReactElement => {
     { UserID: userID, VendorID: vendorID },
     { skip: !token }
   );
+  const [deleteStar] = useDeleteStarMutation();
 
   let buttonClass = styles.starButton;
   if (starExists) {
@@ -35,13 +37,18 @@ export default ({ vendorID }: Props): React.ReactElement => {
   return (
     <Button
       onClick={() => {
-        if (starExists) {
-          return;
-        }
-
         if (userID === "") {
           throw new Error("userID is empty");
         }
+
+        if (starExists) {
+          deleteStar({
+            UserID: userID,
+            VendorID: vendorID,
+          });
+          return;
+        }
+
         createStar({
           UserID: userID,
           VendorID: vendorID,
