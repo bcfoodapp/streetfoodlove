@@ -4,6 +4,6 @@
     box-shadow: 0 0 0 1pt #808080 !important;
 }
 
-.starButton:hover {
+.starButton.highlight {
     box-shadow: 0 0 0 1pt #f3d05b !important;
 }

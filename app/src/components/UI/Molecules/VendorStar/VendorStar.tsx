@@ -27,9 +27,18 @@ export default ({ vendorID }: Props): React.ReactElement => {
     { skip: !token }
   );
 
+  let buttonClass = styles.starButton;
+  if (starExists) {
+    buttonClass += " " + styles.highlight;
+  }
+
   return (
     <Button
       onClick={() => {
+        if (starExists) {
+          return;
+        }
+
         if (userID === "") {
           throw new Error("userID is empty");
         }
@@ -38,7 +47,7 @@ export default ({ vendorID }: Props): React.ReactElement => {
           VendorID: vendorID,
         });
       }}
-      className={styles.starButton}
+      className={buttonClass}
     >
       <span style={{ color: "#000000" }}>⭐️</span>
       &nbsp;{starCount}
