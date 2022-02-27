@@ -75,6 +75,11 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/links/:id", a.Link)
 	router.POST("/links/:id", GetToken, a.LinkPost)
+
+	router.GET("/stars/", a.Stars)
+	router.PUT("/stars/:id", GetToken, a.StarPut)
+	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
+	router.DELETE("/stars/:id", a.StarsDelete)
 }
 
 // errorHandler writes any errors to response.
@@ -605,4 +610,97 @@ func (a *API) Favorite(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, favorite)
+}
+
+// ParseStarKey splits key into userID and vendorID
+func ParseStarKey(key string) (*database.Star, error) {
+	const uuidLength = 36
+
+	if len(key) != uuidLength*2 {
+		return nil, fmt.Errorf("key must be length 72 but is of length %v", len(key))
+	}
+
+	userID, err := uuid.Parse(key[:uuidLength])
+	if err != nil {
+		return nil, err
+	}
+
+	vendorID, err := uuid.Parse(key[uuidLength : uuidLength*2])
+	if err != nil {
+		return nil, err
+	}
+
+	return &database.Star{
+		UserID:   userID,
+		VendorID: vendorID,
+	}, nil
+}
+
+func (a *API) StarPut(c *gin.Context) {
+	key, err := ParseStarKey(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	star := &database.Star{}
+	if err := c.ShouldBindJSON(star); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if *key != *star {
+		c.Error(fmt.Errorf("ID in path does not match body ID"))
+		return
+	}
+
+	if err := a.Backend.StarCreate(getTokenFromContext(c), star); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) Stars(c *gin.Context) {
+	userID, err := uuid.Parse(c.Query("userID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	stars, err := a.Backend.StarsByUserID(userID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, stars)
+}
+
+func (a *API) StarsCountForVendor(c *gin.Context) {
+	vendorID, err := uuid.Parse(c.Param("vendorID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	count, err := a.Backend.CountVendorStars(vendorID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, count)
+}
+
+func (a *API) StarsDelete(c *gin.Context) {
+	star, err := ParseStarKey(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := a.Backend.StarDelete(star.UserID, star.VendorID); err != nil {
+		c.Error(err)
+		return
+	}
 }
