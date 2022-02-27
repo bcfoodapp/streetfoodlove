@@ -21,6 +21,7 @@ export default ({ vendorID }: Props): React.ReactElement => {
   const token = useAppSelector((state) => state.token.token);
   let userID = "";
   if (token) {
+    // Token should exist because other queries are called for vendor page
     userID = getUserIDFromToken(token!);
   }
   const { data: starExists } = useStarExistsQuery(

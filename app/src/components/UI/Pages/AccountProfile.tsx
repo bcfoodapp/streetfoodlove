@@ -4,6 +4,7 @@ import styles from "./accountprofile.module.css";
 import { Tab } from "semantic-ui-react";
 import AccountSettingsFormGroup from "../Molecules/Form Group/AccountSettingsFormGroup";
 import Buttons from "../Atoms/Button/Buttons";
+import AccountProfileStars from "../Organisms/AccountProfileStars/AccountProfileStars";
 
 const AccountProfile: React.FC = () => {
   const [disabledForm, setDisabledForm] = useState<boolean>(true);
@@ -23,6 +24,14 @@ const AccountProfile: React.FC = () => {
             disabled={disabledForm}
             setDisabledForm={setDisabledForm}
           />
+        </Tab.Pane>
+      ),
+    },
+    {
+      menuItem: "Stars",
+      render: () => (
+        <Tab.Pane className={styles.pane}>
+          <AccountProfileStars />
         </Tab.Pane>
       ),
     },
