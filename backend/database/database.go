@@ -612,7 +612,7 @@ func (d *Database) Star(userID uuid.UUID, vendorID uuid.UUID) (*Star, error) {
 	`
 
 	star := &Star{}
-	err := d.db.QueryRowx(command, &userID, &vendorID).StructScan(&star)
+	err := d.db.QueryRowx(command, &userID, &vendorID).StructScan(star)
 	return star, err
 }
 
