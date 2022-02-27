@@ -521,13 +521,13 @@ export const apiSlice = createApi({
         );
         if ("error" in response && response.error) {
           if (response.error.status === 404) {
-            return { data: true };
+            return { data: false };
           } else {
             return response;
           }
         }
 
-        return { data: false };
+        return { data: true };
       },
       providesTags: ["UserStars"],
     }),
