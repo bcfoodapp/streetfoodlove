@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Form } from "semantic-ui-react";
+import { Container, Form, Image } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
 import {
@@ -8,8 +8,13 @@ import {
   useGetTokenMutation,
   useUpdateUserMutation,
   useUserProtectedQuery,
+  getExtension,
+  useS3CredentialsMutation,
 } from "../../../../api";
 import { UserType } from "../../../../api";
+import DragAndDrop from "../../Organisms/DragAndDrop/DragAndDrop";
+import { v4 as uuid } from "uuid";
+import { uploadToS3 } from "../../../../aws";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
@@ -35,12 +40,13 @@ const AccountSettingsFormGroup: React.FC<{
     isLoading: userQueryIsLoading,
   } = useUserProtectedQuery(userID, { skip: userID === "" });
 
-  const [updateUser, { isLoading: updateUserIsLoading }] =
-    useUpdateUserMutation();
+  const [updateUser] = useUpdateUserMutation();
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [photo, setPhoto] = useState(null as File | null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (userQueryIsSuccess) {
@@ -50,10 +56,24 @@ const AccountSettingsFormGroup: React.FC<{
     }
   }, [userQueryIsSuccess]);
 
+  const [getS3Credentials] = useS3CredentialsMutation();
+
   const handleSubmit = async () => {
+    setIsSubmitting(true);
+    let photoID = user!.Photo;
+    if (photo) {
+      const s3Response = await getS3Credentials(user!.ID);
+      if ("error" in s3Response) {
+        throw new Error("could not get S3 credentials");
+      }
+
+      photoID = `${uuid()}.${getExtension(photo.name)}`;
+      await uploadToS3(s3Response.data, photoID, photo);
+    }
+
     const response = await updateUser({
-      ID: userID,
-      Photo: user!.Photo,
+      ID: user!.ID,
+      Photo: photoID,
       Username: user!.Username,
       Email: email,
       FirstName: firstName,
@@ -66,6 +86,7 @@ const AccountSettingsFormGroup: React.FC<{
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
+    setIsSubmitting(false);
   };
 
   if (tokenIsSuccess && token === null) {
@@ -101,20 +122,43 @@ const AccountSettingsFormGroup: React.FC<{
             loading={userQueryIsLoading}
           />
         </Form.Group>
-        <Container className={styles.saveBtn}>
+        <Form.Group>
+          <label style={{ width: "100%" }}>
+            <strong>
+              Profile picture (Image must be smaller than 500x500)
+            </strong>
+            <DragAndDrop
+              onDrop={(files) => {
+                setPhoto(files[0]);
+              }}
+              multiple={false}
+            />
+          </label>
+        </Form.Group>
+        {photo ? <p>{photo.name}</p> : null}
+        {user?.Photo ? (
+          <>
+            <Image
+              src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${user.Photo}`}
+              alt="logo"
+              style={{ width: 40, height: 40, objectFit: "cover" }}
+            />
+            <br />
+          </>
+        ) : null}
+        <Container>
           {userQueryIsSuccess ? (
             <Buttons
               submit
               color="green"
               clicked={() => setDisabledForm(true)}
-              loading={updateUserIsLoading}
+              loading={isSubmitting}
             >
               Save
             </Buttons>
           ) : null}
         </Container>
       </Form>
-      <br />
       <br />
       {showSuccess ? <p>Updated profile</p> : null}
     </Container>
