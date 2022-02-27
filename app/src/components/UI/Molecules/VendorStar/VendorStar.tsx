@@ -2,7 +2,7 @@ import {
   getUserIDFromToken,
   useCountStarsForVendorQuery,
   useCreateStarMutation,
-  useStarQuery,
+  useStarExistsQuery,
 } from "../../../../api";
 import styles from "./vendorstar.module.css";
 import { Button } from "semantic-ui-react";
@@ -22,7 +22,10 @@ export default ({ vendorID }: Props): React.ReactElement => {
   if (token) {
     userID = getUserIDFromToken(token!);
   }
-  useStarQuery({ UserID: userID, VendorID: vendorID }, { skip: !token });
+  const { data: starExists } = useStarExistsQuery(
+    { UserID: userID, VendorID: vendorID },
+    { skip: !token }
+  );
 
   return (
     <Button
