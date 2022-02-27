@@ -124,7 +124,9 @@ const AccountSettingsFormGroup: React.FC<{
         </Form.Group>
         <Form.Group>
           <label style={{ width: "100%" }}>
-            <strong>Logo image (Image must be smaller than 500x500)</strong>
+            <strong>
+              Profile picture (Image must be smaller than 500x500)
+            </strong>
             <DragAndDrop
               onDrop={(files) => {
                 setPhoto(files[0]);
