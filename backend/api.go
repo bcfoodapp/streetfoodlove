@@ -685,6 +685,11 @@ func (a *API) Star(c *gin.Context) {
 	}
 
 	star, err := a.Backend.Star(key.UserID, key.VendorID)
+	if errors.Is(err, sql.ErrNoRows) {
+		c.Status(http.StatusNotFound)
+		return
+	}
+
 	if err != nil {
 		c.Error(err)
 		return
