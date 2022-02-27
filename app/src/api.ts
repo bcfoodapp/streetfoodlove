@@ -511,6 +511,10 @@ export const apiSlice = createApi({
         method: POST,
       }),
     }),
+    star: builder.query<Star, Star>({
+      query: (star) => `/stars/${encode(star.UserID + star.VendorID)}`,
+      providesTags: ["UserStars"],
+    }),
     // Returns stars associated with given user.
     starsByUserID: builder.query<Star[], string>({
       query: (userID) => `/stars/?userID=${encode(userID)}`,

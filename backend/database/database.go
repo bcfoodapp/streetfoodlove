@@ -608,11 +608,11 @@ func (d *Database) StarsByUserID(userID uuid.UUID) ([]Star, error) {
 
 func (d *Database) Star(userID uuid.UUID, vendorID uuid.UUID) (*Star, error) {
 	const command = `
-		SELECT count(*) FROM Stars WHERE UserID=? AND VendorID=?
+		SELECT * FROM Stars WHERE UserID=? AND VendorID=?
 	`
 
 	star := &Star{}
-	err := d.db.QueryRowx(command, &userID, &vendorID).StructScan(&star)
+	err := d.db.QueryRowx(command, &userID, &vendorID).StructScan(star)
 	return star, err
 }
 
