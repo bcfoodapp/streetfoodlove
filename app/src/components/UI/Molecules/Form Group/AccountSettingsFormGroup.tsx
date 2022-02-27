@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, Form, Image } from "semantic-ui-react";
+import { Container, Form, Header, Image } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./accountformgroup.module.css";
 import {
@@ -124,9 +124,9 @@ const AccountSettingsFormGroup: React.FC<{
         </Form.Group>
         <Form.Group>
           <label style={{ width: "100%" }}>
-            <strong>
+            <Header as="h4">
               Profile picture (Image must be smaller than 500x500)
-            </strong>
+            </Header>
             <DragAndDrop
               onDrop={(files) => {
                 setPhoto(files[0]);
@@ -137,14 +137,15 @@ const AccountSettingsFormGroup: React.FC<{
         </Form.Group>
         {photo ? <p>{photo.name}</p> : null}
         {user?.Photo ? (
-          <>
+          <label>
+            <p>Current profile picture</p>
             <Image
               src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${user.Photo}`}
               alt="logo"
               style={{ width: 40, height: 40, objectFit: "cover" }}
             />
             <br />
-          </>
+          </label>
         ) : null}
         <Container>
           {userQueryIsSuccess ? (
