@@ -566,6 +566,7 @@ export const {
   usePhotosByLinkIDQuery,
   useCreatePhotoMutation,
   useS3CredentialsMutation,
+  useStarQuery,
   useStarsByUserIDQuery,
   useCreateStarMutation,
   useCountStarsForVendorQuery,

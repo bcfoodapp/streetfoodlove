@@ -2,6 +2,7 @@ import {
   getUserIDFromToken,
   useCountStarsForVendorQuery,
   useCreateStarMutation,
+  useStarQuery,
 } from "../../../../api";
 import styles from "./vendorstar.module.css";
 import { Button } from "semantic-ui-react";
@@ -17,16 +18,23 @@ export default ({ vendorID }: Props): React.ReactElement => {
   const [createStar] = useCreateStarMutation();
   const { data: starCount } = useCountStarsForVendorQuery(vendorID);
   const token = useAppSelector((state) => state.token.token);
+  let userID = "";
+  if (token) {
+    userID = getUserIDFromToken(token!);
+  }
+  useStarQuery({ UserID: userID, VendorID: vendorID }, { skip: !token });
 
   return (
     <Button
-      onClick={() =>
+      onClick={() => {
+        if (userID === "") {
+          throw new Error("userID is empty");
+        }
         createStar({
-          // Token is defined because queries are called in vendor page
-          UserID: getUserIDFromToken(token!),
+          UserID: userID,
           VendorID: vendorID,
-        })
-      }
+        });
+      }}
       className={styles.starButton}
     >
       <span style={{ color: "#000000" }}>⭐️</span>
