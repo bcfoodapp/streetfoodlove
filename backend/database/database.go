@@ -562,3 +562,65 @@ func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	err := d.db.QueryRowx(command, &id).StructScan(favorite)
 	return favorite, err
 }
+
+type Star struct {
+	UserID   uuid.UUID
+	VendorID uuid.UUID
+}
+
+func (d *Database) StarCreate(star *Star) error {
+	const command = `
+		INSERT INTO Stars (
+			UserID,
+			VendorID
+		) VALUES (
+			:UserID,
+			:VendorID
+		)
+	`
+
+	_, err := d.db.NamedExec(command, star)
+	return err
+}
+
+func (d *Database) StarsByUserID(userID uuid.UUID) ([]Star, error) {
+	const command = `
+		SELECT * FROM Stars WHERE UserID=?
+	`
+
+	rows, err := d.db.Queryx(command, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Star, 0)
+
+	for rows.Next() {
+		result = append(result, Star{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) CountVendorStars(vendorID uuid.UUID) (int, error) {
+	const command = `
+		SELECT count(*) FROM Stars WHERE VendorID=?
+	`
+
+	result := 0
+	err := d.db.QueryRowx(command, &vendorID).Scan(&result)
+	return result, err
+}
+
+func (d *Database) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
+	const command = `
+		DELETE FROM Stars WHERE UserID=? AND VendorID=?
+	`
+
+	_, err := d.db.Exec(command, &userID, &vendorID)
+	return err
+}
