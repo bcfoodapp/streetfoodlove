@@ -34,6 +34,7 @@ import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
 import { uploadToS3 } from "../../../aws";
+import VendorStar from "../Molecules/VendorStar/VendorStar";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -50,8 +51,6 @@ export function Vendor(): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
   const [getS3Credentials] = useS3CredentialsMutation();
-  const [createStar] = useCreateStarMutation();
-  const { data: starCount } = useCountStarsForVendorQuery(vendorID);
 
   const completedReviewHandler = async ({
     text,
@@ -117,18 +116,7 @@ export function Vendor(): React.ReactElement {
               />
             ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
-            <Button
-              onClick={() =>
-                createStar({
-                  UserID: getUserIDFromToken(token!),
-                  VendorID: vendorID,
-                })
-              }
-              className={styles.starButton}
-            >
-              <span style={{ color: "#000000" }}>⭐️</span>
-              &nbsp;{starCount}
-            </Button>
+            <VendorStar vendorID={vendorID} />
           </Grid.Row>
           <Grid.Row>
             {photos ? (
