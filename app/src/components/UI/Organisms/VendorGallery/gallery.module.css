@@ -1,0 +1,13 @@
+.shareTwitter {
+  width: 50px !important;
+  height: 50px !important;
+  z-index: 1000 !important;
+}
+
+.icon {
+  width: 50px !important;
+  height: 50px !important;
+  z-index: 1000 !important;
+  /* margin-top: 50px !important; */
+
+}
