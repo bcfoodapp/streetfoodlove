@@ -511,8 +511,24 @@ export const apiSlice = createApi({
         method: POST,
       }),
     }),
-    star: builder.query<Star, Star>({
-      query: (star) => `/stars/${encode(star.UserID + star.VendorID)}`,
+    // Returns true if star exists
+    starExists: builder.query<boolean, Star>({
+      queryFn: async (star, api) => {
+        let response = await baseQuery(
+          { url: `/stars/${encode(star.UserID + star.VendorID)}` },
+          api,
+          {}
+        );
+        if ("error" in response && response.error) {
+          if (response.error.status === 404) {
+            return { data: false };
+          } else {
+            return response;
+          }
+        }
+
+        return { data: true };
+      },
       providesTags: ["UserStars"],
     }),
     // Returns stars associated with given user.
@@ -566,6 +582,7 @@ export const {
   usePhotosByLinkIDQuery,
   useCreatePhotoMutation,
   useS3CredentialsMutation,
+  useStarExistsQuery,
   useStarsByUserIDQuery,
   useCreateStarMutation,
   useCountStarsForVendorQuery,
