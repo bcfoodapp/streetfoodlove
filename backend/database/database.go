@@ -612,7 +612,7 @@ func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 
 }
 func (d *Database) FavoritebyVendor(favoriteID uuid.UUID) ([]Favorite, error) {
-	rows, err := d.db.Query("SELECT * FROM Favorite WHERE ID = ?", favoriteID)
+	rows, err := d.db.Queryx("SELECT * FROM Favorite WHERE ID = ?", favoriteID)
 	if err != nil {
 		return nil, err
 	}
