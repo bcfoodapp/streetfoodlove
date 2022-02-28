@@ -85,8 +85,8 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
               ) : null}
               <Rating
                 icon="heart"
-                defaultRating={1}
-                disabled
+                defaultRating={0}
+                // disabled
                 className={styles.heart}
               />
               <i>Liked by vendor!</i>
