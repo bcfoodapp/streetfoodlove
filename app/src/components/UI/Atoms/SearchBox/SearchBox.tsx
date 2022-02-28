@@ -98,12 +98,7 @@ export const SearchBox: React.FC = () => {
       <Form onSubmit={enterQueryHandler}>
         <Search
           input={
-            <Input
-              placeholder="Search..."
-              focus
-              className={styles.inputBox}
-              value={searchString}
-            />
+            <Input placeholder="Search..." focus className={styles.inputBox} />
           }
           onSearchChange={onSearchChange}
           results={searchResult}
