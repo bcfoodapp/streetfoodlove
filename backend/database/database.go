@@ -329,7 +329,7 @@ type Review struct {
 	DatePosted     time.Time
 	StarRating     *int
 	ReplyTo        *uuid.UUID
-	VendorFavorite *int
+	VendorFavorite bool
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
