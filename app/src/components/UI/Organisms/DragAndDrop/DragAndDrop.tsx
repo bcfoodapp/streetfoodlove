@@ -22,6 +22,7 @@ export default ({ onDrop, multiple }: Props): React.ReactElement => {
         onDropRejected={() => setShowUploadError(true)}
         maxSize={1_000_000}
         multiple={multiple}
+        noClick
       >
         {({ getRootProps, getInputProps, isDragAccept }) => {
           let dragAndDropStyles = styles.dragAndDrop;

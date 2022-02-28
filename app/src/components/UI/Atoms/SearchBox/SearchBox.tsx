@@ -1,10 +1,8 @@
-import React, { useRef, useState } from "react";
-import { Input, Menu, Search, SearchProps } from "semantic-ui-react";
+import React, { useState } from "react";
+import { Form, Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
-import Buttons from "../Button/Buttons";
 import { useVendorsQuery, Vendor } from "../../../../api";
-import { Field } from "formik";
-import { useAppDispatch } from "../../../../store";
+import { setSearchQuery, useAppDispatch } from "../../../../store";
 import { showSideBar } from "../../../../store";
 
 /**
@@ -15,23 +13,17 @@ export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
   const [recentSearchResult, setRecentSearchResult] = useState<Vendor[]>([]);
   const { data: vendorsList } = useVendorsQuery();
-  const inputRef = useRef<any>(null);
+  const [searchString, setSearchString] = useState("");
   const dispatch = useAppDispatch();
 
   const enterQueryHandler = () => {
-    let resultSet = new Set([
-      inputRef.current.props.value,
-      ...recentSearchResult,
-    ]);
+    let resultSet = new Set([searchString, ...recentSearchResult]);
 
     let array: Vendor[] = [];
 
     if (vendorsList !== undefined) {
       for (const vendor of vendorsList) {
-        if (
-          vendor.Name === inputRef.current.props.value &&
-          resultSet.has(vendor.Name)
-        ) {
+        if (vendor.Name === searchString && resultSet.has(vendor.Name)) {
           let obj = {
             title: vendor.Name,
             description: vendor.BusinessAddress,
@@ -46,12 +38,15 @@ export const SearchBox: React.FC = () => {
     setRecentSearchResult([...array, ...recentSearchResult]);
 
     dispatch(showSideBar());
+    dispatch(setSearchQuery(searchString));
   };
 
   const onSearchChange = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: React.MouseEvent<HTMLElement>,
     data: SearchProps
   ) => {
+    setSearchString((event.target as any).value);
+
     if (data.value?.length === 0) {
       setSearchResult([]);
       return;
@@ -60,7 +55,6 @@ export const SearchBox: React.FC = () => {
     if (vendorsList) {
       let search = data.value;
       let condition = new RegExp(search as string);
-      // console.log(condition);
       let resultArray: Vendor[] = [];
 
       let filteredResult = vendorsList.filter((element) => {
@@ -101,30 +95,16 @@ export const SearchBox: React.FC = () => {
 
   return (
     <Menu.Item className={styles.searchBox}>
-      <Search
-        input={
-          <Input
-            icon={
-              <Buttons enter color={"green"} clicked={enterQueryHandler}>
-                Enter
-              </Buttons>
-            }
-            placeholder="Search..."
-            focus
-            size={"small"}
-            className={styles.inputBox}
-            ref={inputRef}
-          />
-        }
-        size={"small"}
-        onSearchChange={onSearchChange}
-        results={searchResult}
-        showNoResults
-      />
-      {/* <Field>
-        {({ form: {dirty, valid } }) => (
-        )}
-      </Field> */}
+      <Form onSubmit={enterQueryHandler}>
+        <Search
+          input={
+            <Input placeholder="Search..." focus className={styles.inputBox} />
+          }
+          onSearchChange={onSearchChange}
+          results={searchResult}
+          showNoResults
+        />
+      </Form>
     </Menu.Item>
   );
 };
