@@ -8,6 +8,7 @@
 
 .card {
   padding: 10px !important;
+  margin: 0.875em 0.5em !important;
   cursor: pointer;
   box-shadow: 2px 4px darkcyan !important;
   border: 2px solid black !important;
@@ -23,6 +24,7 @@
 }
 
 .header {
+  margin-top: 2% !important;
   margin-left: 42% !important;
   font-size: 2rem !important;
 }

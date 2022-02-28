@@ -3,6 +3,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
@@ -35,6 +36,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.Use(cors.New(corsOptions))
 	router.Use(errorHandler)
 	router.Use(gin.CustomRecovery(recovery))
+	router.NoRoute(noRoute)
 
 	router.GET("/", root)
 
@@ -49,6 +51,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/users/:id/protected", GetToken, a.UserProtected)
 	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
 	router.PUT("/users/:id/protected", a.UserProtectedPut)
+	router.POST("/users/:id/s3-credentials", GetToken, a.UserS3CredentialsPost)
 
 	router.GET("/reviews", a.Reviews)
 	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
@@ -63,14 +66,21 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/favorite/:id", a.FavoritePut)
 	router.GET("/favorite/:id", a.Favorite)
 
+	router.GET("/photos", a.Photos)
 	router.GET("/photos/:id", a.Photo)
-	router.POST("/photos/:id", GetToken, a.PhotoPost)
+	router.PUT("/photos/:id", GetToken, a.PhotoPut)
 
 	router.GET("/guides/:id", a.Guide)
 	router.POST("/guides/:id", GetToken, a.GuidePost)
 
 	router.GET("/links/:id", a.Link)
 	router.POST("/links/:id", GetToken, a.LinkPost)
+
+	router.GET("/stars/", a.Stars)
+	router.GET("/stars/:id", a.Star)
+	router.PUT("/stars/:id", GetToken, a.StarPut)
+	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
+	router.DELETE("/stars/:id", a.StarsDelete)
 }
 
 // errorHandler writes any errors to response.
@@ -90,6 +100,10 @@ func recovery(c *gin.Context, err interface{}) {
 	} else {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
+}
+
+func noRoute(c *gin.Context) {
+	c.JSON(http.StatusNotFound, "page not found")
 }
 
 var idsDoNotMatch = fmt.Errorf("ids do not match")
@@ -177,13 +191,24 @@ func (a *API) VendorPost(c *gin.Context) {
 }
 
 func (a *API) Vendors(c *gin.Context) {
-	ownerID, err := uuid.Parse(c.Query("owner"))
-	if err != nil {
-		c.Error(err)
+	if c.Query("owner") != "" {
+		ownerID, err := uuid.Parse(c.Query("owner"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		vendor, err := a.Backend.VendorByOwnerID(ownerID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, vendor)
 		return
 	}
 
-	vendors, err := a.Backend.VendorByOwnerID(ownerID)
+	vendors, err := a.Backend.Vendors()
 	if err != nil {
 		c.Error(err)
 		return
@@ -273,6 +298,16 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+}
+
+func (a *API) UserS3CredentialsPost(c *gin.Context) {
+	credentials, err := a.Backend.UserS3Credentials(c, getTokenFromContext(c))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, credentials)
 }
 
 func (a *API) Reviews(c *gin.Context) {
@@ -365,7 +400,7 @@ func (a *API) TokenGoogleRefreshPut(c *gin.Context) {
 	}
 
 	if _, err := a.Backend.Database.UserIDByGoogleID(claims.Subject); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			c.AbortWithStatusJSON(http.StatusNotFound, "user with Google ID does not exist")
 		} else {
 			c.Error(err)
@@ -442,6 +477,22 @@ func (a *API) MapView(c *gin.Context) {
 	c.JSON(http.StatusOK, vendors)
 }
 
+func (a *API) Photos(c *gin.Context) {
+	linkID, err := uuid.Parse(c.Query("link-id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	photos, err := a.Backend.PhotosByLinkID(linkID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, photos)
+}
+
 func (a *API) Photo(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -458,14 +509,17 @@ func (a *API) Photo(c *gin.Context) {
 	c.JSON(http.StatusOK, photo)
 }
 
-func (a *API) PhotoPost(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
-	if err != nil {
+func (a *API) PhotoPut(c *gin.Context) {
+	photo := &database.Photo{}
+	if err := c.ShouldBindJSON(photo); err != nil {
 		c.Error(err)
 		return
 	}
-	_ = id
-	// TODO
+
+	if err := a.Backend.PhotoCreate(getTokenFromContext(c), photo); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) Guide(c *gin.Context) {
@@ -557,4 +611,118 @@ func (a *API) Favorite(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, favorite)
+}
+
+// ParseStarKey splits key into userID and vendorID
+func ParseStarKey(key string) (*database.Star, error) {
+	const uuidLength = 36
+
+	if len(key) != uuidLength*2 {
+		return nil, fmt.Errorf("key must be length 72 but is of length %v", len(key))
+	}
+
+	userID, err := uuid.Parse(key[:uuidLength])
+	if err != nil {
+		return nil, err
+	}
+
+	vendorID, err := uuid.Parse(key[uuidLength : uuidLength*2])
+	if err != nil {
+		return nil, err
+	}
+
+	return &database.Star{
+		UserID:   userID,
+		VendorID: vendorID,
+	}, nil
+}
+
+func (a *API) StarPut(c *gin.Context) {
+	key, err := ParseStarKey(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	star := &database.Star{}
+	if err := c.ShouldBindJSON(star); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if *key != *star {
+		c.Error(fmt.Errorf("ID in path does not match body ID"))
+		return
+	}
+
+	if err := a.Backend.StarCreate(getTokenFromContext(c), star); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) Stars(c *gin.Context) {
+	userID, err := uuid.Parse(c.Query("userID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	stars, err := a.Backend.StarsByUserID(userID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, stars)
+}
+
+func (a *API) Star(c *gin.Context) {
+	key, err := ParseStarKey(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	star, err := a.Backend.Star(key.UserID, key.VendorID)
+	if errors.Is(err, sql.ErrNoRows) {
+		c.Status(http.StatusNotFound)
+		return
+	}
+
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, star)
+}
+
+func (a *API) StarsCountForVendor(c *gin.Context) {
+	vendorID, err := uuid.Parse(c.Param("vendorID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	count, err := a.Backend.CountVendorStars(vendorID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, count)
+}
+
+func (a *API) StarsDelete(c *gin.Context) {
+	star, err := ParseStarKey(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := a.Backend.StarDelete(star.UserID, star.VendorID); err != nil {
+		c.Error(err)
+		return
+	}
 }

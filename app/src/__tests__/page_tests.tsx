@@ -15,6 +15,7 @@ import VendorAppForm from "../components/UI/Pages/VendorAppForm";
 import VendorDashboard from "../components/UI/Pages/VendorDashboard";
 import YourAccountUser from "../components/UI/Pages/YourAccountUser";
 import App from "../App";
+import VendorPhotosUploader from "../components/UI/Pages/VendorPhotosUploader";
 
 const MockEnvironment: React.FC = ({
   children,
@@ -121,6 +122,14 @@ test("VendorDashboard", () => {
   renderer.create(
     <MockEnvironment>
       <VendorDashboard />
+    </MockEnvironment>
+  );
+});
+
+test("VendorPhotosUploader", () => {
+  renderer.create(
+    <MockEnvironment>
+      <VendorPhotosUploader />
     </MockEnvironment>
   );
 });

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Container } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import { Dropdown } from "semantic-ui-react";
@@ -6,6 +6,7 @@ import styles from "./vendorappform.module.css";
 import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
 import {
+  useEffectAsync,
   getUserIDFromToken,
   useCreateVendorMutation,
   useGetTokenMutation,
@@ -13,7 +14,6 @@ import {
 } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../../store";
 
 interface inputValues {
   name: string;
@@ -29,20 +29,20 @@ export default function VendorAppForm(): React.ReactElement {
   const navigate = useNavigate();
   const [createVendor] = useCreateVendorMutation();
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  useEffect(() => {
-    getToken();
+  const [token, setToken] = useState(null as string | null);
+
+  useEffectAsync(async () => {
+    const response = await getToken();
+    if ("data" in response) {
+      setToken(response.data);
+    }
   }, []);
-  const token = useAppSelector((state) => state.token.token);
 
   if (!tokenIsSuccess || token === null) {
     return <p>Not logged in</p>;
   }
 
   const onSubmit = async (data: inputValues) => {
-    if (!tokenIsSuccess || token === null) {
-      // Button is inaccessible when token is null
-      throw new Error("unexpected");
-    }
     const userID = getUserIDFromToken(token);
     const vendor: Vendor = {
       ID: uuid(),
@@ -56,8 +56,8 @@ export default function VendorAppForm(): React.ReactElement {
       Longitude: 0,
       Owner: userID,
     };
-    const result = await createVendor(vendor);
-    if ((result as any).error === undefined) {
+    const response = await createVendor(vendor);
+    if ("data" in response) {
       navigate("/vendor-dashboard");
     }
   };
@@ -157,7 +157,7 @@ export default function VendorAppForm(): React.ReactElement {
                 fluid
                 label="Vendor Name"
                 placeholder="Vendor Name"
-                name={"name"}
+                name="name"
                 required
                 width={5}
                 onChange={handleChange}
@@ -171,7 +171,7 @@ export default function VendorAppForm(): React.ReactElement {
                 placeholder="Business Address"
                 required
                 width={5}
-                name={"businessAddress"}
+                name="businessAddress"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.businessAddress}
@@ -184,7 +184,7 @@ export default function VendorAppForm(): React.ReactElement {
                 label="Website URL"
                 placeholder="Website URL"
                 width={5}
-                name={"website"}
+                name="website"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.website}
@@ -195,7 +195,7 @@ export default function VendorAppForm(): React.ReactElement {
                 placeholder="From"
                 selection
                 options={startTimeOptions}
-                name={"fromHour"}
+                name="fromHour"
                 onBlur={handleBlur}
                 error={touched.fromHour && Boolean(errors.fromHour)}
                 value={values.fromHour}
@@ -210,7 +210,7 @@ export default function VendorAppForm(): React.ReactElement {
                 selection
                 options={endTimeOptions}
                 className={styles.dropdown}
-                name={"toHour"}
+                name="toHour"
                 onBlur={handleBlur}
                 error={touched.toHour && Boolean(errors.toHour)}
                 value={values.toHour}
@@ -224,7 +224,7 @@ export default function VendorAppForm(): React.ReactElement {
                 fluid
                 label="Phone"
                 placeholder="Phone"
-                name={"phoneNumber"}
+                name="phoneNumber"
                 required
                 width={5}
                 className={styles.phoneInput}

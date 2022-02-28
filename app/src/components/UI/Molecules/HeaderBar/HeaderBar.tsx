@@ -40,9 +40,9 @@ export default function HeaderBar(): React.ReactElement {
     },
     {
       key: "page",
-      text: "Edit Vendor Page",
+      text: "Vendor Dashboard",
       onClick: () => {
-        navigate("/edit-vendor-page");
+        navigate("/vendor-dashboard");
       },
     },
     { key: "help", text: "Help" },
@@ -60,7 +60,7 @@ export default function HeaderBar(): React.ReactElement {
     <Menu size="massive" className={styles.menu}>
       <Link to="/">
         <Menu.Item>
-          <h2>StreetFoodLove</h2>
+          <h2 className={styles.title}>StreetFoodLove</h2>
         </Menu.Item>
       </Link>
       <SearchBox />

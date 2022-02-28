@@ -1,4 +1,12 @@
-.searchBox input {
+.inputBox {
   border-radius: 4px;
-  font-size: 18px;
+  font-size: 10px;
+  width: 400px !important;
+}
+
+.nothing {
+  font-size: 40px !important;
+}
+
+.searchBox {
 }

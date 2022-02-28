@@ -2,6 +2,8 @@
 
 [https://bcfoodapp.github.io/streetfoodlove/](https://bcfoodapp.github.io/streetfoodlove/)
 
+Use an alternate Google account if you want to sign-in with Google! Do not use your main Google account as the app is not guaranteed to be secure.
+
 # Document links
 
 - [API doc](https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1)
@@ -21,11 +23,12 @@
 
 # How to run
 1. To initialize the database, go to `backend/reset_database` and run `go run .`
-2. Go to the `backend` folder in PowerShell and run the command `go run .`
-  - Open your browser and go to http://localhost:8080/. If it says "404 page not found", it's working.
-3. Go to the `app` folder, and install dependencies with `npm i`
-4. Do `npm start` and wait for it to compile
-5. With the backend server still running, go to http://localhost:3000/streetfoodlove/
+2. (Optional) [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), then [configure AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html). If you do not do this, all AWS calls will fail.
+3. Go to the `backend` folder in PowerShell and run the command `go run .`
+  - Open your browser and go to http://localhost:8080/ to make sure it is working.
+4. Go to the `app` folder, and install dependencies with `npm i`
+5. Do `npm start` and wait for it to compile
+6. With the backend server still running, go to http://localhost:3000/streetfoodlove/
   - Press ctrl-c to stop the server and npm
 
 # To run in production
