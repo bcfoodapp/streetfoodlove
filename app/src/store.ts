@@ -1,7 +1,6 @@
 import {
   configureStore,
   createSlice,
-  isRejected,
   isRejectedWithValue,
   Middleware,
   MiddlewareAPI,

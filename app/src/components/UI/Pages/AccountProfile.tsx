@@ -28,7 +28,7 @@ const AccountProfile: React.FC = () => {
       ),
     },
     {
-      menuItem: "Stars",
+      menuItem: "Starred Vendors",
       render: () => (
         <Tab.Pane className={styles.pane}>
           <AccountProfileStars />
