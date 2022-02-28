@@ -31,6 +31,7 @@ import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
 import { uploadToS3 } from "../../../aws";
+import { TwitterShareButton, TwitterIcon } from "react-share";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -117,6 +118,12 @@ export function Vendor(): React.ReactElement {
             ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
           </Grid.Row>
+          <TwitterShareButton
+            url="http://localhost:3000/streetfoodlove/vendors/e72ac985-3d7e-47eb-9f0c-f8e52621a708"
+            title="Check out this Vendor!"
+          >
+            <TwitterIcon size={32} round={true} />
+          </TwitterShareButton>
           <Grid.Row>
             {photos ? (
               <Segment style={{ width: "100%" }}>

@@ -2,7 +2,6 @@ import { Photo } from "../../../../api";
 import React from "react";
 import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
 import { Container, Icon, Image } from "semantic-ui-react";
-import styles from './gallery.module.css'
 
 interface Props {
   photos: Photo[];
@@ -26,19 +25,15 @@ export default ({ photos, photoHeight }: Props): React.ReactElement => {
             showDownloadButton: false,
             showThumbnailsButton: false,
           },
-          caption: {
-
-          }
+          caption: {},
         }}
       >
-        <Image.Group style={{position: "relative"}}>
+        <Image.Group style={{ position: "relative" }}>
           {photos.map((photo, i) => (
             <a
-            href={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}`}
-            key={i}
+              href={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}`}
+              key={i}
             >
-              <Container className={styles.shareTwitter}>
-              </Container>
               <Image
                 src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}`}
                 alt={photo.Text}
@@ -51,7 +46,6 @@ export default ({ photos, photoHeight }: Props): React.ReactElement => {
               />
             </a>
           ))}
-          <Icon name="twitter" size="large" color="blue" className={styles.icon}/>
         </Image.Group>
       </SRLWrapper>
     </SimpleReactLightbox>
