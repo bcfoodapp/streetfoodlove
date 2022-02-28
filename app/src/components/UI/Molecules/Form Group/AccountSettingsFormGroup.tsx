@@ -20,7 +20,7 @@ const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
-  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  const [getToken] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
 
   useEffectAsync(async () => {
@@ -31,7 +31,7 @@ const AccountSettingsFormGroup: React.FC<{
   }, []);
 
   let userID = "";
-  if (tokenIsSuccess && token !== null) {
+  if (token) {
     userID = getUserIDFromToken(token as string);
   }
   const {
@@ -89,7 +89,7 @@ const AccountSettingsFormGroup: React.FC<{
     setIsSubmitting(false);
   };
 
-  if (tokenIsSuccess && token === null) {
+  if (token === null) {
     return <p>Not logged in</p>;
   }
 
