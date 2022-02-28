@@ -12,8 +12,11 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
+  useCreateStarMutation,
+  useCountStarsForVendorQuery,
 } from "../../../api";
 import {
+  Button,
   Container,
   Divider,
   Grid,
@@ -31,6 +34,7 @@ import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
 import { uploadToS3 } from "../../../aws";
+import VendorStar from "../Molecules/VendorStar/VendorStar";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -57,12 +61,8 @@ export function Vendor(): React.ReactElement {
     starRating: StarRatingInteger;
     files: File[];
   }) => {
-    if (token === null) {
-      throw new Error("token is null");
-    }
-
     setIsSubmitting(true);
-    const userID = getUserIDFromToken(token);
+    const userID = getUserIDFromToken(token!);
     const reviewID = uuid();
 
     let s3Credentials = {} as AWSCredentials;
@@ -116,6 +116,7 @@ export function Vendor(): React.ReactElement {
               />
             ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
+            <VendorStar vendorID={vendorID} />
           </Grid.Row>
           <Grid.Row>
             {photos ? (
