@@ -516,6 +516,11 @@ func (a *API) PhotoPut(c *gin.Context) {
 		return
 	}
 
+	if c.Param("id") != photo.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
 	if err := a.Backend.PhotoCreate(getTokenFromContext(c), photo); err != nil {
 		c.Error(err)
 		return
