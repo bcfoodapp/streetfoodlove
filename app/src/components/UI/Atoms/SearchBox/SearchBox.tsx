@@ -41,10 +41,12 @@ export const SearchBox: React.FC = () => {
     dispatch(setSearchQuery(searchString));
   };
 
-  const onSearchChange = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+  const onChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
     data: SearchProps
   ) => {
+    setSearchString(event.target.value);
+
     if (data.value?.length === 0) {
       setSearchResult([]);
       return;
@@ -102,10 +104,9 @@ export const SearchBox: React.FC = () => {
               focus
               className={styles.inputBox}
               value={searchString}
-              onChange={(e) => setSearchString(e.target.value)}
+              onChange={onChange}
             />
           }
-          onSearchChange={onSearchChange}
           results={searchResult}
           showNoResults
         />
