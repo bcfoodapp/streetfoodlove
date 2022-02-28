@@ -196,3 +196,27 @@ func (b *Backend) FavoriteCreate(userID uuid.UUID, favorite *database.Favorite) 
 
 	return b.Database.FavoriteCreate(favorite)
 }
+
+func (b *Backend) StarCreate(userID uuid.UUID, star *database.Star) error {
+	if star.UserID != userID {
+		return unauthorized
+	}
+
+	return b.Database.StarCreate(star)
+}
+
+func (b *Backend) StarsByUserID(userID uuid.UUID) ([]database.Star, error) {
+	return b.Database.StarsByUserID(userID)
+}
+
+func (b *Backend) Star(userID uuid.UUID, vendorID uuid.UUID) (*database.Star, error) {
+	return b.Database.Star(userID, vendorID)
+}
+
+func (b *Backend) CountVendorStars(vendorID uuid.UUID) (int, error) {
+	return b.Database.CountVendorStars(vendorID)
+}
+
+func (b *Backend) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
+	return b.Database.StarDelete(userID, vendorID)
+}
