@@ -395,18 +395,29 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 }
 
 //query to find out if the vendor has been starred, it returns true if it is false if not
-func (d *Database) StarredVendorFavorite(VendorID uuid.UUID, ReviewsID uuid.UUID) (bool, error) {
+func (d *Database) StarredVendorFavorite(ReviewID uuid.UUID, VendorID uuid.UUID) (bool, error) {
 	var starred bool
-
-	if err := d.db.QueryRow("SELECT * FROM Reviews WHERE ID >= ?",
-		ReviewsID, VendorID).Scan(&starred); err != nil {
-
-		return false,
-			fmt.Errorf("starredVendorFavorite %d: No review", VendorID)
-	}
-	//return false,
+	const command = `
+		SELECT *
+		FROM Reviews
+		WHERE ID=?
+		AND VendorID = ?
+	`
+	//if err := d.db.Queryx("SELECT * FROM Reviews WHERE ID = ? AND VendorID = ?"
+	//return false, err
 	//fmt.Errorf("starredVendorFavorite %d: ", ReviewsID)
-
+	rows, err := d.db.Queryx(command, &ReviewID, &VendorID)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	result := make([]Review, 0)
+	for rows.Next() {
+		result = append(result, Review{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return false, err
+		}
+	}
 	return starred, nil
 }
 
@@ -613,7 +624,7 @@ func (d *Database) FavoritebyVendor(favoriteID uuid.UUID) ([]Favorite, error) {
 	//go through rows to assign column to struct field
 	for rows.Next() {
 		var favs Favorite
-		if err := rows.Scan(&favs.ID, &favs.UserID, &favs.VendorID, &favs.DatePosted); err != nil {
+		if err := rows.StructScan(&favs); err != nil {
 			return fav, err
 		}
 		fav = append(fav, favs)
