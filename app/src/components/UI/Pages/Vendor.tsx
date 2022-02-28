@@ -12,8 +12,11 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
+  useCreateStarMutation,
+  useCountStarsForVendorQuery,
 } from "../../../api";
 import {
+  Button,
   Container,
   Divider,
   Grid,
@@ -32,6 +35,7 @@ import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
 import { uploadToS3 } from "../../../aws";
 import { TwitterShareButton, TwitterIcon } from "react-share";
+import VendorStar from "../Molecules/VendorStar/VendorStar";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -58,13 +62,19 @@ export function Vendor(): React.ReactElement {
     starRating: StarRatingInteger;
     files: File[];
   }) => {
-    if (token === null) {
-      throw new Error("token is null");
-    }
-
     setIsSubmitting(true);
-    const userID = getUserIDFromToken(token);
-    const reviewID = uuid();
+    const userID = getUserIDFromToken(token!);
+
+    const review = {
+      ID: uuid(),
+      Text: text,
+      DatePosted: DateTime.now(),
+      VendorID: vendorID,
+      UserID: userID,
+      StarRating: starRating,
+      ReplyTo: null,
+    };
+    await submitReview(review);
 
     let s3Credentials = {} as AWSCredentials;
 
@@ -83,23 +93,13 @@ export function Vendor(): React.ReactElement {
         ID: photoID,
         DatePosted: DateTime.now(),
         Text: "",
-        LinkID: reviewID,
+        LinkID: review.ID,
       };
       const createPhotoResponse = await createPhoto(photo);
       if ("error" in createPhotoResponse) {
         return;
       }
     }
-    const review = {
-      ID: reviewID,
-      Text: text,
-      DatePosted: DateTime.now(),
-      VendorID: vendorID,
-      UserID: userID,
-      StarRating: starRating,
-      ReplyTo: null,
-    };
-    await submitReview(review);
     setIsSubmitting(false);
   };
 
@@ -117,6 +117,7 @@ export function Vendor(): React.ReactElement {
               />
             ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
+            <VendorStar vendorID={vendorID} />
           </Grid.Row>
           <TwitterShareButton
             url="http://localhost:3000/streetfoodlove/vendors/e72ac985-3d7e-47eb-9f0c-f8e52621a708"
