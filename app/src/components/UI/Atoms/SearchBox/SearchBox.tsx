@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Input, Menu, Search, SearchProps } from "semantic-ui-react";
+import { Form, Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
-import Buttons from "../Button/Buttons";
 import { useVendorsQuery, Vendor } from "../../../../api";
 import { setSearchQuery, useAppDispatch } from "../../../../store";
 import { showSideBar } from "../../../../store";
@@ -95,31 +94,23 @@ export const SearchBox: React.FC = () => {
 
   return (
     <Menu.Item className={styles.searchBox}>
-      <Search
-        input={
-          <Input
-            icon={
-              <Buttons enter color={"green"} clicked={enterQueryHandler}>
-                Enter
-              </Buttons>
-            }
-            placeholder="Search..."
-            focus
-            size={"small"}
-            className={styles.inputBox}
-            value={searchString}
-            onChange={(e) => setSearchString(e.target.value)}
-          />
-        }
-        size={"small"}
-        onSearchChange={onSearchChange}
-        results={searchResult}
-        showNoResults
-      />
-      {/* <Field>
-        {({ form: {dirty, valid } }) => (
-        )}
-      </Field> */}
+      <Form onSubmit={enterQueryHandler}>
+        <Search
+          input={
+            <Input
+              placeholder="Search..."
+              focus
+              className={styles.inputBox}
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
+            />
+          }
+          size={"small"}
+          onSearchChange={onSearchChange}
+          results={searchResult}
+          showNoResults
+        />
+      </Form>
     </Menu.Item>
   );
 };

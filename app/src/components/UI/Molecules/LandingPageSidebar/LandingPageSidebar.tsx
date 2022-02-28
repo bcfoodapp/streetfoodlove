@@ -1,12 +1,32 @@
-import React from "react";
-import { Sidebar, Menu, Icon, Button, Checkbox } from "semantic-ui-react";
+import React, { useState } from "react";
+import {
+  Sidebar,
+  Menu,
+  Icon,
+  Button,
+  Checkbox,
+  Container,
+} from "semantic-ui-react";
 import { hideSideBar, useAppDispatch, useAppSelector } from "../../../../store";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
+import { search } from "../../../../search";
+import { useEffectAsync } from "../../../../api";
 
 const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector((state) => state.root.sideBarShowing);
   const searchQuery = useAppSelector((state) => state.root.searchQuery);
+  const [searchResult, setSearchResult] = useState([] as string[]);
+
+  useEffectAsync(async () => {
+    if (searchQuery) {
+      const result = await search(searchQuery);
+      setSearchResult(
+        result.hits.hits.map(({ _source }) => JSON.stringify(_source, null, 2))
+      );
+    }
+  }, [searchQuery]);
+
   const dispatch = useAppDispatch();
 
   const closeSidebar = () => {
@@ -46,6 +66,11 @@ const LandingPageSidebar: React.FC = () => {
       <Menu.Item>
         <h3 className={styles.header}>Results</h3>
       </Menu.Item>
+      <Container textAlign="left">
+        {searchResult.map((row) => (
+          <pre>{row}</pre>
+        ))}
+      </Container>
     </Sidebar>
   );
 };
