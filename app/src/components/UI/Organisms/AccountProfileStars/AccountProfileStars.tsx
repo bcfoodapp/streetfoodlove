@@ -42,8 +42,8 @@ export default (): React.ReactElement => {
 
   return (
     <>
-      {stars?.map((star) => (
-        <VendorName vendorID={star.VendorID} />
+      {stars?.map((star, index) => (
+        <VendorName key={index} vendorID={star.VendorID} />
       ))}
     </>
   );
