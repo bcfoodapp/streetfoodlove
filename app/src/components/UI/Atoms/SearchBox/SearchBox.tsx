@@ -1,10 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
 import Buttons from "../Button/Buttons";
 import { useVendorsQuery, Vendor } from "../../../../api";
-import { Field } from "formik";
-import { useAppDispatch } from "../../../../store";
+import { setSearchQuery, useAppDispatch } from "../../../../store";
 import { showSideBar } from "../../../../store";
 
 /**
@@ -40,6 +39,7 @@ export const SearchBox: React.FC = () => {
     setRecentSearchResult([...array, ...recentSearchResult]);
 
     dispatch(showSideBar());
+    dispatch(setSearchQuery(searchString));
   };
 
   const onSearchChange = (

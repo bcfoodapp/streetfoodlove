@@ -60,7 +60,7 @@ export const rootSlice = createSlice({
   },
 });
 
-export const { setError, hideError, showSideBar, hideSideBar } =
+export const { setError, hideError, showSideBar, hideSideBar, setSearchQuery } =
   rootSlice.actions;
 
 export const store = configureStore({

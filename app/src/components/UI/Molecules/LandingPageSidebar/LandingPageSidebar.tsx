@@ -6,6 +6,7 @@ import styles from "./sidebar.module.css";
 
 const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector((state) => state.root.sideBarShowing);
+  const searchQuery = useAppSelector((state) => state.root.searchQuery);
   const dispatch = useAppDispatch();
 
   const closeSidebar = () => {
