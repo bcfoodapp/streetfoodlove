@@ -36,6 +36,8 @@ export const rootSlice = createSlice({
     error: null as string | null,
     showError: false,
     sideBarShowing: false,
+    // searchQuery is a string if user searched for the string
+    searchQuery: null as string | null,
   },
   reducers: {
     setError: (state, { payload }: PayloadAction<string>) => {
@@ -51,6 +53,9 @@ export const rootSlice = createSlice({
     },
     hideSideBar: (state) => {
       state.sideBarShowing = false;
+    },
+    setSearchQuery: (state, { payload }: PayloadAction<string>) => {
+      state.searchQuery = payload;
     },
   },
 });
