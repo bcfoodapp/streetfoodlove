@@ -28,7 +28,7 @@ export default ({ photos, photoHeight }: Props): React.ReactElement => {
           caption: {},
         }}
       >
-        <Image.Group style={{ position: "relative" }}>
+        <Image.Group>
           {photos.map((photo, i) => (
             <a
               href={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}`}
