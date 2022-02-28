@@ -1,6 +1,6 @@
 .inputBox {
   border-radius: 4px;
-  font-size: 10px;
+  font-size: 1em !important;
   width: 400px !important;
 }
 

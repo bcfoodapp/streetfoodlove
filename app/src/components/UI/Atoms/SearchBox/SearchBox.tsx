@@ -105,7 +105,6 @@ export const SearchBox: React.FC = () => {
               onChange={(e) => setSearchString(e.target.value)}
             />
           }
-          size={"small"}
           onSearchChange={onSearchChange}
           results={searchResult}
           showNoResults
