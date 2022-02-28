@@ -119,12 +119,17 @@ export function Vendor(): React.ReactElement {
             <h1 className={styles.name}>{vendor?.Name}</h1>
             <VendorStar vendorID={vendorID} />
           </Grid.Row>
-          <TwitterShareButton
-            url="http://localhost:3000/streetfoodlove/vendors/e72ac985-3d7e-47eb-9f0c-f8e52621a708"
-            title="Check out this Vendor!"
-          >
-            <TwitterIcon size={32} round={true} />
-          </TwitterShareButton>
+          <Grid.Row textAlign="center">
+            <Container className={styles.shareContainer}>
+              <strong className={styles.shareLabel}>Share</strong>
+              <TwitterShareButton
+                url="http://localhost:3000/streetfoodlove/vendors/e72ac985-3d7e-47eb-9f0c-f8e52621a708"
+                title="Check out this Vendor!"
+              >
+                <TwitterIcon size={32} round={true} />
+              </TwitterShareButton>
+            </Container>
+          </Grid.Row>
           <Grid.Row>
             {photos ? (
               <Segment style={{ width: "100%" }}>
