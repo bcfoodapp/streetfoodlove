@@ -24,8 +24,6 @@ const apiErrorHandler: Middleware =
           `api error: ${JSON.stringify(action.payload)}, ${requestDetail}`
         )
       );
-    } else if (isRejected(action)) {
-      api.dispatch(setError(`api error occurred with no value`));
     }
     return next(action);
   };
