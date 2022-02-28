@@ -7,13 +7,9 @@
 .shareLabel {
   float: left;
   margin-top: 5px;
-  /* right: 56%; */
-  /* margin-right: 10px !important; */
-  /* margin-top: 5px !important; */
 }
 
 .shareContainer {
   position: relative;
   width: 10% !important;
-  /* padding-right: 10%; */
 }
