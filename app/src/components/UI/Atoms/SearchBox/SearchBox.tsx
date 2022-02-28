@@ -41,11 +41,11 @@ export const SearchBox: React.FC = () => {
     dispatch(setSearchQuery(searchString));
   };
 
-  const onChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+  const onSearchChange = (
+    event: React.MouseEvent<HTMLElement>,
     data: SearchProps
   ) => {
-    setSearchString(event.target.value);
+    setSearchString((event.target as any).value);
 
     if (data.value?.length === 0) {
       setSearchResult([]);
@@ -55,7 +55,6 @@ export const SearchBox: React.FC = () => {
     if (vendorsList) {
       let search = data.value;
       let condition = new RegExp(search as string);
-      // console.log(condition);
       let resultArray: Vendor[] = [];
 
       let filteredResult = vendorsList.filter((element) => {
@@ -104,9 +103,9 @@ export const SearchBox: React.FC = () => {
               focus
               className={styles.inputBox}
               value={searchString}
-              onChange={onChange}
             />
           }
+          onSearchChange={onSearchChange}
           results={searchResult}
           showNoResults
         />
