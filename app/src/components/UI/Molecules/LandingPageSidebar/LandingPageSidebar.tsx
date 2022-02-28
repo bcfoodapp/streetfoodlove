@@ -66,6 +66,7 @@ const LandingPageSidebar: React.FC = () => {
       <Menu.Item>
         <h3 className={styles.header}>Results</h3>
       </Menu.Item>
+      {/* Temporary output */}
       <Container textAlign="left">
         {searchResult.map((row) => (
           <pre>{row}</pre>
