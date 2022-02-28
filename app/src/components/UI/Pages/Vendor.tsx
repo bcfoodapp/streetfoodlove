@@ -63,7 +63,17 @@ export function Vendor(): React.ReactElement {
   }) => {
     setIsSubmitting(true);
     const userID = getUserIDFromToken(token!);
-    const reviewID = uuid();
+
+    const review = {
+      ID: uuid(),
+      Text: text,
+      DatePosted: DateTime.now(),
+      VendorID: vendorID,
+      UserID: userID,
+      StarRating: starRating,
+      ReplyTo: null,
+    };
+    await submitReview(review);
 
     let s3Credentials = {} as AWSCredentials;
 
@@ -82,23 +92,13 @@ export function Vendor(): React.ReactElement {
         ID: photoID,
         DatePosted: DateTime.now(),
         Text: "",
-        LinkID: reviewID,
+        LinkID: review.ID,
       };
       const createPhotoResponse = await createPhoto(photo);
       if ("error" in createPhotoResponse) {
         return;
       }
     }
-    const review = {
-      ID: reviewID,
-      Text: text,
-      DatePosted: DateTime.now(),
-      VendorID: vendorID,
-      UserID: userID,
-      StarRating: starRating,
-      ReplyTo: null,
-    };
-    await submitReview(review);
     setIsSubmitting(false);
   };
 
