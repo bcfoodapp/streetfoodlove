@@ -15,23 +15,17 @@ export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
   const [recentSearchResult, setRecentSearchResult] = useState<Vendor[]>([]);
   const { data: vendorsList } = useVendorsQuery();
-  const inputRef = useRef<any>(null);
+  const [searchString, setSearchString] = useState("");
   const dispatch = useAppDispatch();
 
   const enterQueryHandler = () => {
-    let resultSet = new Set([
-      inputRef.current.props.value,
-      ...recentSearchResult,
-    ]);
+    let resultSet = new Set([searchString, ...recentSearchResult]);
 
     let array: Vendor[] = [];
 
     if (vendorsList !== undefined) {
       for (const vendor of vendorsList) {
-        if (
-          vendor.Name === inputRef.current.props.value &&
-          resultSet.has(vendor.Name)
-        ) {
+        if (vendor.Name === searchString && resultSet.has(vendor.Name)) {
           let obj = {
             title: vendor.Name,
             description: vendor.BusinessAddress,
@@ -113,7 +107,8 @@ export const SearchBox: React.FC = () => {
             focus
             size={"small"}
             className={styles.inputBox}
-            ref={inputRef}
+            value={searchString}
+            onChange={(e) => setSearchString(e.target.value)}
           />
         }
         size={"small"}
