@@ -70,22 +70,3 @@ function Direction(props) {
   )
 }
 
-function Direction2() {
-  const [direction, setDirection] = useState(0)
-
-  const increment = () => {
-    if (direction === 3) {
-      setDirection(0)
-    } else {
-      setDirection(direction + 1)
-    }
-  }
-
-  return (
-    <div>
-      <button onClick={() => increment()}>Rotate</button>
-      <Direction direction={direction}/>
-    </div>
-  )
-}
-
