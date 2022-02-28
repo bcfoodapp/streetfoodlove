@@ -233,7 +233,7 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review", "VendorPhotos", "CurrentUser", "UserStars"],
+  tagTypes: ["Review", "VendorPhotos", "UserStars", "CurrentUser"],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
