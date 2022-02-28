@@ -34,6 +34,7 @@ import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
 import { uploadToS3 } from "../../../aws";
+import { TwitterShareButton, TwitterIcon } from "react-share";
 import VendorStar from "../Molecules/VendorStar/VendorStar";
 
 /**
@@ -117,6 +118,17 @@ export function Vendor(): React.ReactElement {
             ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
             <VendorStar vendorID={vendorID} />
+          </Grid.Row>
+          <Grid.Row textAlign="center">
+            <Container className={styles.shareContainer}>
+              <strong className={styles.shareLabel}>Share</strong>
+              <TwitterShareButton
+                url="http://localhost:3000/streetfoodlove/vendors/e72ac985-3d7e-47eb-9f0c-f8e52621a708"
+                title="Check out this Vendor!"
+              >
+                <TwitterIcon size={32} round={true} />
+              </TwitterShareButton>
+            </Container>
           </Grid.Row>
           <Grid.Row>
             {photos ? (

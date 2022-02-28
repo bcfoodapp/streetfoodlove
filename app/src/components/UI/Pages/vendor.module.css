@@ -3,3 +3,13 @@
   margin-left: 40px;
   margin-top: 0;
 }
+
+.shareLabel {
+  float: left;
+  margin-top: 5px;
+}
+
+.shareContainer {
+  position: relative;
+  width: 10% !important;
+}
