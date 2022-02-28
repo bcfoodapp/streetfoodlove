@@ -28,7 +28,7 @@ const AccountProfile: React.FC = () => {
       ),
     },
     {
-      menuItem: "Stars",
+      menuItem: "Starred Vendors",
       render: () => (
         <Tab.Pane className={styles.pane}>
           <AccountProfileStars />
@@ -51,3 +51,41 @@ const AccountProfile: React.FC = () => {
 };
 
 export default AccountProfile;
+
+function Direction(props) {
+  const {direction} = props
+
+  return (
+    <div>
+      {direction === 0 ? (
+        <p>North</p>
+      ) : direction === 1 ? (
+        <p>East</p>
+      ) : direction === 2 ? (
+        <p>South</p>
+      ) : direction === 3 ? (
+        <p>West</p>
+      ) : null}
+    </div>
+  )
+}
+
+function Direction2() {
+  const [direction, setDirection] = useState(0)
+
+  const increment = () => {
+    if (direction === 3) {
+      setDirection(0)
+    } else {
+      setDirection(direction + 1)
+    }
+  }
+
+  return (
+    <div>
+      <button onClick={() => increment()}>Rotate</button>
+      <Direction direction={direction}/>
+    </div>
+  )
+}
+
