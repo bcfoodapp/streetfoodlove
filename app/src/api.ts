@@ -60,7 +60,7 @@ export interface Review {
   StarRating: StarRatingInteger;
   // Contains the ID of the parent review, or null if there is no parent.
   ReplyTo: string | null;
-  VendorFavorite: boolean
+  VendorFavorite: boolean;
 }
 
 export interface Credentials {

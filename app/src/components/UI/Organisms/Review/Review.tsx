@@ -37,7 +37,7 @@ interface Props {
 export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
-  const [vendorLiked, setVendorLiked] = useState(false)
+  const [vendorLiked, setVendorLiked] = useState(false);
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const { data: user } = useUserQuery(review.UserID);
@@ -63,7 +63,7 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
       UserID: userID,
       StarRating: null,
       ReplyTo: reviewID,
-      VendorFavorite: false
+      VendorFavorite: false,
     });
   };
 
@@ -71,12 +71,12 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
     if (token === null) {
       throw new Error("token is null");
     }
-    const userID = getUserIDFromToken(token)
+    const userID = getUserIDFromToken(token);
 
     // submitReview({
 
     // })
-  }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommentInput(e.target.value);
@@ -102,9 +102,7 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
                 onRate={() => setVendorLiked(true)}
                 className={styles.heart}
               />
-              {vendorLiked ? (
-                <i>Liked by vendor!</i>
-              ) : null}
+              {vendorLiked ? <i>Liked by vendor!</i> : null}
               {/* <i>Liked by vendor!</i> */}
             </Grid.Row>
             <Grid.Row>

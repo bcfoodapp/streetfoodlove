@@ -13,17 +13,23 @@ import styles from "./sidebar.module.css";
 import { search } from "../../../../search";
 import { useEffectAsync } from "../../../../api";
 
+interface openSearchVendor {
+  Name: string;
+  BusinessAddress: string;
+  Website: string;
+  BusinessHours: string;
+  Phone: string;
+}
+
 const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector((state) => state.root.sideBarShowing);
   const searchQuery = useAppSelector((state) => state.root.searchQuery);
-  const [searchResult, setSearchResult] = useState([] as string[]);
+  const [searchResult, setSearchResult] = useState([] as openSearchVendor[]);
 
   useEffectAsync(async () => {
     if (searchQuery) {
       const result = await search(searchQuery);
-      setSearchResult(
-        result.hits.hits.map(({ _source }) => JSON.stringify(_source, null, 2))
-      );
+      setSearchResult(result.hits.hits.map(({ _source }) => _source));
     }
   }, [searchQuery]);
 
@@ -69,7 +75,16 @@ const LandingPageSidebar: React.FC = () => {
       {/* Temporary output */}
       <Container textAlign="left">
         {searchResult.map((row) => (
-          <pre>{row}</pre>
+          <Container>
+            <Container className={styles.vendorInfo}>
+              <h2>{row.Name}</h2>
+              <h4>Address: {row.BusinessAddress}</h4>
+              <h4>Business Hours: {row.BusinessHours}</h4>
+              <h4>Phone: {row.Phone}</h4>
+              <h4>Website: {row.Website}</h4>
+            </Container>
+            <Container className={styles.divider} />
+          </Container>
         ))}
       </Container>
     </Sidebar>
