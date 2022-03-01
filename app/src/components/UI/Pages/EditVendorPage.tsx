@@ -55,7 +55,7 @@ const EditVendorPage: React.FC = () => {
   }, []);
 
   let userID = null as string | null;
-  if (tokenIsSuccess && token) {
+  if (token) {
     userID = getUserIDFromToken(token);
   }
 

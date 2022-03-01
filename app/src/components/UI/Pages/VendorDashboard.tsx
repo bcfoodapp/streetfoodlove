@@ -1,15 +1,49 @@
-import { Container, Card, Icon, Header } from "semantic-ui-react";
+import { Container, Card, Icon, Header, Image } from "semantic-ui-react";
 import styles from "./vendordashboard.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  getUserIDFromToken,
+  useEffectAsync,
+  useGetTokenMutation,
+  useVendorByOwnerIDQuery,
+} from "../../../api";
+import React, { useState } from "react";
 
 const VendorDashBoard: React.FC = () => {
+  const [getToken] = useGetTokenMutation();
+  const [token, setToken] = useState(null as string | null);
+
+  useEffectAsync(async () => {
+    const response = await getToken();
+    if ("data" in response) {
+      setToken(response.data);
+    }
+  }, []);
+
+  let userID = null as string | null;
+  if (token) {
+    userID = getUserIDFromToken(token);
+  }
+
+  const { data: vendor } = useVendorByOwnerIDQuery(userID as string, {
+    skip: !userID,
+  });
+
+  const navigate = useNavigate();
+
   return (
     <Container className={styles.wrapper}>
       <Header as="h2" className={styles.header}>
         Vendor Dashboard
       </Header>
       <Card.Group className={styles.cardGroup}>
-        <Link to="">
+        <a
+          onClick={() => {
+            if (vendor) {
+              navigate(`/vendors/${vendor.ID}`);
+            }
+          }}
+        >
           <Card className={styles.card}>
             {vendor ? (
               vendor.BusinessLogo ? (
@@ -24,10 +58,10 @@ const VendorDashBoard: React.FC = () => {
               )
             ) : null}
             <Card.Content className={styles.content}>
-              <Card.Header>My Vendor Page</Card.Header>
+              {vendor ? <Card.Header>My Vendor Page</Card.Header> : null}
             </Card.Content>
           </Card>
-        </Link>
+        </a>
         <Link to="/edit-vendor-page">
           <Card className={styles.card}>
             <Icon name="setting" size="huge" className={styles.icon} />
