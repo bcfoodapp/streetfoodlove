@@ -28,7 +28,7 @@ export default ({ photos, photoHeight }: Props): React.ReactElement => {
           caption: {},
         }}
       >
-        <Image.Group>
+        <Image.Group style={{ whiteSpace: "nowrap", overflowX: "auto" }}>
           {photos.map((photo, i) => (
             <a
               href={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}`}
@@ -40,8 +40,8 @@ export default ({ photos, photoHeight }: Props): React.ReactElement => {
                 style={{
                   height: photoHeight,
                   margin: 0,
-                  marginLeft: 2,
-                  marginRight: 2,
+                  marginLeft: photoHeight / 30,
+                  marginRight: photoHeight / 30,
                 }}
               />
             </a>
