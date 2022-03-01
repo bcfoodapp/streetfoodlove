@@ -81,6 +81,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/stars/:id", GetToken, a.StarPut)
 	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
 	router.DELETE("/stars/:id", a.StarsDelete)
+	router.GET("/areas/", a.Areas);
+	router.PUT("/areas/:id", GetToken, a.AreaPut)
 }
 
 // errorHandler writes any errors to response.
@@ -731,3 +733,68 @@ func (a *API) StarsDelete(c *gin.Context) {
 		return
 	}
 }
+
+// ParseStarKey splits key into userID and vendorID
+func ParseAreaKey(key string) (*database.Areas, error) {
+	const uuidLength = 36
+
+	if len(key) != uuidLength {
+		return nil, fmt.Errorf("key must be length 36 but is of length %v", len(key))
+	}
+
+	vendorID, err := uuid.Parse(key[:uuidLength])
+	if err != nil {
+		return nil, err
+	}
+
+	AreaName:= key[uuidLength:]
+
+	return &database.Areas{
+		VendorID:   vendorID,
+		AreaName:   AreaName,
+	}, nil
+}
+
+
+func (a *API) AreaPut(c *gin.Context) {
+	key, err := ParseAreaKey(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	area := &database.Areas{}
+	if err := c.ShouldBindJSON(area); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if *key != *area {
+		c.Error(fmt.Errorf("ID in path does not match body ID"))
+		return
+	}
+
+	if err := a.Backend.Database.AreasCreate(area); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) Areas(c *gin.Context) {
+	vendorID, err := uuid.Parse(c.Query("vendorID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	areas, err := a.Backend.Database.AreasByVendorID(vendorID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, areas)
+}
+
+
+

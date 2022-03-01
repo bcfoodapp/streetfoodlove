@@ -706,3 +706,92 @@ func (d *Database) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
 	_, err := d.db.Exec(command, &userID, &vendorID)
 	return err
 }
+
+type Areas struct {
+	VendorID       uuid.UUID
+	AreaName       string
+}
+
+func (d *Database) AreasCreate(area *Areas) error {
+	const command = `
+		INSERT INTO Areas (
+			VendorID,
+			AreaName
+		) VALUES (
+			:VendorID,
+			:AreaName
+		)
+	`
+	_, err := d.db.NamedExec(command, area)
+	return err
+}
+
+
+func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
+	const command = `
+		SELECT *
+		FROM Areas
+		WHERE VendorID=?
+	`
+	rows, err := d.db.Queryx(command, vendorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Areas, 0)
+
+	for rows.Next() {
+		result = append(result, Areas{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+type CuisineTypes struct {
+	VendorID       uuid.UUID
+	CuisineType    string
+}
+
+func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
+	const command = `
+		INSERT INTO CuisineTypes (
+			VendorID,
+			CuisineType,
+		) VALUES (
+			:VendorID,
+			:CuisineType
+		)
+	`
+	_, err := d.db.NamedExec(command, cuisineType)
+	return err
+}
+
+
+func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, error) {
+	const command = `
+		SELECT *
+		FROM CuisineTypes
+		WHERE VendorID=?
+	`
+	rows, err := d.db.Queryx(command, vendorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]CuisineTypes, 0)
+
+	for rows.Next() {
+		result = append(result, CuisineTypes{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
