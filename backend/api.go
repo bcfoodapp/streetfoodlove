@@ -5,14 +5,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/bcfoodapp/streetfoodlove/database"
-	"github.com/bcfoodapp/streetfoodlove/uuid"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/bcfoodapp/streetfoodlove/database"
+	"github.com/bcfoodapp/streetfoodlove/uuid"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 // API is the backend interface.
@@ -81,8 +82,10 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/stars/:id", GetToken, a.StarPut)
 	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
 	router.DELETE("/stars/:id", a.StarsDelete)
-	router.GET("/areas/", a.Areas);
+	router.GET("/areas/", a.Areas)
 	router.PUT("/areas/:id", GetToken, a.AreaPut)
+	router.GET("/cuisinetypes/", a.CuisineType)
+	router.PUT("/cuisinetypes/:id", GetToken, a.CuisineTypePut)
 }
 
 // errorHandler writes any errors to response.
@@ -747,14 +750,13 @@ func ParseAreaKey(key string) (*database.Areas, error) {
 		return nil, err
 	}
 
-	AreaName:= key[uuidLength:]
+	AreaName := key[uuidLength:]
 
 	return &database.Areas{
-		VendorID:   vendorID,
-		AreaName:   AreaName,
+		VendorID: vendorID,
+		AreaName: AreaName,
 	}, nil
 }
-
 
 func (a *API) AreaPut(c *gin.Context) {
 	key, err := ParseAreaKey(c.Param("id"))
@@ -796,5 +798,58 @@ func (a *API) Areas(c *gin.Context) {
 	c.JSON(http.StatusOK, areas)
 }
 
+// ParseStarKey splits key into userID and vendorID
+func ParseCuisineTypeKey(key string) (*database.CuisineTypes, error) {
+	const uuidLength = 36
 
+	if len(key) != uuidLength {
+		return nil, fmt.Errorf("key must be length 36 but is of length %v", len(key))
+	}
 
+	vendorID, err := uuid.Parse(key[:uuidLength])
+	if err != nil {
+		return nil, err
+	}
+
+	CuisineType := key[uuidLength:]
+
+	return &database.CuisineTypes{
+		VendorID:    vendorID,
+		CuisineType: CuisineType,
+	}, nil
+}
+
+func (a *API) CuisineTypePut(c *gin.Context) {
+	key, err := ParseAreaKey(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	cuisineType := &database.CuisineTypes{}
+	if err := c.ShouldBindJSON(cuisineType); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := a.Backend.Database.AreasCreate(key); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) CuisineType(c *gin.Context) {
+	vendorID, err := uuid.Parse(c.Query("vendorID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	cuisineType, err := a.Backend.Database.CuisineTypeByVendorID(vendorID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, cuisineType)
+}
