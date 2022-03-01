@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/sts/types"
 	"github.com/bcfoodapp/streetfoodlove/database"
@@ -49,13 +51,15 @@ func (b *Backend) VendorCreate(userID uuid.UUID, vendor *database.Vendor) error 
 		return fmt.Errorf("owner field does not match userID")
 	}
 
-	existingVendors, err := b.Database.VendorByOwnerID(userID)
-	if err != nil {
-		return err
+	_, err = b.Database.VendorByOwnerID(userID)
+	// Check that vendor for owner does not exist. We are expecting sql.ErrNoRows if there is no
+	// owner.
+	if err == nil {
+		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
 	}
 
-	if len(existingVendors) > 0 {
-		return fmt.Errorf("you already have a vendor; each user may only be associated with up to one vendor")
+	if !errors.Is(err, sql.ErrNoRows) {
+		return err
 	}
 
 	return b.Database.VendorCreate(vendor)
@@ -69,7 +73,7 @@ func (b *Backend) VendorUpdate(userID uuid.UUID, vendor *database.Vendor) error 
 	return b.Database.VendorUpdate(vendor)
 }
 
-func (b *Backend) VendorByOwnerID(userID uuid.UUID) ([]database.Vendor, error) {
+func (b *Backend) VendorByOwnerID(userID uuid.UUID) (*database.Vendor, error) {
 	return b.Database.VendorByOwnerID(userID)
 }
 
@@ -155,6 +159,21 @@ func (b *Backend) Photo(id uuid.UUID) (*database.Photo, error) {
 	return b.Database.Photo(id)
 }
 
+func (b *Backend) PhotoCreate(userID uuid.UUID, photo *database.Photo) error {
+	// Check that the referenced record belongs to the user
+	owner, err := b.Database.GetOwnerOfLink(photo.LinkID)
+	if err != nil {
+		return err
+	}
+	if owner != userID {
+		return unauthorized
+	}
+
+	photo.DatePosted = time.Now()
+
+	return b.Database.PhotoCreate(photo)
+}
+
 func (b *Backend) Guide(id uuid.UUID) (*database.Guide, error) {
 	return b.Database.Guide(id)
 }
@@ -176,4 +195,28 @@ func (b *Backend) FavoriteCreate(userID uuid.UUID, favorite *database.Favorite) 
 	favorite.DatePosted = time.Now()
 
 	return b.Database.FavoriteCreate(favorite)
+}
+
+func (b *Backend) StarCreate(userID uuid.UUID, star *database.Star) error {
+	if star.UserID != userID {
+		return unauthorized
+	}
+
+	return b.Database.StarCreate(star)
+}
+
+func (b *Backend) StarsByUserID(userID uuid.UUID) ([]database.Star, error) {
+	return b.Database.StarsByUserID(userID)
+}
+
+func (b *Backend) Star(userID uuid.UUID, vendorID uuid.UUID) (*database.Star, error) {
+	return b.Database.Star(userID, vendorID)
+}
+
+func (b *Backend) CountVendorStars(vendorID uuid.UUID) (int, error) {
+	return b.Database.CountVendorStars(vendorID)
+}
+
+func (b *Backend) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
+	return b.Database.StarDelete(userID, vendorID)
 }

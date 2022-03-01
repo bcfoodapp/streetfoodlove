@@ -2,31 +2,32 @@ import {
   Container,
   Form,
   Header,
-  Input,
-  Segment,
+  Image,
   Select,
   TextArea,
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./createvendorpage.module.css";
-import useEffectAsync, {
+import {
+  useEffectAsync,
   getUserIDFromToken,
   useGetTokenMutation,
   useUpdateVendorMutation,
   useVendorByOwnerIDQuery,
   Vendor,
+  useS3CredentialsMutation,
+  getExtension,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
-
-const fileInput = () => {
-  return <Input type="file" className={styles.input} size="small" fluid />;
-};
+import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
+import { uploadToS3 } from "../../../aws";
+import { v4 as uuid } from "uuid";
 
 interface inputValues {
-  ID: string;
   name: string;
+  businessLogo: string | null;
   businessAddress: string;
   phoneNumber: string;
   businessHours: string;
@@ -40,10 +41,11 @@ const businessHours = [
 ];
 
 const EditVendorPage: React.FC = () => {
-  const [updateVendor, { isLoading: updateVendorIsLoading }] =
-    useUpdateVendorMutation();
+  const [updateVendor] = useUpdateVendorMutation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
+  const [logoFile, setLogoFile] = useState(null as File | null);
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -58,7 +60,7 @@ const EditVendorPage: React.FC = () => {
   }
 
   const {
-    data: vendors,
+    data: vendor,
     isSuccess: vendorQueryIsSuccess,
     isLoading: vendorQueryIsLoading,
   } = useVendorByOwnerIDQuery(userID as string, { skip: !userID });
@@ -74,25 +76,22 @@ const EditVendorPage: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    if (vendorQueryIsSuccess && vendors!.length > 0) {
-      const vendor = vendors![0];
+    if (vendorQueryIsSuccess) {
       setInitalValues({
-        ID: vendor.ID,
-        name: vendor.Name,
-        businessAddress: vendor.BusinessAddress,
-        phoneNumber: vendor.Phone,
-        businessHours: vendor.BusinessHours,
-        website: vendor.Website,
+        businessLogo: vendor!.BusinessLogo,
+        name: vendor!.Name,
+        businessAddress: vendor!.BusinessAddress,
+        phoneNumber: vendor!.Phone,
+        businessHours: vendor!.BusinessHours,
+        website: vendor!.Website,
       });
     }
   }, [vendorQueryIsSuccess]);
 
+  const [getS3Credentials] = useS3CredentialsMutation();
+
   if (tokenIsSuccess && !token) {
     return <p>Not logged in</p>;
-  }
-
-  if (vendorQueryIsSuccess && vendors!.length === 0) {
-    return <p>No vendor found with matching owner ID</p>;
   }
 
   const validationSchema = Yup.object({
@@ -104,24 +103,37 @@ const EditVendorPage: React.FC = () => {
   });
 
   const onSubmit = async (data: inputValues) => {
-    const vendor: Vendor = {
-      ID: data.ID,
+    setIsSubmitting(true);
+    let photoID = data.businessLogo;
+    if (logoFile) {
+      // userID is defined at this point
+      const s3Response = await getS3Credentials(userID!);
+      if ("error" in s3Response) {
+        throw new Error("could not get S3 credentials");
+      }
+
+      photoID = `${uuid()}.${getExtension(logoFile.name)}`;
+      await uploadToS3(s3Response.data, photoID, logoFile);
+    }
+
+    const updatedVendor: Vendor = {
+      ID: vendor!.ID,
       Name: data.name,
       BusinessAddress: data.businessAddress,
       Website: data.website,
       BusinessHours: data.businessHours,
       Phone: data.phoneNumber,
-      BusinessLogo: "",
-      Latitude: 0,
-      Longitude: 0,
-      // userID is defined at this point
-      Owner: userID as string,
+      BusinessLogo: photoID,
+      Latitude: vendor!.Latitude,
+      Longitude: vendor!.Longitude,
+      Owner: userID!,
     };
-    const response = await updateVendor(vendor);
+    const response = await updateVendor(updatedVendor);
     if ("data" in response) {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -173,11 +185,27 @@ const EditVendorPage: React.FC = () => {
                 className={styles.error}
               />
 
-              <Form.Field
-                control={fileInput}
-                label="Upload Business Logo"
-                width={8}
-              />
+              <label>
+                <strong>Logo image (Image must be smaller than 500x500)</strong>
+                <DragAndDrop
+                  onDrop={(files) => {
+                    setLogoFile(files[0]);
+                  }}
+                  multiple={false}
+                />
+              </label>
+              {logoFile ? <p>{logoFile.name}</p> : null}
+              <br />
+              {values.businessLogo ? (
+                <>
+                  <Image
+                    src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${values.businessLogo}`}
+                    alt="logo"
+                    style={{ width: 60, height: 60, objectFit: "cover" }}
+                  />
+                  <br />
+                </>
+              ) : null}
 
               <Form.Input
                 name="businessAddress"
@@ -263,7 +291,7 @@ const EditVendorPage: React.FC = () => {
                 color="green"
                 dirty
                 valid={isValid}
-                loading={updateVendorIsLoading}
+                loading={isSubmitting}
               >
                 Edit
               </Buttons>

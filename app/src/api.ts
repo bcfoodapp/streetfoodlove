@@ -22,7 +22,7 @@ export interface Vendor {
   Website: string;
   BusinessHours: string;
   Phone: string;
-  BusinessLogo: string;
+  BusinessLogo: string | null;
   Latitude: number;
   Longitude: number;
   Owner: string;
@@ -109,6 +109,17 @@ export interface Photo {
   LinkID: string;
 }
 
+export interface AWSCredentials {
+  AccessKeyId: string;
+  SecretAccessKey: string;
+  SessionToken: string;
+}
+
+export interface Star {
+  UserID: string;
+  VendorID: string;
+}
+
 export const tokenSlice = createSlice({
   name: "token",
   initialState: {
@@ -138,6 +149,7 @@ export function getUserIDFromToken(token: string) {
 
 const PUT = "PUT";
 const POST = "POST";
+const DELETE = "DELETE";
 
 const encode = encodeURIComponent;
 
@@ -221,7 +233,7 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review"],
+  tagTypes: ["Review", "VendorPhotos", "UserStars", "CurrentUser"],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -253,8 +265,8 @@ export const apiSlice = createApi({
         return { data: vendors };
       },
     }),
-    // Returns vendors with given owner ID. There should only be zero or one vendor associated with a user.
-    vendorByOwnerID: builder.query<Vendor[], string>({
+    // Returns vendor with given owner ID.
+    vendorByOwnerID: builder.query<Vendor, string>({
       query: (ownerID) => `/vendors?owner=${encode(ownerID)}`,
     }),
     createVendor: builder.mutation<undefined, Vendor>({
@@ -274,31 +286,13 @@ export const apiSlice = createApi({
     user: builder.query<User, string>({
       query: (id) => `/users/${encode(id)}`,
     }),
-    usersMultiple: builder.query<Record<string, User>, string[]>({
-      queryFn: async (args, api, extraOptions) => {
-        const users = {} as Record<string, User>;
-        for (const id of args) {
-          const response = await baseQuery(
-            `/users/${encode(id)}`,
-            api,
-            extraOptions
-          );
-          if (response.error) {
-            return response;
-          }
-
-          const data = response.data as User;
-          users[data.ID] = data;
-        }
-        return { data: users };
-      },
-    }),
     userProtected: builder.query<UserProtected, string>({
       query: (id) => `/users/${encode(id)}/protected`,
       transformResponse: (user: any) => ({
         ...user,
         SignUpDate: DateTime.fromISO(user.SignUpDate),
       }),
+      providesTags: ["CurrentUser"],
     }),
     updateUser: builder.mutation<undefined, UserProtected>({
       query: (user) => ({
@@ -306,6 +300,7 @@ export const apiSlice = createApi({
         method: POST,
         body: user,
       }),
+      invalidatesTags: ["CurrentUser"],
     }),
     createUser: builder.mutation<
       undefined,
@@ -316,6 +311,7 @@ export const apiSlice = createApi({
         method: PUT,
         body: payload,
       }),
+      invalidatesTags: ["CurrentUser"],
     }),
     // Changes password for given user.
     updatePassword: builder.mutation<
@@ -337,7 +333,7 @@ export const apiSlice = createApi({
         })),
       providesTags: ["Review"],
     }),
-    submitReview: builder.mutation<undefined, Review>({
+    createReview: builder.mutation<undefined, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
         method: PUT,
@@ -349,7 +345,7 @@ export const apiSlice = createApi({
     // returns null. This endpoint should be used to get the token if no query is called before the token is required.
     // When any query is called, the token can be retrieved from the store without calling getToken.
     getToken: builder.mutation<string | null, void>({
-      queryFn: async (arg, api, extraOptions) => {
+      queryFn: async (arg, api) => {
         const credentials = getCredentialsEntry();
         if (credentials === null) {
           return { data: null };
@@ -501,6 +497,67 @@ export const apiSlice = createApi({
           ...photo,
           DatePosted: DateTime.fromISO(photo.DatePosted),
         })),
+      providesTags: ["VendorPhotos"],
+    }),
+    createPhoto: builder.mutation<void, Photo>({
+      query: (photo) => ({
+        url: `/photos/${encode(photo.ID)}`,
+        method: PUT,
+        body: photo,
+      }),
+      invalidatesTags: ["VendorPhotos"],
+    }),
+    // Returns temporary credentials for given user which can be used to upload photos.
+    s3Credentials: builder.mutation<AWSCredentials, string>({
+      query: (userID) => ({
+        url: `/users/${encode(userID)}/s3-credentials`,
+        method: POST,
+      }),
+    }),
+    // Returns true if star exists
+    starExists: builder.query<boolean, Star>({
+      queryFn: async (star, api) => {
+        let response = await baseQuery(
+          { url: `/stars/${encode(star.UserID + star.VendorID)}` },
+          api,
+          {}
+        );
+        if ("error" in response && response.error) {
+          if (response.error.status === 404) {
+            return { data: false };
+          } else {
+            return response;
+          }
+        }
+
+        return { data: true };
+      },
+      providesTags: ["UserStars"],
+    }),
+    // Returns stars associated with given user.
+    starsByUserID: builder.query<Star[], string>({
+      query: (userID) => `/stars/?userID=${encode(userID)}`,
+      providesTags: ["UserStars"],
+    }),
+    createStar: builder.mutation<void, Star>({
+      query: (star) => ({
+        url: `/stars/${encode(star.UserID + star.VendorID)}`,
+        method: PUT,
+        body: star,
+      }),
+      invalidatesTags: ["UserStars"],
+    }),
+    // Returns number of stars associated with given vendor.
+    countStarsForVendor: builder.query<number, string>({
+      query: (vendorID) => `/stars/count-for-vendor/${encode(vendorID)}`,
+      providesTags: ["UserStars"],
+    }),
+    deleteStar: builder.mutation<void, Star>({
+      query: (star) => ({
+        url: `/stars/${encode(star.UserID + star.VendorID)}`,
+        method: DELETE,
+      }),
+      invalidatesTags: ["UserStars"],
     }),
   }),
 });
@@ -514,19 +571,25 @@ export const {
   useCreateVendorMutation,
   useUpdateVendorMutation,
   useUserQuery,
-  useLazyUsersMultipleQuery,
   useUserProtectedQuery,
   useUpdateUserMutation,
   useCreateUserMutation,
   useUpdatePasswordMutation,
   useReviewsQuery,
-  useSubmitReviewMutation,
+  useCreateReviewMutation,
   useGetTokenMutation,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
   useGuideQuery,
   useSignInWithGoogleMutation,
   usePhotosByLinkIDQuery,
+  useCreatePhotoMutation,
+  useS3CredentialsMutation,
+  useStarExistsQuery,
+  useStarsByUserIDQuery,
+  useCreateStarMutation,
+  useCountStarsForVendorQuery,
+  useDeleteStarMutation,
 } = apiSlice;
 
 // Sets credentials and name in localStorage.
@@ -552,7 +615,7 @@ export function clearLocalStorage() {
 }
 
 // This is to make it easier to write async functions inside useEffect.
-export default function useEffectAsync(
+export function useEffectAsync(
   effect: () => Promise<any>,
   inputs: DependencyList
 ) {
@@ -560,4 +623,14 @@ export default function useEffectAsync(
     // noinspection JSIgnoredPromiseFromCall
     effect();
   }, inputs);
+}
+
+// Returns extension of file, not including the dot.
+export function getExtension(filename: string): string {
+  const dotIndex = filename.lastIndexOf(".");
+  if (dotIndex === -1) {
+    return "";
+  }
+
+  return filename.substring(dotIndex + 1);
 }

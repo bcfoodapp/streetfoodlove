@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Container, Form, Header, TextArea } from "semantic-ui-react";
+import { Container, Form, Header, Icon, TextArea } from "semantic-ui-react";
 import { StarRating } from "../../Atoms/StarRating/StarRating";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./reviewForm.module.css";
 import { StarRatingInteger } from "../../../../api";
+import DragAndDrop from "../DragAndDrop/DragAndDrop";
 
 /**
  * Renders a review form template that includes fields to be filled out
@@ -13,12 +14,14 @@ interface Props {
   finishedFormHandler: (review: {
     text: string;
     starRating: StarRatingInteger;
+    files: File[];
   }) => void;
 }
 
 export const ReviewForm = (props: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
   const [starRating, setStarRating] = useState(null as StarRatingInteger);
+  const [files, setFiles] = useState([] as File[]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaInput(e.target.value);
@@ -32,6 +35,7 @@ export const ReviewForm = (props: Props) => {
     props.finishedFormHandler({
       text: textAreaInput,
       starRating,
+      files,
     });
   };
 
@@ -46,10 +50,20 @@ export const ReviewForm = (props: Props) => {
       <Form onSubmit={handleSubmit}>
         <TextArea
           placeholder="Write your review here..."
-          style={{ minHeight: 60, maxWidth: 700 }}
           value={textAreaInput}
           onChange={handleChange}
         />
+        <p>
+          <strong>Attach pictures</strong>
+        </p>
+        <DragAndDrop
+          onDrop={(files: File[]) => {
+            setFiles((state) => [...state, ...files]);
+          }}
+        />
+        {files.map((file, i) => (
+          <p key={i}>{file.name}</p>
+        ))}
         <Container className={styles.buttons}>
           <Buttons submit color="green" valid={starRating !== null}>
             Submit Review

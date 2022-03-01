@@ -1,44 +1,52 @@
-import React, { ChangeEvent, SetStateAction, useState } from "react";
-import {
-  Container,
-  Input,
-  InputOnChangeData,
-  Menu,
-  Search,
-  SearchProps,
-} from "semantic-ui-react";
+import React, { useState } from "react";
+import { Form, Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
-import Buttons from "../Button/Buttons";
 import { useVendorsQuery, Vendor } from "../../../../api";
-import { Field } from "formik";
+import { setSearchQuery, useAppDispatch } from "../../../../store";
+import { showSideBar } from "../../../../store";
 
 /**
  * This is the searchbox for the header
  */
 
-const inputBox = (
-  <Input
-    icon={
-      <Buttons enter color={"green"}>
-        Enter
-      </Buttons>
-    }
-    placeholder="Search..."
-    focus
-    size={"small"}
-    className={styles.inputBox}
-  />
-);
-
 export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
+  const [recentSearchResult, setRecentSearchResult] = useState<Vendor[]>([]);
   const { data: vendorsList } = useVendorsQuery();
-  console.log(vendorsList);
+  const [searchString, setSearchString] = useState("");
+  const dispatch = useAppDispatch();
+
+  const enterQueryHandler = () => {
+    let resultSet = new Set([searchString, ...recentSearchResult]);
+
+    let array: Vendor[] = [];
+
+    if (vendorsList !== undefined) {
+      for (const vendor of vendorsList) {
+        if (vendor.Name === searchString && resultSet.has(vendor.Name)) {
+          let obj = {
+            title: vendor.Name,
+            description: vendor.BusinessAddress,
+            ...vendor,
+          };
+
+          array.push(obj);
+        }
+      }
+    }
+
+    setRecentSearchResult([...array, ...recentSearchResult]);
+
+    dispatch(showSideBar());
+    dispatch(setSearchQuery(searchString));
+  };
 
   const onSearchChange = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: React.MouseEvent<HTMLElement>,
     data: SearchProps
   ) => {
+    setSearchString((event.target as any).value);
+
     if (data.value?.length === 0) {
       setSearchResult([]);
       return;
@@ -47,40 +55,56 @@ export const SearchBox: React.FC = () => {
     if (vendorsList) {
       let search = data.value;
       let condition = new RegExp(search as string);
+      let resultArray: Vendor[] = [];
 
-      let result = vendorsList.filter((element) => {
+      let filteredResult = vendorsList.filter((element) => {
+        //filter all vendors from vendors list who matches regex expression
         return condition.test(element.Name);
       });
 
-      let resultArray: Vendor[] = [];
+      let recentSearchFilteredResult = recentSearchResult.filter((element) => {
+        //filter all vendors from recent search who matches regex expr.
+        return condition.test(element.Name);
+      });
 
-      for (let obj of result) {
+      // console.table(recentSearchFilteredResult);
+
+      for (let i = 0; i < filteredResult.length; i++) {
+        //loop through all vendors that pass the regex filter
+
         let tempObject = {
-          title: obj.Name,
-          description: obj.BusinessAddress,
-          ...obj,
+          title: filteredResult[i].Name,
+          description: filteredResult[i].BusinessAddress,
+          ...filteredResult[i],
         };
 
-        resultArray.push(tempObject);
+        if (
+          //if the tempobject has no matches in recentsearch result, then push to the result array
+          !recentSearchResult.some(
+            (element) => element.Name === tempObject.title
+          )
+        ) {
+          resultArray.push(tempObject);
+        }
       }
 
+      resultArray.unshift(...recentSearchFilteredResult); //add filtered recentsearchresult to the front of reusltarray
       setSearchResult(resultArray);
     }
   };
 
   return (
     <Menu.Item className={styles.searchBox}>
-      <Search
-        input={inputBox}
-        size={"small"}
-        onSearchChange={onSearchChange}
-        results={searchResult}
-        showNoResults
-      />
-      {/* <Field>
-        {({ form: {dirty, valid } }) => (
-        )}
-      </Field> */}
+      <Form onSubmit={enterQueryHandler}>
+        <Search
+          input={
+            <Input placeholder="Search..." focus className={styles.inputBox} />
+          }
+          onSearchChange={onSearchChange}
+          results={searchResult}
+          showNoResults
+        />
+      </Form>
     </Menu.Item>
   );
 };

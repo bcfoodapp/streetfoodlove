@@ -5,7 +5,8 @@ import { Dropdown } from "semantic-ui-react";
 import styles from "./vendorappform.module.css";
 import { Formik, FormikProps, ErrorMessage, Field } from "formik";
 import * as Yup from "yup";
-import useEffectAsync, {
+import {
+  useEffectAsync,
   getUserIDFromToken,
   useCreateVendorMutation,
   useGetTokenMutation,
@@ -156,7 +157,7 @@ export default function VendorAppForm(): React.ReactElement {
                 fluid
                 label="Vendor Name"
                 placeholder="Vendor Name"
-                name={"name"}
+                name="name"
                 required
                 width={5}
                 onChange={handleChange}
@@ -170,7 +171,7 @@ export default function VendorAppForm(): React.ReactElement {
                 placeholder="Business Address"
                 required
                 width={5}
-                name={"businessAddress"}
+                name="businessAddress"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.businessAddress}
@@ -183,7 +184,7 @@ export default function VendorAppForm(): React.ReactElement {
                 label="Website URL"
                 placeholder="Website URL"
                 width={5}
-                name={"website"}
+                name="website"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.website}
@@ -194,7 +195,7 @@ export default function VendorAppForm(): React.ReactElement {
                 placeholder="From"
                 selection
                 options={startTimeOptions}
-                name={"fromHour"}
+                name="fromHour"
                 onBlur={handleBlur}
                 error={touched.fromHour && Boolean(errors.fromHour)}
                 value={values.fromHour}
@@ -209,7 +210,7 @@ export default function VendorAppForm(): React.ReactElement {
                 selection
                 options={endTimeOptions}
                 className={styles.dropdown}
-                name={"toHour"}
+                name="toHour"
                 onBlur={handleBlur}
                 error={touched.toHour && Boolean(errors.toHour)}
                 value={values.toHour}
@@ -223,7 +224,7 @@ export default function VendorAppForm(): React.ReactElement {
                 fluid
                 label="Phone"
                 placeholder="Phone"
-                name={"phoneNumber"}
+                name="phoneNumber"
                 required
                 width={5}
                 className={styles.phoneInput}

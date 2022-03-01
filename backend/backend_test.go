@@ -232,3 +232,60 @@ func (b *BackendTestSuite) TestFavorite() {
 		b.Equal(favorite.ID, result.ID)
 	}
 }
+
+func (b *BackendTestSuite) TestPhotoCreate() {
+	user := &database.UserProtected{
+		User: &database.User{
+			ID:       uuid.MustParse("33f0fd6b-a1ef-49c5-bc81-43348cc2aac6"),
+			UserType: database.UserTypeVendor,
+		},
+	}
+	err := b.backend.UserProtectedCreate(user, "")
+	b.NoError(err)
+
+	vendor := &database.Vendor{
+		ID:    uuid.MustParse("9c212411-ce10-47b4-87d1-610872b0f45c"),
+		Owner: user.ID,
+	}
+
+	err = b.backend.VendorCreate(vendor.Owner, vendor)
+	b.NoError(err)
+
+	review := &database.Review{
+		ID:       uuid.MustParse("ae20960a-2c47-4e3d-bc99-f169202b56b4"),
+		VendorID: vendor.ID,
+		UserID:   user.ID,
+	}
+
+	err = b.backend.ReviewCreate(review.UserID, review)
+	b.NoError(err)
+
+	{
+		err := b.backend.PhotoCreate(uuid.UUID{}, &database.Photo{})
+		b.ErrorAs(err, &sql.ErrNoRows)
+	}
+	{
+		photo := &database.Photo{
+			ID:     "c8b699a2-3335-41a8-91c2-f00ac74b3733.jpg",
+			LinkID: vendor.ID,
+		}
+		err := b.backend.PhotoCreate(uuid.UUID{}, photo)
+		b.ErrorAs(err, &unauthorized)
+	}
+	{
+		photo := &database.Photo{
+			ID:     "96702be8-48dc-4d5e-9ec5-7ea18f186871.jpg",
+			LinkID: vendor.ID,
+		}
+		err := b.backend.PhotoCreate(vendor.Owner, photo)
+		b.NoError(err)
+	}
+	{
+		photo := &database.Photo{
+			ID:     "f93869d3-6494-434a-adfc-0710c064a7cc.jpg",
+			LinkID: review.ID,
+		}
+		err := b.backend.PhotoCreate(review.UserID, photo)
+		b.NoError(err)
+	}
+}

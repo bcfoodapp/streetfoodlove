@@ -23,7 +23,7 @@ Use an alternate Google account if you want to sign-in with Google! Do not use y
 
 # How to run
 1. To initialize the database, go to `backend/reset_database` and run `go run .`
-2. (Optional) [Configure AWS credentials](https://aws.github.io/aws-sdk-go-v2/docs/configuring-sdk/#specifying-credentials). If you do not do this, all AWS calls will fail.
+2. (Optional) [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), then [configure AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html). If you do not do this, all AWS calls will fail.
 3. Go to the `backend` folder in PowerShell and run the command `go run .`
   - Open your browser and go to http://localhost:8080/ to make sure it is working.
 4. Go to the `app` folder, and install dependencies with `npm i`
