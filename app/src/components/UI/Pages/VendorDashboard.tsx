@@ -9,6 +9,25 @@ const VendorDashBoard: React.FC = () => {
         Vendor Dashboard
       </Header>
       <Card.Group className={styles.cardGroup}>
+        <Link to="">
+          <Card className={styles.card}>
+            {vendor ? (
+              vendor.BusinessLogo ? (
+                <Image
+                  src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${vendor.BusinessLogo}`}
+                  alt="logo"
+                  style={{ width: 60, height: 60, objectFit: "cover" }}
+                  className={styles.icon}
+                />
+              ) : (
+                <Icon name="globe" size="huge" className={styles.icon} />
+              )
+            ) : null}
+            <Card.Content className={styles.content}>
+              <Card.Header>My Vendor Page</Card.Header>
+            </Card.Content>
+          </Card>
+        </Link>
         <Link to="/edit-vendor-page">
           <Card className={styles.card}>
             <Icon name="setting" size="huge" className={styles.icon} />
