@@ -103,7 +103,7 @@ export default (): React.ReactElement => {
       {s3CredentialsIsLoading ? (
         <p>Getting AWS credentials</p>
       ) : vendor ? (
-        <DragAndDrop onDrop={onDrop} />
+        <DragAndDrop onDrop={onDrop} multiple />
       ) : (
         <p>Vendor loading</p>
       )}
