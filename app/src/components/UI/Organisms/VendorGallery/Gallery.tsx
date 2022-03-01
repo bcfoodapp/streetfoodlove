@@ -1,7 +1,7 @@
 import { Photo } from "../../../../api";
 import React from "react";
 import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
-import { Image } from "semantic-ui-react";
+import { Container, Icon, Image } from "semantic-ui-react";
 
 interface Props {
   photos: Photo[];
@@ -25,6 +25,7 @@ export default ({ photos, photoHeight }: Props): React.ReactElement => {
             showDownloadButton: false,
             showThumbnailsButton: false,
           },
+          caption: {},
         }}
       >
         <Image.Group style={{ whiteSpace: "nowrap", overflowX: "auto" }}>
