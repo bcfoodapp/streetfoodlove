@@ -37,6 +37,7 @@ interface Props {
 export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
+  const [vendorLiked, setVendorLiked] = useState(false)
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const { data: user } = useUserQuery(review.UserID);
@@ -62,8 +63,20 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
       UserID: userID,
       StarRating: null,
       ReplyTo: reviewID,
+      VendorFavorite: false
     });
   };
+
+  const updateFavoriteHandler = () => {
+    if (token === null) {
+      throw new Error("token is null");
+    }
+    const userID = getUserIDFromToken(token)
+
+    // submitReview({
+
+    // })
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommentInput(e.target.value);
@@ -86,10 +99,13 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
               <Rating
                 icon="heart"
                 defaultRating={0}
-                // disabled
+                onRate={() => setVendorLiked(true)}
                 className={styles.heart}
               />
-              <i>Liked by vendor!</i>
+              {vendorLiked ? (
+                <i>Liked by vendor!</i>
+              ) : null}
+              {/* <i>Liked by vendor!</i> */}
             </Grid.Row>
             <Grid.Row>
               <Container className={styles.stars}>

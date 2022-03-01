@@ -73,6 +73,7 @@ export function Vendor(): React.ReactElement {
       UserID: userID,
       StarRating: starRating,
       ReplyTo: null,
+      VendorFavorite: false
     };
     await submitReview(review);
 
