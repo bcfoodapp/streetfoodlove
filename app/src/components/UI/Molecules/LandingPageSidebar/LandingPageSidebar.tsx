@@ -78,10 +78,10 @@ const LandingPageSidebar: React.FC = () => {
           <Container>
             <Container className={styles.vendorInfo}>
               <h2>{row.Name}</h2>
-              <h4>Address: {row.BusinessAddress}</h4>
-              <h4>Business Hours: {row.BusinessHours}</h4>
-              <h4>Phone: {row.Phone}</h4>
-              <h4>Website: {row.Website}</h4>
+              <p>Address: {row.BusinessAddress}</p>
+              <p>Business Hours: {row.BusinessHours}</p>
+              {/* <h4>Phone: {row.Phone}</h4> */}
+              {/* <h4>Website: {row.Website}</h4> */}
             </Container>
             <Container className={styles.divider} />
           </Container>
