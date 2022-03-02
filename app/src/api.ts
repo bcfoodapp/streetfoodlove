@@ -613,7 +613,18 @@ export function getCredentialsEntry(): CredentialsStorageEntry | null {
     return null;
   }
 
-  return JSON.parse(entry);
+  const obj: Partial<CredentialsStorageEntry> = JSON.parse(entry);
+
+  // Ensure all fields are defined
+  if (obj.Name === undefined) {
+    obj.Name = "";
+  }
+
+  if (obj.UserPhoto === undefined) {
+    obj.UserPhoto = defaultUserPhoto;
+  }
+
+  return obj as CredentialsStorageEntry;
 }
 
 // Clears all entries in localStorage.
