@@ -45,16 +45,21 @@ export const SearchBox: React.FC = () => {
     event: React.MouseEvent<HTMLElement>,
     data: SearchProps
   ) => {
-    setSearchString((event.target as any).value);
+    let string = "";
+    if (data.value) {
+      string = data.value;
+    } else {
+      string = data.result.title;
+    }
+    setSearchString(string);
 
-    if (data.value?.length === 0) {
+    if (string.length === 0) {
       setSearchResult([]);
       return;
     }
 
     if (vendorsList) {
-      let search = data.value;
-      let condition = new RegExp(search as string);
+      let condition = new RegExp(string);
       let resultArray: Vendor[] = [];
 
       let filteredResult = vendorsList.filter((element) => {
@@ -101,6 +106,7 @@ export const SearchBox: React.FC = () => {
             <Input placeholder="Search..." focus className={styles.inputBox} />
           }
           onSearchChange={onSearchChange}
+          onResultSelect={onSearchChange}
           results={searchResult}
           showNoResults
         />

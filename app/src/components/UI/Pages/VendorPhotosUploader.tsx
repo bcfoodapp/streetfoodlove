@@ -31,7 +31,7 @@ export default (): React.ReactElement => {
   }, []);
 
   let userID = null as string | null;
-  if (tokenIsSuccess && token) {
+  if (token) {
     userID = getUserIDFromToken(token);
   }
 
