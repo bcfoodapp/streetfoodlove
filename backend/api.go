@@ -820,7 +820,7 @@ func ParseCuisineTypeKey(key string) (*database.CuisineTypes, error) {
 }
 
 func (a *API) CuisineTypePut(c *gin.Context) {
-	key, err := ParseAreaKey(c.Param("id"))
+	key, err := ParseCuisineTypeKey(c.Param("id"))
 	if err != nil {
 		c.Error(err)
 		return
@@ -832,7 +832,7 @@ func (a *API) CuisineTypePut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.Database.AreasCreate(key); err != nil {
+	if err := a.Backend.Database.CuisineTypesCreate(key); err != nil {
 		c.Error(err)
 		return
 	}
