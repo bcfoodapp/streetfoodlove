@@ -708,8 +708,8 @@ func (d *Database) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
 }
 
 type Areas struct {
-	VendorID       uuid.UUID
-	AreaName       string
+	VendorID uuid.UUID
+	AreaName string
 }
 
 func (d *Database) AreasCreate(area *Areas) error {
@@ -725,7 +725,6 @@ func (d *Database) AreasCreate(area *Areas) error {
 	_, err := d.db.NamedExec(command, area)
 	return err
 }
-
 
 func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
 	const command = `
@@ -752,8 +751,8 @@ func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
 }
 
 type CuisineTypes struct {
-	VendorID       uuid.UUID
-	CuisineType    string
+	VendorID    uuid.UUID
+	CuisineType string
 }
 
 func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
@@ -769,7 +768,6 @@ func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
 	_, err := d.db.NamedExec(command, cuisineType)
 	return err
 }
-
 
 func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, error) {
 	const command = `
@@ -794,4 +792,3 @@ func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, er
 
 	return result, rows.Err()
 }
-
