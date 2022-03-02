@@ -21,9 +21,13 @@ export const SearchBox: React.FC = () => {
 
     let array: Vendor[] = [];
 
-    if (vendorsList !== undefined) {
+    if (vendorsList) {
       for (const vendor of vendorsList) {
-        if (vendor.Name === searchString && resultSet.has(vendor.Name)) {
+        if (
+          vendor.Name === searchString &&
+          resultSet.has(vendor.Name) &&
+          !recentSearchResult.some((item) => item.Name === searchString)
+        ) {
           let obj = {
             title: vendor.Name,
             description: vendor.BusinessAddress,
