@@ -80,6 +80,7 @@ const CommentCard: React.FC<{
       UserID: userID,
       StarRating: null,
       ReplyTo: commentID,
+      VendorFavorite: false,
     });
   };
 
