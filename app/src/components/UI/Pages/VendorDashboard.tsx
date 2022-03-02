@@ -8,6 +8,7 @@ import {
   useVendorByOwnerIDQuery,
 } from "../../../api";
 import React, { useState } from "react";
+import { s3Prefix } from "../../../aws";
 
 const VendorDashBoard: React.FC = () => {
   const [getToken] = useGetTokenMutation();
@@ -48,7 +49,7 @@ const VendorDashBoard: React.FC = () => {
             {vendor ? (
               vendor.BusinessLogo ? (
                 <Image
-                  src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${vendor.BusinessLogo}`}
+                  src={s3Prefix + vendor.BusinessLogo}
                   alt="logo"
                   style={{ width: 60, height: 60, objectFit: "cover" }}
                   className={styles.icon}

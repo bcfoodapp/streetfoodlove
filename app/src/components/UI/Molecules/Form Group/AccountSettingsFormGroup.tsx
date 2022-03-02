@@ -14,7 +14,7 @@ import {
 import { UserType } from "../../../../api";
 import DragAndDrop from "../../Organisms/DragAndDrop/DragAndDrop";
 import { v4 as uuid } from "uuid";
-import { uploadToS3 } from "../../../../aws";
+import { s3Prefix, uploadToS3 } from "../../../../aws";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
@@ -140,7 +140,7 @@ const AccountSettingsFormGroup: React.FC<{
           <label>
             <p>Current profile picture</p>
             <Image
-              src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${user.Photo}`}
+              src={s3Prefix + user.Photo}
               alt="logo"
               style={{ width: 40, height: 40, objectFit: "cover" }}
             />
