@@ -812,4 +812,3 @@ func (d *Database) CuisineType(vendorID uuid.UUID, cuisineType string) (*Cuisine
 	err := d.db.QueryRowx(command, &vendorID, &cuisineType).StructScan(CuisineType)
 	return CuisineType, err
 }
-
