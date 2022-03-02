@@ -606,7 +606,7 @@ function setCredentialsAndName(entry: CredentialsStorageEntry) {
   localStorage.setItem("user", JSON.stringify(entry));
 }
 
-// Gets credentials from localStorage.
+// Gets credentials from localStorage. Returns null if not present in store.
 export function getCredentialsEntry(): CredentialsStorageEntry | null {
   const entry = localStorage.getItem("user");
   if (entry === null) {

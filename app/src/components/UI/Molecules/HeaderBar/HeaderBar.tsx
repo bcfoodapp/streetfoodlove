@@ -11,13 +11,13 @@ import { clearLocalStorage, getCredentialsEntry } from "../../../../api";
  */
 
 export default function HeaderBar(): React.ReactElement {
-  const name = getCredentialsEntry()?.Name;
+  const storeEntry = getCredentialsEntry();
 
   const navigate = useNavigate();
 
   const ProfileIcon = (
     <span>
-      <Icon name="user circle" size="big" /> Hi {name}
+      <Icon name="user circle" size="big" /> Hi {storeEntry?.Name}
     </span>
   );
 
@@ -26,7 +26,7 @@ export default function HeaderBar(): React.ReactElement {
       key: "user",
       text: (
         <span>
-          Signed in as <strong>{name}</strong>
+          Signed in as <strong>{storeEntry?.Name}</strong>
         </span>
       ),
       disabled: true,
@@ -65,7 +65,7 @@ export default function HeaderBar(): React.ReactElement {
       </Link>
       <SearchBox />
       <Menu.Menu position="right">
-        {name ? (
+        {storeEntry?.Name ? (
           <Dropdown
             trigger={ProfileIcon}
             options={options}
