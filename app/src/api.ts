@@ -75,10 +75,6 @@ interface CredentialsAndToken {
   RefreshToken: string | null;
 }
 
-export interface CredentialsStorageEntry extends CredentialsAndToken {
-  Name: string;
-}
-
 export interface GeoRectangle {
   northWestLat: number;
   northWestLng: number;
@@ -120,6 +116,8 @@ export interface Star {
   UserID: string;
   VendorID: string;
 }
+
+export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
 
 export const tokenSlice = createSlice({
   name: "token",
@@ -381,6 +379,8 @@ export const apiSlice = createApi({
           Credentials: args,
           RefreshToken: null,
           Name: `${user.FirstName} ${user.LastName}`,
+          // TODO set photo
+          UserPhoto: defaultUserPhoto,
         });
         return { data: undefined };
       },
@@ -424,7 +424,7 @@ export const apiSlice = createApi({
           const newUser: UserProtected & { Password: string } = {
             ID: uuid(),
             Username: tokenPayload.given_name + tokenPayload.family_name,
-            Photo: uuid(),
+            Photo: defaultUserPhoto,
             UserType: UserType.Customer,
             Email: tokenPayload.email,
             FirstName: tokenPayload.given_name,
@@ -485,6 +485,8 @@ export const apiSlice = createApi({
           Credentials: null,
           RefreshToken: refreshToken,
           Name: `${user.FirstName} ${user.LastName}`,
+          // TODO set photo
+          UserPhoto: defaultUserPhoto,
         });
 
         return { data: null };
@@ -592,6 +594,11 @@ export const {
   useCountStarsForVendorQuery,
   useDeleteStarMutation,
 } = apiSlice;
+
+export interface CredentialsStorageEntry extends CredentialsAndToken {
+  Name: string;
+  UserPhoto: string;
+}
 
 // Sets credentials and name in localStorage.
 function setCredentialsAndName(entry: CredentialsStorageEntry) {
