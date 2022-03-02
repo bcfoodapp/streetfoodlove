@@ -22,7 +22,7 @@ import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
-import { uploadToS3 } from "../../../aws";
+import { s3Prefix, uploadToS3 } from "../../../aws";
 import { v4 as uuid } from "uuid";
 
 interface inputValues {
@@ -199,7 +199,7 @@ const EditVendorPage: React.FC = () => {
               {values.businessLogo ? (
                 <>
                   <Image
-                    src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${values.businessLogo}`}
+                    src={s3Prefix + values.businessLogo}
                     alt="logo"
                     style={{ width: 60, height: 60, objectFit: "cover" }}
                   />
