@@ -789,7 +789,7 @@ func (a *API) Areas(c *gin.Context) {
 		return
 	}
 
-	areas, err := a.Backend.Database.AreasByVendorID(vendorID)
+	areas, err := a.Backend.AreasByVendorID(vendorID)
 	if err != nil {
 		c.Error(err)
 		return
@@ -845,7 +845,7 @@ func (a *API) CuisineType(c *gin.Context) {
 		return
 	}
 
-	cuisineType, err := a.Backend.Database.CuisineTypeByVendorID(vendorID)
+	cuisineType, err := a.Backend.CuisineTypeByVendorID(vendorID)
 	if err != nil {
 		c.Error(err)
 		return
