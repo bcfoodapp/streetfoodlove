@@ -223,13 +223,6 @@ func (b *Backend) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
 }
 
 //Area
-func (b *Backend) AreaCreate(vendorID uuid.UUID, area *database.Areas) error {
-	if area.VendorID != vendorID {
-		return unauthorized
-	}
-
-	return b.Database.AreasCreate(area)
-}
 
 func (b *Backend) AreasByVendorID(vendorID uuid.UUID) ([]database.Areas, error) {
 	return b.Database.AreasByVendorID(vendorID)
