@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, Menu, Dropdown } from "semantic-ui-react";
+import { Menu, Dropdown, Image } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
@@ -14,12 +14,6 @@ export default function HeaderBar(): React.ReactElement {
   const storeEntry = getCredentialsEntry();
 
   const navigate = useNavigate();
-
-  const ProfileIcon = (
-    <span>
-      <Icon name="user circle" size="big" /> Hi {storeEntry?.Name}
-    </span>
-  );
 
   const options = [
     {
@@ -65,9 +59,18 @@ export default function HeaderBar(): React.ReactElement {
       </Link>
       <SearchBox />
       <Menu.Menu position="right">
-        {storeEntry?.Name ? (
+        {storeEntry ? (
           <Dropdown
-            trigger={ProfileIcon}
+            trigger={
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Image
+                  src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${storeEntry.UserPhoto}`}
+                  alt="logo"
+                  style={{ width: 30, height: 30, objectFit: "cover" }}
+                />
+                &nbsp;&nbsp;{storeEntry?.Name}
+              </div>
+            }
             options={options}
             className={styles.dropdown}
           />
