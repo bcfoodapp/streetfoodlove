@@ -44,6 +44,6 @@ jobs:
         run: |
           aws deploy create-deployment \
             --application-name sfl-deploy \
-            --deployment-group-name sfl-codedeploy-group \
+            --deployment-group-name sfl-deployment-group \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
