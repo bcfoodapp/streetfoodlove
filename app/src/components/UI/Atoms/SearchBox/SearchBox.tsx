@@ -48,7 +48,7 @@ export const SearchBox: React.FC = () => {
     let string = "";
     if (data.value) {
       string = data.value;
-    } else {
+    } else if (data.result && data.result.title) {
       string = data.result.title;
     }
     setSearchString(string);
