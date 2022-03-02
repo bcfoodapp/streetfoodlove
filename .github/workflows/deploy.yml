@@ -46,4 +46,5 @@ jobs:
             --application-name sfl-deploy \
             --deployment-group-name sfl-deployment-group \
             --deployment-config-name CodeDeployDefault.OneAtATime \
-            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }} \
+            --ignore-application-stop-failures
