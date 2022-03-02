@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set frontend version
         run: |
-          echo "{\"version\":\"${GITHUB_REF_NAME}\",\"apiBaseURL\":\"https://ec2-52-24-163-172.us-west-2.compute.amazonaws.com/\"}" \
+          echo "{\"version\":\"${GITHUB_REF_NAME}\",\"apiBaseURL\":\"https://ec2-35-161-46-59.us-west-2.compute.amazonaws.com/\"}" \
             > configuration.json
         working-directory: app/src
       - uses: actions/setup-node@v2
@@ -41,7 +41,7 @@ jobs:
       - name: Create deployment
         run: |
           aws deploy create-deployment \
-            --application-name sfl-codedeploy-app \
+            --application-name sfl-deploy \
             --deployment-group-name sfl-codedeploy-group \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
