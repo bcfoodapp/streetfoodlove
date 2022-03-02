@@ -739,7 +739,7 @@ func (a *API) StarsDelete(c *gin.Context) {
 
 // ParseStarKey splits key into userID and vendorID
 func ParseAreaKey(key string) (*database.Areas, error) {
-	const uuidLength = 45
+	const uuidLength = 81
 
 	if len(key) != uuidLength {
 		return nil, fmt.Errorf("key must be length 36 but is of length %v", len(key))
@@ -800,7 +800,7 @@ func (a *API) Areas(c *gin.Context) {
 
 // ParseStarKey splits key into userID and vendorID
 func ParseCuisineTypeKey(key string) (*database.CuisineTypes, error) {
-	const uuidLength = 45
+	const uuidLength = 81
 
 	if len(key) != uuidLength {
 		return nil, fmt.Errorf("key must be length 36 but is of length %v", len(key))
