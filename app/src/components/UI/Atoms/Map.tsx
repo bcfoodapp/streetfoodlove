@@ -9,7 +9,6 @@ import {
 } from "react-leaflet";
 import PopupInfo from "./PopupInfo/PopupInfo";
 import { useMapViewVendorsQuery, useVendorsMultipleQuery } from "../../../api";
-import { MapOptions } from "leaflet";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({
@@ -29,9 +28,14 @@ function MapContent(): React.ReactElement {
     });
   };
 
-  // Gets initial vendors
-  useEffect(handler, []);
-  // Gets vendors when map moves
+  useEffect(() => {
+    // Get initial vendors
+    handler();
+    // Get current coordinates
+    map.locate({ setView: true, maxZoom: 12, maximumAge: 10_000 });
+  }, []);
+
+  // Get vendors when map moves
   useMapEvents({
     moveend: handler,
   });
@@ -68,21 +72,9 @@ function MapContent(): React.ReactElement {
 }
 
 export default function Map(): React.ReactElement {
-  const [center, setCenter] = useState([
-    47.584401, -122.14819,
-  ] as MapOptions["center"]);
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) =>
-        setCenter([position.coords.latitude, position.coords.longitude]),
-      (error) => console.error(error)
-    );
-  }, []);
-
   return (
     <MapContainer
-      key={center?.toString()}
-      center={center}
+      center={[47.584401, -122.14819]}
       zoom={12}
       style={{
         height: "90.3vh",
