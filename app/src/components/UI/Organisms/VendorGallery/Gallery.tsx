@@ -2,6 +2,7 @@ import { Photo } from "../../../../api";
 import React from "react";
 import SimpleReactLightbox, { SRLWrapper } from "simple-react-lightbox";
 import { Container, Icon, Image } from "semantic-ui-react";
+import { s3Prefix } from "../../../../aws";
 
 interface Props {
   photos: Photo[];
@@ -30,12 +31,9 @@ export default ({ photos, photoHeight }: Props): React.ReactElement => {
       >
         <Image.Group style={{ whiteSpace: "nowrap", overflowX: "auto" }}>
           {photos.map((photo, i) => (
-            <a
-              href={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}`}
-              key={i}
-            >
+            <a href={s3Prefix + photo.ID} key={i}>
               <Image
-                src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${photo.ID}`}
+                src={s3Prefix + photo.ID}
                 alt={photo.Text}
                 style={{
                   height: photoHeight,

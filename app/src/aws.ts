@@ -40,3 +40,6 @@ export async function uploadToS3(
 
   await client.send(command);
 }
+
+// The S3 bucket URL
+export const s3Prefix = "https://streetfoodlove.s3.us-west-2.amazonaws.com/";
