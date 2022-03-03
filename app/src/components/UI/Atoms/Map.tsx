@@ -19,17 +19,23 @@ function MapContent(): React.ReactElement {
     southEastLng: 0,
   });
   const map = useMap();
+  const handler = () => {
+    const bounds = map.getBounds();
+    setBounds({
+      northWestLat: bounds.getNorthWest().lat,
+      northWestLng: bounds.getNorthWest().lng,
+      southEastLat: bounds.getSouthEast().lat,
+      southEastLng: bounds.getSouthEast().lng,
+    });
+  };
+
+  // Gets initial vendors
+  useEffect(handler, []);
+  // Gets vendors when map moves
   useMapEvents({
-    moveend: () => {
-      const bounds = map.getBounds();
-      setBounds({
-        northWestLat: bounds.getNorthWest().lat,
-        northWestLng: bounds.getNorthWest().lng,
-        southEastLat: bounds.getSouthEast().lat,
-        southEastLng: bounds.getSouthEast().lng,
-      });
-    },
+    moveend: handler,
   });
+
   const vendorIDsQuery = useMapViewVendorsQuery(bounds);
   let vendorIDs = [] as string[];
   if (vendorIDsQuery.data) {
@@ -77,7 +83,7 @@ export default function Map(): React.ReactElement {
     <MapContainer
       key={center?.toString()}
       center={center}
-      zoom={11}
+      zoom={12}
       style={{
         height: "90.3vh",
         width: "100%",
