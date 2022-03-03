@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -18,17 +18,28 @@ function MapContent(): React.ReactElement {
     southEastLng: 0,
   });
   const map = useMap();
+  const handler = () => {
+    const bounds = map.getBounds();
+    setBounds({
+      northWestLat: bounds.getNorthWest().lat,
+      northWestLng: bounds.getNorthWest().lng,
+      southEastLat: bounds.getSouthEast().lat,
+      southEastLng: bounds.getSouthEast().lng,
+    });
+  };
+
+  useEffect(() => {
+    // Get initial vendors
+    handler();
+    // Get current coordinates
+    map.locate({ setView: true, maxZoom: 12, maximumAge: 10_000 });
+  }, []);
+
+  // Get vendors when map moves
   useMapEvents({
-    moveend: () => {
-      const bounds = map.getBounds();
-      setBounds({
-        northWestLat: bounds.getNorthWest().lat,
-        northWestLng: bounds.getNorthWest().lng,
-        southEastLat: bounds.getSouthEast().lat,
-        southEastLng: bounds.getSouthEast().lng,
-      });
-    },
+    moveend: handler,
   });
+
   const vendorIDsQuery = useMapViewVendorsQuery(bounds);
   let vendorIDs = [] as string[];
   if (vendorIDsQuery.data) {
@@ -42,7 +53,7 @@ function MapContent(): React.ReactElement {
       <TileLayer
         attribution="© OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        detectRetina={true}
+        detectRetina
       />
       {vendors.data
         ? vendors.data.map((vendor) => (
@@ -64,7 +75,7 @@ export default function Map(): React.ReactElement {
   return (
     <MapContainer
       center={[47.584401, -122.14819]}
-      zoom={14}
+      zoom={12}
       style={{
         height: "90.3vh",
         width: "100%",
