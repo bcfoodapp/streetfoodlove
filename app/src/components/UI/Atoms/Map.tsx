@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -9,6 +9,7 @@ import {
 } from "react-leaflet";
 import PopupInfo from "./PopupInfo/PopupInfo";
 import { useMapViewVendorsQuery, useVendorsMultipleQuery } from "../../../api";
+import { MapOptions } from "leaflet";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({
@@ -42,7 +43,7 @@ function MapContent(): React.ReactElement {
       <TileLayer
         attribution="© OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        detectRetina={true}
+        detectRetina
       />
       {vendors.data
         ? vendors.data.map((vendor) => (
@@ -61,10 +62,22 @@ function MapContent(): React.ReactElement {
 }
 
 export default function Map(): React.ReactElement {
+  const [center, setCenter] = useState([
+    47.584401, -122.14819,
+  ] as MapOptions["center"]);
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) =>
+        setCenter([position.coords.latitude, position.coords.longitude]),
+      (error) => console.error(error)
+    );
+  }, []);
+
   return (
     <MapContainer
-      center={[47.584401, -122.14819]}
-      zoom={14}
+      key={center?.toString()}
+      center={center}
+      zoom={11}
       style={{
         height: "90.3vh",
         width: "100%",
