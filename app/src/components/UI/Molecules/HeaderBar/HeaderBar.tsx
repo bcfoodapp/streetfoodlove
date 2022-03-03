@@ -5,6 +5,7 @@ import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { clearLocalStorage, getCredentialsEntry } from "../../../../api";
+import { s3Prefix } from "../../../../aws";
 
 /**
  * Returns the headerbar element
@@ -64,7 +65,7 @@ export default function HeaderBar(): React.ReactElement {
             trigger={
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Image
-                  src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${storeEntry.UserPhoto}`}
+                  src={s3Prefix + storeEntry.UserPhoto}
                   alt="logo"
                   style={{ width: 30, height: 30, objectFit: "cover" }}
                 />
