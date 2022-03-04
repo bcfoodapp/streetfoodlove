@@ -75,10 +75,6 @@ interface CredentialsAndToken {
   RefreshToken: string | null;
 }
 
-export interface CredentialsStorageEntry extends CredentialsAndToken {
-  Name: string;
-}
-
 export interface GeoRectangle {
   northWestLat: number;
   northWestLng: number;
@@ -120,6 +116,8 @@ export interface Star {
   UserID: string;
   VendorID: string;
 }
+
+export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
 
 export const tokenSlice = createSlice({
   name: "token",
@@ -247,11 +245,11 @@ export const apiSlice = createApi({
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
     }),
-    // Gets all vendors that match the given IDs
+    // Gets all vendors that match the given IDs.
     vendorsMultiple: builder.query<Vendor[], string[]>({
-      queryFn: async (args, api, extraOptions) => {
+      queryFn: async (ids, api, extraOptions) => {
         const vendors = [] as Vendor[];
-        for (const id of args) {
+        for (const id of ids) {
           const response = await baseQuery(
             `/vendors/${encode(id)}`,
             api,
@@ -295,12 +293,30 @@ export const apiSlice = createApi({
       }),
       providesTags: ["CurrentUser"],
     }),
+    // Updates user and sets header photo.
     updateUser: builder.mutation<undefined, UserProtected>({
-      query: (user) => ({
-        url: `/users/${encode(user.ID)}/protected`,
-        method: POST,
-        body: user,
-      }),
+      queryFn: async (user, api, extraOptions) => {
+        const response = await baseQuery(
+          {
+            url: `/users/${encode(user.ID)}/protected`,
+            method: POST,
+            body: user,
+          },
+          api,
+          extraOptions
+        );
+        if (response.error) {
+          return response;
+        }
+
+        const entry = getCredentialsEntry();
+        if (entry) {
+          entry.UserPhoto = user.Photo;
+          setCredentialsAndName(entry);
+        }
+
+        return { data: undefined };
+      },
       invalidatesTags: ["CurrentUser"],
     }),
     createUser: builder.mutation<
@@ -356,9 +372,9 @@ export const apiSlice = createApi({
     }),
     // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
-      queryFn: async (args, api, extraOptions) => {
+      queryFn: async (credentials, api, extraOptions) => {
         const credentialsResponse = await getAndSaveCredentials(
-          { Credentials: args, RefreshToken: null },
+          { Credentials: credentials, RefreshToken: null },
           api
         );
         if (credentialsResponse.error) {
@@ -378,9 +394,10 @@ export const apiSlice = createApi({
         const user = userResponse.data as User;
 
         setCredentialsAndName({
-          Credentials: args,
+          Credentials: credentials,
           RefreshToken: null,
           Name: `${user.FirstName} ${user.LastName}`,
+          UserPhoto: user.Photo,
         });
         return { data: undefined };
       },
@@ -403,9 +420,9 @@ export const apiSlice = createApi({
     // Signs in with Google account, creating an account if necessary. The passed token is the one provided by Google
     // using OAuth. On success, access token and refresh token in store is set.
     signInWithGoogle: builder.mutation<null, string>({
-      queryFn: async (arg, api, extraOptions) => {
+      queryFn: async (googleToken, api, extraOptions) => {
         const body = {
-          GoogleToken: arg,
+          GoogleToken: googleToken,
         };
         let refreshTokenResponse = await baseQuery(
           { url: "/token/google/refresh", method: PUT, body },
@@ -420,11 +437,11 @@ export const apiSlice = createApi({
           console.info("ignore the last error!");
 
           // Account does not exist so we need to make one
-          const tokenPayload = jwtDecode<GoogleClaims>(arg);
+          const tokenPayload = jwtDecode<GoogleClaims>(googleToken);
           const newUser: UserProtected & { Password: string } = {
             ID: uuid(),
             Username: tokenPayload.given_name + tokenPayload.family_name,
-            Photo: uuid(),
+            Photo: defaultUserPhoto,
             UserType: UserType.Customer,
             Email: tokenPayload.email,
             FirstName: tokenPayload.given_name,
@@ -485,6 +502,7 @@ export const apiSlice = createApi({
           Credentials: null,
           RefreshToken: refreshToken,
           Name: `${user.FirstName} ${user.LastName}`,
+          UserPhoto: defaultUserPhoto,
         });
 
         return { data: null };
@@ -593,20 +611,36 @@ export const {
   useDeleteStarMutation,
 } = apiSlice;
 
+export interface CredentialsStorageEntry extends CredentialsAndToken {
+  Name: string;
+  UserPhoto: string;
+}
+
 // Sets credentials and name in localStorage.
 function setCredentialsAndName(entry: CredentialsStorageEntry) {
   console.info("set localStorage");
   localStorage.setItem("user", JSON.stringify(entry));
 }
 
-// Gets credentials from localStorage.
+// Gets credentials from localStorage. Returns null if not present in store.
 export function getCredentialsEntry(): CredentialsStorageEntry | null {
   const entry = localStorage.getItem("user");
   if (entry === null) {
     return null;
   }
 
-  return JSON.parse(entry);
+  const obj: Partial<CredentialsStorageEntry> = JSON.parse(entry);
+
+  // Ensure all fields are defined
+  if (obj.Name === undefined) {
+    obj.Name = "";
+  }
+
+  if (obj.UserPhoto === undefined) {
+    obj.UserPhoto = defaultUserPhoto;
+  }
+
+  return obj as CredentialsStorageEntry;
 }
 
 // Clears all entries in localStorage.
