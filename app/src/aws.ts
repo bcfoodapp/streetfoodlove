@@ -27,7 +27,7 @@ export async function uploadToS3(
       },
       masterCredentials: convertCredentials(credentials),
       params: {
-        RoleArn: "arn:aws:iam::082691565476:role/SFLPhotoUpload",
+        RoleArn: "arn:aws:iam::907229944921:role/SFLPhotoUpload",
       },
     }),
   });

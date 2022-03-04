@@ -23,7 +23,7 @@ func NewAWS() (*AWS, error) {
 
 func (a *AWS) GetS3Role(ctx context.Context) (*types.Credentials, error) {
 	params := &sts.AssumeRoleInput{
-		RoleArn:         aws.String("arn:aws:iam::082691565476:role/SFLPhotoUpload"),
+		RoleArn:         aws.String("arn:aws:iam::907229944921:role/SFLPhotoUpload"),
 		RoleSessionName: aws.String("streetfoodlove"),
 		DurationSeconds: aws.Int32(900),
 	}
