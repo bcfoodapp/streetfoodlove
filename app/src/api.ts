@@ -245,7 +245,7 @@ export const apiSlice = createApi({
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
     }),
-    // Gets all vendors that match the given IDs
+    // Gets all vendors that match the given IDs.
     vendorsMultiple: builder.query<Vendor[], string[]>({
       queryFn: async (args, api, extraOptions) => {
         const vendors = [] as Vendor[];
@@ -293,12 +293,30 @@ export const apiSlice = createApi({
       }),
       providesTags: ["CurrentUser"],
     }),
+    // Updates user and sets header photo.
     updateUser: builder.mutation<undefined, UserProtected>({
-      query: (user) => ({
-        url: `/users/${encode(user.ID)}/protected`,
-        method: POST,
-        body: user,
-      }),
+      queryFn: async (user, api, extraOptions) => {
+        const response = await baseQuery(
+          {
+            url: `/users/${encode(user.ID)}/protected`,
+            method: POST,
+            body: user,
+          },
+          api,
+          extraOptions
+        );
+        if (response.error) {
+          return response;
+        }
+
+        const entry = getCredentialsEntry();
+        if (entry) {
+          entry.UserPhoto = user.Photo;
+          setCredentialsAndName(entry);
+        }
+
+        return { data: undefined };
+      },
       invalidatesTags: ["CurrentUser"],
     }),
     createUser: builder.mutation<
