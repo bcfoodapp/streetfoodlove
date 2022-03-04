@@ -61,20 +61,20 @@ export default function HeaderBar(): React.ReactElement {
       <SearchBox />
       <Menu.Menu position="right">
         {storeEntry ? (
-          <Dropdown
-            trigger={
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Image
-                  src={s3Prefix + storeEntry.UserPhoto}
-                  alt="logo"
-                  style={{ width: 30, height: 30, objectFit: "cover" }}
-                />
-                &nbsp;&nbsp;{storeEntry?.Name}
-              </div>
-            }
-            options={options}
-            className={styles.dropdown}
-          />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Image
+              src={s3Prefix + storeEntry.UserPhoto}
+              alt="logo"
+              style={{ width: 30, height: 30, objectFit: "cover" }}
+            />
+            &nbsp;&nbsp;
+            <Dropdown
+              inline
+              text={storeEntry?.Name}
+              options={options}
+              className={styles.dropdown}
+            />
+          </div>
         ) : (
           <Menu.Item>
             <Link to="/account-selection">
