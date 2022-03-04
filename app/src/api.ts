@@ -247,9 +247,9 @@ export const apiSlice = createApi({
     }),
     // Gets all vendors that match the given IDs.
     vendorsMultiple: builder.query<Vendor[], string[]>({
-      queryFn: async (args, api, extraOptions) => {
+      queryFn: async (ids, api, extraOptions) => {
         const vendors = [] as Vendor[];
-        for (const id of args) {
+        for (const id of ids) {
           const response = await baseQuery(
             `/vendors/${encode(id)}`,
             api,
@@ -372,9 +372,9 @@ export const apiSlice = createApi({
     }),
     // Retrieves token and stores credentials and name in localStorage.
     setCredentialsAndGetToken: builder.mutation<undefined, Credentials>({
-      queryFn: async (args, api, extraOptions) => {
+      queryFn: async (credentials, api, extraOptions) => {
         const credentialsResponse = await getAndSaveCredentials(
-          { Credentials: args, RefreshToken: null },
+          { Credentials: credentials, RefreshToken: null },
           api
         );
         if (credentialsResponse.error) {
@@ -394,11 +394,10 @@ export const apiSlice = createApi({
         const user = userResponse.data as User;
 
         setCredentialsAndName({
-          Credentials: args,
+          Credentials: credentials,
           RefreshToken: null,
           Name: `${user.FirstName} ${user.LastName}`,
-          // TODO set photo
-          UserPhoto: defaultUserPhoto,
+          UserPhoto: user.Photo,
         });
         return { data: undefined };
       },
@@ -421,9 +420,9 @@ export const apiSlice = createApi({
     // Signs in with Google account, creating an account if necessary. The passed token is the one provided by Google
     // using OAuth. On success, access token and refresh token in store is set.
     signInWithGoogle: builder.mutation<null, string>({
-      queryFn: async (arg, api, extraOptions) => {
+      queryFn: async (googleToken, api, extraOptions) => {
         const body = {
-          GoogleToken: arg,
+          GoogleToken: googleToken,
         };
         let refreshTokenResponse = await baseQuery(
           { url: "/token/google/refresh", method: PUT, body },
@@ -438,7 +437,7 @@ export const apiSlice = createApi({
           console.info("ignore the last error!");
 
           // Account does not exist so we need to make one
-          const tokenPayload = jwtDecode<GoogleClaims>(arg);
+          const tokenPayload = jwtDecode<GoogleClaims>(googleToken);
           const newUser: UserProtected & { Password: string } = {
             ID: uuid(),
             Username: tokenPayload.given_name + tokenPayload.family_name,
@@ -503,7 +502,6 @@ export const apiSlice = createApi({
           Credentials: null,
           RefreshToken: refreshToken,
           Name: `${user.FirstName} ${user.LastName}`,
-          // TODO set photo
           UserPhoto: defaultUserPhoto,
         });
 
