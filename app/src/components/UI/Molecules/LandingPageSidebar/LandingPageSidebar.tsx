@@ -11,20 +11,13 @@ import { hideSideBar, useAppDispatch, useAppSelector } from "../../../../store";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
 import { search } from "../../../../search";
-import { useEffectAsync } from "../../../../api";
-
-interface openSearchVendor {
-  Name: string;
-  BusinessAddress: string;
-  Website: string;
-  BusinessHours: string;
-  Phone: string;
-}
+import { useEffectAsync, Vendor } from "../../../../api";
+import { Link } from "react-router-dom";
 
 const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector((state) => state.root.sideBarShowing);
   const searchQuery = useAppSelector((state) => state.root.searchQuery);
-  const [searchResult, setSearchResult] = useState([] as openSearchVendor[]);
+  const [searchResult, setSearchResult] = useState([] as Vendor[]);
 
   useEffectAsync(async () => {
     if (searchQuery) {
@@ -72,16 +65,15 @@ const LandingPageSidebar: React.FC = () => {
       <Menu.Item>
         <h3 className={styles.header}>Results</h3>
       </Menu.Item>
-      {/* Temporary output */}
       <Container textAlign="left">
-        {searchResult.map((row) => (
+        {searchResult.map((vendor) => (
           <Container>
             <Container className={styles.vendorInfo}>
-              <h2>{row.Name}</h2>
-              <p>Address: {row.BusinessAddress}</p>
-              <p>Business Hours: {row.BusinessHours}</p>
-              {/* <h4>Phone: {row.Phone}</h4> */}
-              {/* <h4>Website: {row.Website}</h4> */}
+              <h2>
+                <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+              </h2>
+              <p>Address: {vendor.BusinessAddress}</p>
+              <p>Business Hours: {vendor.BusinessHours}</p>
             </Container>
             <Container className={styles.divider} />
           </Container>
