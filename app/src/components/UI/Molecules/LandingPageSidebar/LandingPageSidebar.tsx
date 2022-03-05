@@ -10,19 +10,18 @@ import {
 import { hideSideBar, useAppDispatch, useAppSelector } from "../../../../store";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
-import { search } from "../../../../search";
-import { useEffectAsync, Vendor } from "../../../../api";
+import { OpenSearchVendor, search } from "../../../../search";
+import { useEffectAsync } from "../../../../api";
 import { Link } from "react-router-dom";
 
 const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector((state) => state.root.sideBarShowing);
   const searchQuery = useAppSelector((state) => state.root.searchQuery);
-  const [searchResult, setSearchResult] = useState([] as Vendor[]);
+  const [searchResult, setSearchResult] = useState([] as OpenSearchVendor[]);
 
   useEffectAsync(async () => {
     if (searchQuery) {
-      const result = await search(searchQuery);
-      setSearchResult(result.hits.hits.map(({ _source }) => _source));
+      setSearchResult(await search(searchQuery));
     }
   }, [searchQuery]);
 
