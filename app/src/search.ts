@@ -8,8 +8,8 @@ export async function search(searchString: string) {
     "source",
     JSON.stringify({
       query: {
-        wildcard: {
-          Name: `*${searchString}*`,
+        match: {
+          Name: searchString,
         },
       },
     })
