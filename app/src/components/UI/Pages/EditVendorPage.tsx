@@ -32,7 +32,7 @@ interface inputValues {
   phoneNumber: string;
   businessHours: string;
   website: string;
-  vendorOperationAreas: []
+  // vendorOperationAreas: []
 }
 
 const businessHours = [
@@ -80,7 +80,7 @@ const EditVendorPage: React.FC = () => {
     phoneNumber: "",
     businessHours: "",
     website: "",
-    vendorOperationAreas: []
+    // vendorOperationAreas: []
   } as inputValues);
 
   const [showSuccess, setShowSuccess] = useState(false);
