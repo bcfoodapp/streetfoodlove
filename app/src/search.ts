@@ -1,4 +1,13 @@
-export async function search(searchString: string) {
+import { Vendor } from "./api";
+
+export type OpenSearchVendor = Pick<
+  Vendor,
+  "ID" | "Name" | "BusinessAddress" | "BusinessHours"
+>;
+
+export async function search(
+  searchString: string
+): Promise<OpenSearchVendor[]> {
   let headers = new Headers();
   headers.append("Authorization", `Basic ${btoa("admin:Streetfoodlove8090!")}`);
 
@@ -8,8 +17,8 @@ export async function search(searchString: string) {
     "source",
     JSON.stringify({
       query: {
-        wildcard: {
-          Name: `*${searchString}*`,
+        match: {
+          Name: searchString,
         },
       },
     })
@@ -25,5 +34,6 @@ export async function search(searchString: string) {
     throw new Error(await response.text());
   }
 
-  return await response.json();
+  const obj = await response.json();
+  return obj.hits.hits.map(({ _source }) => _source);
 }
