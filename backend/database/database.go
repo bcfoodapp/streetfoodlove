@@ -769,7 +769,7 @@ func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
 	const command = `
 		INSERT INTO CuisineTypes (
 			VendorID,
-			CuisineType,
+			CuisineType
 		) VALUES (
 			:VendorID,
 			:CuisineType
