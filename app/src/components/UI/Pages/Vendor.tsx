@@ -132,7 +132,7 @@ export function Vendor(): React.ReactElement {
             </Container>
           </Grid.Row>
           <Grid.Row>
-            {photos ? (
+            {photos && photos.length > 0 ? (
               <Segment style={{ width: "100%" }}>
                 <Gallery photos={photos} photoHeight={250} />
               </Segment>
