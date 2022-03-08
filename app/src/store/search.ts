@@ -4,7 +4,7 @@ export const searchSlice = createSlice({
   name: "search",
   initialState: {
     sideBarShowing: false,
-    // searchQuery is a string if user searched for the string
+    // searchQuery is the string that the user searched for. It is null if the user did not search.
     searchQuery: null as string | null,
   },
   reducers: {
