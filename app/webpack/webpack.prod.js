@@ -30,7 +30,7 @@ module.exports = merge(common, {
       patterns: [
         {
           from: "public",
-          to: "/",
+          to: ".",
           globOptions: {
             ignore: ["**/index.html"],
           },
