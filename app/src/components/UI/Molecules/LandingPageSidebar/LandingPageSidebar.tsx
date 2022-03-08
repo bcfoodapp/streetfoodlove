@@ -7,7 +7,11 @@ import {
   Checkbox,
   Container,
 } from "semantic-ui-react";
-import { hideSideBar, useAppDispatch, useAppSelector } from "../../../../store";
+import {
+  hideSideBar,
+  useAppDispatch,
+  useAppSelector,
+} from "../../../../store/store";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
 import { useSearchQuery } from "../../../../api";

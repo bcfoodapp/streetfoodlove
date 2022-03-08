@@ -6,7 +6,7 @@ import {
   MiddlewareAPI,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { apiSlice, tokenSlice } from "./api";
+import { apiSlice, tokenSlice } from "../api";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 const apiErrorHandler: Middleware =

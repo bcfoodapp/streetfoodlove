@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Form, Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
 import { useVendorsQuery, Vendor } from "../../../../api";
-import { setSearchQuery, useAppDispatch } from "../../../../store";
-import { showSideBar } from "../../../../store";
+import { setSearchQuery, useAppDispatch } from "../../../../store/store";
+import { showSideBar } from "../../../../store/store";
 
 /**
  * This is the searchbox for the header
