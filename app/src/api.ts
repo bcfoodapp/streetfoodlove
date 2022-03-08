@@ -3,7 +3,7 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/dist/query/react";
-import { RootState } from "./store";
+import { RootState } from "./store/root";
 import { DateTime } from "luxon";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
@@ -578,6 +578,47 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["UserStars"],
     }),
+    // Returns search result for given search string.
+    search: builder.query<OpenSearchVendor[], string>({
+      queryFn: async (searchString, api) => {
+        let headers = new Headers();
+        headers.append(
+          "Authorization",
+          `Basic ${btoa("admin:Streetfoodlove8090!")}`
+        );
+
+        const form = new URLSearchParams();
+        form.set("source_content_type", "application/json");
+        form.set(
+          "source",
+          JSON.stringify({
+            query: {
+              match: {
+                Name: searchString,
+              },
+            },
+          })
+        );
+
+        const response = await openSearchQuery(
+          {
+            url: `/_search?${form.toString()}`,
+            headers,
+          },
+          api,
+          {}
+        );
+
+        if ("error" in response) {
+          return response as QueryReturnValue<OpenSearchVendor[]>;
+        }
+
+        const hits: any[] = (response.data as any).hits.hits;
+        return {
+          data: hits.map(({ _source }) => _source) as OpenSearchVendor[],
+        };
+      },
+    }),
   }),
 });
 
@@ -609,6 +650,7 @@ export const {
   useCreateStarMutation,
   useCountStarsForVendorQuery,
   useDeleteStarMutation,
+  useSearchQuery,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
@@ -669,3 +711,13 @@ export function getExtension(filename: string): string {
 
   return filename.substring(dotIndex + 1);
 }
+
+type OpenSearchVendor = Pick<
+  Vendor,
+  "ID" | "Name" | "BusinessAddress" | "BusinessHours"
+>;
+
+const openSearchQuery = fetchBaseQuery({
+  baseUrl:
+    "https://search-streetfoodlove-e4m4435lizlgmjfdk37gp6fo64.us-west-2.es.amazonaws.com",
+});

@@ -2,7 +2,7 @@ import { Container, Grid, Comment, Label, Form } from "semantic-ui-react";
 import { ReviewLabel } from "../../Atoms/ReviewLabel/ReviewLabel";
 import styles from "./commentCard.module.css";
 import React, { useState } from "react";
-import { useAppSelector } from "../../../../store";
+import { useAppSelector } from "../../../../store/root";
 import {
   getUserIDFromToken,
   Review as ReviewObj,

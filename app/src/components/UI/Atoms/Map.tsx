@@ -8,7 +8,13 @@ import {
   useMap,
 } from "react-leaflet";
 import PopupInfo from "./PopupInfo/PopupInfo";
-import { useMapViewVendorsQuery, useVendorsMultipleQuery } from "../../../api";
+import {
+  useMapViewVendorsQuery,
+  useSearchQuery,
+  useVendorsMultipleQuery,
+} from "../../../api";
+import { useAppSelector } from "../../../store/root";
+import { icon, Icon } from "leaflet";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({
@@ -48,6 +54,11 @@ function MapContent(): React.ReactElement {
 
   const vendors = useVendorsMultipleQuery(vendorIDs);
 
+  const searchQuery = useAppSelector(({ search }) => search.searchQuery);
+  const { data: resultVendors } = useSearchQuery(searchQuery!, {
+    skip: !searchQuery,
+  });
+
   return (
     <>
       <TileLayer
@@ -56,16 +67,42 @@ function MapContent(): React.ReactElement {
         detectRetina
       />
       {vendors.data
-        ? vendors.data.map((vendor) => (
-            <Marker
-              position={[vendor.Latitude, vendor.Longitude]}
-              key={vendor.ID}
-            >
-              <Popup>
-                <PopupInfo vendor={vendor} />
-              </Popup>
-            </Marker>
-          ))
+        ? vendors.data.map((vendor) => {
+            let iconUrl = "/streetfoodlove/marker-icon-blue.png";
+            let opacity = 1.0;
+            if (resultVendors) {
+              if (resultVendors.some(({ ID }) => ID === vendor.ID)) {
+                iconUrl = "/streetfoodlove/marker-icon-red.png";
+              } else {
+                opacity = 0.7;
+              }
+            }
+
+            const defaultIcon = icon({
+              iconUrl,
+              iconRetinaUrl: iconUrl,
+              shadowUrl: "/streetfoodlove/marker-shadow.png",
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              tooltipAnchor: [16, -28],
+              shadowSize: [41, 41],
+            });
+
+            return (
+              <Marker
+                key={vendor.ID}
+                position={[vendor.Latitude, vendor.Longitude]}
+                riseOnHover
+                icon={defaultIcon}
+                opacity={opacity}
+              >
+                <Popup>
+                  <PopupInfo vendor={vendor} />
+                </Popup>
+              </Marker>
+            );
+          })
         : null}
     </>
   );
