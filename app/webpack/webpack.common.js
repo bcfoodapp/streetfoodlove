@@ -25,15 +25,6 @@ module.exports = {
   target: "web",
   output: {
     filename: "[name].[contenthash].js",
-    publicPath: "/",
   },
-  plugins: [
-    new HtmlWebpackPlugin({ template: "./public/index.html" }),
-    new CopyPlugin({
-      patterns: [
-        { from: "public", to: "public" },
-        { from: "public/404.html", to: "404.html" },
-      ],
-    }),
-  ],
+  plugins: [new HtmlWebpackPlugin({ template: "./public/index.html" })],
 };
