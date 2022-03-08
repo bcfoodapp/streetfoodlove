@@ -18,7 +18,7 @@ const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector(
     (state) => state.search.sideBarShowing
   );
-  const searchQuery = useAppSelector((state) => state.search.searchQuery);
+  const searchQuery = useAppSelector(({ search }) => search.searchQuery);
   const { data: resultVendors } = useSearchQuery(searchQuery!, {
     skip: !searchQuery,
   });

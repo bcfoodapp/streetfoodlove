@@ -8,7 +8,12 @@ import {
   useMap,
 } from "react-leaflet";
 import PopupInfo from "./PopupInfo/PopupInfo";
-import { useMapViewVendorsQuery, useVendorsMultipleQuery } from "../../../api";
+import {
+  useMapViewVendorsQuery,
+  useSearchQuery,
+  useVendorsMultipleQuery,
+} from "../../../api";
+import { useAppSelector } from "../../../store/root";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({
@@ -48,6 +53,11 @@ function MapContent(): React.ReactElement {
 
   const vendors = useVendorsMultipleQuery(vendorIDs);
 
+  const searchQuery = useAppSelector(({ search }) => search.searchQuery);
+  const { data: resultVendors } = useSearchQuery(searchQuery!, {
+    skip: !searchQuery,
+  });
+
   return (
     <>
       <TileLayer
@@ -56,16 +66,28 @@ function MapContent(): React.ReactElement {
         detectRetina
       />
       {vendors.data
-        ? vendors.data.map((vendor) => (
-            <Marker
-              position={[vendor.Latitude, vendor.Longitude]}
-              key={vendor.ID}
-            >
-              <Popup>
-                <PopupInfo vendor={vendor} />
-              </Popup>
-            </Marker>
-          ))
+        ? vendors.data.map((vendor) => {
+            let opacity = 1.0;
+            if (
+              resultVendors &&
+              !resultVendors.some(({ ID }) => ID === vendor.ID)
+            ) {
+              opacity = 0.15;
+            }
+
+            return (
+              <Marker
+                position={[vendor.Latitude, vendor.Longitude]}
+                key={vendor.ID}
+                opacity={opacity}
+                riseOnHover
+              >
+                <Popup>
+                  <PopupInfo vendor={vendor} />
+                </Popup>
+              </Marker>
+            );
+          })
         : null}
     </>
   );
