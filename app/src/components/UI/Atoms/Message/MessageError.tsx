@@ -5,7 +5,7 @@ import {
   hideError,
   useAppDispatch,
   useAppSelector,
-} from "../../../../store/store";
+} from "../../../../store/root";
 import { useLocation } from "react-router-dom";
 
 const MessageError: React.FC = () => {

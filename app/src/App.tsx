@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Vendor } from "./components/UI/Pages/Vendor";
-import { store, useAppSelector } from "./store/store";
 import { ErrorBoundary } from "./components/UI/Organisms/ErrorBoundary";
 import Signup from "./components/UI/Pages/Signup";
 import { LandingPage } from "./components/UI/Pages/LandingPage";

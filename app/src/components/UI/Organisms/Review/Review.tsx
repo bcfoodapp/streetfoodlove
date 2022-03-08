@@ -22,7 +22,7 @@ import styleComments from "./script.js";
 import CommentCardContainer from "../CommentCard/CommentCard";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
-import { useAppSelector } from "../../../../store/store";
+import { useAppSelector } from "../../../../store/root";
 import Gallery from "../VendorGallery/Gallery";
 
 interface Props {

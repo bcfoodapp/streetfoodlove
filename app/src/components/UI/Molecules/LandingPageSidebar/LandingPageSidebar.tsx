@@ -11,7 +11,7 @@ import {
   hideSideBar,
   useAppDispatch,
   useAppSelector,
-} from "../../../../store/store";
+} from "../../../../store/root";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
 import { useSearchQuery } from "../../../../api";
