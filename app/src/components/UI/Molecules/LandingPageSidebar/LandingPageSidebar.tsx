@@ -7,19 +7,18 @@ import {
   Checkbox,
   Container,
 } from "semantic-ui-react";
-import {
-  hideSideBar,
-  useAppDispatch,
-  useAppSelector,
-} from "../../../../store/root";
+import { useAppDispatch, useAppSelector } from "../../../../store/root";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
 import { useSearchQuery } from "../../../../api";
 import { Link } from "react-router-dom";
+import { hideSideBar } from "../../../../store/search";
 
 const LandingPageSidebar: React.FC = () => {
-  const showSideBarState = useAppSelector((state) => state.root.sideBarShowing);
-  const searchQuery = useAppSelector((state) => state.root.searchQuery);
+  const showSideBarState = useAppSelector(
+    (state) => state.search.sideBarShowing
+  );
+  const searchQuery = useAppSelector((state) => state.search.searchQuery);
   const { data: resultVendors } = useSearchQuery(searchQuery!, {
     skip: !searchQuery,
   });
