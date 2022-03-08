@@ -25,10 +25,6 @@ const LandingPageSidebar: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-  const closeSidebar = () => {
-    dispatch(hideSideBar());
-  };
-
   return (
     <Sidebar
       as={Menu}
@@ -40,7 +36,11 @@ const LandingPageSidebar: React.FC = () => {
       width="very wide"
       className={styles.sidebar}
     >
-      <Button icon onClick={closeSidebar} className={styles.closeIcon}>
+      <Button
+        icon
+        onClick={() => dispatch(hideSideBar())}
+        className={styles.closeIcon}
+      >
         <Icon name="close" size="big" color="grey" />
       </Button>
       <Menu.Item as="div" className={styles.menuItem}>
