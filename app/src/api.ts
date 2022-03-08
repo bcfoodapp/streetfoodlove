@@ -712,7 +712,7 @@ export function getExtension(filename: string): string {
   return filename.substring(dotIndex + 1);
 }
 
-export type OpenSearchVendor = Pick<
+type OpenSearchVendor = Pick<
   Vendor,
   "ID" | "Name" | "BusinessAddress" | "BusinessHours"
 >;
