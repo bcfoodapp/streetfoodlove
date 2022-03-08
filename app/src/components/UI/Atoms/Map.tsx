@@ -14,6 +14,7 @@ import {
   useVendorsMultipleQuery,
 } from "../../../api";
 import { useAppSelector } from "../../../store/root";
+import { icon, Icon } from "leaflet";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({
@@ -67,20 +68,34 @@ function MapContent(): React.ReactElement {
       />
       {vendors.data
         ? vendors.data.map((vendor) => {
+            let iconUrl = "/streetfoodlove/marker-icon-blue.png";
             let opacity = 1.0;
-            if (
-              resultVendors &&
-              !resultVendors.some(({ ID }) => ID === vendor.ID)
-            ) {
-              opacity = 0.15;
+            if (resultVendors) {
+              if (resultVendors.some(({ ID }) => ID === vendor.ID)) {
+                iconUrl = "/streetfoodlove/marker-icon-red.png";
+              } else {
+                opacity = 0.7;
+              }
             }
+
+            const defaultIcon = icon({
+              iconUrl,
+              iconRetinaUrl: iconUrl,
+              shadowUrl: "/streetfoodlove/marker-shadow.png",
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              tooltipAnchor: [16, -28],
+              shadowSize: [41, 41],
+            });
 
             return (
               <Marker
-                position={[vendor.Latitude, vendor.Longitude]}
                 key={vendor.ID}
-                opacity={opacity}
+                position={[vendor.Latitude, vendor.Longitude]}
                 riseOnHover
+                icon={defaultIcon}
+                opacity={opacity}
               >
                 <Popup>
                   <PopupInfo vendor={vendor} />
