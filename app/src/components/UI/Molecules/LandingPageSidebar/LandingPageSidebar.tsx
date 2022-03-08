@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Sidebar,
   Menu,
@@ -10,20 +10,15 @@ import {
 import { hideSideBar, useAppDispatch, useAppSelector } from "../../../../store";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
-import { OpenSearchVendor, search } from "../../../../search";
-import { useEffectAsync } from "../../../../api";
+import { useSearchQuery } from "../../../../api";
 import { Link } from "react-router-dom";
 
 const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector((state) => state.root.sideBarShowing);
   const searchQuery = useAppSelector((state) => state.root.searchQuery);
-  const [searchResult, setSearchResult] = useState([] as OpenSearchVendor[]);
-
-  useEffectAsync(async () => {
-    if (searchQuery) {
-      setSearchResult(await search(searchQuery));
-    }
-  }, [searchQuery]);
+  const { data: resultVendors } = useSearchQuery(searchQuery!, {
+    skip: !searchQuery,
+  });
 
   const dispatch = useAppDispatch();
 
@@ -65,18 +60,20 @@ const LandingPageSidebar: React.FC = () => {
         <h3 className={styles.header}>Results</h3>
       </Menu.Item>
       <Container textAlign="left">
-        {searchResult.map((vendor) => (
-          <Container>
-            <Container className={styles.vendorInfo}>
-              <h2>
-                <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
-              </h2>
-              <p>Address: {vendor.BusinessAddress}</p>
-              <p>Business Hours: {vendor.BusinessHours}</p>
-            </Container>
-            <Container className={styles.divider} />
-          </Container>
-        ))}
+        {resultVendors
+          ? resultVendors.map((vendor) => (
+              <Container key={vendor.ID}>
+                <Container className={styles.vendorInfo}>
+                  <h2>
+                    <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+                  </h2>
+                  <p>Address: {vendor.BusinessAddress}</p>
+                  <p>Business Hours: {vendor.BusinessHours}</p>
+                </Container>
+                <Container className={styles.divider} />
+              </Container>
+            ))
+          : null}
       </Container>
     </Sidebar>
   );
