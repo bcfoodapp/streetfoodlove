@@ -1,7 +1,11 @@
 import React, { useEffect } from "react";
 import { Container, Message } from "semantic-ui-react";
 import styles from "./msgerror.module.css";
-import { hideError, useAppDispatch, useAppSelector } from "../../../../store";
+import {
+  hideError,
+  useAppDispatch,
+  useAppSelector,
+} from "../../../../store/root";
 import { useLocation } from "react-router-dom";
 
 const MessageError: React.FC = () => {
