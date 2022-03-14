@@ -6,8 +6,9 @@ import {
   MiddlewareAPI,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { apiSlice, tokenSlice } from "./api";
+import { apiSlice, tokenSlice } from "../api";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { searchSlice } from "./search";
 
 const apiErrorHandler: Middleware =
   (api: MiddlewareAPI<typeof store.dispatch, RootState>) =>
@@ -32,9 +33,6 @@ export const rootSlice = createSlice({
   initialState: {
     error: null as string | null,
     showError: false,
-    sideBarShowing: false,
-    // searchQuery is a string if user searched for the string
-    searchQuery: null as string | null,
   },
   reducers: {
     setError: (state, { payload }: PayloadAction<string>) => {
@@ -45,26 +43,17 @@ export const rootSlice = createSlice({
     hideError: (state) => {
       state.showError = false;
     },
-    showSideBar: (state) => {
-      state.sideBarShowing = true;
-    },
-    hideSideBar: (state) => {
-      state.sideBarShowing = false;
-    },
-    setSearchQuery: (state, { payload }: PayloadAction<string>) => {
-      state.searchQuery = payload;
-    },
   },
 });
 
-export const { setError, hideError, showSideBar, hideSideBar, setSearchQuery } =
-  rootSlice.actions;
+export const { setError, hideError } = rootSlice.actions;
 
 export const store = configureStore({
   reducer: {
-    root: rootSlice.reducer,
+    [rootSlice.name]: rootSlice.reducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
     [tokenSlice.name]: tokenSlice.reducer,
+    [searchSlice.name]: searchSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

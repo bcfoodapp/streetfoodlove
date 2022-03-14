@@ -28,7 +28,7 @@ import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
-import { useAppSelector } from "../../../store";
+import { useAppSelector } from "../../../store/root";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/Gallery";
@@ -132,7 +132,7 @@ export function Vendor(): React.ReactElement {
             </Container>
           </Grid.Row>
           <Grid.Row>
-            {photos ? (
+            {photos && photos.length > 0 ? (
               <Segment style={{ width: "100%" }}>
                 <Gallery photos={photos} photoHeight={250} />
               </Segment>
