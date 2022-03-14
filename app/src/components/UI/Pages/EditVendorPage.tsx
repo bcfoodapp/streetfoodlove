@@ -42,12 +42,20 @@ const businessHours = [
 ];
 
 const vendorOperatingAreas = [
-  {key: "Bothell", text: "Bothell", value: "Bothell"},
-  {key: "Seattle", text: "Seattle", value: "Seattle"},
-  {key: "Bellevue", text: "Bellevue", value: "Bellevue"},
-  {key: "Issaquah", text: "Issaquah", value: "Issaquah"},
-  {key: "Redmond", text: "Redmond", value: "Redmond"}
-]
+  { key: "Bothell", text: "Bothell", value: "Bothell" },
+  { key: "Seattle", text: "Seattle", value: "Seattle" },
+  { key: "Bellevue", text: "Bellevue", value: "Bellevue" },
+  { key: "Issaquah", text: "Issaquah", value: "Issaquah" },
+  { key: "Redmond", text: "Redmond", value: "Redmond" },
+];
+
+const cuisineTypes = [
+  { key: "Chinese", text: "Chinese", value: "Chinese" },
+  { key: "Indian", text: "Indian", value: "Indian" },
+  { key: "Mexican", text: "Mexican", value: "Mexican" },
+  { key: "Italian", text: "Italian", value: "Italian" },
+  { key: "Japanese", text: "Japanese", value: "Japanese" },
+];
 
 const EditVendorPage: React.FC = () => {
   const [updateVendor] = useUpdateVendorMutation();
@@ -249,8 +257,21 @@ const EditVendorPage: React.FC = () => {
                 // onChange={(_, area) => {
                 //   setFieldValue("")
                 // }}
-
-
+              />
+              <Form.Field
+                id="cuisineTypes"
+                control={Select}
+                multiple
+                options={cuisineTypes}
+                placeholder="Cuisine Types"
+                searched
+                required
+                onBlur={handleBlur}
+                label="Cuisine Types"
+                loading={vendorQueryIsLoading}
+                // onChange={(_, area) => {
+                //   setFieldValue("")
+                // }}
               />
               <Form.Input
                 name="phoneNumber"
@@ -312,7 +333,6 @@ const EditVendorPage: React.FC = () => {
                 label="Vendor Description"
                 placeholder="Vendor Description"
               />
-
               <Buttons
                 edit
                 color="green"
