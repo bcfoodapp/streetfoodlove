@@ -14,6 +14,7 @@ import {
   useCreateReviewMutation,
   usePhotosByLinkIDQuery,
   useUserQuery,
+  useVendorByOwnerIDQuery,
 } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 import React, { useEffect, useState } from "react";
@@ -46,6 +47,13 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   useEffect(() => {
     styleComments();
   }, []);
+
+  let userID = null as string | null;
+  if (token) {
+    userID = getUserIDFromToken(token);
+  }
+
+  const { data: vendor } = useVendorByOwnerIDQuery(userID as string);
 
   const completedCommentHandler = () => {
     setOpenCommentForm(false);
@@ -96,12 +104,24 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
                   {user.FirstName} {user.LastName}
                 </b>
               ) : null}
-              <Rating
-                icon="heart"
-                defaultRating={0}
-                onRate={() => setVendorLiked(true)}
-                className={styles.heart}
-              />
+
+              {vendor ? (
+                <Rating
+                  icon="heart"
+                  defaultRating={0}
+                  onRate={() => setVendorLiked(true)}
+                  className={styles.heart}
+                />
+              ) : (
+                <Rating
+                  icon="heart"
+                  defaultRating={0}
+                  onRate={() => setVendorLiked(true)}
+                  className={styles.heart}
+                  disabled
+                />
+              )}
+
               {vendorLiked ? <i>Liked by vendor!</i> : null}
               {/* <i>Liked by vendor!</i> */}
             </Grid.Row>
