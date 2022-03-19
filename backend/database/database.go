@@ -313,7 +313,7 @@ type Review struct {
 	DatePosted     time.Time
 	StarRating     *int
 	ReplyTo        *uuid.UUID
-	VendorFavorite *int
+	VendorFavorite bool
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -374,6 +374,54 @@ func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 		}
 	}
 
+	return result, rows.Err()
+}
+
+//query to find out if the vendor has been starred, it returns true if it is false if not
+func (d *Database) StarredVendorFavorite(ReviewID uuid.UUID, VendorID uuid.UUID) (bool, error) {
+	var starred bool
+	const command = `
+		SELECT *
+		FROM Reviews
+		WHERE ID=?
+		AND VendorID = ?
+	`
+	//if err := d.db.Queryx("SELECT * FROM Reviews WHERE ID = ? AND VendorID = ?"
+	//return false, err
+	//fmt.Errorf("starredVendorFavorite %d: ", ReviewsID)
+	rows, err := d.db.Queryx(command, &ReviewID, &VendorID)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	result := make([]Review, 0)
+	for rows.Next() {
+		result = append(result, Review{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return false, err
+		}
+	}
+	return starred, nil
+}
+
+func (d *Database) VendorStarredByUser(UserID uuid.UUID) ([]Vendor, error) {
+	const command = `
+		SELECT * FROM Reviews WHERE UserID=?
+`
+	rows, err := d.db.Queryx(command, UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Vendor, 0)
+
+	for rows.Next() {
+		result = append(result, Vendor{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
 	return result, rows.Err()
 }
 
@@ -555,12 +603,36 @@ func (d *Database) FavoriteCreate(favorite *Favorite) error {
 
 func (d *Database) Favorite(id uuid.UUID) (*Favorite, error) {
 	const command = `
-		SELECT * FROM Favorite WHERE ID=?
+		SELECT * FROM Favorite WHERE VendorID=?
 	`
 
 	favorite := &Favorite{}
 	err := d.db.QueryRowx(command, &id).StructScan(favorite)
 	return favorite, err
+
+}
+func (d *Database) FavoritebyVendor(favoriteID uuid.UUID) ([]Favorite, error) {
+	rows, err := d.db.Queryx("SELECT * FROM Favorite WHERE ID = ?", favoriteID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	//to hold data that favorite a vendor
+	var fav []Favorite
+
+	//go through rows to assign column to struct field
+	for rows.Next() {
+		var favs Favorite
+		if err := rows.StructScan(&favs); err != nil {
+			return fav, err
+		}
+		fav = append(fav, favs)
+	}
+	if err = rows.Err(); err != nil {
+		return fav, err
+	}
+	return fav, nil
 }
 
 type Star struct {
@@ -633,4 +705,110 @@ func (d *Database) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
 
 	_, err := d.db.Exec(command, &userID, &vendorID)
 	return err
+}
+
+type Areas struct {
+	VendorID uuid.UUID
+	AreaName string
+}
+
+func (d *Database) AreasCreate(area *Areas) error {
+	const command = `
+		INSERT INTO Areas (
+			VendorID,
+			AreaName
+		) VALUES (
+			:VendorID,
+			:AreaName
+		)
+	`
+	_, err := d.db.NamedExec(command, area)
+	return err
+}
+
+func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
+	const command = `
+		SELECT *
+		FROM Areas
+		WHERE VendorID=?
+	`
+	rows, err := d.db.Queryx(command, vendorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Areas, 0)
+
+	for rows.Next() {
+		result = append(result, Areas{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) Area(vendorID uuid.UUID, areaName string) (*Areas, error) {
+	const command = `
+		SELECT * FROM Areas WHERE VendorID=? AND AreaName=?
+	`
+
+	Area := &Areas{}
+	err := d.db.QueryRowx(command, &vendorID, &areaName).StructScan(Area)
+	return Area, err
+}
+
+type CuisineTypes struct {
+	VendorID    uuid.UUID
+	CuisineType string
+}
+
+func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
+	const command = `
+		INSERT INTO CuisineTypes (
+			VendorID,
+			CuisineType
+		) VALUES (
+			:VendorID,
+			:CuisineType
+		)
+	`
+	_, err := d.db.NamedExec(command, cuisineType)
+	return err
+}
+
+func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, error) {
+	const command = `
+		SELECT *
+		FROM CuisineTypes
+		WHERE VendorID=?
+	`
+	rows, err := d.db.Queryx(command, vendorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]CuisineTypes, 0)
+
+	for rows.Next() {
+		result = append(result, CuisineTypes{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) CuisineType(vendorID uuid.UUID, cuisineType string) (*CuisineTypes, error) {
+	const command = `
+		SELECT * FROM CuisineTypes WHERE VendorID=? AND CuisineType=?
+	`
+
+	CuisineType := &CuisineTypes{}
+	err := d.db.QueryRowx(command, &vendorID, &cuisineType).StructScan(CuisineType)
+	return CuisineType, err
 }

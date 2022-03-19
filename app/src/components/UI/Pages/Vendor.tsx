@@ -28,12 +28,12 @@ import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
-import { useAppSelector } from "../../../store";
+import { useAppSelector } from "../../../store/root";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
-import { uploadToS3 } from "../../../aws";
+import { s3Prefix, uploadToS3 } from "../../../aws";
 import { TwitterShareButton, TwitterIcon } from "react-share";
 import VendorStar from "../Molecules/VendorStar/VendorStar";
 
@@ -73,7 +73,7 @@ export function Vendor(): React.ReactElement {
       UserID: userID,
       StarRating: starRating,
       ReplyTo: null,
-      VendorFavorite: false
+      VendorFavorite: false,
     };
     await submitReview(review);
 
@@ -112,7 +112,7 @@ export function Vendor(): React.ReactElement {
           <Grid.Row style={{ display: "flex", alignItems: "center" }}>
             {vendor && vendor.BusinessLogo ? (
               <Image
-                src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${vendor.BusinessLogo}`}
+                src={s3Prefix + vendor.BusinessLogo}
                 alt="logo"
                 style={{ width: 60, height: 60, objectFit: "cover" }}
               />
@@ -132,7 +132,7 @@ export function Vendor(): React.ReactElement {
             </Container>
           </Grid.Row>
           <Grid.Row>
-            {photos ? (
+            {photos && photos.length > 0 ? (
               <Segment style={{ width: "100%" }}>
                 <Gallery photos={photos} photoHeight={250} />
               </Segment>

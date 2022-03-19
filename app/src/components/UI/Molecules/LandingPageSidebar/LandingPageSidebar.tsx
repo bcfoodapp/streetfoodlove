@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Sidebar,
   Menu,
@@ -7,31 +7,23 @@ import {
   Checkbox,
   Container,
 } from "semantic-ui-react";
-import { hideSideBar, useAppDispatch, useAppSelector } from "../../../../store";
+import { useAppDispatch, useAppSelector } from "../../../../store/root";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
-import { search } from "../../../../search";
-import { useEffectAsync } from "../../../../api";
+import { useSearchQuery } from "../../../../api";
+import { Link } from "react-router-dom";
+import { hideSideBar } from "../../../../store/search";
 
 const LandingPageSidebar: React.FC = () => {
-  const showSideBarState = useAppSelector((state) => state.root.sideBarShowing);
-  const searchQuery = useAppSelector((state) => state.root.searchQuery);
-  const [searchResult, setSearchResult] = useState([] as string[]);
-
-  useEffectAsync(async () => {
-    if (searchQuery) {
-      const result = await search(searchQuery);
-      setSearchResult(
-        result.hits.hits.map(({ _source }) => JSON.stringify(_source, null, 2))
-      );
-    }
-  }, [searchQuery]);
+  const showSideBarState = useAppSelector(
+    (state) => state.search.sideBarShowing
+  );
+  const searchQuery = useAppSelector(({ search }) => search.searchQuery);
+  const { data: resultVendors } = useSearchQuery(searchQuery!, {
+    skip: !searchQuery,
+  });
 
   const dispatch = useAppDispatch();
-
-  const closeSidebar = () => {
-    dispatch(hideSideBar());
-  };
 
   return (
     <Sidebar
@@ -44,7 +36,11 @@ const LandingPageSidebar: React.FC = () => {
       width="very wide"
       className={styles.sidebar}
     >
-      <Button icon onClick={closeSidebar} className={styles.closeIcon}>
+      <Button
+        icon
+        onClick={() => dispatch(hideSideBar())}
+        className={styles.closeIcon}
+      >
         <Icon name="close" size="big" color="grey" />
       </Button>
       <Menu.Item as="div" className={styles.menuItem}>
@@ -66,11 +62,21 @@ const LandingPageSidebar: React.FC = () => {
       <Menu.Item>
         <h3 className={styles.header}>Results</h3>
       </Menu.Item>
-      {/* Temporary output */}
       <Container textAlign="left">
-        {searchResult.map((row) => (
-          <pre>{row}</pre>
-        ))}
+        {resultVendors
+          ? resultVendors.map((vendor) => (
+              <Container key={vendor.ID}>
+                <Container className={styles.vendorInfo}>
+                  <h2>
+                    <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+                  </h2>
+                  <p>Address: {vendor.BusinessAddress}</p>
+                  <p>Business Hours: {vendor.BusinessHours}</p>
+                </Container>
+                <Container className={styles.divider} />
+              </Container>
+            ))
+          : null}
       </Container>
     </Sidebar>
   );

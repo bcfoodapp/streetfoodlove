@@ -8,7 +8,7 @@ import {
 import styles from "./vendorstar.module.css";
 import { Button } from "semantic-ui-react";
 import React from "react";
-import { useAppSelector } from "../../../../store";
+import { useAppSelector } from "../../../../store/root";
 
 interface Props {
   vendorID: string;

@@ -3,7 +3,6 @@ module github.com/bcfoodapp/streetfoodlove
 go 1.15
 
 require (
-	github.com/DATA-DOG/go-txdb v0.1.5
 	github.com/aws/aws-sdk-go-v2 v1.13.0
 	github.com/aws/aws-sdk-go-v2/config v1.13.1
 	github.com/aws/aws-sdk-go-v2/service/sts v1.14.0

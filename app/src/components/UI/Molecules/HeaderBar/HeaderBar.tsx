@@ -1,32 +1,27 @@
 import React from "react";
-import { Icon, Menu, Dropdown } from "semantic-ui-react";
+import { Menu, Dropdown, Image } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { clearLocalStorage, getCredentialsEntry } from "../../../../api";
+import { s3Prefix } from "../../../../aws";
 
 /**
  * Returns the headerbar element
  */
 
 export default function HeaderBar(): React.ReactElement {
-  const name = getCredentialsEntry()?.Name;
+  const storeEntry = getCredentialsEntry();
 
   const navigate = useNavigate();
-
-  const ProfileIcon = (
-    <span>
-      <Icon name="user circle" size="big" /> Hi {name}
-    </span>
-  );
 
   const options = [
     {
       key: "user",
       text: (
         <span>
-          Signed in as <strong>{name}</strong>
+          Signed in as <strong>{storeEntry?.Name}</strong>
         </span>
       ),
       disabled: true,
@@ -60,17 +55,32 @@ export default function HeaderBar(): React.ReactElement {
     <Menu size="massive" className={styles.menu}>
       <Link to="/">
         <Menu.Item>
-          <h2 className={styles.title}>StreetFoodLove</h2>
+          <h2 className={styles.title}>
+            <Image
+              src="/logo.svg"
+              alt="StreetFoodLove logo"
+              style={{ width: 200 }}
+            />
+          </h2>
         </Menu.Item>
       </Link>
       <SearchBox />
       <Menu.Menu position="right">
-        {name ? (
-          <Dropdown
-            trigger={ProfileIcon}
-            options={options}
-            className={styles.dropdown}
-          />
+        {storeEntry ? (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Image
+              src={s3Prefix + storeEntry.UserPhoto}
+              alt="user photo"
+              style={{ width: 30, height: 30, objectFit: "cover" }}
+            />
+            &nbsp;&nbsp;
+            <Dropdown
+              inline
+              text={storeEntry?.Name}
+              options={options}
+              className={styles.dropdown}
+            />
+          </div>
         ) : (
           <Menu.Item>
             <Link to="/account-selection">

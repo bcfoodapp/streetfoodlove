@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Form, Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
 import { useVendorsQuery, Vendor } from "../../../../api";
-import { setSearchQuery, useAppDispatch } from "../../../../store";
-import { showSideBar } from "../../../../store";
+import { useAppDispatch } from "../../../../store/root";
+import { setSearchQuery, showSideBar } from "../../../../store/search";
 
 /**
  * This is the searchbox for the header
@@ -21,9 +21,13 @@ export const SearchBox: React.FC = () => {
 
     let array: Vendor[] = [];
 
-    if (vendorsList !== undefined) {
+    if (vendorsList) {
       for (const vendor of vendorsList) {
-        if (vendor.Name === searchString && resultSet.has(vendor.Name)) {
+        if (
+          vendor.Name === searchString &&
+          resultSet.has(vendor.Name) &&
+          !recentSearchResult.some((item) => item.Name === searchString)
+        ) {
           let obj = {
             title: vendor.Name,
             description: vendor.BusinessAddress,
@@ -45,16 +49,21 @@ export const SearchBox: React.FC = () => {
     event: React.MouseEvent<HTMLElement>,
     data: SearchProps
   ) => {
-    setSearchString((event.target as any).value);
+    let string = "";
+    if (data.value) {
+      string = data.value;
+    } else if (data.result && data.result.title) {
+      string = data.result.title;
+    }
+    setSearchString(string);
 
-    if (data.value?.length === 0) {
+    if (string.length === 0) {
       setSearchResult([]);
       return;
     }
 
     if (vendorsList) {
-      let search = data.value;
-      let condition = new RegExp(search as string);
+      let condition = new RegExp(string);
       let resultArray: Vendor[] = [];
 
       let filteredResult = vendorsList.filter((element) => {
@@ -101,6 +110,7 @@ export const SearchBox: React.FC = () => {
             <Input placeholder="Search..." focus className={styles.inputBox} />
           }
           onSearchChange={onSearchChange}
+          onResultSelect={onSearchChange}
           results={searchResult}
           showNoResults
         />
