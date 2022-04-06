@@ -135,6 +135,14 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) error 
 	return b.Database.ReviewCreate(review)
 }
 
+func (b *Backend) ReviewUpdate(userID uuid.UUID, review *database.Review) error {
+	if review.UserID != userID {
+		return unauthorized
+	}
+
+	return b.Database.ReviewUpdate(review)
+}
+
 func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]database.Review, error) {
 	return b.Database.ReviewsByVendorID(vendorID)
 }
