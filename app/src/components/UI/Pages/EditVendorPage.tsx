@@ -172,6 +172,18 @@ const EditVendorPage: React.FC = () => {
             setFieldValue,
           } = formProps;
 
+          const onGetCoordinates = () =>
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                setFieldValue("latitude", position.coords.latitude);
+                setFieldValue("longitude", position.coords.longitude);
+                setCoordinatesChanged(true);
+              },
+              (e) => {
+                throw new Error(e.message);
+              }
+            );
+
           return (
             <Form
               onSubmit={handleSubmit}
@@ -236,21 +248,7 @@ const EditVendorPage: React.FC = () => {
               />
               <strong>Coordinates</strong>
               <br />
-              <Button
-                onClick={() =>
-                  navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                      setFieldValue("latitude", position.coords.latitude);
-                      setFieldValue("longitude", position.coords.longitude);
-                      setCoordinatesChanged(true);
-                    },
-                    (e) => {
-                      throw new Error(e.message);
-                    }
-                  )
-                }
-                type="button"
-              >
+              <Button onClick={onGetCoordinates} type="button">
                 Get current location
               </Button>
               {coordinatesChanged ? (
