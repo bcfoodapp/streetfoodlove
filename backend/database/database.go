@@ -352,6 +352,22 @@ func (d *Database) Review(id uuid.UUID) (*Review, error) {
 	return review, err
 }
 
+func (d *Database) ReviewUpdate(review *Review) error {
+	const command = `
+		UPDATE Reviews SET
+			Text = :Text,
+			VendorID = :VendorID,
+			UserID = :UserID,
+			DatePosted = :DatePosted,
+			StarRating = :StarRating,
+			ReplyTo = :ReplyTo,
+			VendorFavorite = :VendorFavorite
+		WHERE ID = :ID
+	`
+	_, err := d.db.NamedExec(command, &review)
+	return err
+}
+
 func (d *Database) ReviewsByVendorID(vendorID uuid.UUID) ([]Review, error) {
 	const command = `
 		SELECT *
