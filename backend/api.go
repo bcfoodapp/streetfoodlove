@@ -57,7 +57,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/reviews", a.Reviews)
 	router.GET("/reviews/:id", a.Review)
 	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
-	router.PUT("/reviews/:id", GetToken, a.ReviewPost)
+	router.POST("/reviews/:id", GetToken, a.ReviewPost)
 
 	router.POST("/token", a.TokenPost)
 	router.PUT("/token/google/refresh", a.TokenGoogleRefreshPut)
