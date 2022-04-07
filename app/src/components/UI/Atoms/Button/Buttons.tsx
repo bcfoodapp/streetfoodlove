@@ -17,6 +17,7 @@ interface ButtonsProps {
   edit?: boolean;
   save?: boolean;
   writeReview?: boolean;
+  getLocation?: boolean;
   color?: ButtonProps["color"];
   create?: boolean;
   clicked?: () => void | ((values: any) => void);
@@ -41,6 +42,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
   else if (props.edit) name = classes.edit;
   else if (props.save) name = classes.save;
   else if (props.create) name = classes.create;
+  else if (props.getLocation) name = classes.GetLocation;
   else throw new Error("Invalid Prop");
 
   return (
