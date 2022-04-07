@@ -24,6 +24,7 @@ interface ButtonsProps {
   valid?: boolean;
   dirty?: boolean;
   loading?: boolean;
+  type?: string;
 }
 
 export default function Buttons(props: ButtonsProps): React.ReactElement {
@@ -50,6 +51,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
           color={props.color}
           onClick={props.clicked}
           loading={props.loading}
+          type={props.type}
         >
           <span>{props.children}</span>
         </Button>
