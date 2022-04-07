@@ -45,7 +45,7 @@ export default function PopupInfo({ vendor }: Props): React.ReactElement {
 
   return (
     <>
-      <Container className={styles.header}>
+      <Container>
         <Container className={styles.title}>
           <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
         </Container>
