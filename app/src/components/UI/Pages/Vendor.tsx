@@ -12,11 +12,8 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
-  useCreateStarMutation,
-  useCountStarsForVendorQuery,
 } from "../../../api";
 import {
-  Button,
   Container,
   Divider,
   Grid,
@@ -43,8 +40,7 @@ import VendorStar from "../Molecules/VendorStar/VendorStar";
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
   const { data: vendor } = useVendorQuery(vendorID);
-  const reviewsQuery = useReviewsQuery(vendorID);
-  const reviews = reviewsQuery.data;
+  const { data: reviews } = useReviewsQuery(vendorID);
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const { data: photos } = usePhotosByLinkIDQuery(vendorID);
