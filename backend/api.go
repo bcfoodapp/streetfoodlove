@@ -55,8 +55,9 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.POST("/users/:id/s3-credentials", GetToken, a.UserS3CredentialsPost)
 
 	router.GET("/reviews", a.Reviews)
-	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
+	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
+	router.POST("/reviews/:id", GetToken, a.ReviewPost)
 
 	router.POST("/token", a.TokenPost)
 	router.PUT("/token/google/refresh", a.TokenGoogleRefreshPut)
@@ -331,6 +332,22 @@ func (a *API) Reviews(c *gin.Context) {
 	c.JSON(http.StatusOK, reviews)
 }
 
+func (a *API) Review(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	review, err := a.Backend.Review(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, review)
+}
+
 func (a *API) ReviewPut(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -355,20 +372,28 @@ func (a *API) ReviewPut(c *gin.Context) {
 	}
 }
 
-func (a *API) Review(c *gin.Context) {
+func (a *API) ReviewPost(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	review, err := a.Backend.Review(id)
-	if err != nil {
+	review := &database.Review{}
+	if err := c.ShouldBindJSON(review); err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, review)
+	if id != review.ID {
+		c.Error(idsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.ReviewUpdate(getTokenFromContext(c), review); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) TokenPost(c *gin.Context) {

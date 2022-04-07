@@ -1,4 +1,5 @@
 import {
+  Button,
   Container,
   Form,
   Header,
@@ -29,6 +30,8 @@ interface inputValues {
   name: string;
   businessLogo: string | null;
   businessAddress: string;
+  latitude: number;
+  longitude: number;
   phoneNumber: string;
   businessHours: string;
   website: string;
@@ -46,6 +49,7 @@ const EditVendorPage: React.FC = () => {
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
+  const [coordinatesChanged, setCoordinatesChanged] = useState(false);
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -68,6 +72,8 @@ const EditVendorPage: React.FC = () => {
   const [initialValues, setInitalValues] = useState({
     name: "",
     businessAddress: "",
+    latitude: 0,
+    longitude: 0,
     phoneNumber: "",
     businessHours: "",
     website: "",
@@ -81,6 +87,8 @@ const EditVendorPage: React.FC = () => {
         businessLogo: vendor!.BusinessLogo,
         name: vendor!.Name,
         businessAddress: vendor!.BusinessAddress,
+        latitude: vendor!.Latitude,
+        longitude: vendor!.Longitude,
         phoneNumber: vendor!.Phone,
         businessHours: vendor!.BusinessHours,
         website: vendor!.Website,
@@ -97,6 +105,8 @@ const EditVendorPage: React.FC = () => {
   const validationSchema = Yup.object({
     name: Yup.string().required("Required"),
     businessAddress: Yup.string().required("Required"),
+    latitude: Yup.number().required("Required"),
+    longitude: Yup.number().required("Required"),
     phoneNumber: Yup.string().required("Required"),
     businessHours: Yup.string().required("Required"),
     website: Yup.string(),
@@ -124,8 +134,8 @@ const EditVendorPage: React.FC = () => {
       BusinessHours: data.businessHours,
       Phone: data.phoneNumber,
       BusinessLogo: photoID,
-      Latitude: vendor!.Latitude,
-      Longitude: vendor!.Longitude,
+      Latitude: data.latitude,
+      Longitude: data.longitude,
       Owner: userID!,
     };
     const response = await updateVendor(updatedVendor);
@@ -147,7 +157,7 @@ const EditVendorPage: React.FC = () => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
-        validateOnChange={true}
+        validateOnChange
       >
         {(formProps: FormikProps<inputValues>) => {
           const {
@@ -161,6 +171,18 @@ const EditVendorPage: React.FC = () => {
             values,
             setFieldValue,
           } = formProps;
+
+          const onGetCoordinates = () =>
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                setFieldValue("latitude", position.coords.latitude);
+                setFieldValue("longitude", position.coords.longitude);
+                setCoordinatesChanged(true);
+              },
+              (e) => {
+                throw new Error(e.message);
+              }
+            );
 
           return (
             <Form
@@ -206,7 +228,6 @@ const EditVendorPage: React.FC = () => {
                   <br />
                 </>
               ) : null}
-
               <Form.Input
                 name="businessAddress"
                 onChange={handleChange}
@@ -225,6 +246,20 @@ const EditVendorPage: React.FC = () => {
                 component="span"
                 className={styles.error}
               />
+              <strong>Coordinates</strong>
+              <br />
+              <Button onClick={onGetCoordinates} type="button">
+                Get current location
+              </Button>
+              {coordinatesChanged ? (
+                <>
+                  <br />
+                  {values.latitude}, {values.longitude}
+                </>
+              ) : null}
+              <br />
+              <br />
+
               <Form.Input
                 name="phoneNumber"
                 onChange={handleChange}
