@@ -131,7 +131,7 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
                   disabled
                 />
               )}
-              {+review.VendorFavorite === 1 ? <i>Liked by vendor!</i> : null}
+              {review.VendorFavorite ? <i>Liked by vendor!</i> : null}
             </Grid.Row>
             <Grid.Row>
               <Container className={styles.stars}>
