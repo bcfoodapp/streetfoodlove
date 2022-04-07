@@ -53,7 +53,7 @@ const AccountProfile: React.FC = () => {
 export default AccountProfile;
 
 function Direction(props) {
-  const {direction} = props
+  const { direction } = props;
 
   return (
     <div>
@@ -67,6 +67,5 @@ function Direction(props) {
         <p>West</p>
       ) : null}
     </div>
-  )
+  );
 }
-

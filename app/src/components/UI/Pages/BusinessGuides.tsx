@@ -1,5 +1,4 @@
-import { Container, Header, Card, Dropdown, Icon } from "semantic-ui-react";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
+import { Container, Header, Card } from "semantic-ui-react";
 import styles from "./businessGuide.module.css";
 
 const BusinessGuides: React.FC = () => {

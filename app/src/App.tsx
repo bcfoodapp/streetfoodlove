@@ -30,7 +30,7 @@ function App(): React.ReactElement {
           <Route path="/login" element={<LoginWrapper />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/account-selection" element={<AccountSelection />} />
-        <Route path="/vendor-signup" element={<VendorAppForm />} />
+          <Route path="/vendor-signup" element={<VendorAppForm />} />
           <Route path="/account-profile" element={<AccountProfile />} />
           <Route path="/your-acct-user" element={<YourAccountUser />} />
           <Route path="/business-guide" element={<BusinessGuides />} />
