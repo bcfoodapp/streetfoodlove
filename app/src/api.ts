@@ -723,7 +723,7 @@ export function getExtension(filename: string): string {
 
 type OpenSearchVendor = Pick<
   Vendor,
-  "ID" | "Name" | "BusinessAddress" | "BusinessHours"
+  "ID" | "Name" | "BusinessAddress" | "BusinessHours" | "Latitude" | "Longitude"
 >;
 
 const openSearchQuery = fetchBaseQuery({
