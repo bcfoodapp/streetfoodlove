@@ -49,3 +49,8 @@
   margin-left: 10px !important;
   margin-right: 15px !important;
 }
+
+.GetLocation {
+  color: black !important;
+  border: 2px solid black !important;
+}
