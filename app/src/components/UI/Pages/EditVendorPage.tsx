@@ -248,9 +248,9 @@ const EditVendorPage: React.FC = () => {
               />
               <strong>Coordinates</strong>
               <br />
-              <Button onClick={onGetCoordinates} type="button">
+              <Buttons signup clicked={onGetCoordinates} type="button">
                 Get current location
-              </Button>
+              </Buttons>
               {coordinatesChanged ? (
                 <>
                   <br />
