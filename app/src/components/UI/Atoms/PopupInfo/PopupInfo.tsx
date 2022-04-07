@@ -7,7 +7,7 @@ import {
   Vendor,
 } from "../../../../api";
 import { Link } from "react-router-dom";
-import { Container, Header, Image, Rating } from "semantic-ui-react";
+import { Container, Header, Image } from "semantic-ui-react";
 import { s3Prefix } from "../../../../aws";
 import { FinalStarRating } from "../StarRating/FinalStarRating";
 
@@ -15,6 +15,7 @@ interface Props {
   vendor: Vendor;
 }
 
+// Chooses a highly rated review to display on popup.
 function selectReview(reviews: Review[] | undefined): Review | null {
   if (reviews && reviews.length > 0) {
     const found = reviews.find(
@@ -22,9 +23,9 @@ function selectReview(reviews: Review[] | undefined): Review | null {
     );
     if (found) {
       return found;
-    } else {
-      return reviews[0];
     }
+
+    return reviews[0];
   }
   return null;
 }
