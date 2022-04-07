@@ -178,6 +178,7 @@ export function Vendor(): React.ReactElement {
           <p>No one has posted a review for this vendor. Yet...</p>
         ) : (
           reviews?.map((review, i) => {
+            console.log("Reviews: " + JSON.stringify(review, null, 2));
             if (review.ReplyTo === null) {
               return (
                 <Review
