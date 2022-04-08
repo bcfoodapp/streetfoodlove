@@ -40,6 +40,13 @@ export default function HeaderBar(): React.ReactElement {
         navigate("/vendor-dashboard");
       },
     },
+    {
+      key: "guides",
+      text: "Business Guides",
+      onClick: () => {
+        navigate("/business-guide");
+      },
+    },
     { key: "help", text: "Help" },
     {
       key: "log-out",
