@@ -3,7 +3,7 @@ import React from "react";
 import { LandingPage } from "../components/UI/Pages/LandingPage";
 import AccountProfile from "../components/UI/Pages/AccountProfile";
 import { MemoryRouter } from "react-router-dom";
-import { store } from "../store";
+import { store } from "../store/root";
 import { Provider } from "react-redux";
 import AccountSelection from "../components/UI/Pages/AccountSelection";
 import BusinessGuides from "../components/UI/Pages/BusinessGuides";

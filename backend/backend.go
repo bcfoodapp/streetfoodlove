@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/aws/aws-sdk-go-v2/service/sts/types"
 	"github.com/bcfoodapp/streetfoodlove/database"
 	"github.com/bcfoodapp/streetfoodlove/uuid"
-	"time"
 )
 
 // Backend handles the application logic.
@@ -134,6 +135,14 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) error 
 	return b.Database.ReviewCreate(review)
 }
 
+func (b *Backend) ReviewUpdate(userID uuid.UUID, review *database.Review) error {
+	if review.UserID != userID {
+		return unauthorized
+	}
+
+	return b.Database.ReviewUpdate(review)
+}
+
 func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]database.Review, error) {
 	return b.Database.ReviewsByVendorID(vendorID)
 }
@@ -195,4 +204,55 @@ func (b *Backend) FavoriteCreate(userID uuid.UUID, favorite *database.Favorite) 
 	favorite.DatePosted = time.Now()
 
 	return b.Database.FavoriteCreate(favorite)
+}
+
+func (b *Backend) StarCreate(userID uuid.UUID, star *database.Star) error {
+	if star.UserID != userID {
+		return unauthorized
+	}
+
+	return b.Database.StarCreate(star)
+}
+
+func (b *Backend) StarsByUserID(userID uuid.UUID) ([]database.Star, error) {
+	return b.Database.StarsByUserID(userID)
+}
+
+func (b *Backend) Star(userID uuid.UUID, vendorID uuid.UUID) (*database.Star, error) {
+	return b.Database.Star(userID, vendorID)
+}
+
+func (b *Backend) CountVendorStars(vendorID uuid.UUID) (int, error) {
+	return b.Database.CountVendorStars(vendorID)
+}
+
+func (b *Backend) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
+	return b.Database.StarDelete(userID, vendorID)
+}
+
+//Area
+
+func (b *Backend) AreasByVendorID(vendorID uuid.UUID) ([]database.Areas, error) {
+	return b.Database.AreasByVendorID(vendorID)
+}
+
+func (b *Backend) Area(vendorID uuid.UUID, areaName string) (*database.Areas, error) {
+	return b.Database.Area(vendorID, areaName)
+}
+
+//CuisineTypes
+func (b *Backend) CuisineTypeCreate(vendorID uuid.UUID, cuisineType *database.CuisineTypes) error {
+	if cuisineType.VendorID != vendorID {
+		return unauthorized
+	}
+
+	return b.Database.CuisineTypesCreate(cuisineType)
+}
+
+func (b *Backend) CuisineTypeByVendorID(vendorID uuid.UUID) ([]database.CuisineTypes, error) {
+	return b.Database.CuisineTypeByVendorID(vendorID)
+}
+
+func (b *Backend) CuisineType(vendorID uuid.UUID, cuisineType string) (*database.CuisineTypes, error) {
+	return b.Database.CuisineType(vendorID, cuisineType)
 }

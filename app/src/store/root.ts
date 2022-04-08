@@ -6,15 +6,24 @@ import {
   MiddlewareAPI,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { apiSlice, tokenSlice } from "./api";
+import { apiSlice, tokenSlice } from "../api";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { searchSlice } from "./search";
 
 const apiErrorHandler: Middleware =
   (api: MiddlewareAPI<typeof store.dispatch, RootState>) =>
   (next) =>
   (action) => {
     if (isRejectedWithValue(action)) {
-      api.dispatch(setError(`api error: ${JSON.stringify(action.payload)}`));
+      let requestDetail = "";
+      if ("meta" in action) {
+        requestDetail = `method: ${action.meta.baseQueryMeta.request.method}, url: ${action.meta.baseQueryMeta.request.url}`;
+      }
+      api.dispatch(
+        setError(
+          `api error: ${JSON.stringify(action.payload)}, ${requestDetail}`
+        )
+      );
     }
     return next(action);
   };
@@ -49,9 +58,10 @@ export const { setError, hideError, showSideBar, hideSideBar } =
 
 export const store = configureStore({
   reducer: {
-    root: rootSlice.reducer,
+    [rootSlice.name]: rootSlice.reducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
     [tokenSlice.name]: tokenSlice.reducer,
+    [searchSlice.name]: searchSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

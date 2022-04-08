@@ -4,7 +4,7 @@ import { StarRating } from "../../Atoms/StarRating/StarRating";
 import Buttons from "../../Atoms/Button/Buttons";
 import styles from "./reviewForm.module.css";
 import { StarRatingInteger } from "../../../../api";
-import Dropzone from "react-dropzone";
+import DragAndDrop from "../DragAndDrop/DragAndDrop";
 
 /**
  * Renders a review form template that includes fields to be filled out
@@ -22,7 +22,6 @@ export const ReviewForm = (props: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
   const [starRating, setStarRating] = useState(null as StarRatingInteger);
   const [files, setFiles] = useState([] as File[]);
-  const [showUploadError, setShowUploadError] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextAreaInput(e.target.value);
@@ -40,11 +39,6 @@ export const ReviewForm = (props: Props) => {
     });
   };
 
-  const onDrop = async (files: File[]) => {
-    setShowUploadError(false);
-    setFiles((state) => [...state, ...files]);
-  };
-
   return (
     <Container>
       <Container>
@@ -56,40 +50,18 @@ export const ReviewForm = (props: Props) => {
       <Form onSubmit={handleSubmit}>
         <TextArea
           placeholder="Write your review here..."
-          style={{ minHeight: 60, maxWidth: 700 }}
           value={textAreaInput}
           onChange={handleChange}
         />
-        <p>Attach pictures</p>
-        <Dropzone
-          accept="image/jpeg"
-          onDropAccepted={onDrop}
-          onDropRejected={() => setShowUploadError(true)}
-          maxSize={1_000_000}
-        >
-          {({ getRootProps, getInputProps, isDragAccept }) => {
-            let dragAndDropStyles = styles.dragAndDrop;
-            if (isDragAccept) {
-              dragAndDropStyles += " " + styles.accept;
-            }
-            return (
-              <div className={dragAndDropStyles} {...getRootProps()}>
-                <input {...getInputProps()} />
-                <Container textAlign="center">
-                  <p>
-                    <Icon name="upload" />
-                    Drag-and-drop .jpg files or click to browse
-                  </p>
-                </Container>
-              </div>
-            );
+        <p>
+          <strong>Attach pictures</strong>
+        </p>
+        <DragAndDrop
+          onDrop={(files: File[]) => {
+            setFiles((state) => [...state, ...files]);
           }}
-        </Dropzone>
-        {showUploadError ? (
-          <p className={styles.error}>
-            This is not a jpg file. Only .jpg files are accepted.
-          </p>
-        ) : null}
+          multiple
+        />
         {files.map((file, i) => (
           <p key={i}>{file.name}</p>
         ))}

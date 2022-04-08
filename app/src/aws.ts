@@ -27,7 +27,7 @@ export async function uploadToS3(
       },
       masterCredentials: convertCredentials(credentials),
       params: {
-        RoleArn: "arn:aws:iam::082691565476:role/SFLPhotoUpload",
+        RoleArn: "arn:aws:iam::907229944921:role/SFLPhotoUpload",
       },
     }),
   });
@@ -40,3 +40,6 @@ export async function uploadToS3(
 
   await client.send(command);
 }
+
+// The S3 bucket URL
+export const s3Prefix = "https://streetfoodlove.s3.us-west-2.amazonaws.com/";
