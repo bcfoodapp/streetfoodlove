@@ -51,3 +51,21 @@ const AccountProfile: React.FC = () => {
 };
 
 export default AccountProfile;
+
+function Direction(props) {
+  const { direction } = props;
+
+  return (
+    <div>
+      {direction === 0 ? (
+        <p>North</p>
+      ) : direction === 1 ? (
+        <p>East</p>
+      ) : direction === 2 ? (
+        <p>South</p>
+      ) : direction === 3 ? (
+        <p>West</p>
+      ) : null}
+    </div>
+  );
+}

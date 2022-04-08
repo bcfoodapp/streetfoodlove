@@ -3,23 +3,24 @@
   display: flex;
 }
 
+.content {
+  display: flex;
+  flex-direction: column !important;
+  justify-content: center !important;
+  padding-left: 10% !important;
+}
+
 .title {
-  margin-left: 45% !important;
+  margin-left: 43% !important;
+  margin-top: 10px !important;
   font-size: 35px !important;
   padding-bottom: 100px !important;
 }
 
 .newCards {
-  position: absolute;
-  left: 50%;
-  bottom: 40.5%;
+  margin-top: 40px !important;
 }
 
 .newCards > h2 {
   color: red !important;
-}
-
-.content {
-  width: 80% !important;
-  padding-left: 20% !important;
 }
