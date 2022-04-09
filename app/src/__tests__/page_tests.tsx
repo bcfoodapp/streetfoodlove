@@ -70,7 +70,7 @@ test("BusinessGuides", () => {
   );
 });
 
-test("CreateVendorPage", () => {
+test("EditVendorPage", () => {
   renderer.create(
     <MockEnvironment>
       <EditVendorPage />

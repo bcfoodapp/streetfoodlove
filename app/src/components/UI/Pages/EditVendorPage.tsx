@@ -8,7 +8,7 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
-import styles from "./createvendorpage.module.css";
+import styles from "./editvendorpage.module.css";
 import {
   useEffectAsync,
   getUserIDFromToken,
