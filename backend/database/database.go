@@ -168,9 +168,7 @@ func (d *Database) VendorByOwnerID(userID uuid.UUID) (*Vendor, error) {
 type UserType int
 
 const (
-	// nolint: deadcode
 	UserTypeCustomer UserType = iota
-	// nolint: deadcode
 	UserTypeVendor
 )
 
