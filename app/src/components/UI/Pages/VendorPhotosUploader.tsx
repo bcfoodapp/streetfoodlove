@@ -33,13 +33,10 @@ export default (): React.ReactElement => {
   let userID = null as string | null;
   if (token) {
     userID = getUserIDFromToken(token);
-    // console.log('userID: ' + userID);
   }
 
   const { data: vendor, isLoading: vendorQueryIsLoading } =
     useVendorByOwnerIDQuery(userID as string, { skip: !userID });
-
-  console.log("vendor: " + JSON.stringify(vendor));
 
   const { data: photos, isLoading: photosIsLoading } = usePhotosByLinkIDQuery(
     vendor ? vendor.ID : "",

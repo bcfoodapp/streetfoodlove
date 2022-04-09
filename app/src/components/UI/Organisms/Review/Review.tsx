@@ -39,14 +39,11 @@ interface Props {
 export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
-  // const [vendorLiked, setVendorLiked] = useState(false);
   const [submitReview] = useCreateReviewMutation();
   const [submitUpdatedReview] = useUpdateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const { data: user } = useUserQuery(review.UserID);
   const { data: photos } = usePhotosByLinkIDQuery(review.ID);
-
-  console.log(review);
 
   useEffect(() => {
     styleComments();
