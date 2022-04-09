@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Sidebar,
   Menu,
@@ -15,13 +15,18 @@ import { Link } from "react-router-dom";
 import { hideSideBar } from "../../../../store/search";
 
 const LandingPageSidebar: React.FC = () => {
+  const [cuisineSelection, setCuisineSelection] = useState<string[]>([])
+
   const showSideBarState = useAppSelector(
     (state) => state.search.sideBarShowing
   );
+
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
   const { data: resultVendors } = useSearchQuery(searchQuery!, {
     skip: !searchQuery,
   });
+
+  console.log('query result: ' + JSON.stringify(resultVendors, null, 2));
 
   const dispatch = useAppDispatch();
 
@@ -52,7 +57,9 @@ const LandingPageSidebar: React.FC = () => {
         />
         <h3 className={styles.header}>Filters</h3>
         <h3 className={styles.header}>Cuisine</h3>
-        <SelectFilter />
+
+        <SelectFilter addSelection={setCuisineSelection} selections={cuisineSelection}/>
+        
         <h3 className={styles.header}>Prices</h3>
         <Checkbox label="0~5$" className={styles.checkbox} />
         <Checkbox label="5~10$" className={styles.checkbox} />
@@ -62,6 +69,7 @@ const LandingPageSidebar: React.FC = () => {
       <Menu.Item>
         <h3 className={styles.header}>Results</h3>
       </Menu.Item>
+      
       <Container textAlign="left">
         {resultVendors
           ? resultVendors.map((vendor) => (

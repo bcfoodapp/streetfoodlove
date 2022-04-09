@@ -40,7 +40,7 @@ const options = [
   },
 ];
 
-const SelectFilter: React.FC = () => {
+const SelectFilter: React.FC<{addSelection: (cuisine: string[]) => void, selections: string[]}> = ({ addSelection, selections }) => {
   return (
     <Dropdown
       placeholder="Cuisine Type"
@@ -50,6 +50,8 @@ const SelectFilter: React.FC = () => {
       selection
       options={options}
       className={styles.filter}
+      value={selections}
+      // onChange={addSelection([...selections])}
     />
   );
 };
