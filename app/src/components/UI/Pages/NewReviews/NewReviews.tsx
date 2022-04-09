@@ -20,13 +20,14 @@ export default (): React.ReactElement => {
     }
   }, []);
 
-  const { data: vendor } = useVendorByOwnerIDQuery(userID as string, {
+  const { data: vendor } = useVendorByOwnerIDQuery(userID!, {
     skip: !userID,
   });
 
   const review = {
     Text: "Text",
     StarRating: 5,
+    VendorID: vendor?.ID,
   } as ReviewObj;
 
   if (userID === null) {

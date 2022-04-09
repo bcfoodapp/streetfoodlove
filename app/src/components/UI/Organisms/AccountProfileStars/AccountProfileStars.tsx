@@ -18,25 +18,20 @@ function VendorName({ vendorID }: VendorNameProps): React.ReactElement {
 
 export default (): React.ReactElement => {
   const [getToken] = useGetTokenMutation();
-  const [token, setToken] = useState(null as string | null);
+  const [userID, setUserID] = useState(null as string | null);
 
   useEffectAsync(async () => {
     const response = await getToken();
-    if ("data" in response) {
-      setToken(response.data);
+    if ("data" in response && response.data) {
+      setUserID(getUserIDFromToken(response.data));
     }
   }, []);
 
-  let userID = "";
-  if (token) {
-    userID = getUserIDFromToken(token as string);
-  }
-
-  const { data: stars } = useStarsByUserIDQuery(userID, {
-    skip: userID === "",
+  const { data: stars } = useStarsByUserIDQuery(userID!, {
+    skip: !userID,
   });
 
-  if (!token) {
+  if (userID === null) {
     return <p>Not logged in</p>;
   }
 
