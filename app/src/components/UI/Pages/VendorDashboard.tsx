@@ -12,25 +12,24 @@ import { s3Prefix } from "../../../aws";
 
 const VendorDashBoard: React.FC = () => {
   const [getToken] = useGetTokenMutation();
-  const [token, setToken] = useState(null as string | null);
+  const [userID, setUserID] = useState(null as string | null);
 
   useEffectAsync(async () => {
     const response = await getToken();
-    if ("data" in response) {
-      setToken(response.data);
+    if ("data" in response && response.data) {
+      setUserID(getUserIDFromToken(response.data));
     }
   }, []);
-
-  let userID = null as string | null;
-  if (token) {
-    userID = getUserIDFromToken(token);
-  }
 
   const { data: vendor } = useVendorByOwnerIDQuery(userID as string, {
     skip: !userID,
   });
 
   const navigate = useNavigate();
+
+  if (userID === null) {
+    return <p>Not logged in</p>;
+  }
 
   return (
     <Container className={styles.wrapper}>
@@ -96,7 +95,7 @@ const VendorDashBoard: React.FC = () => {
             </Card.Content>
           </Card>
         </Link>
-        <Link to="">
+        <Link to="/vendor-dashboard/new-reviews">
           <Card className={styles.card}>
             <Icon name="write" size="huge" className={styles.icon} />
             <Card.Content className={styles.content}>
