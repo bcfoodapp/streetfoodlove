@@ -8,7 +8,7 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
-import styles from "./createvendorpage.module.css";
+import styles from "./editvendorpage.module.css";
 import {
   useEffectAsync,
   getUserIDFromToken,
@@ -47,27 +47,22 @@ const EditVendorPage: React.FC = () => {
   const [updateVendor] = useUpdateVendorMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  const [token, setToken] = useState(null as string | null);
+  const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
   const [coordinatesChanged, setCoordinatesChanged] = useState(false);
 
   useEffectAsync(async () => {
     const response = await getToken();
-    if ("data" in response) {
-      setToken(response.data);
+    if ("data" in response && response.data) {
+      setUserID(getUserIDFromToken(response.data));
     }
   }, []);
-
-  let userID = null as string | null;
-  if (token) {
-    userID = getUserIDFromToken(token);
-  }
 
   const {
     data: vendor,
     isSuccess: vendorQueryIsSuccess,
     isLoading: vendorQueryIsLoading,
-  } = useVendorByOwnerIDQuery(userID as string, { skip: !userID });
+  } = useVendorByOwnerIDQuery(userID!, { skip: !userID });
 
   const [initialValues, setInitalValues] = useState({
     name: "",
@@ -98,7 +93,7 @@ const EditVendorPage: React.FC = () => {
 
   const [getS3Credentials] = useS3CredentialsMutation();
 
-  if (tokenIsSuccess && !token) {
+  if (userID === null) {
     return <p>Not logged in</p>;
   }
 

@@ -21,25 +21,17 @@ import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 export default (): React.ReactElement => {
   const [uploading, setUploading] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  const [token, setToken] = useState(null as string | null);
+  const [userID, setUserID] = useState(null as string | null);
 
   useEffectAsync(async () => {
     const response = await getToken();
-    if ("data" in response) {
-      setToken(response.data);
+    if ("data" in response && response.data) {
+      setUserID(getUserIDFromToken(response.data));
     }
   }, []);
 
-  let userID = null as string | null;
-  if (token) {
-    userID = getUserIDFromToken(token);
-    // console.log('userID: ' + userID);
-  }
-
   const { data: vendor, isLoading: vendorQueryIsLoading } =
-    useVendorByOwnerIDQuery(userID as string, { skip: !userID });
-
-  console.log("vendor: " + JSON.stringify(vendor));
+    useVendorByOwnerIDQuery(userID!, { skip: !userID });
 
   const { data: photos, isLoading: photosIsLoading } = usePhotosByLinkIDQuery(
     vendor ? vendor.ID : "",
@@ -80,7 +72,7 @@ export default (): React.ReactElement => {
     }
   };
 
-  if (!tokenIsSuccess || token === null) {
+  if (userID === null) {
     return <p>Not logged in</p>;
   }
 
