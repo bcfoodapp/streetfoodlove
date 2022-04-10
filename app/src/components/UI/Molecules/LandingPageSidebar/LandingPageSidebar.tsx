@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent, useState } from "react";
 import {
   Sidebar,
   Menu,
@@ -6,6 +6,7 @@ import {
   Button,
   Checkbox,
   Container,
+  DropdownProps,
 } from "semantic-ui-react";
 import { useAppDispatch, useAppSelector } from "../../../../store/root";
 import SelectFilter from "../MultiSelectFilter/SelectFilter";
@@ -15,13 +16,26 @@ import { Link } from "react-router-dom";
 import { hideSideBar } from "../../../../store/search";
 
 const LandingPageSidebar: React.FC = () => {
+  const [cuisineSelection, setCuisineSelection] = useState<string[]>([]);
+
   const showSideBarState = useAppSelector(
     (state) => state.search.sideBarShowing
   );
+
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
   const { data: resultVendors } = useSearchQuery(searchQuery!, {
     skip: !searchQuery,
   });
+
+  const handleChange = (
+    e: SyntheticEvent<HTMLElement, Event>,
+    data: string[]
+  ) => {
+    setCuisineSelection([...data]);
+  };
+
+  console.log("query result: " + JSON.stringify(resultVendors, null, 2));
+  console.log("cuisine selection:" + cuisineSelection);
 
   const dispatch = useAppDispatch();
 
@@ -52,7 +66,12 @@ const LandingPageSidebar: React.FC = () => {
         />
         <h3 className={styles.header}>Filters</h3>
         <h3 className={styles.header}>Cuisine</h3>
-        <SelectFilter />
+
+        <SelectFilter
+          addSelection={handleChange}
+          selections={cuisineSelection}
+        />
+
         <h3 className={styles.header}>Prices</h3>
         <Checkbox label="0~5$" className={styles.checkbox} />
         <Checkbox label="5~10$" className={styles.checkbox} />
@@ -62,20 +81,44 @@ const LandingPageSidebar: React.FC = () => {
       <Menu.Item>
         <h3 className={styles.header}>Results</h3>
       </Menu.Item>
+
       <Container textAlign="left">
         {resultVendors
-          ? resultVendors.map((vendor) => (
-              <Container key={vendor.ID}>
-                <Container className={styles.vendorInfo}>
-                  <h2>
-                    <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
-                  </h2>
-                  <p>Address: {vendor.BusinessAddress}</p>
-                  <p>Business Hours: {vendor.BusinessHours}</p>
-                </Container>
-                <Container className={styles.divider} />
-              </Container>
-            ))
+          ? resultVendors.map((vendor) => {
+              if (cuisineSelection.length === 0) {
+                return (
+                  <Container key={vendor.ID}>
+                    <Container className={styles.vendorInfo}>
+                      <h2>
+                        <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+                      </h2>
+                      <p>Address: {vendor.BusinessAddress}</p>
+                      <p>Business Hours: {vendor.BusinessHours}</p>
+                    </Container>
+                    <Container className={styles.divider} />
+                  </Container>
+                );
+              } else {
+                for (const iterator of vendor["Cuisine Types"]) {
+                  if (cuisineSelection.includes(iterator)) {
+                    return (
+                      <Container key={vendor.ID}>
+                        <Container className={styles.vendorInfo}>
+                          <h2>
+                            <Link to={`/vendors/${vendor.ID}`}>
+                              {vendor.Name}
+                            </Link>
+                          </h2>
+                          <p>Address: {vendor.BusinessAddress}</p>
+                          <p>Business Hours: {vendor.BusinessHours}</p>
+                        </Container>
+                        <Container className={styles.divider} />
+                      </Container>
+                    );
+                  }
+                }
+              }
+            })
           : null}
       </Container>
     </Sidebar>
