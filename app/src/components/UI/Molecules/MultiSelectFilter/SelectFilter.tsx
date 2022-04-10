@@ -1,5 +1,5 @@
-import React from "react";
-import { Dropdown } from "semantic-ui-react";
+import React, { SyntheticEvent } from "react";
+import { Dropdown, DropdownProps } from "semantic-ui-react";
 import styles from "./filter.module.css";
 
 const options = [
@@ -40,7 +40,10 @@ const options = [
   },
 ];
 
-const SelectFilter: React.FC<{addSelection: (cuisine: string[]) => void, selections: string[]}> = ({ addSelection, selections }) => {
+const SelectFilter: React.FC<{
+  addSelection: (e, value) => void;
+  selections: string[];
+}> = ({ addSelection, selections }) => {
   return (
     <Dropdown
       placeholder="Cuisine Type"
@@ -51,7 +54,7 @@ const SelectFilter: React.FC<{addSelection: (cuisine: string[]) => void, selecti
       options={options}
       className={styles.filter}
       value={selections}
-      // onChange={addSelection([...selections])}
+      onChange={(e, data) => addSelection(e, data.value)}
     />
   );
 };
