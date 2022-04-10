@@ -38,10 +38,15 @@ const options = [
     text: "Thai",
     value: "Thai",
   },
+  {
+    key: "Korean",
+    text: "Korean",
+    value: "Korean",
+  },
 ];
 
 const SelectFilter: React.FC<{
-  addSelection: (e, value) => void;
+  addSelection: (e: SyntheticEvent<HTMLElement, Event>, value) => void;
   selections: string[];
 }> = ({ addSelection, selections }) => {
   return (
