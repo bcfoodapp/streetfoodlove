@@ -258,7 +258,7 @@ func (b *Backend) CuisineType(vendorID uuid.UUID, cuisineType string) (*database
 	return b.Database.CuisineType(vendorID, cuisineType)
 }
 
-//Query 
+//Query
 func (b *Backend) QueryCreate(userID uuid.UUID, query *database.Query) error {
 	if query.UserID != userID {
 		return unauthorized

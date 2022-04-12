@@ -92,7 +92,6 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/queries/:id", a.Query)
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
-
 }
 
 // errorHandler writes any errors to response.
@@ -904,7 +903,7 @@ func ParseQueryKey(key string) (*database.Query, error) {
 	}
 
 	return &database.Query{
-		ID:   ID,
+		ID:     ID,
 		UserID: userID,
 	}, nil
 }
