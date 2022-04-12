@@ -29,6 +29,7 @@ export default (): React.ReactElement => {
 
   useEffectAsync(async () => {
     if (reviews && reviews.length > 0 && user) {
+      // Update LastReviewSeen to latest review
       await updateUser({
         ...user,
         LastReviewSeen: reviews[0].ID,
