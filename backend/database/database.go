@@ -187,7 +187,7 @@ type UserProtected struct {
 	Email          string
 	SignUpDate     time.Time
 	GoogleID       *string
-	LastReviewSeen uuid.UUID
+	LastReviewSeen *uuid.UUID
 }
 
 func (d *Database) UserCreate(user *UserProtected, password string) error {

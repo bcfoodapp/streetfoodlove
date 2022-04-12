@@ -5,9 +5,6 @@ import {
   useEffectAsync,
   useGetTokenMutation,
   useVendorByOwnerIDQuery,
-  Review as ReviewObj,
-  useUserQuery,
-  useUserProtectedQuery,
   useNewReviewsQuery,
 } from "../../../../api";
 import { Review } from "../../Organisms/Review/Review";
@@ -26,26 +23,24 @@ export default (): React.ReactElement => {
   const { data: reviews } = useNewReviewsQuery(userID!, {
     skip: !userID,
   });
-  console.log(reviews);
+  const { data: vendor } = useVendorByOwnerIDQuery(userID!, { skip: !userID });
 
-  return <></>;
+  if (userID === null) {
+    return <p>Not logged in</p>;
+  }
 
-  // const review = {
-  //   Text: "Text",
-  //   StarRating: 5,
-  //   VendorID: vendor?.ID,
-  // } as ReviewObj;
-  //
-  // if (userID === null) {
-  //   return <p>Not logged in</p>;
-  // }
-  //
-  // return (
-  //   <Container>
-  //     <h1>New Reviews for {vendor?.Name}</h1>
-  //     {vendor ? (
-  //       <Review review={review} reviewID={""} vendorID={vendor.ID} />
-  //     ) : null}
-  //   </Container>
-  // );
+  return (
+    <Container>
+      <h1>New Reviews for {vendor?.Name}</h1>
+      {reviews && vendor ? (
+        reviews.length > 0 ? (
+          reviews.map((review) => (
+            <Review review={review} reviewID={review.ID} vendorID={vendor.ID} />
+          ))
+        ) : (
+          <p>No new reviews</p>
+        )
+      ) : null}
+    </Container>
+  );
 };
