@@ -656,17 +656,24 @@ export const apiSlice = createApi({
 
         const user = userResponse.data as UserProtected;
 
+        let response;
+
         if (user.LastReviewSeen === null) {
-          return { data: [] };
+          response = await baseQuery(
+            `/reviews?vendorID=${encode(vendor.ID)}`,
+            api,
+            {}
+          );
+        } else {
+          response = await baseQuery(
+            `/reviews?vendorID=${encode(vendor.ID)}&afterReview=${encode(
+              user.LastReviewSeen
+            )}`,
+            api,
+            {}
+          );
         }
 
-        const response = await baseQuery(
-          `/reviews?vendorID=${encode(vendor.ID)}&afterReview=${encode(
-            user.LastReviewSeen
-          )}`,
-          api,
-          {}
-        );
         if ("error" in response) {
           return response as QueryReturnValue<Review[]>;
         }
