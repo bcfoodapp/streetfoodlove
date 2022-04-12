@@ -6,6 +6,8 @@ import {
   useGetTokenMutation,
   useVendorByOwnerIDQuery,
   useNewReviewsQuery,
+  useUserProtectedQuery,
+  useUpdateUserMutation,
 } from "../../../../api";
 import { Review } from "../../Organisms/Review/Review";
 
@@ -20,10 +22,19 @@ export default (): React.ReactElement => {
     }
   }, []);
 
-  const { data: reviews } = useNewReviewsQuery(userID!, {
-    skip: !userID,
-  });
+  const { data: reviews } = useNewReviewsQuery(userID!, { skip: !userID });
   const { data: vendor } = useVendorByOwnerIDQuery(userID!, { skip: !userID });
+  const { data: user } = useUserProtectedQuery(userID!, { skip: !userID });
+  const [updateUser] = useUpdateUserMutation();
+
+  useEffectAsync(async () => {
+    if (reviews && reviews.length > 0 && user) {
+      await updateUser({
+        ...user,
+        LastReviewSeen: reviews[0].ID,
+      });
+    }
+  }, [reviews, user]);
 
   if (userID === null) {
     return <p>Not logged in</p>;

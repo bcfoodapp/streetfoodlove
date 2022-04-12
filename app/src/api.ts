@@ -47,6 +47,7 @@ export interface UserProtected extends User {
   Email: string;
   SignUpDate: DateTime;
   GoogleID: string | null;
+  // Review ID of last seen review
   LastReviewSeen: string | null;
 }
 
