@@ -688,7 +688,7 @@ export const apiSlice = createApi({
           data: transformed,
         };
       },
-      providesTags: ["Review"],
+      providesTags: ["Review", "CurrentUser"],
     }),
   }),
 });

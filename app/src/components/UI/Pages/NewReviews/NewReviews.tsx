@@ -10,6 +10,7 @@ import {
   useUpdateUserMutation,
 } from "../../../../api";
 import { Review } from "../../Organisms/Review/Review";
+import Buttons from "../../Atoms/Button/Buttons";
 
 export default (): React.ReactElement => {
   const [getToken] = useGetTokenMutation();
@@ -27,16 +28,6 @@ export default (): React.ReactElement => {
   const { data: user } = useUserProtectedQuery(userID!, { skip: !userID });
   const [updateUser] = useUpdateUserMutation();
 
-  useEffectAsync(async () => {
-    if (reviews && reviews.length > 0 && user) {
-      // Update LastReviewSeen to latest review
-      await updateUser({
-        ...user,
-        LastReviewSeen: reviews[0].ID,
-      });
-    }
-  }, [reviews, user]);
-
   if (userID === null) {
     return <p>Not logged in</p>;
   }
@@ -46,9 +37,29 @@ export default (): React.ReactElement => {
       <h1>New Reviews for {vendor?.Name}</h1>
       {reviews && vendor ? (
         reviews.length > 0 ? (
-          reviews.map((review) => (
-            <Review review={review} reviewID={review.ID} vendorID={vendor.ID} />
-          ))
+          <>
+            {reviews.map((review) => (
+              <Review
+                review={review}
+                reviewID={review.ID}
+                vendorID={vendor.ID}
+              />
+            ))}
+            {user ? (
+              <Buttons
+                login
+                clicked={() => {
+                  // Update LastReviewSeen to latest review
+                  updateUser({
+                    ...user,
+                    LastReviewSeen: reviews[0].ID,
+                  });
+                }}
+              >
+                Mark all as read
+              </Buttons>
+            ) : null}
+          </>
         ) : (
           <p>No new reviews</p>
         )
