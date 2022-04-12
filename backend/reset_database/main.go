@@ -184,7 +184,7 @@ func SetupTables(db *sqlx.DB) error {
 			UserID CHAR(36) NOT NULL,
 			QueryText VARCHAR(200) NULL,
 			DateRequested DATETIME NULL,
-			PRIMARY KEY (ID)
+			PRIMARY KEY (ID),
 			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
