@@ -178,6 +178,16 @@ func SetupTables(db *sqlx.DB) error {
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
+		`
+		CREATE TABLE Queries (
+			ID CHAR(36) NOT NULL,
+			UserID CHAR(36) NOT NULL,
+			QueryText VARCHAR(200) NULL,
+			DateRequested DATETIME NULL,
+			PRIMARY KEY (ID)
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
 	}
 
 	for _, command := range commands {
