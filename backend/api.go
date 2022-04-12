@@ -346,7 +346,6 @@ func (a *API) Reviews(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, reviews)
-	return
 }
 
 func (a *API) Review(c *gin.Context) {
