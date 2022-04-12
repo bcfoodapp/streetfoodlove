@@ -847,7 +847,7 @@ func (d *Database) QueryCreate(Query *Query) error {
 		) VALUES (
 			:ID,
 			:UserID,
-			:QueryText
+			:QueryText,
 			:DateRequested
 		)
 	`
