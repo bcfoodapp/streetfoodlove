@@ -1,20 +1,13 @@
+import React, { useState } from "react";
+import { Container } from "semantic-ui-react";
 import {
   getUserIDFromToken,
   useEffectAsync,
   useGetTokenMutation,
-  useStarsByUserIDQuery,
-  useVendorQuery,
+  useVendorByOwnerIDQuery,
+  Review as ReviewObj,
 } from "../../../../api";
-import React, { useState } from "react";
-
-interface VendorNameProps {
-  vendorID: string;
-}
-
-function VendorName({ vendorID }: VendorNameProps): React.ReactElement {
-  const { data: vendor } = useVendorQuery(vendorID);
-  return <p>{vendor?.Name}</p>;
-}
+import { Review } from "../../Organisms/Review/Review";
 
 export default (): React.ReactElement => {
   const [getToken] = useGetTokenMutation();
@@ -27,19 +20,26 @@ export default (): React.ReactElement => {
     }
   }, []);
 
-  const { data: stars } = useStarsByUserIDQuery(userID!, {
+  const { data: vendor } = useVendorByOwnerIDQuery(userID!, {
     skip: !userID,
   });
+
+  const review = {
+    Text: "Text",
+    StarRating: 5,
+    VendorID: vendor?.ID,
+  } as ReviewObj;
 
   if (userID === null) {
     return <p>Not logged in</p>;
   }
 
   return (
-    <>
-      {stars?.map((star, index) => (
-        <VendorName key={index} vendorID={star.VendorID} />
-      ))}
-    </>
+    <Container>
+      <h1>New Reviews for {vendor?.Name}</h1>
+      {vendor ? (
+        <Review review={review} reviewID={""} vendorID={vendor.ID} />
+      ) : null}
+    </Container>
   );
 };
