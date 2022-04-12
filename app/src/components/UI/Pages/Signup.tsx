@@ -65,6 +65,7 @@ export default function Signup(): React.ReactElement {
       Password: data.password,
       SignUpDate: DateTime.now(),
       GoogleID: null,
+      LastReviewSeen: null,
     });
 
     if ("data" in response) {

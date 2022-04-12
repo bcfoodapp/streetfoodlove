@@ -6,6 +6,9 @@ import {
   useGetTokenMutation,
   useVendorByOwnerIDQuery,
   Review as ReviewObj,
+  useUserQuery,
+  useUserProtectedQuery,
+  useNewReviewsQuery,
 } from "../../../../api";
 import { Review } from "../../Organisms/Review/Review";
 
@@ -20,26 +23,29 @@ export default (): React.ReactElement => {
     }
   }, []);
 
-  const { data: vendor } = useVendorByOwnerIDQuery(userID!, {
+  const { data: reviews } = useNewReviewsQuery(userID!, {
     skip: !userID,
   });
+  console.log(reviews);
 
-  const review = {
-    Text: "Text",
-    StarRating: 5,
-    VendorID: vendor?.ID,
-  } as ReviewObj;
+  return <></>;
 
-  if (userID === null) {
-    return <p>Not logged in</p>;
-  }
-
-  return (
-    <Container>
-      <h1>New Reviews for {vendor?.Name}</h1>
-      {vendor ? (
-        <Review review={review} reviewID={""} vendorID={vendor.ID} />
-      ) : null}
-    </Container>
-  );
+  // const review = {
+  //   Text: "Text",
+  //   StarRating: 5,
+  //   VendorID: vendor?.ID,
+  // } as ReviewObj;
+  //
+  // if (userID === null) {
+  //   return <p>Not logged in</p>;
+  // }
+  //
+  // return (
+  //   <Container>
+  //     <h1>New Reviews for {vendor?.Name}</h1>
+  //     {vendor ? (
+  //       <Review review={review} reviewID={""} vendorID={vendor.ID} />
+  //     ) : null}
+  //   </Container>
+  // );
 };
