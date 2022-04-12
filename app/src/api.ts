@@ -346,7 +346,7 @@ export const apiSlice = createApi({
       transformResponse: (response: any[]) =>
         response.map((review) => ({
           ...review,
-          PostDate: DateTime.fromISO(review.DatePosted),
+          DatePosted: DateTime.fromISO(review.DatePosted),
         })),
       providesTags: ["Review"],
     }),
@@ -627,6 +627,21 @@ export const apiSlice = createApi({
         };
       },
     }),
+    reviewsAfterLastSeen: builder.query<
+      Review[],
+      { vendorID: string; lastSeenReview: string }
+    >({
+      query: ({ vendorID, lastSeenReview }) =>
+        `/reviews?vendorID=${encode(vendorID)}&afterReview=${encode(
+          lastSeenReview
+        )}`,
+      transformResponse: (response: any[]) =>
+        response.map((review) => ({
+          ...review,
+          DatePosted: DateTime.fromISO(review.DatePosted),
+        })),
+      providesTags: ["Review"],
+    }),
   }),
 });
 
@@ -660,6 +675,7 @@ export const {
   useCountStarsForVendorQuery,
   useDeleteStarMutation,
   useSearchQuery,
+  useReviewsAfterLastSeenQuery,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
