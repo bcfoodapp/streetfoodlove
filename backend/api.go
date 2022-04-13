@@ -884,7 +884,6 @@ func (a *API) CuisineType(c *gin.Context) {
 	c.JSON(http.StatusOK, cuisineType)
 }
 
-
 func (a *API) QueryPut(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -924,7 +923,6 @@ func (a *API) Queries(c *gin.Context) {
 
 	c.JSON(http.StatusOK, queries)
 }
-
 
 func (a *API) Query(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
