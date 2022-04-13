@@ -77,6 +77,7 @@ func SetupTables(db *sqlx.DB) error {
 			UserType TINYINT NULL,
 			Photo VARCHAR(50) NOT NULL,
 			GoogleID VARCHAR(50) UNIQUE NULL,
+			LastReviewSeen CHAR(36) NULL,
 			PRIMARY KEY (ID)
 		)
 		`,
@@ -188,6 +189,11 @@ func SetupTables(db *sqlx.DB) error {
 			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
+    `
+		ALTER TABLE User
+			ADD FOREIGN KEY (LastReviewSeen) REFERENCES Reviews(ID)
+			ON DELETE SET NULL ON UPDATE CASCADE
+    `,
 	}
 
 	for _, command := range commands {
