@@ -12,8 +12,8 @@ import { setSearchQuery, showSideBar } from "../../../../store/search";
 export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
   const [recentSearchResult, setRecentSearchResult] = useState<Vendor[]>([]);
-  const { data: vendorsList } = useVendorsQuery();
   const [searchString, setSearchString] = useState("");
+  const { data: vendorsList } = useVendorsQuery();
   const dispatch = useAppDispatch();
 
   const enterQueryHandler = () => {
@@ -75,8 +75,6 @@ export const SearchBox: React.FC = () => {
         //filter all vendors from recent search who matches regex expr.
         return condition.test(element.Name);
       });
-
-      // console.table(recentSearchFilteredResult);
 
       for (let i = 0; i < filteredResult.length; i++) {
         //loop through all vendors that pass the regex filter

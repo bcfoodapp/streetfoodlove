@@ -1,5 +1,7 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { Dropdown } from "semantic-ui-react";
+import { useAppDispatch } from "../../../../store/root";
+import { setCuisineType } from "../../../../store/search";
 import styles from "./filter.module.css";
 
 const options = [
@@ -38,9 +40,16 @@ const options = [
     text: "Thai",
     value: "Thai",
   },
+  {
+    key: "Korean",
+    text: "Korean",
+    value: "Korean",
+  },
 ];
 
-const SelectFilter: React.FC = () => {
+const SelectFilter: React.FC<{}> = () => {
+  const dispatch = useAppDispatch();
+
   return (
     <Dropdown
       placeholder="Cuisine Type"
@@ -50,6 +59,7 @@ const SelectFilter: React.FC = () => {
       selection
       options={options}
       className={styles.filter}
+      onChange={(e, data) => dispatch(setCuisineType(data.value as string[]))}
     />
   );
 };
