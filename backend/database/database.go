@@ -186,9 +186,10 @@ type User struct {
 // UserProtected contains User fields plus fields that are password-protected.
 type UserProtected struct {
 	*User
-	Email      string
-	SignUpDate time.Time
-	GoogleID   *string
+	Email          string
+	SignUpDate     time.Time
+	GoogleID       *string
+	LastReviewSeen uuid.UUID
 }
 
 func (d *Database) UserCreate(user *UserProtected, password string) error {
@@ -239,7 +240,8 @@ func (d *Database) User(id uuid.UUID) (*UserProtected, error) {
 			SignUpDate,
 			UserType,
 			Photo,
-			GoogleID
+			GoogleID,
+			LastReviewSeen
 		FROM User
 		WHERE ID=?
 	`
@@ -258,7 +260,8 @@ func (d *Database) UserUpdate(user *UserProtected) error {
 			LastName = :LastName,
 			UserType = :UserType,
 			Photo = :Photo,
-			GoogleID = :GoogleID
+			GoogleID = :GoogleID,
+			LastReviewSeen = :LastReviewSeen
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &user)
