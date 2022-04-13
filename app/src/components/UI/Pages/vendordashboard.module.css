@@ -12,6 +12,7 @@
   cursor: pointer;
   box-shadow: 2px 4px darkcyan !important;
   border: 2px solid black !important;
+  height: 200px;
 }
 
 .content {
