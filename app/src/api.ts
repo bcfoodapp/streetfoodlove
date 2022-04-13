@@ -47,6 +47,8 @@ export interface UserProtected extends User {
   Email: string;
   SignUpDate: DateTime;
   GoogleID: string | null;
+  // Review ID of last seen review
+  LastReviewSeen: string | null;
 }
 
 export type StarRatingInteger = 1 | 2 | 3 | 4 | 5 | null;
@@ -346,7 +348,7 @@ export const apiSlice = createApi({
       transformResponse: (response: any[]) =>
         response.map((review) => ({
           ...review,
-          PostDate: DateTime.fromISO(review.DatePosted),
+          DatePosted: DateTime.fromISO(review.DatePosted),
         })),
       providesTags: ["Review"],
     }),
@@ -457,6 +459,7 @@ export const apiSlice = createApi({
             Password: uuid(),
             SignUpDate: DateTime.now(),
             GoogleID: tokenPayload.sub,
+            LastReviewSeen: null,
           };
           const createUserResponse = await baseQuery(
             {
@@ -544,7 +547,7 @@ export const apiSlice = createApi({
     // Returns true if star exists
     starExists: builder.query<boolean, Star>({
       queryFn: async (star, api) => {
-        let response = await baseQuery(
+        const response = await baseQuery(
           { url: `/stars/${encode(star.UserID + star.VendorID)}` },
           api,
           {}
@@ -627,6 +630,66 @@ export const apiSlice = createApi({
         };
       },
     }),
+    // Gets new reviews for vendor user.
+    newReviews: builder.query<Review[], string>({
+      queryFn: async (userID, api) => {
+        const vendorResponse = await baseQuery(
+          `/vendors?owner=${encode(userID)}`,
+          api,
+          {}
+        );
+
+        if ("error" in vendorResponse) {
+          return vendorResponse as QueryReturnValue<Review[]>;
+        }
+
+        const vendor = vendorResponse.data as Vendor;
+
+        const userResponse = await baseQuery(
+          `/users/${encode(userID)}/protected`,
+          api,
+          {}
+        );
+
+        if ("error" in userResponse) {
+          return userResponse as QueryReturnValue<Review[]>;
+        }
+
+        const user = userResponse.data as UserProtected;
+
+        let response;
+
+        if (user.LastReviewSeen === null) {
+          response = await baseQuery(
+            `/reviews?vendorID=${encode(vendor.ID)}`,
+            api,
+            {}
+          );
+        } else {
+          response = await baseQuery(
+            `/reviews?vendorID=${encode(vendor.ID)}&afterReview=${encode(
+              user.LastReviewSeen
+            )}`,
+            api,
+            {}
+          );
+        }
+
+        if ("error" in response) {
+          return response as QueryReturnValue<Review[]>;
+        }
+
+        const transformed = (response.data as any[]).map((review) => ({
+          ...review,
+          DatePosted: DateTime.fromISO(review.DatePosted),
+        }));
+
+        return {
+          data: transformed,
+        };
+      },
+      providesTags: ["Review", "CurrentUser"],
+    }),
   }),
 });
 
@@ -660,6 +723,7 @@ export const {
   useCountStarsForVendorQuery,
   useDeleteStarMutation,
   useSearchQuery,
+  useNewReviewsQuery,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
