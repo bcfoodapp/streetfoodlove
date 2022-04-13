@@ -117,7 +117,7 @@ func noRoute(c *gin.Context) {
 	c.JSON(http.StatusNotFound, "page not found")
 }
 
-var idsDoNotMatch = fmt.Errorf("ids do not match")
+var errIDsDoNotMatch = fmt.Errorf("ids do not match")
 
 func root(c *gin.Context) {
 	c.JSON(http.StatusOK, "StreetFoodLove API")
@@ -167,7 +167,7 @@ func (a *API) VendorPut(c *gin.Context) {
 	}
 
 	if id != vendor.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -191,7 +191,7 @@ func (a *API) VendorPost(c *gin.Context) {
 	}
 
 	if id != vendor.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -274,7 +274,7 @@ func (a *API) UserProtectedPost(c *gin.Context) {
 	}
 
 	if id != user.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -301,7 +301,7 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 
 	if id != userWithPassword.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -383,7 +383,7 @@ func (a *API) ReviewPut(c *gin.Context) {
 	}
 
 	if id != review.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -407,7 +407,7 @@ func (a *API) ReviewPost(c *gin.Context) {
 	}
 
 	if id != review.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -568,7 +568,7 @@ func (a *API) PhotoPut(c *gin.Context) {
 	}
 
 	if c.Param("id") != photo.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -644,7 +644,7 @@ func (a *API) FavoritePut(c *gin.Context) {
 	}
 
 	if id != favorite.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -914,7 +914,7 @@ func (a *API) QueryPut(c *gin.Context) {
 	}
 
 	if id != query.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
