@@ -5,6 +5,7 @@ import {
   getUserIDFromToken,
   useEffectAsync,
   useGetTokenMutation,
+  useNewReviewsQuery,
   useVendorByOwnerIDQuery,
 } from "../../../api";
 import React, { useState } from "react";
@@ -24,6 +25,8 @@ const VendorDashBoard: React.FC = () => {
   const { data: vendor } = useVendorByOwnerIDQuery(userID as string, {
     skip: !userID,
   });
+
+  const { data: newReviews } = useNewReviewsQuery(userID!, { skip: !userID });
 
   const navigate = useNavigate();
 
@@ -99,8 +102,12 @@ const VendorDashBoard: React.FC = () => {
           <Card className={styles.card}>
             <Icon name="write" size="huge" className={styles.icon} />
             <Card.Content className={styles.content}>
-              <Card.Header>New Reviews</Card.Header>
-              <Card.Description>Look at recent reviews</Card.Description>
+              <Card.Header>New Reviews ({newReviews?.length})</Card.Header>
+              <Card.Description>
+                {newReviews && newReviews.length > 0
+                  ? `There are ${newReviews.length} new reviews`
+                  : "No new reviews"}
+              </Card.Description>
             </Card.Content>
           </Card>
         </Link>
