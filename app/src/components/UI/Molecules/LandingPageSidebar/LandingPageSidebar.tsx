@@ -13,7 +13,11 @@ import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
 import { useSearchQuery } from "../../../../api";
 import { Link } from "react-router-dom";
-import { hideSideBar } from "../../../../store/search";
+import {
+  hideSideBar,
+  addPriceRange,
+  deletePriceRangeFilter,
+} from "../../../../store/search";
 
 const LandingPageSidebar: React.FC = () => {
   const [cuisineSelection, setCuisineSelection] = useState<string[]>([]);
@@ -23,6 +27,9 @@ const LandingPageSidebar: React.FC = () => {
   );
 
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
+  const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
+  const priceRangeFilter = useAppSelector(({ search }) => search.searchQuery);
+
   const { data: resultVendors } = useSearchQuery(searchQuery!, {
     skip: !searchQuery,
   });
@@ -67,16 +74,38 @@ const LandingPageSidebar: React.FC = () => {
         <h3 className={styles.header}>Filters</h3>
         <h3 className={styles.header}>Cuisine</h3>
 
-        <SelectFilter
-          addSelection={handleChange}
-          selections={cuisineSelection}
-        />
+        <SelectFilter />
 
         <h3 className={styles.header}>Prices</h3>
-        <Checkbox label="0~5$" className={styles.checkbox} />
-        <Checkbox label="5~10$" className={styles.checkbox} />
-        <Checkbox label="10~15$" className={styles.checkbox} />
-        <Checkbox label="20+$" className={styles.checkbox} />
+        <Checkbox
+          label="Cheap"
+          className={styles.checkbox}
+          onChange={(e, data) => {
+            data.checked
+              ? dispatch(addPriceRange(data.label as string))
+              : dispatch(deletePriceRangeFilter());
+          }}
+        />
+
+        <Checkbox
+          label="Medium"
+          className={styles.checkbox}
+          onChange={(e, data) => {
+            data.checked
+              ? dispatch(addPriceRange(data.label as string))
+              : dispatch(deletePriceRangeFilter());
+          }}
+        />
+
+        <Checkbox
+          label="Gourmet"
+          className={styles.checkbox}
+          onChange={(e, data) => {
+            data.checked
+              ? dispatch(addPriceRange(data.label as string))
+              : dispatch(deletePriceRangeFilter());
+          }}
+        />
       </Menu.Item>
       <Menu.Item>
         <h3 className={styles.header}>Results</h3>
@@ -85,39 +114,18 @@ const LandingPageSidebar: React.FC = () => {
       <Container textAlign="left">
         {resultVendors
           ? resultVendors.map((vendor) => {
-              if (cuisineSelection.length === 0) {
-                return (
-                  <Container key={vendor.ID}>
-                    <Container className={styles.vendorInfo}>
-                      <h2>
-                        <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
-                      </h2>
-                      <p>Address: {vendor.BusinessAddress}</p>
-                      <p>Business Hours: {vendor.BusinessHours}</p>
-                    </Container>
-                    <Container className={styles.divider} />
+              return (
+                <Container key={vendor.ID}>
+                  <Container className={styles.vendorInfo}>
+                    <h2>
+                      <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+                    </h2>
+                    <p>Address: {vendor.BusinessAddress}</p>
+                    <p>Business Hours: {vendor.BusinessHours}</p>
                   </Container>
-                );
-              } else {
-                for (const iterator of vendor["Cuisine Types"]) {
-                  if (cuisineSelection.includes(iterator)) {
-                    return (
-                      <Container key={vendor.ID}>
-                        <Container className={styles.vendorInfo}>
-                          <h2>
-                            <Link to={`/vendors/${vendor.ID}`}>
-                              {vendor.Name}
-                            </Link>
-                          </h2>
-                          <p>Address: {vendor.BusinessAddress}</p>
-                          <p>Business Hours: {vendor.BusinessHours}</p>
-                        </Container>
-                        <Container className={styles.divider} />
-                      </Container>
-                    );
-                  }
-                }
-              }
+                  <Container className={styles.divider} />
+                </Container>
+              );
             })
           : null}
       </Container>

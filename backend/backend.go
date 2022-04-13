@@ -147,6 +147,30 @@ func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]database.Review, erro
 	return b.Database.ReviewsByVendorID(vendorID)
 }
 
+func (b *Backend) ReviewsPostedAfterReview(vendorID uuid.UUID, afterReview uuid.UUID) ([]database.Review, error) {
+	lastSeenReview, err := b.Database.Review(afterReview)
+	if err != nil {
+		return nil, err
+	}
+
+	vendorReviews, err := b.Database.ReviewsByVendorID(vendorID)
+	if err != nil {
+		return nil, err
+	}
+
+	return selectReviewsAfterTime(vendorReviews, lastSeenReview.DatePosted), nil
+}
+
+func selectReviewsAfterTime(reviews []database.Review, afterTime time.Time) []database.Review {
+	var result []database.Review
+	for _, review := range reviews {
+		if review.DatePosted.After(afterTime) {
+			result = append(result, review)
+		}
+	}
+	return result
+}
+
 func (b *Backend) VendorsByCoordinateBounds(bounds *database.CoordinateBounds) ([]uuid.UUID, error) {
 	vendors, err := b.Database.VendorsByCoordinateBounds(bounds)
 	if err != nil {
@@ -206,6 +230,7 @@ func (b *Backend) FavoriteCreate(userID uuid.UUID, favorite *database.Favorite) 
 	return b.Database.FavoriteCreate(favorite)
 }
 
+//Star
 func (b *Backend) StarCreate(userID uuid.UUID, star *database.Star) error {
 	if star.UserID != userID {
 		return unauthorized
@@ -255,4 +280,21 @@ func (b *Backend) CuisineTypeByVendorID(vendorID uuid.UUID) ([]database.CuisineT
 
 func (b *Backend) CuisineType(vendorID uuid.UUID, cuisineType string) (*database.CuisineTypes, error) {
 	return b.Database.CuisineType(vendorID, cuisineType)
+}
+
+//Query
+func (b *Backend) QueryCreate(userID uuid.UUID, query *database.Query) error {
+	if query.UserID != userID {
+		return unauthorized
+	}
+	query.DateRequested = time.Now()
+	return b.Database.QueryCreate(query)
+}
+
+func (b *Backend) QueryByUserID(userID uuid.UUID) ([]database.Query, error) {
+	return b.Database.QueryByUserID(userID)
+}
+
+func (b *Backend) Query(id uuid.UUID) (*database.Query, error) {
+	return b.Database.Query(id)
 }
