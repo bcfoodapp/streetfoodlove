@@ -829,12 +829,11 @@ func (d *Database) CuisineType(vendorID uuid.UUID, cuisineType string) (*Cuisine
 	return CuisineType, err
 }
 
-
 type Query struct {
-	ID              uuid.UUID
-	UserID          uuid.UUID
-	QueryText       string
-	DateRequested   time.Time
+	ID            uuid.UUID
+	UserID        uuid.UUID
+	QueryText     string
+	DateRequested time.Time
 }
 
 func (d *Database) QueryCreate(Query *Query) error {
@@ -898,4 +897,3 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	err := d.db.QueryRowx(command, &userID).Scan(&result)
 	return result, err
 }
-
