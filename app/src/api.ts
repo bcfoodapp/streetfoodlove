@@ -591,7 +591,7 @@ export const apiSlice = createApi({
     }),
     // Returns search result for given search string.
     search: builder.query<OpenSearchVendor[], string>({
-      queryFn: async (searchString, api) => {
+      queryFn: async (searchString, api, priceRanges) => {
         let headers = new Headers();
         headers.append(
           "Authorization",
@@ -604,9 +604,26 @@ export const apiSlice = createApi({
           "source",
           JSON.stringify({
             query: {
-              match: {
-                Name: searchString,
-              },
+              bool: {
+                must: [
+                  {
+                    match: {
+                      Name: searchString,
+                    },
+                  },
+                  // {
+                  //   multi_match: {
+                  //     query: "Lynnwood",
+                  //     fields: ["Areas"]
+                  //   }
+                  // }
+                ],
+                filter: {
+                  term: {
+                    ["Cuisine Type"]: "Mexican"
+                  }
+                }
+              }
             },
           })
         );

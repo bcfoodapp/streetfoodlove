@@ -31,6 +31,8 @@ const LandingPageSidebar: React.FC = () => {
     skip: !searchQuery,
   });
 
+  console.log(resultVendors);
+
   const dispatch = useAppDispatch();
 
   return (
@@ -121,3 +123,37 @@ const LandingPageSidebar: React.FC = () => {
 };
 
 export default LandingPageSidebar;
+
+// GET _search
+// {
+//  "query": {
+//  "bool": {
+//  "must": [
+//  {
+//  "match": {
+//  "text_entry": "Bellevue"
+//  }
+//  }
+//  ],
+//  "should": [
+//  {
+//  "match": {
+//  "text_entry": "Korean"
+//  }
+//  }
+//  ],
+//  "minimum_should_match": 1,
+//  "must_not": [
+//  {
+//  "match": {
+//  "PriceRange": "Gourmet"
+//  }
+//  ],
+//  "filter": {
+//  "term": {
+//  "Cuisine Type": "Cheap"
+//  }
+//  }
+//  }
+// } 
+
