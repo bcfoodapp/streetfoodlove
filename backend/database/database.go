@@ -831,3 +831,72 @@ func (d *Database) CuisineType(vendorID uuid.UUID, cuisineType string) (*Cuisine
 	err := d.db.QueryRowx(command, &vendorID, &cuisineType).StructScan(CuisineType)
 	return CuisineType, err
 }
+
+type Query struct {
+	ID            uuid.UUID
+	UserID        uuid.UUID
+	QueryText     string
+	DateRequested time.Time
+}
+
+func (d *Database) QueryCreate(Query *Query) error {
+	const command = `
+		INSERT INTO Queries (
+			ID,
+			UserID,
+			QueryText,
+			DateRequested
+		) VALUES (
+			:ID,
+			:UserID,
+			:QueryText,
+			:DateRequested
+		)
+	`
+
+	_, err := d.db.NamedExec(command, Query)
+	return err
+}
+
+func (d *Database) Query(id uuid.UUID) (*Query, error) {
+	const command = `
+		SELECT * FROM Queries WHERE ID=?
+	`
+
+	query := &Query{}
+	err := d.db.QueryRowx(command, &id).StructScan(query)
+	return query, err
+}
+
+func (d *Database) QueryByUserID(userID uuid.UUID) ([]Query, error) {
+	const command = `
+		SELECT * FROM Queries WHERE UserID=?
+	`
+
+	rows, err := d.db.Queryx(command, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Query, 0)
+
+	for rows.Next() {
+		result = append(result, Query{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
+	const command = `
+		SELECT count(*) FROM Queries WHERE UserID=? QueryText = ?
+		ORDER BY DateRequested DESC
+	`
+	result := 0
+	err := d.db.QueryRowx(command, &userID).Scan(&result)
+	return result, err
+}
