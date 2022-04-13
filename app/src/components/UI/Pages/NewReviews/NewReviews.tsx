@@ -38,8 +38,9 @@ export default (): React.ReactElement => {
       {reviews && vendor ? (
         reviews.length > 0 ? (
           <>
-            {reviews.map((review) => (
+            {reviews.map((review, i) => (
               <Review
+                key={i}
                 review={review}
                 reviewID={review.ID}
                 vendorID={vendor.ID}
