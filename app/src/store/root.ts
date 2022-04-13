@@ -33,7 +33,6 @@ export const rootSlice = createSlice({
   initialState: {
     error: null as string | null,
     showError: false,
-    sideBarShowing: false,
   },
   reducers: {
     setError: (state, { payload }: PayloadAction<string>) => {
@@ -44,17 +43,10 @@ export const rootSlice = createSlice({
     hideError: (state) => {
       state.showError = false;
     },
-    showSideBar: (state) => {
-      state.sideBarShowing = true;
-    },
-    hideSideBar: (state) => {
-      state.sideBarShowing = false;
-    },
   },
 });
 
-export const { setError, hideError, showSideBar, hideSideBar } =
-  rootSlice.actions;
+export const { setError, hideError } = rootSlice.actions;
 
 export const store = configureStore({
   reducer: {

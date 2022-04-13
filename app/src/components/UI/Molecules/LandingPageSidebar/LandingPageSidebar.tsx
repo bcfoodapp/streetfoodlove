@@ -12,53 +12,24 @@ import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
 import { useSearchQuery } from "../../../../api";
 import { Link } from "react-router-dom";
-import { hideSideBar } from "../../../../store/search";
+import {
+  hideSideBar,
+  addPriceRange,
+  deletePriceRangeFilter,
+} from "../../../../store/search";
 
 const LandingPageSidebar: React.FC = () => {
-  const [cuisineSelection, setCuisineSelection] = useState<string[]>([]);
-  const [cheapSelection, setCheapSelection] = useState<boolean>(false);
-  const [mediumSelection, setMediumSelection] = useState<boolean>(false);
-  const [gourmetSelection, setGourmetSelection] = useState<boolean>(false);
-
   const showSideBarState = useAppSelector(
     (state) => state.search.sideBarShowing
   );
 
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
+  const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
+  const priceRangeFilter = useAppSelector(({ search }) => search.searchQuery);
+
   const { data: resultVendors } = useSearchQuery(searchQuery!, {
     skip: !searchQuery,
   });
-
-  const handleChange = (
-    e: SyntheticEvent<HTMLElement, Event>,
-    data: string[]
-  ) => {
-    setCuisineSelection([...data]);
-  };
-
-  const handleCheapSelectionChange = (
-    e: React.FormEvent<HTMLInputElement>,
-    data
-  ) => {
-    console.log("data: " + data);
-    setCheapSelection(data);
-  };
-
-  const handleMediumSelectionChange = (
-    e: React.FormEvent<HTMLInputElement>,
-    data
-  ) => {
-    console.log("data: " + data);
-    setMediumSelection(data);
-  };
-
-  const handleGourmetSelectionChange = (
-    e: React.FormEvent<HTMLInputElement>,
-    data
-  ) => {
-    console.log("data: " + data);
-    setGourmetSelection(data);
-  };
 
   const dispatch = useAppDispatch();
 
@@ -90,28 +61,37 @@ const LandingPageSidebar: React.FC = () => {
         <h3 className={styles.header}>Filters</h3>
         <h3 className={styles.header}>Cuisine</h3>
 
-        <SelectFilter
-          addSelection={handleChange}
-          selections={cuisineSelection}
-        />
+        <SelectFilter />
 
         <h3 className={styles.header}>Prices</h3>
         <Checkbox
           label="Cheap"
           className={styles.checkbox}
-          onChange={(e, data) => handleCheapSelectionChange(e, data.checked)}
+          onChange={(e, data) => {
+            data.checked
+              ? dispatch(addPriceRange(data.label as string))
+              : dispatch(deletePriceRangeFilter());
+          }}
         />
 
         <Checkbox
           label="Medium"
           className={styles.checkbox}
-          onChange={(e, data) => handleMediumSelectionChange(e, data.checked)}
+          onChange={(e, data) => {
+            data.checked
+              ? dispatch(addPriceRange(data.label as string))
+              : dispatch(deletePriceRangeFilter());
+          }}
         />
 
         <Checkbox
           label="Gourmet"
           className={styles.checkbox}
-          onChange={(e, data) => handleGourmetSelectionChange(e, data.checked)}
+          onChange={(e, data) => {
+            data.checked
+              ? dispatch(addPriceRange(data.label as string))
+              : dispatch(deletePriceRangeFilter());
+          }}
         />
       </Menu.Item>
       <Menu.Item>
@@ -121,50 +101,18 @@ const LandingPageSidebar: React.FC = () => {
       <Container textAlign="left">
         {resultVendors
           ? resultVendors.map((vendor) => {
-              if (
-                (cheapSelection && vendor["PriceRange"] === "Cheap") ||
-                (mediumSelection && vendor["PriceRange"] === "Medium") ||
-                (gourmetSelection && vendor["PriceRange"] === "Gourmet") ||
-                (cheapSelection === false &&
-                  mediumSelection === false &&
-                  gourmetSelection === false)
-              ) {
-                if (cuisineSelection.length === 0) {
-                  return (
-                    <Container key={vendor.ID}>
-                      <Container className={styles.vendorInfo}>
-                        <h2>
-                          <Link to={`/vendors/${vendor.ID}`}>
-                            {vendor.Name}
-                          </Link>
-                        </h2>
-                        <p>Address: {vendor.BusinessAddress}</p>
-                        <p>Business Hours: {vendor.BusinessHours}</p>
-                      </Container>
-                      <Container className={styles.divider} />
-                    </Container>
-                  );
-                } else {
-                  for (const cuisine of vendor["Cuisine Types"]) {
-                    if (cuisineSelection.includes(cuisine)) {
-                      return (
-                        <Container key={vendor.ID}>
-                          <Container className={styles.vendorInfo}>
-                            <h2>
-                              <Link to={`/vendors/${vendor.ID}`}>
-                                {vendor.Name}
-                              </Link>
-                            </h2>
-                            <p>Address: {vendor.BusinessAddress}</p>
-                            <p>Business Hours: {vendor.BusinessHours}</p>
-                          </Container>
-                          <Container className={styles.divider} />
-                        </Container>
-                      );
-                    }
-                  }
-                }
-              }
+              return (
+                <Container key={vendor.ID}>
+                  <Container className={styles.vendorInfo}>
+                    <h2>
+                      <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+                    </h2>
+                    <p>Address: {vendor.BusinessAddress}</p>
+                    <p>Business Hours: {vendor.BusinessHours}</p>
+                  </Container>
+                  <Container className={styles.divider} />
+                </Container>
+              );
             })
           : null}
       </Container>
