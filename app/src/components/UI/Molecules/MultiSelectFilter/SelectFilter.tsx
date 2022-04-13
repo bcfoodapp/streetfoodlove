@@ -59,7 +59,7 @@ const SelectFilter: React.FC<{}> = () => {
       selection
       options={options}
       className={styles.filter}
-      onChange={(e, data) => dispatch(setCuisineType(data.value as string))}
+      onChange={(e, data) => dispatch(setCuisineType(data.value as string[]))}
     />
   );
 };

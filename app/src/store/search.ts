@@ -4,7 +4,7 @@ export const searchSlice = createSlice({
   name: "search",
   initialState: {
     sideBarShowing: false,
-    cuisineType: null as string[] | null,
+    cuisineType: [] as string[],
     priceRange: [] as string[],
     // searchQuery is the string that the user searched for. It is null if the user did not search.
     searchQuery: null as string | null,
@@ -19,8 +19,8 @@ export const searchSlice = createSlice({
     setSearchQuery: (state, { payload }: PayloadAction<string>) => {
       state.searchQuery = payload;
     },
-    setCuisineType: (state, { payload }: PayloadAction<string>) => {
-      state.cuisineType = [...payload];
+    setCuisineType: (state, { payload }: PayloadAction<string[]>) => {
+      state.cuisineType = payload;
     },
     addPriceRange: (state, { payload }: PayloadAction<string>) => {
       let tempArray = state.priceRange;
