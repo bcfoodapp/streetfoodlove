@@ -884,29 +884,6 @@ func (a *API) CuisineType(c *gin.Context) {
 	c.JSON(http.StatusOK, cuisineType)
 }
 
-// ParseQueryKey splits key into QueryID and UserID
-func ParseQueryKey(key string) (*database.Query, error) {
-	const uuidLength = 36
-
-	if len(key) != uuidLength*2 {
-		return nil, fmt.Errorf("key must be length 72 but is of length %v", len(key))
-	}
-
-	ID, err := uuid.Parse(key[:uuidLength])
-	if err != nil {
-		return nil, err
-	}
-
-	userID, err := uuid.Parse(key[uuidLength : uuidLength*2])
-	if err != nil {
-		return nil, err
-	}
-
-	return &database.Query{
-		ID:     ID,
-		UserID: userID,
-	}, nil
-}
 
 func (a *API) QueryPut(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
@@ -948,19 +925,15 @@ func (a *API) Queries(c *gin.Context) {
 	c.JSON(http.StatusOK, queries)
 }
 
+
 func (a *API) Query(c *gin.Context) {
-	key, err := ParseQueryKey(c.Param("id"))
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	query, err := a.Backend.Query(key.ID)
-	if errors.Is(err, sql.ErrNoRows) {
-		c.Status(http.StatusNotFound)
-		return
-	}
-
+	query, err := a.Backend.Query(id)
 	if err != nil {
 		c.Error(err)
 		return
