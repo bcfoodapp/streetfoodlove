@@ -147,6 +147,30 @@ func (b *Backend) ReviewsByVendorID(vendorID uuid.UUID) ([]database.Review, erro
 	return b.Database.ReviewsByVendorID(vendorID)
 }
 
+func (b *Backend) ReviewsPostedAfterReview(vendorID uuid.UUID, afterReview uuid.UUID) ([]database.Review, error) {
+	lastSeenReview, err := b.Database.Review(afterReview)
+	if err != nil {
+		return nil, err
+	}
+
+	vendorReviews, err := b.Database.ReviewsByVendorID(vendorID)
+	if err != nil {
+		return nil, err
+	}
+
+	return selectReviewsAfterTime(vendorReviews, lastSeenReview.DatePosted), nil
+}
+
+func selectReviewsAfterTime(reviews []database.Review, afterTime time.Time) []database.Review {
+	var result []database.Review
+	for _, review := range reviews {
+		if review.DatePosted.After(afterTime) {
+			result = append(result, review)
+		}
+	}
+	return result
+}
+
 func (b *Backend) VendorsByCoordinateBounds(bounds *database.CoordinateBounds) ([]uuid.UUID, error) {
 	vendors, err := b.Database.VendorsByCoordinateBounds(bounds)
 	if err != nil {

@@ -328,10 +328,26 @@ func (a *API) Reviews(c *gin.Context) {
 		return
 	}
 
-	reviews, err := a.Backend.ReviewsByVendorID(vendorID)
-	if err != nil {
-		c.Error(err)
-		return
+	var reviews []database.Review
+
+	if c.Query("afterReview") == "" {
+		reviews, err = a.Backend.ReviewsByVendorID(vendorID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+	} else {
+		afterReviewID, err := uuid.Parse(c.Query("afterReview"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		reviews, err = a.Backend.ReviewsPostedAfterReview(vendorID, afterReviewID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, reviews)
