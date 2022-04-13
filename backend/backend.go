@@ -162,7 +162,7 @@ func (b *Backend) ReviewsPostedAfterReview(vendorID uuid.UUID, afterReview uuid.
 }
 
 func selectReviewsAfterTime(reviews []database.Review, afterTime time.Time) []database.Review {
-	var result []database.Review
+	result := make([]database.Review, 0)
 	for _, review := range reviews {
 		if review.DatePosted.After(afterTime) {
 			result = append(result, review)
