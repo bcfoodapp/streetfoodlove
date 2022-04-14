@@ -611,16 +611,16 @@ export const apiSlice = createApi({
                       Name: searchString,
                     },
                   },
-                  // {
-                  //   multi_match: {
-                  //     query: "Lynnwood",
-                  //     fields: ["Areas"]
-                  //   }
-                  // }
+                  {
+                    multi_match: {
+                      query: "Bellevue",
+                      fields: ["Areas"]
+                    }
+                  }
                 ],
                 filter: {
                   term: {
-                    ["Cuisine Type"]: "Mexican"
+                    priceRange: "Cheap"
                   }
                 }
               }
