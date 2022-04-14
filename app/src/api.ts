@@ -614,16 +614,16 @@ export const apiSlice = createApi({
                   {
                     multi_match: {
                       query: "Bellevue",
-                      fields: ["Areas"]
-                    }
-                  }
+                      fields: ["Areas"],
+                    },
+                  },
                 ],
                 // filter: {
                 //   term: {
                 //     PriceRange: "Cheap"
                 //   }
                 // }
-              }
+              },
             },
           })
         );
@@ -644,7 +644,7 @@ export const apiSlice = createApi({
         }
 
         const hits: any[] = (response.data as any).hits.hits;
-        console.log(hits)
+        console.log(hits);
         return {
           data: hits.map(({ _source }) => _source) as OpenSearchVendor[],
         };
