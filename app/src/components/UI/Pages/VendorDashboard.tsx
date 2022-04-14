@@ -61,7 +61,8 @@ const VendorDashBoard: React.FC = () => {
               )
             ) : null}
             <Card.Content className={styles.content}>
-              {vendor ? <Card.Header>My Vendor Page</Card.Header> : null}
+              {vendor ? <Card.Header>{vendor.Name}</Card.Header> : null}
+              <Card.Description>My Vendor Page</Card.Description>
             </Card.Content>
           </Card>
         </a>
@@ -107,6 +108,17 @@ const VendorDashBoard: React.FC = () => {
                 {newReviews && newReviews.length > 0
                   ? `There are ${newReviews.length} new reviews`
                   : "No new reviews"}
+              </Card.Description>
+            </Card.Content>
+          </Card>
+        </Link>
+        <Link to="/business-guide">
+          <Card className={styles.card}>
+            <Icon name="book" size="huge" className={styles.icon} />
+            <Card.Content className={styles.content}>
+              <Card.Header>Business Guides</Card.Header>
+              <Card.Description>
+                Guides on bringing in more customers and improving your business
               </Card.Description>
             </Card.Content>
           </Card>
