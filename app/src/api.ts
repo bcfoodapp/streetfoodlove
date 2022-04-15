@@ -697,7 +697,7 @@ export const apiSlice = createApi({
       },
       providesTags: ["Review", "CurrentUser"],
     }),
-    createQuery: builder.query<void, Query>({
+    createQuery: builder.mutation<void, Query>({
       query: (query) => ({
         url: `/queries/${encode(query.ID)}`,
         method: PUT,
@@ -738,6 +738,7 @@ export const {
   useDeleteStarMutation,
   useSearchQuery,
   useNewReviewsQuery,
+  useCreateQueryMutation,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
