@@ -55,7 +55,16 @@ function MapContent(): React.ReactElement {
   const { data: vendors } = useVendorsMultipleQuery(vendorIDs);
 
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
-  const { data: resultVendors } = useSearchQuery(searchQuery!, {
+  const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
+  const priceRangeFilter = useAppSelector(({ search }) => search.priceRange);
+
+  let searchParams = {
+    SearchString: searchQuery,
+    CuisineType: cuisineTypeFilter,
+    PriceRange: priceRangeFilter,
+  };
+
+  const { data: resultVendors } = useSearchQuery(searchParams!, {
     skip: !searchQuery,
   });
 

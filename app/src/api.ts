@@ -65,6 +65,12 @@ export interface Review {
   VendorFavorite: boolean;
 }
 
+export interface ReviewFilters {
+  CuisineType: string[];
+  PriceRange: string[];
+  SearchString: string | null;
+}
+
 export interface Credentials {
   Username: string;
   Password: string;
@@ -590,8 +596,8 @@ export const apiSlice = createApi({
       invalidatesTags: ["UserStars"],
     }),
     // Returns search result for given search string.
-    search: builder.query<OpenSearchVendor[], string>({
-      queryFn: async (searchString, api) => {
+    search: builder.query<OpenSearchVendor[], ReviewFilters>({
+      queryFn: async (searchParams, api) => {
         let headers = new Headers();
         headers.append(
           "Authorization",
@@ -608,27 +614,30 @@ export const apiSlice = createApi({
                 must: [
                   {
                     match: {
-                      Name: "Tasty",
+                      Name: searchParams.SearchString,
                     },
                   },
                   {
-                    multi_match: {
-                      query: "Bellevue",
-                      fields: ["Areas"],
+                    bool: {
+                      must: [
+                        {
+                          terms: {
+                            PriceRange: searchParams.PriceRange,
+                          },
+                        },
+                        {
+                          terms: {
+                            ["Cuisine Types"]: searchParams.CuisineType,
+                          },
+                        },
+                      ],
                     },
                   },
                 ],
-                // filter: {
-                //   term: {
-                //     PriceRange: "Cheap"
-                //   }
-                // }
               },
             },
           })
         );
-
-        console.log(form.toString());
 
         const response = await openSearchQuery(
           {
