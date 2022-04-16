@@ -119,6 +119,13 @@ export interface Star {
   VendorID: string;
 }
 
+export interface Query {
+  ID: string;
+  UserID: string;
+  QueryText: string;
+  DateRequested: DateTime;
+}
+
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
 
 export const tokenSlice = createSlice({
@@ -690,6 +697,13 @@ export const apiSlice = createApi({
       },
       providesTags: ["Review", "CurrentUser"],
     }),
+    createQuery: builder.mutation<void, Query>({
+      query: (query) => ({
+        url: `/queries/${encode(query.ID)}`,
+        method: PUT,
+        body: query,
+      }),
+    }),
   }),
 });
 
@@ -724,6 +738,7 @@ export const {
   useDeleteStarMutation,
   useSearchQuery,
   useNewReviewsQuery,
+  useCreateQueryMutation,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
