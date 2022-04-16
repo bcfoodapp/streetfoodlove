@@ -8,42 +8,47 @@ const options = [
   {
     key: "Mexican",
     text: "Mexican",
-    value: "Mexican",
+    value: "mexican",
   },
   {
     key: "Indian",
     text: "Indian",
-    value: "Indian",
+    value: "indian",
   },
   {
     key: "Chinese",
     text: "Chinese",
-    value: "Chinese",
+    value: "chinese",
   },
   {
     key: "Japanese",
     text: "Japanese",
-    value: "Japanese",
+    value: "japanese",
   },
   {
     key: "French",
     text: "French",
-    value: "French",
+    value: "french",
   },
   {
     key: "Spanish",
     text: "Spanish",
-    value: "Spanish",
+    value: "spanish",
   },
   {
     key: "Thai",
     text: "Thai",
-    value: "Thai",
+    value: "thai",
   },
   {
     key: "Korean",
     text: "Korean",
-    value: "Korean",
+    value: "korean",
+  },
+  {
+    key: "Italian",
+    text: "Italian",
+    value: "italian",
   },
 ];
 

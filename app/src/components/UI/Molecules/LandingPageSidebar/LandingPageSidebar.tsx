@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from "react";
+import React from "react";
 import {
   Sidebar,
   Menu,
@@ -25,9 +25,15 @@ const LandingPageSidebar: React.FC = () => {
 
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
   const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
-  const priceRangeFilter = useAppSelector(({ search }) => search.searchQuery);
+  const priceRangeFilter = useAppSelector(({ search }) => search.priceRange);
 
-  const { data: resultVendors } = useSearchQuery(searchQuery!, {
+  let searchParams = {
+    SearchString: searchQuery,
+    CuisineType: cuisineTypeFilter,
+    PriceRange: priceRangeFilter,
+  };
+
+  const { data: resultVendors } = useSearchQuery(searchParams!, {
     skip: !searchQuery,
   });
 
@@ -65,7 +71,7 @@ const LandingPageSidebar: React.FC = () => {
 
         <h3 className={styles.header}>Prices</h3>
         <Checkbox
-          label="Cheap"
+          label="cheap"
           className={styles.checkbox}
           onChange={(e, data) => {
             data.checked
@@ -75,7 +81,7 @@ const LandingPageSidebar: React.FC = () => {
         />
 
         <Checkbox
-          label="Medium"
+          label="medium"
           className={styles.checkbox}
           onChange={(e, data) => {
             data.checked
@@ -85,7 +91,7 @@ const LandingPageSidebar: React.FC = () => {
         />
 
         <Checkbox
-          label="Gourmet"
+          label="gourmet"
           className={styles.checkbox}
           onChange={(e, data) => {
             data.checked
@@ -121,3 +127,36 @@ const LandingPageSidebar: React.FC = () => {
 };
 
 export default LandingPageSidebar;
+
+// GET _search
+// {
+//  "query": {
+//  "bool": {
+//  "must": [
+//  {
+//  "match": {
+//  "text_entry": "Bellevue"
+//  }
+//  }
+//  ],
+//  "should": [
+//  {
+//  "match": {
+//  "text_entry": "Korean"
+//  }
+//  }
+//  ],
+//  "minimum_should_match": 1,
+//  "must_not": [
+//  {
+//  "match": {
+//  "PriceRange": "Gourmet"
+//  }
+//  ],
+//  "filter": {
+//  "term": {
+//  "Cuisine Type": "Cheap"
+//  }
+//  }
+//  }
+// }
