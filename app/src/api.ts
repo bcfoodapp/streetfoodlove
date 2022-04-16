@@ -627,7 +627,7 @@ export const apiSlice = createApi({
                         },
                         {
                           terms: {
-                            ["Cuisine Types"]: searchParams.CuisineType,
+                            "Cuisine Types": searchParams.CuisineType,
                           },
                         },
                       ],
