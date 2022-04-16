@@ -12,14 +12,28 @@ import SelectFilter from "../MultiSelectFilter/SelectFilter";
 import styles from "./sidebar.module.css";
 import { useSearchQuery } from "../../../../api";
 import { Link } from "react-router-dom";
-import { hideSideBar } from "../../../../store/search";
+import {
+  hideSideBar,
+  addPriceRange,
+  deletePriceRangeFilter,
+} from "../../../../store/search";
 
 const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector(
     (state) => state.search.sideBarShowing
   );
+
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
-  const { data: resultVendors } = useSearchQuery(searchQuery!, {
+  const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
+  const priceRangeFilter = useAppSelector(({ search }) => search.priceRange);
+
+  let searchParams = {
+    SearchString: searchQuery,
+    CuisineType: cuisineTypeFilter,
+    PriceRange: priceRangeFilter,
+  };
+
+  const { data: resultVendors } = useSearchQuery(searchParams!, {
     skip: !searchQuery,
   });
 
@@ -52,30 +66,60 @@ const LandingPageSidebar: React.FC = () => {
         />
         <h3 className={styles.header}>Filters</h3>
         <h3 className={styles.header}>Cuisine</h3>
+
         <SelectFilter />
+
         <h3 className={styles.header}>Prices</h3>
-        <Checkbox label="0~5$" className={styles.checkbox} />
-        <Checkbox label="5~10$" className={styles.checkbox} />
-        <Checkbox label="10~15$" className={styles.checkbox} />
-        <Checkbox label="20+$" className={styles.checkbox} />
+        <Checkbox
+          label="cheap"
+          className={styles.checkbox}
+          onChange={(e, data) => {
+            data.checked
+              ? dispatch(addPriceRange(data.label as string))
+              : dispatch(deletePriceRangeFilter());
+          }}
+        />
+
+        <Checkbox
+          label="medium"
+          className={styles.checkbox}
+          onChange={(e, data) => {
+            data.checked
+              ? dispatch(addPriceRange(data.label as string))
+              : dispatch(deletePriceRangeFilter());
+          }}
+        />
+
+        <Checkbox
+          label="gourmet"
+          className={styles.checkbox}
+          onChange={(e, data) => {
+            data.checked
+              ? dispatch(addPriceRange(data.label as string))
+              : dispatch(deletePriceRangeFilter());
+          }}
+        />
       </Menu.Item>
       <Menu.Item>
         <h3 className={styles.header}>Results</h3>
       </Menu.Item>
+
       <Container textAlign="left">
         {resultVendors
-          ? resultVendors.map((vendor) => (
-              <Container key={vendor.ID}>
-                <Container className={styles.vendorInfo}>
-                  <h2>
-                    <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
-                  </h2>
-                  <p>Address: {vendor.BusinessAddress}</p>
-                  <p>Business Hours: {vendor.BusinessHours}</p>
+          ? resultVendors.map((vendor) => {
+              return (
+                <Container key={vendor.ID}>
+                  <Container className={styles.vendorInfo}>
+                    <h2>
+                      <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+                    </h2>
+                    <p>Address: {vendor.BusinessAddress}</p>
+                    <p>Business Hours: {vendor.BusinessHours}</p>
+                  </Container>
+                  <Container className={styles.divider} />
                 </Container>
-                <Container className={styles.divider} />
-              </Container>
-            ))
+              );
+            })
           : null}
       </Container>
     </Sidebar>
@@ -83,3 +127,36 @@ const LandingPageSidebar: React.FC = () => {
 };
 
 export default LandingPageSidebar;
+
+// GET _search
+// {
+//  "query": {
+//  "bool": {
+//  "must": [
+//  {
+//  "match": {
+//  "text_entry": "Bellevue"
+//  }
+//  }
+//  ],
+//  "should": [
+//  {
+//  "match": {
+//  "text_entry": "Korean"
+//  }
+//  }
+//  ],
+//  "minimum_should_match": 1,
+//  "must_not": [
+//  {
+//  "match": {
+//  "PriceRange": "Gourmet"
+//  }
+//  ],
+//  "filter": {
+//  "term": {
+//  "Cuisine Type": "Cheap"
+//  }
+//  }
+//  }
+// }

@@ -58,6 +58,8 @@ export interface UserProtected extends User {
   Email: string;
   SignUpDate: DateTime;
   GoogleID: string | null;
+  // Review ID of last seen review
+  LastReviewSeen: string | null;
 }
 
 export type StarRatingInteger = 1 | 2 | 3 | 4 | 5 | null;
@@ -72,6 +74,12 @@ export interface Review {
   // Contains the ID of the parent review, or null if there is no parent.
   ReplyTo: string | null;
   VendorFavorite: boolean;
+}
+
+export interface ReviewFilters {
+  CuisineType: string[];
+  PriceRange: string[];
+  SearchString: string | null;
 }
 
 export interface Credentials {
@@ -126,6 +134,13 @@ export interface AWSCredentials {
 export interface Star {
   UserID: string;
   VendorID: string;
+}
+
+export interface Query {
+  ID: string;
+  UserID: string;
+  QueryText: string;
+  DateRequested: DateTime;
 }
 
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
@@ -357,7 +372,7 @@ export const apiSlice = createApi({
       transformResponse: (response: any[]) =>
         response.map((review) => ({
           ...review,
-          PostDate: DateTime.fromISO(review.DatePosted),
+          DatePosted: DateTime.fromISO(review.DatePosted),
         })),
       providesTags: ["Review"],
     }),
@@ -365,6 +380,14 @@ export const apiSlice = createApi({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
         method: PUT,
+        body: review,
+      }),
+      invalidatesTags: ["Review"],
+    }),
+    updateReview: builder.mutation<undefined, Review>({
+      query: (review) => ({
+        url: `/reviews/${encode(review.ID)}`,
+        method: POST,
         body: review,
       }),
       invalidatesTags: ["Review"],
@@ -460,6 +483,7 @@ export const apiSlice = createApi({
             Password: uuid(),
             SignUpDate: DateTime.now(),
             GoogleID: tokenPayload.sub,
+            LastReviewSeen: null,
           };
           const createUserResponse = await baseQuery(
             {
@@ -547,7 +571,7 @@ export const apiSlice = createApi({
     // Returns true if star exists
     starExists: builder.query<boolean, Star>({
       queryFn: async (star, api) => {
-        let response = await baseQuery(
+        const response = await baseQuery(
           { url: `/stars/${encode(star.UserID + star.VendorID)}` },
           api,
           {}
@@ -590,8 +614,8 @@ export const apiSlice = createApi({
       invalidatesTags: ["UserStars"],
     }),
     // Returns search result for given search string.
-    search: builder.query<OpenSearchVendor[], string>({
-      queryFn: async (searchString, api) => {
+    search: builder.query<OpenSearchVendor[], ReviewFilters>({
+      queryFn: async (searchParams, api) => {
         let headers = new Headers();
         headers.append(
           "Authorization",
@@ -604,8 +628,30 @@ export const apiSlice = createApi({
           "source",
           JSON.stringify({
             query: {
-              match: {
-                Name: searchString,
+              bool: {
+                must: [
+                  {
+                    match: {
+                      Name: searchParams.SearchString,
+                    },
+                  },
+                  {
+                    bool: {
+                      must: [
+                        {
+                          terms: {
+                            PriceRange: searchParams.PriceRange,
+                          },
+                        },
+                        {
+                          terms: {
+                            "Cuisine Types": searchParams.CuisineType,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
               },
             },
           })
@@ -625,10 +671,78 @@ export const apiSlice = createApi({
         }
 
         const hits: any[] = (response.data as any).hits.hits;
+        console.log(hits);
         return {
           data: hits.map(({ _source }) => _source) as OpenSearchVendor[],
         };
       },
+    }),
+    // Gets new reviews for vendor user.
+    newReviews: builder.query<Review[], string>({
+      queryFn: async (userID, api) => {
+        const vendorResponse = await baseQuery(
+          `/vendors?owner=${encode(userID)}`,
+          api,
+          {}
+        );
+
+        if ("error" in vendorResponse) {
+          return vendorResponse as QueryReturnValue<Review[]>;
+        }
+
+        const vendor = vendorResponse.data as Vendor;
+
+        const userResponse = await baseQuery(
+          `/users/${encode(userID)}/protected`,
+          api,
+          {}
+        );
+
+        if ("error" in userResponse) {
+          return userResponse as QueryReturnValue<Review[]>;
+        }
+
+        const user = userResponse.data as UserProtected;
+
+        let response;
+
+        if (user.LastReviewSeen === null) {
+          response = await baseQuery(
+            `/reviews?vendorID=${encode(vendor.ID)}`,
+            api,
+            {}
+          );
+        } else {
+          response = await baseQuery(
+            `/reviews?vendorID=${encode(vendor.ID)}&afterReview=${encode(
+              user.LastReviewSeen
+            )}`,
+            api,
+            {}
+          );
+        }
+
+        if ("error" in response) {
+          return response as QueryReturnValue<Review[]>;
+        }
+
+        const transformed = (response.data as any[]).map((review) => ({
+          ...review,
+          DatePosted: DateTime.fromISO(review.DatePosted),
+        }));
+
+        return {
+          data: transformed,
+        };
+      },
+      providesTags: ["Review", "CurrentUser"],
+    }),
+    createQuery: builder.mutation<void, Query>({
+      query: (query) => ({
+        url: `/queries/${encode(query.ID)}`,
+        method: PUT,
+        body: query,
+      }),
     }),
   }),
 });
@@ -648,6 +762,7 @@ export const {
   useUpdatePasswordMutation,
   useReviewsQuery,
   useCreateReviewMutation,
+  useUpdateReviewMutation,
   useGetTokenMutation,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
@@ -662,6 +777,8 @@ export const {
   useCountStarsForVendorQuery,
   useDeleteStarMutation,
   useSearchQuery,
+  useNewReviewsQuery,
+  useCreateQueryMutation,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
@@ -725,7 +842,7 @@ export function getExtension(filename: string): string {
 
 type OpenSearchVendor = Pick<
   Vendor,
-  "ID" | "Name" | "BusinessAddress" | "BusinessHours"
+  "ID" | "Name" | "BusinessAddress" | "BusinessHours" | "Latitude" | "Longitude"
 >;
 
 const openSearchQuery = fetchBaseQuery({

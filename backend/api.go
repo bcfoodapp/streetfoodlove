@@ -55,8 +55,9 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.POST("/users/:id/s3-credentials", GetToken, a.UserS3CredentialsPost)
 
 	router.GET("/reviews", a.Reviews)
-	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
 	router.GET("/reviews/:id", a.Review)
+	router.PUT("/reviews/:id", GetToken, a.ReviewPut)
+	router.POST("/reviews/:id", GetToken, a.ReviewPost)
 
 	router.POST("/token", a.TokenPost)
 	router.PUT("/token/google/refresh", a.TokenGoogleRefreshPut)
@@ -86,6 +87,11 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/areas/:id", GetToken, a.AreaPut)
 	router.GET("/cuisinetypes/", a.CuisineType)
 	router.PUT("/cuisinetypes/:id", GetToken, a.CuisineTypePut)
+
+	router.GET("/queries", a.Queries)
+	router.GET("/queries/:id", a.Query)
+	router.PUT("/queries/:id", GetToken, a.QueryPut)
+
 }
 
 // errorHandler writes any errors to response.
@@ -111,7 +117,7 @@ func noRoute(c *gin.Context) {
 	c.JSON(http.StatusNotFound, "page not found")
 }
 
-var idsDoNotMatch = fmt.Errorf("ids do not match")
+var errIDsDoNotMatch = fmt.Errorf("ids do not match")
 
 func root(c *gin.Context) {
 	c.JSON(http.StatusOK, "StreetFoodLove API")
@@ -161,7 +167,7 @@ func (a *API) VendorPut(c *gin.Context) {
 	}
 
 	if id != vendor.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -185,7 +191,7 @@ func (a *API) VendorPost(c *gin.Context) {
 	}
 
 	if id != vendor.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -268,7 +274,7 @@ func (a *API) UserProtectedPost(c *gin.Context) {
 	}
 
 	if id != user.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -295,7 +301,7 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 	}
 
 	if id != userWithPassword.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -322,37 +328,29 @@ func (a *API) Reviews(c *gin.Context) {
 		return
 	}
 
-	reviews, err := a.Backend.ReviewsByVendorID(vendorID)
-	if err != nil {
-		c.Error(err)
-		return
+	var reviews []database.Review
+
+	if c.Query("afterReview") == "" {
+		reviews, err = a.Backend.ReviewsByVendorID(vendorID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+	} else {
+		afterReviewID, err := uuid.Parse(c.Query("afterReview"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		reviews, err = a.Backend.ReviewsPostedAfterReview(vendorID, afterReviewID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, reviews)
-}
-
-func (a *API) ReviewPut(c *gin.Context) {
-	id, err := uuid.Parse(c.Param("id"))
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	review := &database.Review{}
-	if err := c.ShouldBindJSON(review); err != nil {
-		c.Error(err)
-		return
-	}
-
-	if id != review.ID {
-		c.Error(idsDoNotMatch)
-		return
-	}
-
-	if err := a.Backend.ReviewCreate(getTokenFromContext(c), review); err != nil {
-		c.Error(err)
-		return
-	}
 }
 
 func (a *API) Review(c *gin.Context) {
@@ -369,6 +367,54 @@ func (a *API) Review(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, review)
+}
+
+func (a *API) ReviewPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	review := &database.Review{}
+	if err := c.ShouldBindJSON(review); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != review.ID {
+		c.Error(errIDsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.ReviewCreate(getTokenFromContext(c), review); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) ReviewPost(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	review := &database.Review{}
+	if err := c.ShouldBindJSON(review); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != review.ID {
+		c.Error(errIDsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.ReviewUpdate(getTokenFromContext(c), review); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) TokenPost(c *gin.Context) {
@@ -522,7 +568,7 @@ func (a *API) PhotoPut(c *gin.Context) {
 	}
 
 	if c.Param("id") != photo.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -598,7 +644,7 @@ func (a *API) FavoritePut(c *gin.Context) {
 	}
 
 	if id != favorite.ID {
-		c.Error(idsDoNotMatch)
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
@@ -852,4 +898,60 @@ func (a *API) CuisineType(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, cuisineType)
+}
+
+func (a *API) QueryPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	query := &database.Query{}
+	if err := c.ShouldBindJSON(query); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != query.ID {
+		c.Error(errIDsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.QueryCreate(getTokenFromContext(c), query); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) Queries(c *gin.Context) {
+	userID, err := uuid.Parse(c.Query("userID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	queries, err := a.Backend.QueryByUserID(userID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, queries)
+}
+
+func (a *API) Query(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	query, err := a.Backend.Query(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, query)
 }

@@ -12,11 +12,8 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
-  useCreateStarMutation,
-  useCountStarsForVendorQuery,
 } from "../../../api";
 import {
-  Button,
   Container,
   Divider,
   Grid,
@@ -43,8 +40,7 @@ import VendorStar from "../Molecules/VendorStar/VendorStar";
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
   const { data: vendor } = useVendorQuery(vendorID);
-  const reviewsQuery = useReviewsQuery(vendorID);
-  const reviews = reviewsQuery.data;
+  const { data: reviews } = useReviewsQuery(vendorID);
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const { data: photos } = usePhotosByLinkIDQuery(vendorID);
@@ -124,7 +120,7 @@ export function Vendor(): React.ReactElement {
             <Container className={styles.shareContainer}>
               <strong className={styles.shareLabel}>Share</strong>
               <TwitterShareButton
-                url="http://localhost:3000/streetfoodlove/vendors/e72ac985-3d7e-47eb-9f0c-f8e52621a708"
+                url="https://bcfoodapp.github.io/streetfoodlove/vendors/e72ac985-3d7e-47eb-9f0c-f8e52621a708"
                 title="Check out this Vendor!"
               >
                 <TwitterIcon size={32} round={true} />
@@ -178,6 +174,7 @@ export function Vendor(): React.ReactElement {
           <p>No one has posted a review for this vendor. Yet...</p>
         ) : (
           reviews?.map((review, i) => {
+            console.log("Reviews: " + JSON.stringify(review, null, 2));
             if (review.ReplyTo === null) {
               return (
                 <Review

@@ -1,34 +1,4 @@
-* {
-  box-sizing: border-box;
-}
-
-.firstImage img:first-of-type {
-  height: 50px;
-  margin-right: 70px;
-  padding-bottom: 15px;
-  object-fit: cover;
-}
-
-.vendorName {
-  display: flex;
-}
-
-span {
-  margin-top: 30%;
-}
-
-.secondImage img:first-of-type {
-  height: 100px;
-  width: 200px;
-  object-fit: cover;
-  margin-left: 20px;
-}
-
 .title {
   font-weight: 500;
   font-size: 1.5rem;
-}
-
-pre {
-  white-space: pre-wrap;
 }

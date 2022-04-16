@@ -14,7 +14,7 @@ import {
   useVendorsMultipleQuery,
 } from "../../../api";
 import { useAppSelector } from "../../../store/root";
-import { icon, Icon } from "leaflet";
+import { icon, latLng, latLngBounds } from "leaflet";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({
@@ -52,12 +52,30 @@ function MapContent(): React.ReactElement {
     vendorIDs = vendorIDsQuery.data;
   }
 
-  const vendors = useVendorsMultipleQuery(vendorIDs);
+  const { data: vendors } = useVendorsMultipleQuery(vendorIDs);
 
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
-  const { data: resultVendors } = useSearchQuery(searchQuery!, {
+  const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
+  const priceRangeFilter = useAppSelector(({ search }) => search.priceRange);
+
+  let searchParams = {
+    SearchString: searchQuery,
+    CuisineType: cuisineTypeFilter,
+    PriceRange: priceRangeFilter,
+  };
+
+  const { data: resultVendors } = useSearchQuery(searchParams!, {
     skip: !searchQuery,
   });
+
+  useEffect(() => {
+    if (resultVendors && resultVendors.length > 0) {
+      const bounds = latLngBounds(
+        resultVendors.map((vendor) => latLng(vendor.Latitude, vendor.Longitude))
+      );
+      map.fitBounds(bounds, { maxZoom: 14, padding: [25, 25] });
+    }
+  }, [resultVendors]);
 
   return (
     <>
@@ -66,8 +84,8 @@ function MapContent(): React.ReactElement {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         detectRetina
       />
-      {vendors.data
-        ? vendors.data.map((vendor) => {
+      {vendors
+        ? vendors.map((vendor) => {
             let iconUrl = "/streetfoodlove/marker-icon-blue.png";
             let opacity = 1.0;
             if (resultVendors) {

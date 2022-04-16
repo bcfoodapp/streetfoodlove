@@ -55,7 +55,13 @@ export default function HeaderBar(): React.ReactElement {
     <Menu size="massive" className={styles.menu}>
       <Link to="/">
         <Menu.Item>
-          <h2 className={styles.title}>StreetFoodLove</h2>
+          <h2 className={styles.title}>
+            <Image
+              src="/logo.svg"
+              alt="StreetFoodLove logo"
+              style={{ width: 200 }}
+            />
+          </h2>
         </Menu.Item>
       </Link>
       <SearchBox />
@@ -64,7 +70,7 @@ export default function HeaderBar(): React.ReactElement {
           <div style={{ display: "flex", alignItems: "center" }}>
             <Image
               src={s3Prefix + storeEntry.UserPhoto}
-              alt="logo"
+              alt="user photo"
               style={{ width: 30, height: 30, objectFit: "cover" }}
             />
             &nbsp;&nbsp;

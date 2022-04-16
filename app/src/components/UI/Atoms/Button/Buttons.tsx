@@ -17,6 +17,7 @@ interface ButtonsProps {
   edit?: boolean;
   save?: boolean;
   writeReview?: boolean;
+  getLocation?: boolean;
   color?: ButtonProps["color"];
   create?: boolean;
   clicked?: () => void | ((values: any) => void);
@@ -24,6 +25,7 @@ interface ButtonsProps {
   valid?: boolean;
   dirty?: boolean;
   loading?: boolean;
+  type?: string;
 }
 
 export default function Buttons(props: ButtonsProps): React.ReactElement {
@@ -40,6 +42,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
   else if (props.edit) name = classes.edit;
   else if (props.save) name = classes.save;
   else if (props.create) name = classes.create;
+  else if (props.getLocation) name = classes.GetLocation;
   else throw new Error("Invalid Prop");
 
   return (
@@ -50,6 +53,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
           color={props.color}
           onClick={props.clicked}
           loading={props.loading}
+          type={props.type}
         >
           <span>{props.children}</span>
         </Button>

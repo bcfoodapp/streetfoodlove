@@ -14,6 +14,8 @@ import {
   useCreateReviewMutation,
   usePhotosByLinkIDQuery,
   useUserQuery,
+  useVendorByOwnerIDQuery,
+  useUpdateReviewMutation,
 } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 import React, { useEffect, useState } from "react";
@@ -37,8 +39,8 @@ interface Props {
 export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
-  const [vendorLiked, setVendorLiked] = useState(false);
   const [submitReview] = useCreateReviewMutation();
+  const [submitUpdatedReview] = useUpdateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const { data: user } = useUserQuery(review.UserID);
   const { data: photos } = usePhotosByLinkIDQuery(review.ID);
@@ -46,6 +48,13 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   useEffect(() => {
     styleComments();
   }, []);
+
+  let userID = null as string | null;
+  if (token) {
+    userID = getUserIDFromToken(token);
+  }
+
+  const { data: vendor } = useVendorByOwnerIDQuery(userID as string);
 
   const completedCommentHandler = () => {
     setOpenCommentForm(false);
@@ -67,15 +76,22 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
     });
   };
 
-  const updateFavoriteHandler = () => {
+  const updateFavoriteReviewHandler = () => {
     if (token === null) {
       throw new Error("token is null");
     }
     const userID = getUserIDFromToken(token);
 
-    // submitReview({
-
-    // })
+    submitUpdatedReview({
+      ID: review.ID,
+      Text: review.Text,
+      DatePosted: review.DatePosted,
+      VendorID: vendorID,
+      UserID: userID,
+      StarRating: review.StarRating,
+      ReplyTo: null,
+      VendorFavorite: !review.VendorFavorite,
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -96,14 +112,23 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
                   {user.FirstName} {user.LastName}
                 </b>
               ) : null}
-              <Rating
-                icon="heart"
-                defaultRating={0}
-                onRate={() => setVendorLiked(true)}
-                className={styles.heart}
-              />
-              {vendorLiked ? <i>Liked by vendor!</i> : null}
-              {/* <i>Liked by vendor!</i> */}
+
+              {vendor ? (
+                <Rating
+                  icon="heart"
+                  defaultRating={+review.VendorFavorite}
+                  onRate={() => updateFavoriteReviewHandler()}
+                  className={styles.heart}
+                />
+              ) : (
+                <Rating
+                  icon="heart"
+                  defaultRating={+review.VendorFavorite}
+                  className={styles.heart}
+                  disabled
+                />
+              )}
+              {review.VendorFavorite ? <i>Liked by vendor!</i> : null}
             </Grid.Row>
             <Grid.Row>
               <Container className={styles.stars}>
