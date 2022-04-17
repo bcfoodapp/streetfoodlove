@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Form, Container, Select } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import { Dropdown } from "semantic-ui-react";
@@ -21,6 +21,7 @@ const vendorOperatingAreas = [
   { key: "Bellevue", text: "Bellevue", value: "Bellevue" },
   { key: "Issaquah", text: "Issaquah", value: "Issaquah" },
   { key: "Redmond", text: "Redmond", value: "Redmond" },
+  { key: "Lynnwood", text: "Lynwood", value: "Lynwood" },
 ];
 
 const cuisineTypes = [
@@ -28,6 +29,10 @@ const cuisineTypes = [
   { key: "Indian", text: "Indian", value: "Indian" },
   { key: "Mexican", text: "Mexican", value: "Mexican" },
   { key: "Italian", text: "Italian", value: "Italian" },
+  { key: "French", text: "French", value: "French" },
+  { key: "Spanish", text: "Spanish", value: "Spanish" },
+  { key: "Thai", text: "Thai", value: "Thai" },
+  { key: "Korean", text: "Korean", value: "Korean" },
   { key: "Japanese", text: "Japanese", value: "Japanese" },
 ];
 
