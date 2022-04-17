@@ -26,6 +26,17 @@ export interface Vendor {
   Latitude: number;
   Longitude: number;
   Owner: string;
+  // vendorOperationAreas: string[]
+}
+
+export interface Areas {
+  VendorID: string;
+  AreaName: string;
+}
+
+export interface CuisineTypes {
+  VendorID: string;
+  CuisineType: string;
 }
 
 export enum UserType {
