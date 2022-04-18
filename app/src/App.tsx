@@ -17,6 +17,9 @@ import MessageError from "./components/UI/Atoms/Message/MessageError";
 import LoginWrapper from "./components/UI/Pages/Login";
 import VendorPhotosUploader from "./components/UI/Pages/VendorPhotosUploader";
 import NewReviews from "./components/UI/Pages/NewReviews/NewReviews";
+//import Chart from "./components/LineRechartComponent";
+import Chart from "./components/ReviewsChart";
+
 
 function App(): React.ReactElement {
   return (
@@ -46,6 +49,7 @@ function App(): React.ReactElement {
           />
           <Route path="/edit-vendor-page" element={<EditVendorPage />} />
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
+          <Route path="/chart" element={<Chart/>} />
         </Routes>
       </BrowserRouter>
     </ErrorBoundary>
