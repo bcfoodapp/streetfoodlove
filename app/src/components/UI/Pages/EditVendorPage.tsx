@@ -1,4 +1,5 @@
 import {
+  Button,
   Container,
   Form,
   Header,
@@ -7,7 +8,7 @@ import {
   TextArea,
 } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
-import styles from "./createvendorpage.module.css";
+import styles from "./editvendorpage.module.css";
 import {
   useEffectAsync,
   getUserIDFromToken,
@@ -22,16 +23,19 @@ import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
-import { uploadToS3 } from "../../../aws";
+import { s3Prefix, uploadToS3 } from "../../../aws";
 import { v4 as uuid } from "uuid";
 
 interface inputValues {
   name: string;
   businessLogo: string | null;
   businessAddress: string;
+  latitude: number;
+  longitude: number;
   phoneNumber: string;
   businessHours: string;
   website: string;
+  // vendorOperationAreas: []
 }
 
 const businessHours = [
@@ -40,37 +44,57 @@ const businessHours = [
   { key: "10AM", text: "10AM-7PM", value: "10AM-7PM" },
 ];
 
+const vendorOperatingAreas = [
+  { key: "Bothell", text: "Bothell", value: "Bothell" },
+  { key: "Seattle", text: "Seattle", value: "Seattle" },
+  { key: "Bellevue", text: "Bellevue", value: "Bellevue" },
+  { key: "Issaquah", text: "Issaquah", value: "Issaquah" },
+  { key: "Redmond", text: "Redmond", value: "Redmond" },
+  { key: "Lynnwood", text: "Lynwood", value: "Lynwood" },
+];
+
+const cuisineTypes = [
+  { key: "Chinese", text: "Chinese", value: "Chinese" },
+  { key: "Indian", text: "Indian", value: "Indian" },
+  { key: "Mexican", text: "Mexican", value: "Mexican" },
+  { key: "Italian", text: "Italian", value: "Italian" },
+  { key: "French", text: "French", value: "French" },
+  { key: "Spanish", text: "Spanish", value: "Spanish" },
+  { key: "Thai", text: "Thai", value: "Thai" },
+  { key: "Korean", text: "Korean", value: "Korean" },
+  { key: "Japanese", text: "Japanese", value: "Japanese" },
+];
+
 const EditVendorPage: React.FC = () => {
   const [updateVendor] = useUpdateVendorMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  const [token, setToken] = useState(null as string | null);
+  const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
+  const [coordinatesChanged, setCoordinatesChanged] = useState(false);
 
   useEffectAsync(async () => {
     const response = await getToken();
-    if ("data" in response) {
-      setToken(response.data);
+    if ("data" in response && response.data) {
+      setUserID(getUserIDFromToken(response.data));
     }
   }, []);
-
-  let userID = null as string | null;
-  if (tokenIsSuccess && token) {
-    userID = getUserIDFromToken(token);
-  }
 
   const {
     data: vendor,
     isSuccess: vendorQueryIsSuccess,
     isLoading: vendorQueryIsLoading,
-  } = useVendorByOwnerIDQuery(userID as string, { skip: !userID });
+  } = useVendorByOwnerIDQuery(userID!, { skip: !userID });
 
   const [initialValues, setInitalValues] = useState({
     name: "",
     businessAddress: "",
+    latitude: 0,
+    longitude: 0,
     phoneNumber: "",
     businessHours: "",
     website: "",
+    // vendorOperationAreas: []
   } as inputValues);
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -81,6 +105,8 @@ const EditVendorPage: React.FC = () => {
         businessLogo: vendor!.BusinessLogo,
         name: vendor!.Name,
         businessAddress: vendor!.BusinessAddress,
+        latitude: vendor!.Latitude,
+        longitude: vendor!.Longitude,
         phoneNumber: vendor!.Phone,
         businessHours: vendor!.BusinessHours,
         website: vendor!.Website,
@@ -90,13 +116,15 @@ const EditVendorPage: React.FC = () => {
 
   const [getS3Credentials] = useS3CredentialsMutation();
 
-  if (tokenIsSuccess && !token) {
+  if (userID === null) {
     return <p>Not logged in</p>;
   }
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Required"),
     businessAddress: Yup.string().required("Required"),
+    latitude: Yup.number().required("Required"),
+    longitude: Yup.number().required("Required"),
     phoneNumber: Yup.string().required("Required"),
     businessHours: Yup.string().required("Required"),
     website: Yup.string(),
@@ -124,8 +152,8 @@ const EditVendorPage: React.FC = () => {
       BusinessHours: data.businessHours,
       Phone: data.phoneNumber,
       BusinessLogo: photoID,
-      Latitude: vendor!.Latitude,
-      Longitude: vendor!.Longitude,
+      Latitude: data.latitude,
+      Longitude: data.longitude,
       Owner: userID!,
     };
     const response = await updateVendor(updatedVendor);
@@ -147,7 +175,7 @@ const EditVendorPage: React.FC = () => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={onSubmit}
-        validateOnChange={true}
+        validateOnChange
       >
         {(formProps: FormikProps<inputValues>) => {
           const {
@@ -161,6 +189,18 @@ const EditVendorPage: React.FC = () => {
             values,
             setFieldValue,
           } = formProps;
+
+          const onGetCoordinates = () =>
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                setFieldValue("latitude", position.coords.latitude);
+                setFieldValue("longitude", position.coords.longitude);
+                setCoordinatesChanged(true);
+              },
+              (e) => {
+                throw new Error(e.message);
+              }
+            );
 
           return (
             <Form
@@ -199,14 +239,13 @@ const EditVendorPage: React.FC = () => {
               {values.businessLogo ? (
                 <>
                   <Image
-                    src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${values.businessLogo}`}
+                    src={s3Prefix + values.businessLogo}
                     alt="logo"
                     style={{ width: 60, height: 60, objectFit: "cover" }}
                   />
                   <br />
                 </>
               ) : null}
-
               <Form.Input
                 name="businessAddress"
                 onChange={handleChange}
@@ -224,6 +263,49 @@ const EditVendorPage: React.FC = () => {
                 name="businessAddress"
                 component="span"
                 className={styles.error}
+              />
+              <strong>Coordinates</strong>
+              <br />
+              <Buttons getLocation clicked={onGetCoordinates} type="button">
+                Get current location
+              </Buttons>
+              {coordinatesChanged ? (
+                <>
+                  <br />
+                  {values.latitude}, {values.longitude}
+                </>
+              ) : null}
+              <br />
+              <br />
+              <Form.Field
+                id="vendorArea"
+                control={Select}
+                multiple
+                options={vendorOperatingAreas}
+                placeholder="Operation Areas"
+                searched
+                required
+                onBlur={handleBlur}
+                label="Vendor Operating Areas"
+                loading={vendorQueryIsLoading}
+                // onChange={(_, area) => {
+                //   setFieldValue("")
+                // }}
+              />
+              <Form.Field
+                id="cuisineTypes"
+                control={Select}
+                multiple
+                options={cuisineTypes}
+                placeholder="Cuisine Types"
+                searched
+                required
+                onBlur={handleBlur}
+                label="Cuisine Types"
+                loading={vendorQueryIsLoading}
+                // onChange={(_, area) => {
+                //   setFieldValue("")
+                // }}
               />
               <Form.Input
                 name="phoneNumber"
@@ -285,7 +367,6 @@ const EditVendorPage: React.FC = () => {
                 label="Vendor Description"
                 placeholder="Vendor Description"
               />
-
               <Buttons
                 edit
                 color="green"

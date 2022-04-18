@@ -1,45 +1,96 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./popupInfo.module.css";
-import { Vendor } from "../../../../api";
+import {
+  Review,
+  usePhotosByLinkIDQuery,
+  useReviewsQuery,
+  Vendor,
+} from "../../../../api";
 import { Link } from "react-router-dom";
+import { Container, Header, Image } from "semantic-ui-react";
+import { s3Prefix } from "../../../../aws";
+import { FinalStarRating } from "../StarRating/FinalStarRating";
 
 interface Props {
   vendor: Vendor;
+}
+
+// Chooses a highly rated review to display on popup.
+function selectReview(reviews: Review[] | undefined): Review | null {
+  if (reviews && reviews.length > 0) {
+    const found = reviews.find(
+      (review) => review.StarRating && review.StarRating >= 4
+    );
+    if (found) {
+      return found;
+    }
+
+    return reviews[0];
+  }
+  return null;
+}
+
+function averageRating(reviews: Review[] | undefined): string | null {
+  if (reviews && reviews.length > 0) {
+    let avgRating = 0;
+
+    for (const review of reviews) {
+      if (review.StarRating) {
+        avgRating += review.StarRating;
+      }
+    }
+
+    return (avgRating / reviews.length).toFixed(1);
+  }
+
+  return null;
 }
 
 /**
  * This component is for storing the vendor information in the popups that appear on the map
  */
 export default function PopupInfo({ vendor }: Props): React.ReactElement {
+  const [showReview] = useState(() => Math.random() > 0.7);
+
+  const { data: photos } = usePhotosByLinkIDQuery(vendor.ID);
+  const { data: reviews } = useReviewsQuery(vendor.ID);
+
+  let displayedReview = null as Review | null;
+  let averageReviewRating = null as string | null;
+
+  averageReviewRating = averageRating(reviews);
+
+  if (showReview) {
+    displayedReview = selectReview(reviews);
+  }
+
   return (
-    <div>
-      <div className={styles.header}>
-        <div className={styles.vendorName}>
-          <div>
-            <span className={styles.title}>
-              <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
-            </span>
-          </div>
-          <div className={styles.firstImage}>
-            <img
-              src="https://media.istockphoto.com/vectors/five-stars-rating-vector-id925469766?k=20&m=925469766&s=170667a&w=0&h=Z-e1FuriS6-RmQ4YRuZbPxaWFEWm41D9fiTaNCQIGy4="
-              alt="cannot be displayed"
-            />
-          </div>
-        </div>
-        <div className={styles.secondImage}>
-          <img
-            src="https://s3-media0.fl.yelpcdn.com/bphoto/L96pd4xrj0l_AvDeO8I0JQ/348s.jpg"
-            alt="cannot be displayed"
-          />
-        </div>
-      </div>
-      <div className="sampleReviewWrap">
-        <h3>Review By Colin Zhou</h3>
-        <pre>
-          This was the tastiest spot that I've ever eaten at for dinner!
-        </pre>
-      </div>
-    </div>
+    <>
+      <Container>
+        <Container className={styles.title}>
+          <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+        </Container>
+      </Container>
+      {reviews && reviews?.length > 0 && averageReviewRating ? (
+        <h5>
+          {averageReviewRating} stars({reviews?.length} reviews)
+        </h5>
+      ) : (
+        <h5>No Reviews</h5>
+      )}
+
+      {displayedReview ? (
+        <>
+          <FinalStarRating starRating={displayedReview.StarRating} />
+          <Header as="h4">{displayedReview.Text}</Header>
+        </>
+      ) : photos && photos.length > 0 ? (
+        <Image
+          src={s3Prefix + photos[0].ID}
+          alt={photos[0].Text}
+          style={{ height: 200 }}
+        />
+      ) : null}
+    </>
   );
 }

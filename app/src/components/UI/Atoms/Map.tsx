@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -8,7 +8,13 @@ import {
   useMap,
 } from "react-leaflet";
 import PopupInfo from "./PopupInfo/PopupInfo";
-import { useMapViewVendorsQuery, useVendorsMultipleQuery } from "../../../api";
+import {
+  useMapViewVendorsQuery,
+  useSearchQuery,
+  useVendorsMultipleQuery,
+} from "../../../api";
+import { useAppSelector } from "../../../store/root";
+import { icon, latLng, latLngBounds } from "leaflet";
 
 function MapContent(): React.ReactElement {
   const [bounds, setBounds] = useState({
@@ -18,43 +24,103 @@ function MapContent(): React.ReactElement {
     southEastLng: 0,
   });
   const map = useMap();
+  const handler = () => {
+    const bounds = map.getBounds();
+    setBounds({
+      northWestLat: bounds.getNorthWest().lat,
+      northWestLng: bounds.getNorthWest().lng,
+      southEastLat: bounds.getSouthEast().lat,
+      southEastLng: bounds.getSouthEast().lng,
+    });
+  };
+
+  useEffect(() => {
+    // Get initial vendors
+    handler();
+    // Get current coordinates
+    map.locate({ setView: true, maxZoom: 12, maximumAge: 10_000 });
+  }, []);
+
+  // Get vendors when map moves
   useMapEvents({
-    moveend: () => {
-      const bounds = map.getBounds();
-      setBounds({
-        northWestLat: bounds.getNorthWest().lat,
-        northWestLng: bounds.getNorthWest().lng,
-        southEastLat: bounds.getSouthEast().lat,
-        southEastLng: bounds.getSouthEast().lng,
-      });
-    },
+    moveend: handler,
   });
+
   const vendorIDsQuery = useMapViewVendorsQuery(bounds);
   let vendorIDs = [] as string[];
   if (vendorIDsQuery.data) {
     vendorIDs = vendorIDsQuery.data;
   }
 
-  const vendors = useVendorsMultipleQuery(vendorIDs);
+  const { data: vendors } = useVendorsMultipleQuery(vendorIDs);
+
+  const searchQuery = useAppSelector(({ search }) => search.searchQuery);
+  const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
+  const priceRangeFilter = useAppSelector(({ search }) => search.priceRange);
+
+  let searchParams = {
+    SearchString: searchQuery,
+    CuisineType: cuisineTypeFilter,
+    PriceRange: priceRangeFilter,
+  };
+
+  const { data: resultVendors } = useSearchQuery(searchParams!, {
+    skip: !searchQuery,
+  });
+
+  useEffect(() => {
+    if (resultVendors && resultVendors.length > 0) {
+      const bounds = latLngBounds(
+        resultVendors.map((vendor) => latLng(vendor.Latitude, vendor.Longitude))
+      );
+      map.fitBounds(bounds, { maxZoom: 14, padding: [25, 25] });
+    }
+  }, [resultVendors]);
 
   return (
     <>
       <TileLayer
         attribution="© OpenStreetMap contributors"
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        detectRetina={true}
+        detectRetina
       />
-      {vendors.data
-        ? vendors.data.map((vendor) => (
-            <Marker
-              position={[vendor.Latitude, vendor.Longitude]}
-              key={vendor.ID}
-            >
-              <Popup>
-                <PopupInfo vendor={vendor} />
-              </Popup>
-            </Marker>
-          ))
+      {vendors
+        ? vendors.map((vendor) => {
+            let iconUrl = "/streetfoodlove/marker-icon-blue.png";
+            let opacity = 1.0;
+            if (resultVendors) {
+              if (resultVendors.some(({ ID }) => ID === vendor.ID)) {
+                iconUrl = "/streetfoodlove/marker-icon-red.png";
+              } else {
+                opacity = 0.7;
+              }
+            }
+
+            const defaultIcon = icon({
+              iconUrl,
+              iconRetinaUrl: iconUrl,
+              shadowUrl: "/streetfoodlove/marker-shadow.png",
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              tooltipAnchor: [16, -28],
+              shadowSize: [41, 41],
+            });
+
+            return (
+              <Marker
+                key={vendor.ID}
+                position={[vendor.Latitude, vendor.Longitude]}
+                riseOnHover
+                icon={defaultIcon}
+                opacity={opacity}
+              >
+                <Popup>
+                  <PopupInfo vendor={vendor} />
+                </Popup>
+              </Marker>
+            );
+          })
         : null}
     </>
   );
@@ -64,7 +130,7 @@ export default function Map(): React.ReactElement {
   return (
     <MapContainer
       center={[47.584401, -122.14819]}
-      zoom={14}
+      zoom={12}
       style={{
         height: "90.3vh",
         width: "100%",

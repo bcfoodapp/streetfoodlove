@@ -60,6 +60,7 @@ export const ReviewForm = (props: Props) => {
           onDrop={(files: File[]) => {
             setFiles((state) => [...state, ...files]);
           }}
+          multiple
         />
         {files.map((file, i) => (
           <p key={i}>{file.name}</p>

@@ -14,31 +14,27 @@ import {
 import { UserType } from "../../../../api";
 import DragAndDrop from "../../Organisms/DragAndDrop/DragAndDrop";
 import { v4 as uuid } from "uuid";
-import { uploadToS3 } from "../../../../aws";
+import { s3Prefix, uploadToS3 } from "../../../../aws";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
   setDisabledForm: (value: boolean) => void;
 }> = ({ disabled, setDisabledForm }) => {
-  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  const [token, setToken] = useState(null as string | null);
+  const [getToken] = useGetTokenMutation();
+  const [userID, setUserID] = useState(null as string | null);
 
   useEffectAsync(async () => {
     const response = await getToken();
-    if ("data" in response) {
-      setToken(response.data);
+    if ("data" in response && response.data) {
+      setUserID(getUserIDFromToken(response.data));
     }
   }, []);
 
-  let userID = "";
-  if (tokenIsSuccess && token !== null) {
-    userID = getUserIDFromToken(token as string);
-  }
   const {
     data: user,
     isSuccess: userQueryIsSuccess,
     isLoading: userQueryIsLoading,
-  } = useUserProtectedQuery(userID, { skip: userID === "" });
+  } = useUserProtectedQuery(userID!, { skip: userID === null });
 
   const [updateUser] = useUpdateUserMutation();
   const [email, setEmail] = useState("");
@@ -81,6 +77,7 @@ const AccountSettingsFormGroup: React.FC<{
       UserType: UserType.Customer,
       SignUpDate: user!.SignUpDate,
       GoogleID: user!.GoogleID,
+      LastReviewSeen: null,
     });
     if ("data" in response) {
       setShowSuccess(true);
@@ -89,7 +86,7 @@ const AccountSettingsFormGroup: React.FC<{
     setIsSubmitting(false);
   };
 
-  if (tokenIsSuccess && token === null) {
+  if (userID === null) {
     return <p>Not logged in</p>;
   }
 
@@ -140,7 +137,7 @@ const AccountSettingsFormGroup: React.FC<{
           <label>
             <p>Current profile picture</p>
             <Image
-              src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${user.Photo}`}
+              src={s3Prefix + user.Photo}
               alt="logo"
               style={{ width: 40, height: 40, objectFit: "cover" }}
             />

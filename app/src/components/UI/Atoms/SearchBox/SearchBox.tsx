@@ -1,11 +1,20 @@
-import React, { useRef, useState } from "react";
-import { Input, Menu, Search, SearchProps } from "semantic-ui-react";
+import React, { useState } from "react";
+import { Form, Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
-import Buttons from "../Button/Buttons";
-import { useVendorsQuery, Vendor } from "../../../../api";
-import { Field } from "formik";
-import { useAppDispatch } from "../../../../store";
-import { showSideBar } from "../../../../store";
+import {
+  getCredentialsEntry,
+  getUserIDFromToken,
+  Query,
+  useCreateQueryMutation,
+  useEffectAsync,
+  useGetTokenMutation,
+  useVendorsQuery,
+  Vendor,
+} from "../../../../api";
+import { useAppDispatch } from "../../../../store/root";
+import { setSearchQuery, showSideBar } from "../../../../store/search";
+import { DateTime } from "luxon";
+import { v4 as uuid } from "uuid";
 
 /**
  * This is the searchbox for the header
@@ -14,23 +23,23 @@ import { showSideBar } from "../../../../store";
 export const SearchBox: React.FC = () => {
   const [searchResult, setSearchResult] = useState<Vendor[]>([]);
   const [recentSearchResult, setRecentSearchResult] = useState<Vendor[]>([]);
+  const [searchString, setSearchString] = useState("");
   const { data: vendorsList } = useVendorsQuery();
-  const inputRef = useRef<any>(null);
   const dispatch = useAppDispatch();
+  const [getToken] = useGetTokenMutation();
+  const [createQuery] = useCreateQueryMutation();
 
-  const enterQueryHandler = () => {
-    let resultSet = new Set([
-      inputRef.current.props.value,
-      ...recentSearchResult,
-    ]);
+  const enterQueryHandler = async () => {
+    let resultSet = new Set([searchString, ...recentSearchResult]);
 
     let array: Vendor[] = [];
 
-    if (vendorsList !== undefined) {
+    if (vendorsList) {
       for (const vendor of vendorsList) {
         if (
-          vendor.Name === inputRef.current.props.value &&
-          resultSet.has(vendor.Name)
+          vendor.Name === searchString &&
+          resultSet.has(vendor.Name) &&
+          !recentSearchResult.some((item) => item.Name === searchString)
         ) {
           let obj = {
             title: vendor.Name,
@@ -46,21 +55,39 @@ export const SearchBox: React.FC = () => {
     setRecentSearchResult([...array, ...recentSearchResult]);
 
     dispatch(showSideBar());
+    dispatch(setSearchQuery(searchString));
+
+    const tokenResponse = await getToken();
+    if ("data" in tokenResponse && tokenResponse.data) {
+      const query = {
+        ID: uuid(),
+        UserID: getUserIDFromToken(tokenResponse.data),
+        QueryText: searchString,
+        DateRequested: DateTime.now(),
+      };
+      await createQuery(query);
+    }
   };
 
   const onSearchChange = (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    event: React.MouseEvent<HTMLElement>,
     data: SearchProps
   ) => {
-    if (data.value?.length === 0) {
+    let string = "";
+    if (data.value) {
+      string = data.value;
+    } else if (data.result && data.result.title) {
+      string = data.result.title;
+    }
+    setSearchString(string);
+
+    if (string.length === 0) {
       setSearchResult([]);
       return;
     }
 
     if (vendorsList) {
-      let search = data.value;
-      let condition = new RegExp(search as string);
-      // console.log(condition);
+      let condition = new RegExp(string);
       let resultArray: Vendor[] = [];
 
       let filteredResult = vendorsList.filter((element) => {
@@ -72,8 +99,6 @@ export const SearchBox: React.FC = () => {
         //filter all vendors from recent search who matches regex expr.
         return condition.test(element.Name);
       });
-
-      // console.table(recentSearchFilteredResult);
 
       for (let i = 0; i < filteredResult.length; i++) {
         //loop through all vendors that pass the regex filter
@@ -101,30 +126,17 @@ export const SearchBox: React.FC = () => {
 
   return (
     <Menu.Item className={styles.searchBox}>
-      <Search
-        input={
-          <Input
-            icon={
-              <Buttons enter color={"green"} clicked={enterQueryHandler}>
-                Enter
-              </Buttons>
-            }
-            placeholder="Search..."
-            focus
-            size={"small"}
-            className={styles.inputBox}
-            ref={inputRef}
-          />
-        }
-        size={"small"}
-        onSearchChange={onSearchChange}
-        results={searchResult}
-        showNoResults
-      />
-      {/* <Field>
-        {({ form: {dirty, valid } }) => (
-        )}
-      </Field> */}
+      <Form onSubmit={enterQueryHandler}>
+        <Search
+          input={
+            <Input placeholder="Search..." focus className={styles.inputBox} />
+          }
+          onSearchChange={onSearchChange}
+          onResultSelect={onSearchChange}
+          results={searchResult}
+          showNoResults
+        />
+      </Form>
     </Menu.Item>
   );
 };

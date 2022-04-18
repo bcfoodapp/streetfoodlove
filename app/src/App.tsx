@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Vendor } from "./components/UI/Pages/Vendor";
-import { store, useAppSelector } from "./store";
 import { ErrorBoundary } from "./components/UI/Organisms/ErrorBoundary";
 import Signup from "./components/UI/Pages/Signup";
 import { LandingPage } from "./components/UI/Pages/LandingPage";
@@ -17,6 +16,7 @@ import HeaderBar from "./components/UI/Molecules/HeaderBar/HeaderBar";
 import MessageError from "./components/UI/Atoms/Message/MessageError";
 import LoginWrapper from "./components/UI/Pages/Login";
 import VendorPhotosUploader from "./components/UI/Pages/VendorPhotosUploader";
+import NewReviews from "./components/UI/Pages/NewReviews/NewReviews";
 
 function App(): React.ReactElement {
   return (
@@ -39,6 +39,10 @@ function App(): React.ReactElement {
           <Route
             path="/vendor-dashboard/photos"
             element={<VendorPhotosUploader />}
+          />
+          <Route
+            path="/vendor-dashboard/new-reviews"
+            element={<NewReviews />}
           />
           <Route path="/edit-vendor-page" element={<EditVendorPage />} />
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />

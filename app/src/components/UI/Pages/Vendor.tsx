@@ -25,12 +25,14 @@ import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
 import { Review } from "../Organisms/Review/Review";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
-import { useAppSelector } from "../../../store";
+import { useAppSelector } from "../../../store/root";
 import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
-import { uploadToS3 } from "../../../aws";
+import { s3Prefix, uploadToS3 } from "../../../aws";
+import { TwitterShareButton, TwitterIcon } from "react-share";
+import VendorStar from "../Molecules/VendorStar/VendorStar";
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
@@ -38,8 +40,7 @@ import { uploadToS3 } from "../../../aws";
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
   const { data: vendor } = useVendorQuery(vendorID);
-  const reviewsQuery = useReviewsQuery(vendorID);
-  const reviews = reviewsQuery.data;
+  const { data: reviews } = useReviewsQuery(vendorID);
   const [submitReview] = useCreateReviewMutation();
   const token = useAppSelector((state) => state.token.token);
   const { data: photos } = usePhotosByLinkIDQuery(vendorID);
@@ -47,6 +48,8 @@ export function Vendor(): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
   const [getS3Credentials] = useS3CredentialsMutation();
+
+  console.log("Reviews: " + JSON.stringify(reviews, null, 2));
 
   const completedReviewHandler = async ({
     text,
@@ -57,13 +60,20 @@ export function Vendor(): React.ReactElement {
     starRating: StarRatingInteger;
     files: File[];
   }) => {
-    if (token === null) {
-      throw new Error("token is null");
-    }
-
     setIsSubmitting(true);
-    const userID = getUserIDFromToken(token);
-    const reviewID = uuid();
+    const userID = getUserIDFromToken(token!);
+
+    const review = {
+      ID: uuid(),
+      Text: text,
+      DatePosted: DateTime.now(),
+      VendorID: vendorID,
+      UserID: userID,
+      StarRating: starRating,
+      ReplyTo: null,
+      VendorFavorite: false,
+    };
+    await submitReview(review);
 
     let s3Credentials = {} as AWSCredentials;
 
@@ -82,23 +92,13 @@ export function Vendor(): React.ReactElement {
         ID: photoID,
         DatePosted: DateTime.now(),
         Text: "",
-        LinkID: reviewID,
+        LinkID: review.ID,
       };
       const createPhotoResponse = await createPhoto(photo);
       if ("error" in createPhotoResponse) {
         return;
       }
     }
-    const review = {
-      ID: reviewID,
-      Text: text,
-      DatePosted: DateTime.now(),
-      VendorID: vendorID,
-      UserID: userID,
-      StarRating: starRating,
-      ReplyTo: null,
-    };
-    await submitReview(review);
     setIsSubmitting(false);
   };
 
@@ -110,15 +110,27 @@ export function Vendor(): React.ReactElement {
           <Grid.Row style={{ display: "flex", alignItems: "center" }}>
             {vendor && vendor.BusinessLogo ? (
               <Image
-                src={`https://streetfoodlove.s3.us-west-2.amazonaws.com/${vendor.BusinessLogo}`}
+                src={s3Prefix + vendor.BusinessLogo}
                 alt="logo"
                 style={{ width: 60, height: 60, objectFit: "cover" }}
               />
             ) : null}
             <h1 className={styles.name}>{vendor?.Name}</h1>
+            <VendorStar vendorID={vendorID} />
+          </Grid.Row>
+          <Grid.Row textAlign="center">
+            <Container className={styles.shareContainer}>
+              <strong className={styles.shareLabel}>Share</strong>
+              <TwitterShareButton
+                url="https://bcfoodapp.github.io/streetfoodlove/vendors/e72ac985-3d7e-47eb-9f0c-f8e52621a708"
+                title="Check out this Vendor!"
+              >
+                <TwitterIcon size={32} round={true} />
+              </TwitterShareButton>
+            </Container>
           </Grid.Row>
           <Grid.Row>
-            {photos ? (
+            {photos && photos.length > 0 ? (
               <Segment style={{ width: "100%" }}>
                 <Gallery photos={photos} photoHeight={250} />
               </Segment>
@@ -164,6 +176,7 @@ export function Vendor(): React.ReactElement {
           <p>No one has posted a review for this vendor. Yet...</p>
         ) : (
           reviews?.map((review, i) => {
+            // console.log("Reviews: " + JSON.stringify(review, null, 2));
             if (review.ReplyTo === null) {
               return (
                 <Review

@@ -49,7 +49,7 @@ func Production(secretsPath string) *Configuration {
 
 	mysqlConfig := commonMySQLConfig()
 	mysqlConfig.Net = "tcp"
-	mysqlConfig.Addr = "sfl-database.cyacnjr02zgl.us-west-2.rds.amazonaws.com"
+	mysqlConfig.Addr = "sfl-database.coffj5yx52hn.us-west-2.rds.amazonaws.com"
 	mysqlConfig.User = "admin"
 	mysqlConfig.Passwd = secrets.MySQLPassword
 

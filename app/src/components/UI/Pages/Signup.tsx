@@ -3,6 +3,7 @@ import { Container, Form } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./signup.module.css";
 import {
+  defaultUserPhoto,
   useCreateUserMutation,
   UserType,
   useSetCredentialsAndGetTokenMutation,
@@ -56,7 +57,7 @@ export default function Signup(): React.ReactElement {
     const response = await createUser({
       ID: uuid(),
       Username: data.username,
-      Photo: uuid(),
+      Photo: defaultUserPhoto,
       UserType: userType,
       Email: data.email,
       FirstName: data.firstName,
@@ -64,6 +65,7 @@ export default function Signup(): React.ReactElement {
       Password: data.password,
       SignUpDate: DateTime.now(),
       GoogleID: null,
+      LastReviewSeen: null,
     });
 
     if ("data" in response) {

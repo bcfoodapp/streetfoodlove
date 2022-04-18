@@ -4,6 +4,7 @@ import styles from "./accountprofile.module.css";
 import { Tab } from "semantic-ui-react";
 import AccountSettingsFormGroup from "../Molecules/Form Group/AccountSettingsFormGroup";
 import Buttons from "../Atoms/Button/Buttons";
+import AccountProfileStars from "../Organisms/AccountProfileStars/AccountProfileStars";
 
 const AccountProfile: React.FC = () => {
   const [disabledForm, setDisabledForm] = useState<boolean>(true);
@@ -26,6 +27,14 @@ const AccountProfile: React.FC = () => {
         </Tab.Pane>
       ),
     },
+    {
+      menuItem: "Starred Vendors",
+      render: () => (
+        <Tab.Pane className={styles.pane}>
+          <AccountProfileStars />
+        </Tab.Pane>
+      ),
+    },
   ];
 
   return (
@@ -42,3 +51,21 @@ const AccountProfile: React.FC = () => {
 };
 
 export default AccountProfile;
+
+function Direction(props) {
+  const { direction } = props;
+
+  return (
+    <div>
+      {direction === 0 ? (
+        <p>North</p>
+      ) : direction === 1 ? (
+        <p>East</p>
+      ) : direction === 2 ? (
+        <p>South</p>
+      ) : direction === 3 ? (
+        <p>West</p>
+      ) : null}
+    </div>
+  );
+}
