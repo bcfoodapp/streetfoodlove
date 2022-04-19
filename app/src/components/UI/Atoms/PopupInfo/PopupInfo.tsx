@@ -30,6 +30,22 @@ function selectReview(reviews: Review[] | undefined): Review | null {
   return null;
 }
 
+function averageRating(reviews: Review[] | undefined): string | null {
+  if (reviews && reviews.length > 0) {
+    let avgRating = 0;
+
+    for (const review of reviews) {
+      if (review.StarRating) {
+        avgRating += review.StarRating;
+      }
+    }
+
+    return (avgRating / reviews.length).toFixed(1);
+  }
+
+  return null;
+}
+
 /**
  * This component is for storing the vendor information in the popups that appear on the map
  */
@@ -40,6 +56,10 @@ export default function PopupInfo({ vendor }: Props): React.ReactElement {
   const { data: reviews } = useReviewsQuery(vendor.ID);
 
   let displayedReview = null as Review | null;
+  let averageReviewRating = null as string | null;
+
+  averageReviewRating = averageRating(reviews);
+
   if (showReview) {
     displayedReview = selectReview(reviews);
   }
@@ -51,6 +71,14 @@ export default function PopupInfo({ vendor }: Props): React.ReactElement {
           <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
         </Container>
       </Container>
+      {reviews && reviews?.length > 0 && averageReviewRating ? (
+        <h5>
+          {averageReviewRating} stars({reviews?.length} reviews)
+        </h5>
+      ) : (
+        <h5>No Reviews</h5>
+      )}
+
       {displayedReview ? (
         <>
           <FinalStarRating starRating={displayedReview.StarRating} />

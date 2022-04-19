@@ -77,6 +77,7 @@ const AccountSettingsFormGroup: React.FC<{
       UserType: UserType.Customer,
       SignUpDate: user!.SignUpDate,
       GoogleID: user!.GoogleID,
+      LastReviewSeen: null,
     });
     if ("data" in response) {
       setShowSuccess(true);

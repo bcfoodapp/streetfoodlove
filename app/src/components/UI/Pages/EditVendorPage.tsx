@@ -35,12 +35,34 @@ interface inputValues {
   phoneNumber: string;
   businessHours: string;
   website: string;
+  // vendorOperationAreas: []
 }
 
 const businessHours = [
   { key: "8AM ", text: "8AM-5PM", value: "8AM-5PM" },
   { key: "9AM", text: "9AM-6PM", value: "9AM-6PM" },
   { key: "10AM", text: "10AM-7PM", value: "10AM-7PM" },
+];
+
+const vendorOperatingAreas = [
+  { key: "Bothell", text: "Bothell", value: "Bothell" },
+  { key: "Seattle", text: "Seattle", value: "Seattle" },
+  { key: "Bellevue", text: "Bellevue", value: "Bellevue" },
+  { key: "Issaquah", text: "Issaquah", value: "Issaquah" },
+  { key: "Redmond", text: "Redmond", value: "Redmond" },
+  { key: "Lynnwood", text: "Lynwood", value: "Lynwood" },
+];
+
+const cuisineTypes = [
+  { key: "Chinese", text: "Chinese", value: "Chinese" },
+  { key: "Indian", text: "Indian", value: "Indian" },
+  { key: "Mexican", text: "Mexican", value: "Mexican" },
+  { key: "Italian", text: "Italian", value: "Italian" },
+  { key: "French", text: "French", value: "French" },
+  { key: "Spanish", text: "Spanish", value: "Spanish" },
+  { key: "Thai", text: "Thai", value: "Thai" },
+  { key: "Korean", text: "Korean", value: "Korean" },
+  { key: "Japanese", text: "Japanese", value: "Japanese" },
 ];
 
 const EditVendorPage: React.FC = () => {
@@ -72,6 +94,7 @@ const EditVendorPage: React.FC = () => {
     phoneNumber: "",
     businessHours: "",
     website: "",
+    // vendorOperationAreas: []
   } as inputValues);
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -254,7 +277,36 @@ const EditVendorPage: React.FC = () => {
               ) : null}
               <br />
               <br />
-
+              <Form.Field
+                id="vendorArea"
+                control={Select}
+                multiple
+                options={vendorOperatingAreas}
+                placeholder="Operation Areas"
+                searched
+                required
+                onBlur={handleBlur}
+                label="Vendor Operating Areas"
+                loading={vendorQueryIsLoading}
+                // onChange={(_, area) => {
+                //   setFieldValue("")
+                // }}
+              />
+              <Form.Field
+                id="cuisineTypes"
+                control={Select}
+                multiple
+                options={cuisineTypes}
+                placeholder="Cuisine Types"
+                searched
+                required
+                onBlur={handleBlur}
+                label="Cuisine Types"
+                loading={vendorQueryIsLoading}
+                // onChange={(_, area) => {
+                //   setFieldValue("")
+                // }}
+              />
               <Form.Input
                 name="phoneNumber"
                 onChange={handleChange}
@@ -315,7 +367,6 @@ const EditVendorPage: React.FC = () => {
                 label="Vendor Description"
                 placeholder="Vendor Description"
               />
-
               <Buttons
                 edit
                 color="green"
