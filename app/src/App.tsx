@@ -20,7 +20,6 @@ import NewReviews from "./components/UI/Pages/NewReviews/NewReviews";
 import Chart1 from "./components/LineRechartComponent";
 import Chart from "./components/ReviewsChart";
 
-
 function App(): React.ReactElement {
   return (
     <ErrorBoundary>
@@ -49,8 +48,8 @@ function App(): React.ReactElement {
           />
           <Route path="/edit-vendor-page" element={<EditVendorPage />} />
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
-          <Route path="/chart" element={<Chart/>} />
-          <Route path="/chart1" element={<Chart1/>} />
+          <Route path="/chart" element={<Chart />} />
+          <Route path="/chart1" element={<Chart1 />} />
         </Routes>
       </BrowserRouter>
     </ErrorBoundary>
