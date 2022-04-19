@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent, useState } from "react";
 import {
   Sidebar,
   Menu,
