@@ -26,6 +26,17 @@ export interface Vendor {
   Latitude: number;
   Longitude: number;
   Owner: string;
+  // vendorOperationAreas: string[]
+}
+
+export interface Areas {
+  VendorID: string;
+  AreaName: string;
+}
+
+export interface CuisineTypes {
+  VendorID: string;
+  CuisineType: string;
 }
 
 export enum UserType {
@@ -63,6 +74,12 @@ export interface Review {
   // Contains the ID of the parent review, or null if there is no parent.
   ReplyTo: string | null;
   VendorFavorite: boolean;
+}
+
+export interface ReviewFilters {
+  CuisineType: string[];
+  PriceRange: string[];
+  SearchString: string | null;
 }
 
 export interface Credentials {
@@ -117,6 +134,13 @@ export interface AWSCredentials {
 export interface Star {
   UserID: string;
   VendorID: string;
+}
+
+export interface Query {
+  ID: string;
+  UserID: string;
+  QueryText: string;
+  DateRequested: DateTime;
 }
 
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
@@ -590,8 +614,8 @@ export const apiSlice = createApi({
       invalidatesTags: ["UserStars"],
     }),
     // Returns search result for given search string.
-    search: builder.query<OpenSearchVendor[], string>({
-      queryFn: async (searchString, api) => {
+    search: builder.query<OpenSearchVendor[], ReviewFilters>({
+      queryFn: async (searchParams, api) => {
         let headers = new Headers();
         headers.append(
           "Authorization",
@@ -604,8 +628,30 @@ export const apiSlice = createApi({
           "source",
           JSON.stringify({
             query: {
-              match: {
-                Name: searchString,
+              bool: {
+                must: [
+                  {
+                    match: {
+                      Name: searchParams.SearchString,
+                    },
+                  },
+                  {
+                    bool: {
+                      must: [
+                        {
+                          terms: {
+                            PriceRange: searchParams.PriceRange,
+                          },
+                        },
+                        {
+                          terms: {
+                            "Cuisine Types": searchParams.CuisineType,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
               },
             },
           })
@@ -625,6 +671,7 @@ export const apiSlice = createApi({
         }
 
         const hits: any[] = (response.data as any).hits.hits;
+        console.log(hits);
         return {
           data: hits.map(({ _source }) => _source) as OpenSearchVendor[],
         };
@@ -690,6 +737,13 @@ export const apiSlice = createApi({
       },
       providesTags: ["Review", "CurrentUser"],
     }),
+    createQuery: builder.mutation<void, Query>({
+      query: (query) => ({
+        url: `/queries/${encode(query.ID)}`,
+        method: PUT,
+        body: query,
+      }),
+    }),
   }),
 });
 
@@ -724,6 +778,7 @@ export const {
   useDeleteStarMutation,
   useSearchQuery,
   useNewReviewsQuery,
+  useCreateQueryMutation,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {

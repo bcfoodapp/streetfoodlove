@@ -5,12 +5,13 @@
 .form {
   margin-left: 40% !important;
   margin-top: 5% !important;
+  padding-bottom: 20px !important;
 }
 
 .btnContainer.ui.container {
-  width: 20% !important;
+  width: 30% !important;
   padding-top: 20px !important;
-  margin-right: 20px !important;
+  margin-right: 30px !important;
   max-width: 40% !important;
   display: flex !important;
   justify-content: flex-start !important;

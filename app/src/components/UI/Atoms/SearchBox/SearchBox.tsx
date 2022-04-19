@@ -1,9 +1,20 @@
 import React, { useState } from "react";
 import { Form, Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
-import { useVendorsQuery, Vendor } from "../../../../api";
+import {
+  getCredentialsEntry,
+  getUserIDFromToken,
+  Query,
+  useCreateQueryMutation,
+  useEffectAsync,
+  useGetTokenMutation,
+  useVendorsQuery,
+  Vendor,
+} from "../../../../api";
 import { useAppDispatch } from "../../../../store/root";
 import { setSearchQuery, showSideBar } from "../../../../store/search";
+import { DateTime } from "luxon";
+import { v4 as uuid } from "uuid";
 
 /**
  * This is the searchbox for the header
@@ -15,8 +26,10 @@ export const SearchBox: React.FC = () => {
   const [searchString, setSearchString] = useState("");
   const { data: vendorsList } = useVendorsQuery();
   const dispatch = useAppDispatch();
+  const [getToken] = useGetTokenMutation();
+  const [createQuery] = useCreateQueryMutation();
 
-  const enterQueryHandler = () => {
+  const enterQueryHandler = async () => {
     let resultSet = new Set([searchString, ...recentSearchResult]);
 
     let array: Vendor[] = [];
@@ -43,6 +56,17 @@ export const SearchBox: React.FC = () => {
 
     dispatch(showSideBar());
     dispatch(setSearchQuery(searchString));
+
+    const tokenResponse = await getToken();
+    if ("data" in tokenResponse && tokenResponse.data) {
+      const query = {
+        ID: uuid(),
+        UserID: getUserIDFromToken(tokenResponse.data),
+        QueryText: searchString,
+        DateRequested: DateTime.now(),
+      };
+      await createQuery(query);
+    }
   };
 
   const onSearchChange = (
