@@ -6,9 +6,7 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend,
-    ResponsiveContainer,
-    LineChart, Line
+    Legend
 } from 'recharts';
 
 class ReviewsChart extends React.Component {
