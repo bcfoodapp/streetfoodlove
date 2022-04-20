@@ -48,7 +48,7 @@ const LandingPageSidebar: React.FC = () => {
     setCuisineSelection([...data]);
   };
 
-  console.log("query result: " + JSON.stringify(resultVendors, null, 2));
+  // console.log("query result: " + JSON.stringify(resultVendors, null, 2));
   console.log("cuisine selection:" + cuisineSelection);
 
   const dispatch = useAppDispatch();
