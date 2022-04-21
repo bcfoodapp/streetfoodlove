@@ -898,3 +898,36 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	err := d.db.QueryRowx(command, &userID).Scan(&result)
 	return result, err
 }
+
+type PastSearch struct {
+	UserID uuid.UUID
+	CuisineTypes string
+	RelevantSearchWord string
+}
+
+func (d* Database) PastSearchCreate(pastSearch *PastSearch) error {
+	const command = `
+		INSERT INTO PastSearch (
+			UserID,
+			CuisineTypes,
+			RelevantSearchWord
+		) VALUES (
+			:UserID,
+			:CuisineTypes,
+			:RelevantSearchWord
+		)
+	`
+
+	_, err := d.db.NamedExec(command, pastSearch)
+	return err
+}
+
+func (d *Database) PastSearch(id uuid.UUID) (*PastSearch, error) {
+	const command = `
+		SELECT * FROM PastSearch WHERE ID=?
+	`
+	pastSearch := &PastSearch{}
+	err := d.db.QueryRowx(command, &id).StructScan(pastSearch)
+
+	return pastSearch, err
+}
