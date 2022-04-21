@@ -93,6 +93,7 @@ func SetupTables(db *sqlx.DB) error {
 			Latitude FLOAT NOT NULL,
 			Longitude FLOAT NOT NULL,
 			Owner CHAR(36) NOT NULL,
+			DiscountEnabled BOOLEAN NOT NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (Owner) REFERENCES User(ID)
 			ON DELETE CASCADE ON UPDATE CASCADE
