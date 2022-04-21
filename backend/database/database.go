@@ -157,6 +157,14 @@ func SetupTables(db *sqlx.DB) error {
 			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
+		`CREATE TABLE PastSearch (
+			UserID CHAR(36) NOT NULL,
+			CuisineTypes VARCHAR(36) NOT NULL,
+			RelevantSearchWord VARCHAR(255) NOT NULL,
+			PRIMARY KEY (UserID),
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
 		`
 		ALTER TABLE User
 			ADD FOREIGN KEY (LastReviewSeen) REFERENCES Reviews(ID)
