@@ -33,19 +33,8 @@ func main() {
 			}
 		}()
 
-		commands := [...]string{
-			"DROP DATABASE IF EXISTS streetfoodlove",
-			`
-			CREATE DATABASE IF NOT EXISTS streetfoodlove
-			CHARACTER SET utf8mb4
-			COLLATE utf8mb4_unicode_ci
-			`,
-		}
-
-		for _, command := range commands {
-			if _, err := db.Exec(command); err != nil {
-				panic(err)
-			}
+		if err := database.ResetDatabase(db); err != nil {
+			return
 		}
 	}()
 
@@ -54,7 +43,7 @@ func main() {
 		panic(err)
 	}
 
-	if err := SetupTables(db); err != nil {
+	if err := database.SetupTables(db); err != nil {
 		panic(err)
 	}
 
