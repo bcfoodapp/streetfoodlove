@@ -902,3 +902,76 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	err := d.db.QueryRowx(command, &userID).Scan(&result)
 	return result, err
 }
+
+type Discount struct {
+	ID       uuid.UUID
+	UserID   uuid.UUID
+	VendorID uuid.UUID
+	Secret   uuid.UUID
+}
+
+func (d *Database) DiscountCreate(discount *Discount) error {
+	const command = `
+		INSERT INTO Discounts (
+			ID,
+			UserID,
+			VendorID,
+			Secret
+		) VALUES (
+			:ID,
+			:UserID,
+			:VendorID,
+			:Secret
+		)
+	`
+
+	_, err := d.db.NamedExec(command, discount)
+	return err
+}
+
+func (d *Database) DiscountsByUser(userID uuid.UUID) ([]Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE UserID=?
+	`
+
+	rows, err := d.db.Queryx(command, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Discount, 0)
+
+	for rows.Next() {
+		result = append(result, Discount{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) DiscountBySecret(secret uuid.UUID) (*Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE Secret=?
+	`
+
+	query := &Discount{}
+	err := d.db.QueryRowx(command, &secret).StructScan(query)
+	return query, err
+}
+
+func (d *Database) DiscountDelete(id uuid.UUID) error {
+	const command = `
+		DELETE FROM Discounts
+		WHERE ID=?
+	`
+
+	_, err := d.db.Exec(command, &id)
+	return err
+}
