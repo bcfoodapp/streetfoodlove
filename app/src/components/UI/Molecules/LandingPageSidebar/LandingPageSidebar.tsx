@@ -33,9 +33,10 @@ const LandingPageSidebar: React.FC = () => {
     PriceRange: priceRangeFilter,
   };
 
-  const { data: resultVendors } = useSearchQuery(searchParams!, {
-    skip: !searchQuery,
-  });
+  const { data: searchResult, isLoading: searchQueryIsLoading } =
+    useSearchQuery(searchParams!, {
+      skip: !searchQuery,
+    });
 
   const dispatch = useAppDispatch();
 
@@ -105,8 +106,9 @@ const LandingPageSidebar: React.FC = () => {
       </Menu.Item>
 
       <Container textAlign="left">
-        {resultVendors
-          ? resultVendors.map((vendor) => {
+        {searchQueryIsLoading ? <p>Loading</p> : null}
+        {searchResult
+          ? searchResult.map((vendor) => {
               return (
                 <Container key={vendor.ID}>
                   <Container className={styles.vendorInfo}>
@@ -127,36 +129,3 @@ const LandingPageSidebar: React.FC = () => {
 };
 
 export default LandingPageSidebar;
-
-// GET _search
-// {
-//  "query": {
-//  "bool": {
-//  "must": [
-//  {
-//  "match": {
-//  "text_entry": "Bellevue"
-//  }
-//  }
-//  ],
-//  "should": [
-//  {
-//  "match": {
-//  "text_entry": "Korean"
-//  }
-//  }
-//  ],
-//  "minimum_should_match": 1,
-//  "must_not": [
-//  {
-//  "match": {
-//  "PriceRange": "Gourmet"
-//  }
-//  ],
-//  "filter": {
-//  "term": {
-//  "Cuisine Type": "Cheap"
-//  }
-//  }
-//  }
-// }

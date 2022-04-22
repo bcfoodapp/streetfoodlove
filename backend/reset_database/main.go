@@ -33,19 +33,8 @@ func main() {
 			}
 		}()
 
-		commands := [...]string{
-			"DROP DATABASE IF EXISTS streetfoodlove",
-			`
-			CREATE DATABASE IF NOT EXISTS streetfoodlove
-			CHARACTER SET utf8mb4
-			COLLATE utf8mb4_unicode_ci
-			`,
-		}
-
-		for _, command := range commands {
-			if _, err := db.Exec(command); err != nil {
-				panic(err)
-			}
+		if err := database.ResetDatabase(db); err != nil {
+			return
 		}
 	}()
 
@@ -54,169 +43,13 @@ func main() {
 		panic(err)
 	}
 
-	if err := SetupTables(db); err != nil {
+	if err := database.SetupTables(db); err != nil {
 		panic(err)
 	}
 
 	if err := addTestData(database.NewDatabase(db)); err != nil {
 		panic(err)
 	}
-}
-
-func SetupTables(db *sqlx.DB) error {
-	commands := [...]string{
-		`
-		CREATE TABLE User (
-			ID CHAR(36) NOT NULL,
-			Email VARCHAR(100) NULL,
-			Username VARCHAR(100) UNIQUE NULL,
-			FirstName VARCHAR(100) NULL,
-			LastName VARCHAR(100) NULL,
-			SignUpDate DATETIME NULL,
-			LoginPassword BINARY(32) NULL,
-			UserType TINYINT NULL,
-			Photo VARCHAR(50) NOT NULL,
-			GoogleID VARCHAR(50) UNIQUE NULL,
-			LastReviewSeen CHAR(36) NULL,
-			PRIMARY KEY (ID)
-		)
-		`,
-		`
-		CREATE TABLE Vendor (
-			ID CHAR(36) NOT NULL,
-			Name VARCHAR(100) NOT NULL,
-			BusinessAddress VARCHAR(500) NULL,
-			Website VARCHAR(500) NULL,
-			BusinessHours VARCHAR(500) NOT NULL,
-			Phone VARCHAR(50) NULL,
-			BusinessLogo VARCHAR(50) NULL,
-			Latitude FLOAT NOT NULL,
-			Longitude FLOAT NOT NULL,
-			Owner CHAR(36) NOT NULL,
-			DiscountEnabled BOOLEAN NOT NULL,
-			PRIMARY KEY (ID),
-			FOREIGN KEY (Owner) REFERENCES User(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE
-		)
-		`,
-		`
-		CREATE TABLE Reviews (
-			ID CHAR(36) NOT NULL,
-			Text text(500) NULL,
-			VendorID CHAR(36) NOT NULL,
-			UserID CHAR(36) NOT NULL,
-			DatePosted DATETIME NULL,
-			StarRating TINYINT NULL,
-			ReplyTo CHAR(36) NULL,
-			VendorFavorite TINYINT,
-			PRIMARY KEY (ID),
-			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY (UserID) REFERENCES User(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY(ReplyTo) REFERENCES Reviews(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE
-		)
-		`,
-		`
-		CREATE TABLE Photos (
-			ID VARCHAR(50) NOT NULL,
-			DatePosted DATETIME NOT NULL,
-			Text VARCHAR(500) NOT NULL,
-			LinkID CHAR(36) NOT NULL,
-			PRIMARY KEY (ID)
-		)
-		`,
-		`
-		CREATE TABLE Guide (
-			ID CHAR(36) NOT NULL,
-			Guide VARCHAR(5000) NOT NULL,
-			DatePosted DATETIME NOT NULL,
-			ArticleAuthor VARCHAR(500) NOT NULL,
-			PRIMARY KEY (ID)
-		)
-		`,
-		`
-		CREATE TABLE Link (
-			ID CHAR(36) NOT NULL,
-			Title VARCHAR(45) NOT NULL,
-			URL VARCHAR(255) NULL,
-			PRIMARY KEY (ID)
-		)
-		`,
-		`
-		CREATE TABLE Favorite (
-			ID CHAR(36) NOT NULL,
-			DatePosted DATETIME NULL,
-			VendorID CHAR(36),
-			UserID CHAR(36),
-			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-			PRIMARY KEY (ID)
-		)
-		`,
-		`
-		CREATE TABLE Stars (
-			UserID CHAR(36) NOT NULL,
-			VendorID CHAR(36) NOT NULL,
-			PRIMARY KEY (UserID, VendorID),
-			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
-		)
-		`,
-		`
-		CREATE TABLE Areas (
-			VendorID CHAR(36) NOT NULL,
-			AreaName VARCHAR(45) NOT NULL, 
-			PRIMARY KEY (VendorID, AreaName),
-			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
-		)
-		`,
-		`
-		CREATE TABLE CuisineTypes (
-			VendorID CHAR(36) NOT NULL,
-			CuisineType VARCHAR(45) NOT NULL, 
-			PRIMARY KEY (VendorID, CuisineType),
-			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
-		)
-		`,
-		`
-		CREATE TABLE Queries (
-			ID CHAR(36) NOT NULL,
-			UserID CHAR(36) NOT NULL,
-			QueryText VARCHAR(200) NULL,
-			DateRequested DATETIME NULL,
-			PRIMARY KEY (ID),
-			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
-		)
-		`,
-		`
-		CREATE TABLE Discounts (
-			ID CHAR(36) NOT NULL,
-			UserID CHAR(36) NOT NULL,
-			VendorID CHAR(36) NOT NULL,
-			Secret CHAR(36) NOT NULL,
-			PRIMARY KEY(ID),
-			FOREIGN KEY (UserID) REFERENCES User(ID)
-				ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
-				ON DELETE CASCADE ON UPDATE CASCADE
-		)
-		`,
-		`
-		ALTER TABLE User
-			ADD FOREIGN KEY (LastReviewSeen) REFERENCES Reviews(ID)
-			ON DELETE SET NULL ON UPDATE CASCADE
-		`,
-	}
-
-	for _, command := range commands {
-		_, err := db.Exec(command)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func addTestData(db *database.Database) error {
