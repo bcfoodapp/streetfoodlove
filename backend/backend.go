@@ -132,7 +132,29 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) error 
 
 	review.DatePosted = time.Now()
 
-	return b.Database.ReviewCreate(review)
+	if err := b.Database.ReviewCreate(review); err != nil {
+		return err
+	}
+
+	// Create discount if discount exchange is enabled
+	vendor, err := b.Database.Vendor(review.VendorID)
+	if err != nil {
+		return err
+	}
+
+	if vendor.DiscountEnabled {
+		discount := &database.Discount{
+			ID:       uuid.New(),
+			UserID:   review.UserID,
+			VendorID: review.VendorID,
+			Secret:   uuid.New(),
+		}
+		if err := b.Database.DiscountCreate(discount); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (b *Backend) ReviewUpdate(userID uuid.UUID, review *database.Review) error {
