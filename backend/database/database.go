@@ -984,13 +984,13 @@ func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, er
 	return result, rows.Err()
 }
 
-func (d *Database) CuisineType(vendorID uuid.UUID, cuisineType string) (*CuisineTypes, error) {
+func (d *Database) CuisineType(ID uuid.UUID) (*CuisineTypes, error) {
 	const command = `
 		SELECT * FROM CuisineTypes WHERE VendorID=? AND CuisineType=?
 	`
 
 	CuisineType := &CuisineTypes{}
-	err := d.db.QueryRowx(command, &vendorID, &cuisineType).StructScan(CuisineType)
+	err := d.db.QueryRowx(command, &ID).StructScan(CuisineType)
 	return CuisineType, err
 }
 
