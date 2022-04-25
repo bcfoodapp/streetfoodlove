@@ -160,11 +160,8 @@ func (b *BackendTestSuite) TestVendorsByCoordinateBounds() {
 		Owner:     user.ID,
 	}
 
-	{
-		// Add vendor
-		err := b.backend.VendorCreate(user.ID, vendor)
-		require.NoError(b.T(), err)
-	}
+	require.NoError(b.T(), b.backend.VendorCreate(user.ID, vendor))
+
 	{
 		// No vendor within bounds
 		vendors, err := b.backend.VendorsByCoordinateBounds(&database.CoordinateBounds{})
@@ -184,5 +181,51 @@ func (b *BackendTestSuite) TestVendorsByCoordinateBounds() {
 		b.Len(vendors, 1)
 
 		b.Equal(vendor.ID, vendors[0])
+	}
+}
+
+func (b *BackendTestSuite) TestReviewCreate() {
+	user := &database.UserProtected{
+		User: &database.User{
+			ID:       uuid.MustParse("1b006565-78eb-4f44-a816-65f5ab820fed"),
+			UserType: database.UserTypeVendor,
+		},
+	}
+	require.NoError(b.T(), b.backend.UserProtectedCreate(user, ""))
+
+	vendor := &database.Vendor{
+		ID:    uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
+		Owner: user.ID,
+	}
+	require.NoError(b.T(), b.backend.VendorCreate(user.ID, vendor))
+
+	review := &database.Review{
+		ID:       uuid.MustParse("2388137f-b166-4f7d-9e1b-d80485257537"),
+		UserID:   user.ID,
+		VendorID: vendor.ID,
+	}
+
+	{
+		// Create review without discount
+		b.NoError(b.backend.ReviewCreate(user.ID, review))
+		discounts, err := b.backend.DiscountsByUser(review.UserID)
+		b.NoError(err)
+		b.Empty(discounts)
+	}
+	{
+		// Create review and give discount
+		vendor.DiscountEnabled = true
+		require.NoError(b.T(), b.backend.VendorUpdate(user.ID, vendor))
+
+		review.ID = uuid.MustParse("f8d3093d-1c8f-49ac-8f67-e38030eddb9b")
+		b.NoError(b.backend.ReviewCreate(user.ID, review))
+		discounts, err := b.backend.DiscountsByUser(review.UserID)
+		b.NoError(err)
+		b.Len(discounts, 1)
+
+		// Get discount by secret
+		discount, err := b.backend.DiscountsBySecret(discounts[0].Secret)
+		b.NoError(err)
+		b.Equal(discounts[0], *discount)
 	}
 }
