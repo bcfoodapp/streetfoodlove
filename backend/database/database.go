@@ -1093,6 +1093,18 @@ func (d *Database) DiscountCreate(discount *Discount) error {
 	return err
 }
 
+func (d *Database) Discount(id uuid.UUID) (*Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE ID=?
+	`
+
+	result := &Discount{}
+	err := d.db.QueryRowx(command, &id).Scan(&result)
+	return result, err
+}
+
 func (d *Database) DiscountsByUser(userID uuid.UUID) ([]Discount, error) {
 	const command = `
 		SELECT *

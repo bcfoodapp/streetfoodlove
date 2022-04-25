@@ -329,6 +329,21 @@ func (b *Backend) DiscountsBySecret(secret uuid.UUID) (*database.Discount, error
 	return b.Database.DiscountBySecret(secret)
 }
 
-func (b *Backend) DiscountDelete(id uuid.UUID) error {
+func (b *Backend) DiscountDelete(userID uuid.UUID, id uuid.UUID) error {
+	// Only the vendor owner can delete the discount
+	discount, err := b.Database.Discount(id)
+	if err != nil {
+		return err
+	}
+
+	vendor, err := b.Database.Vendor(discount.VendorID)
+	if err != nil {
+		return err
+	}
+
+	if vendor.Owner != userID {
+		return unauthorized
+	}
+
 	return b.Database.DiscountDelete(id)
 }

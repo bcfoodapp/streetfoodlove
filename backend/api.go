@@ -93,7 +93,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
 	router.GET("/discounts", a.Discounts)
-	router.DELETE("/discounts/:id", a.DiscountDelete)
+	router.DELETE("/discounts/:id", GetToken, a.DiscountDelete)
 }
 
 // errorHandler writes any errors to response.
@@ -773,6 +773,7 @@ func (a *API) StarsCountForVendor(c *gin.Context) {
 }
 
 func (a *API) StarsDelete(c *gin.Context) {
+	// TODO need to authorize user
 	star, err := ParseStarKey(c.Param("id"))
 	if err != nil {
 		c.Error(err)
@@ -785,7 +786,6 @@ func (a *API) StarsDelete(c *gin.Context) {
 	}
 }
 
-// ParseStarKey splits key into userID and vendorID
 func ParseAreaKey(key string) (*database.Areas, error) {
 	const uuidLength = 81
 
@@ -998,7 +998,7 @@ func (a *API) DiscountDelete(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.DiscountDelete(id); err != nil {
+	if err := a.Backend.DiscountDelete(getTokenFromContext(c), id); err != nil {
 		c.Error(err)
 		return
 	}
