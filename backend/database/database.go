@@ -13,26 +13,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func ResetDatabase(db *sqlx.DB) error {
-	commands := [...]string{
-		"DROP DATABASE IF EXISTS streetfoodlove",
-		`
-			CREATE DATABASE IF NOT EXISTS streetfoodlove
-			CHARACTER SET utf8mb4
-			COLLATE utf8mb4_unicode_ci
-			`,
-	}
-
-	for _, command := range commands {
-		if _, err := db.Exec(command); err != nil {
-			panic(err)
-		}
-	}
-	return nil
-}
-
+// SetupTables drops all tables then recreates all tables.
 func SetupTables(db *sqlx.DB) error {
 	commands := [...]string{
+		`DROP DATABASE IF EXISTS streetfoodlove`,
+		`
+		CREATE DATABASE IF NOT EXISTS streetfoodlove
+		CHARACTER SET utf8mb4
+		COLLATE utf8mb4_unicode_ci
+		`,
+		`USE streetfoodlove`,
 		`
 		CREATE TABLE User (
 			ID CHAR(36) NOT NULL,

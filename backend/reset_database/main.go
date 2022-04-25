@@ -20,24 +20,6 @@ func main() {
 		config = database.Development()
 	}
 
-	func() {
-		mysqlConfig := config.MySQLConfig
-		mysqlConfig.DBName = ""
-		db, err := sqlx.Connect("mysql", mysqlConfig.FormatDSN())
-		if err != nil {
-			panic(err)
-		}
-		defer func() {
-			if err := db.Close(); err != nil {
-				panic(err)
-			}
-		}()
-
-		if err := database.ResetDatabase(db); err != nil {
-			return
-		}
-	}()
-
 	db, err := sqlx.Connect("mysql", config.MySQLConfig.FormatDSN())
 	if err != nil {
 		panic(err)
