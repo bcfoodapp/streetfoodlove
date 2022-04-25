@@ -320,3 +320,15 @@ func (b *Backend) QueryByUserID(userID uuid.UUID) ([]database.Query, error) {
 func (b *Backend) Query(id uuid.UUID) (*database.Query, error) {
 	return b.Database.Query(id)
 }
+
+func (b *Backend) DiscountsByUser(userID uuid.UUID) ([]database.Discount, error) {
+	return b.Database.DiscountsByUser(userID)
+}
+
+func (b *Backend) DiscountsBySecret(secret uuid.UUID) (*database.Discount, error) {
+	return b.Database.DiscountBySecret(secret)
+}
+
+func (b *Backend) DiscountDelete(id uuid.UUID) error {
+	return b.Database.DiscountDelete(id)
+}

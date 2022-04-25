@@ -16,7 +16,7 @@ func TestSelectReviewsAftertime(t *testing.T) {
 		{
 			nil,
 			time.Date(0, 0, 0, 0, 0, 1, 0, time.UTC),
-			nil,
+			[]database.Review{},
 		},
 		{
 			[]database.Review{
@@ -25,7 +25,7 @@ func TestSelectReviewsAftertime(t *testing.T) {
 				},
 			},
 			time.Date(0, 0, 0, 0, 0, 1, 0, time.UTC),
-			nil,
+			[]database.Review{},
 		},
 		{
 			[]database.Review{
