@@ -844,29 +844,24 @@ func (a *API) Areas(c *gin.Context) {
 	c.JSON(http.StatusOK, areas)
 }
 
-// ParseStarKey splits key into userID and vendorID
-func ParseCuisineTypeKey(key string) (*database.CuisineTypes, error) {
-	const uuidLength = 81
-
-	if len(key) != uuidLength {
-		return nil, fmt.Errorf("key must be length 36 but is of length %v", len(key))
-	}
-
-	vendorID, err := uuid.Parse(key[:uuidLength])
+func (a *API) CuisineType(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		return nil, err
+		c.Error(err)
+		return
 	}
 
-	CuisineType := key[uuidLength:]
+	cuisineType, err := a.Backend.CuisineType(id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
 
-	return &database.CuisineTypes{
-		VendorID:    vendorID,
-		CuisineType: CuisineType,
-	}, nil
+	c.JSON(http.StatusOK, cuisineType)
 }
 
 func (a *API) CuisineTypePut(c *gin.Context) {
-	key, err := ParseCuisineTypeKey(c.Param("id"))
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.Error(err)
 		return
@@ -878,26 +873,15 @@ func (a *API) CuisineTypePut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.Database.CuisineTypesCreate(key); err != nil {
-		c.Error(err)
-		return
-	}
-}
-
-func (a *API) CuisineType(c *gin.Context) {
-	vendorID, err := uuid.Parse(c.Query("vendorID"))
-	if err != nil {
-		c.Error(err)
+	if id != cuisineType.ID {
+		c.Error(errIDsDoNotMatch)
 		return
 	}
 
-	cuisineType, err := a.Backend.CuisineTypeByVendorID(vendorID)
-	if err != nil {
+	if err := a.Backend.CuisineTypeCreate(getTokenFromContext(c), cuisineType); err != nil {
 		c.Error(err)
 		return
 	}
-
-	c.JSON(http.StatusOK, cuisineType)
 }
 
 func (a *API) QueryPut(c *gin.Context) {
