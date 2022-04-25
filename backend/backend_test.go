@@ -65,7 +65,22 @@ func TestBackendSuite(t *testing.T) {
 
 	config := database.Development().MySQLConfig
 
-	db, err := sqlx.Connect("mysql", config.FormatDSN())
+	mysqlConfig := config
+	mysqlConfig.DBName = ""
+	db, err := sqlx.Connect("mysql", mysqlConfig.FormatDSN())
+	if err != nil {
+		panic(err)
+	}
+
+	if _, err := db.Exec("CREATE DATABASE IF NOT EXISTS streetfoodlove"); err != nil {
+		panic(err)
+	}
+
+	if err := db.Close(); err != nil {
+		panic(err)
+	}
+
+	db, err = sqlx.Connect("mysql", config.FormatDSN())
 	require.NoError(t, err)
 	require.NoError(t, database.SetupTables(db))
 	require.NoError(t, db.Close())
