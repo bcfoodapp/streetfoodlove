@@ -1101,7 +1101,7 @@ func (d *Database) Discount(id uuid.UUID) (*Discount, error) {
 	`
 
 	result := &Discount{}
-	err := d.db.QueryRowx(command, &id).Scan(&result)
+	err := d.db.QueryRowx(command, &id).StructScan(result)
 	return result, err
 }
 

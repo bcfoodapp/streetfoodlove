@@ -227,5 +227,9 @@ func (b *BackendTestSuite) TestReviewCreate() {
 		discount, err := b.backend.DiscountsBySecret(discounts[0].Secret)
 		b.NoError(err)
 		b.Equal(discounts[0], *discount)
+
+		// Delete discount
+		b.Error(b.backend.DiscountDelete(uuid.UUID{}, discount.ID))
+		b.NoError(b.backend.DiscountDelete(vendor.Owner, discount.ID))
 	}
 }
