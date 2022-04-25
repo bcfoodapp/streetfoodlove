@@ -92,7 +92,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/queries/:id", a.Query)
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
-	router.GET("/discounts")
+	router.GET("/discounts", a.Discounts)
+	router.DELETE("/discounts/:id", a.DiscountDelete)
 }
 
 // errorHandler writes any errors to response.
