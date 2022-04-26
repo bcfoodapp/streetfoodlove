@@ -141,7 +141,7 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE CuisineTypes (
-			ID  CHAR(36) NOT NULL,
+			ID CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
 			CuisineType VARCHAR(45) NOT NULL, 
 			PRIMARY KEY (ID),
@@ -163,7 +163,7 @@ func SetupTables(db *sqlx.DB) error {
 			CuisineTypes VARCHAR(36) NOT NULL,
 			RelevantSearchWord VARCHAR(255) NOT NULL,
 			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY (CuisineTypes) REFERENCES CuisineTypes(CuisineType) ON DELETE CASCADE ON UPDATE CASCADE
+			FOREIGN KEY (CuisineTypes) REFERENCES CuisineTypes(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
