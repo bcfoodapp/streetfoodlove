@@ -141,7 +141,7 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE CuisineTypes (
-			ID  CHAR(36) NOT NULL,
+			ID CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
 			CuisineType VARCHAR(45) NOT NULL, 
 			PRIMARY KEY (ID),
@@ -156,6 +156,14 @@ func SetupTables(db *sqlx.DB) error {
 			DateRequested DATETIME NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`CREATE TABLE PastSearch (
+			UserID CHAR(36) NOT NULL,
+			CuisineTypes VARCHAR(36) NOT NULL,
+			RelevantSearchWord VARCHAR(255) NOT NULL,
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (CuisineTypes) REFERENCES CuisineTypes(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
@@ -1061,4 +1069,37 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	result := 0
 	err := d.db.QueryRowx(command, &userID).Scan(&result)
 	return result, err
+}
+
+type PastSearch struct {
+	UserID             uuid.UUID
+	CuisineTypes       string
+	RelevantSearchWord string
+}
+
+func (d *Database) PastSearchCreate(pastSearch *PastSearch) error {
+	const command = `
+		INSERT INTO PastSearch (
+			UserID,
+			CuisineTypes,
+			RelevantSearchWord
+		) VALUES (
+			:UserID,
+			:CuisineTypes,
+			:RelevantSearchWord
+		)
+	`
+
+	_, err := d.db.NamedExec(command, pastSearch)
+	return err
+}
+
+func (d *Database) PastSearch(id uuid.UUID) (*PastSearch, error) {
+	const command = `
+		SELECT * FROM PastSearch WHERE ID=?
+	`
+	pastSearch := &PastSearch{}
+	err := d.db.QueryRowx(command, &id).StructScan(pastSearch)
+
+	return pastSearch, err
 }
