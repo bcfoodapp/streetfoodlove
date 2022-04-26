@@ -141,9 +141,10 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE CuisineTypes (
+			ID  CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
 			CuisineType VARCHAR(45) NOT NULL, 
-			PRIMARY KEY (VendorID, CuisineType),
+			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
@@ -946,6 +947,7 @@ func (d *Database) Area(vendorID uuid.UUID, areaName string) (*Areas, error) {
 }
 
 type CuisineTypes struct {
+	ID          uuid.UUID
 	VendorID    uuid.UUID
 	CuisineType string
 }
@@ -953,9 +955,11 @@ type CuisineTypes struct {
 func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
 	const command = `
 		INSERT INTO CuisineTypes (
+			ID,
 			VendorID,
 			CuisineType
 		) VALUES (
+			:ID,
 			:VendorID,
 			:CuisineType
 		)
@@ -988,13 +992,13 @@ func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, er
 	return result, rows.Err()
 }
 
-func (d *Database) CuisineType(vendorID uuid.UUID, cuisineType string) (*CuisineTypes, error) {
+func (d *Database) CuisineType(ID uuid.UUID) (*CuisineTypes, error) {
 	const command = `
 		SELECT * FROM CuisineTypes WHERE VendorID=? AND CuisineType=?
 	`
 
 	CuisineType := &CuisineTypes{}
-	err := d.db.QueryRowx(command, &vendorID, &cuisineType).StructScan(CuisineType)
+	err := d.db.QueryRowx(command, &ID).StructScan(CuisineType)
 	return CuisineType, err
 }
 

@@ -278,8 +278,8 @@ func (b *Backend) CuisineTypeByVendorID(vendorID uuid.UUID) ([]database.CuisineT
 	return b.Database.CuisineTypeByVendorID(vendorID)
 }
 
-func (b *Backend) CuisineType(vendorID uuid.UUID, cuisineType string) (*database.CuisineTypes, error) {
-	return b.Database.CuisineType(vendorID, cuisineType)
+func (b *Backend) CuisineType(id uuid.UUID) (*database.CuisineTypes, error) {
+	return b.Database.CuisineType(id)
 }
 
 //Query
