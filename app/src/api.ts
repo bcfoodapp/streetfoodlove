@@ -143,6 +143,13 @@ export interface Query {
   DateRequested: DateTime;
 }
 
+export interface Discount {
+  ID: string;
+  UserID: string;
+  VendorID: string;
+  Secret: string;
+}
+
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
 
 export const tokenSlice = createSlice({
@@ -743,6 +750,9 @@ export const apiSlice = createApi({
         method: PUT,
         body: query,
       }),
+    }),
+    discountsByUser: builder.query<Discount[], string>({
+      query: (userID) => `/discounts?userID=${encode(userID)}`,
     }),
   }),
 });
