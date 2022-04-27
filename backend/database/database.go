@@ -61,9 +61,10 @@ func SetupTables(db *sqlx.DB) error {
 			Latitude FLOAT NOT NULL,
 			Longitude FLOAT NOT NULL,
 			Owner CHAR(36) NOT NULL,
+			DiscountEnabled BOOLEAN NOT NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (Owner) REFERENCES User(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE
+				ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
@@ -80,9 +81,9 @@ func SetupTables(db *sqlx.DB) error {
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
 			ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY (UserID) REFERENCES User(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE,
+				ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY(ReplyTo) REFERENCES Reviews(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE
+				ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
@@ -169,6 +170,19 @@ func SetupTables(db *sqlx.DB) error {
 		)
 		`,
 		`
+		CREATE TABLE Discounts (
+			ID CHAR(36) NOT NULL,
+			UserID CHAR(36) NOT NULL,
+			VendorID CHAR(36) NOT NULL,
+			Secret CHAR(36) NOT NULL,
+			PRIMARY KEY(ID),
+			FOREIGN KEY (UserID) REFERENCES User(ID)
+				ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
+				ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`
 		ALTER TABLE User
 			ADD FOREIGN KEY (LastReviewSeen) REFERENCES Reviews(ID)
 			ON DELETE SET NULL ON UPDATE CASCADE
@@ -209,6 +223,7 @@ type Vendor struct {
 	Latitude        float64
 	Longitude       float64
 	Owner           uuid.UUID
+	DiscountEnabled bool
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -223,7 +238,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			BusinessLogo,
 			Latitude,
 			Longitude,
-			Owner
+			Owner,
+			DiscountEnabled
 		) VALUES (
 			:ID,
 			:Name,
@@ -234,7 +250,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:BusinessLogo,
 			:Latitude,
 			:Longitude,
-			:Owner
+			:Owner,
+			:DiscountEnabled
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
@@ -283,7 +300,8 @@ func (d *Database) VendorUpdate(vendor *Vendor) error {
 			BusinessLogo = :BusinessLogo,
 			Latitude = :Latitude,
 			Longitude = :Longitude,
-			Owner = :Owner
+			Owner = :Owner,
+			DiscountEnabled = :DiscountEnabled
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &vendor)
@@ -1104,4 +1122,77 @@ func (d *Database) PastSearch(id uuid.UUID) (*PastSearch, error) {
 	err := d.db.QueryRowx(command, &id).StructScan(pastSearch)
 
 	return pastSearch, err
+}
+
+type Discount struct {
+	ID       uuid.UUID
+	UserID   uuid.UUID
+	VendorID uuid.UUID
+	Secret   uuid.UUID
+}
+
+func (d *Database) DiscountCreate(discount *Discount) error {
+	const command = `
+		INSERT INTO Discounts (
+			ID,
+			UserID,
+			VendorID,
+			Secret
+		) VALUES (
+			:ID,
+			:UserID,
+			:VendorID,
+			:Secret
+		)
+	`
+
+	_, err := d.db.NamedExec(command, discount)
+	return err
+}
+
+func (d *Database) DiscountsByUser(userID uuid.UUID) ([]Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE UserID=?
+	`
+
+	rows, err := d.db.Queryx(command, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Discount, 0)
+
+	for rows.Next() {
+		result = append(result, Discount{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) DiscountBySecret(secret uuid.UUID) (*Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE Secret=?
+	`
+
+	query := &Discount{}
+	err := d.db.QueryRowx(command, &secret).StructScan(query)
+	return query, err
+}
+
+func (d *Database) DiscountDelete(id uuid.UUID) error {
+	const command = `
+		DELETE FROM Discounts
+		WHERE ID=?
+	`
+
+	_, err := d.db.Exec(command, &id)
+	return err
 }
