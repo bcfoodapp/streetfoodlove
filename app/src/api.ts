@@ -790,6 +790,7 @@ export const {
   useSearchQuery,
   useNewReviewsQuery,
   useCreateQueryMutation,
+  useDiscountsByUserQuery,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
