@@ -132,9 +132,10 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE CuisineTypes (
+			ID CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
 			CuisineType VARCHAR(45) NOT NULL, 
-			PRIMARY KEY (VendorID, CuisineType),
+			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
@@ -146,6 +147,14 @@ func SetupTables(db *sqlx.DB) error {
 			DateRequested DATETIME NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`CREATE TABLE PastSearch (
+			UserID CHAR(36) NOT NULL,
+			CuisineTypes VARCHAR(36) NOT NULL,
+			RelevantSearchWord VARCHAR(255) NOT NULL,
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (CuisineTypes) REFERENCES CuisineTypes(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
@@ -946,6 +955,7 @@ func (d *Database) Area(vendorID uuid.UUID, areaName string) (*Areas, error) {
 }
 
 type CuisineTypes struct {
+	ID          uuid.UUID
 	VendorID    uuid.UUID
 	CuisineType string
 }
@@ -953,9 +963,11 @@ type CuisineTypes struct {
 func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
 	const command = `
 		INSERT INTO CuisineTypes (
+			ID,
 			VendorID,
 			CuisineType
 		) VALUES (
+			:ID,
 			:VendorID,
 			:CuisineType
 		)
@@ -988,13 +1000,13 @@ func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, er
 	return result, rows.Err()
 }
 
-func (d *Database) CuisineType(vendorID uuid.UUID, cuisineType string) (*CuisineTypes, error) {
+func (d *Database) CuisineType(ID uuid.UUID) (*CuisineTypes, error) {
 	const command = `
 		SELECT * FROM CuisineTypes WHERE VendorID=? AND CuisineType=?
 	`
 
 	CuisineType := &CuisineTypes{}
-	err := d.db.QueryRowx(command, &vendorID, &cuisineType).StructScan(CuisineType)
+	err := d.db.QueryRowx(command, &ID).StructScan(CuisineType)
 	return CuisineType, err
 }
 
@@ -1067,11 +1079,56 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	return result, err
 }
 
+type PastSearch struct {
+	UserID             uuid.UUID
+	CuisineTypes       string
+	RelevantSearchWord string
+}
+
+func (d *Database) PastSearchCreate(pastSearch *PastSearch) error {
+	const command = `
+		INSERT INTO PastSearch (
+			UserID,
+			CuisineTypes,
+			RelevantSearchWord
+		) VALUES (
+			:UserID,
+			:CuisineTypes,
+			:RelevantSearchWord
+		)
+	`
+
+	_, err := d.db.NamedExec(command, pastSearch)
+	return err
+}
+
+func (d *Database) PastSearch(id uuid.UUID) (*PastSearch, error) {
+	const command = `
+		SELECT * FROM PastSearch WHERE ID=?
+	`
+	pastSearch := &PastSearch{}
+	err := d.db.QueryRowx(command, &id).StructScan(pastSearch)
+
+	return pastSearch, err
+}
+
 type Discount struct {
 	ID       uuid.UUID
 	UserID   uuid.UUID
 	VendorID uuid.UUID
 	Secret   uuid.UUID
+}
+
+func (d *Database) Discount(id uuid.UUID) (*Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE ID=?
+	`
+
+	result := &Discount{}
+	err := d.db.QueryRowx(command, &id).StructScan(result)
+	return result, err
 }
 
 func (d *Database) DiscountCreate(discount *Discount) error {
@@ -1091,18 +1148,6 @@ func (d *Database) DiscountCreate(discount *Discount) error {
 
 	_, err := d.db.NamedExec(command, discount)
 	return err
-}
-
-func (d *Database) Discount(id uuid.UUID) (*Discount, error) {
-	const command = `
-		SELECT *
-		FROM Discounts
-		WHERE ID=?
-	`
-
-	result := &Discount{}
-	err := d.db.QueryRowx(command, &id).StructScan(result)
-	return result, err
 }
 
 func (d *Database) DiscountsByUser(userID uuid.UUID) ([]Discount, error) {
