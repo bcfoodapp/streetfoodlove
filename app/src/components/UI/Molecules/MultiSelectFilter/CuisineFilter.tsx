@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from "react";
+import React from "react";
 import { Dropdown } from "semantic-ui-react";
 import { useAppDispatch, useAppSelector } from "../../../../store/root";
 import {
@@ -71,10 +71,6 @@ const CuisineFilter: React.FC<Props> = ({ searchQuery }) => {
     userID = getUserIDFromToken(token);
   }
 
-  if (token === null) {
-    throw new Error("token is null");
-  }
-
   return (
     <Dropdown
       placeholder="Cuisine Type"
@@ -86,6 +82,9 @@ const CuisineFilter: React.FC<Props> = ({ searchQuery }) => {
       className={styles.filter}
       onChange={(e, data) => {
         dispatch(setCuisineType(data.value as string[]));
+        if (token === null) {
+          throw new Error("token is null");
+        }
         const userID = getUserIDFromToken(token);
         let relevantWord = searchQuery?.split(" ").pop();
 
