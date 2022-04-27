@@ -143,6 +143,14 @@ export interface Query {
   DateRequested: DateTime;
 }
 
+export interface PreviousQueryForRec {
+  //for recommendation based on previous queries
+  ID: string;
+  UserID: string;
+  RelevantSearchWord: string;
+  CuisineType: string;
+}
+
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
 
 export const tokenSlice = createSlice({
@@ -258,7 +266,13 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review", "VendorPhotos", "UserStars", "CurrentUser"],
+  tagTypes: [
+    "Review",
+    "VendorPhotos",
+    "UserStars",
+    "CurrentUser",
+    "Recommendation",
+  ],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -613,6 +627,14 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["UserStars"],
     }),
+    createRecommendation: builder.mutation<void, PreviousQueryForRec>({
+      query: (rec) => ({
+        url: `/recommended/${encode(rec.ID + rec.UserID)}`,
+        method: PUT,
+        body: rec,
+      }),
+      invalidatesTags: ["Recommendation"],
+    }),
     // Returns search result for given search string.
     search: builder.query<OpenSearchVendor[], ReviewFilters>({
       queryFn: async (searchParams, api) => {
@@ -778,6 +800,7 @@ export const {
   useDeleteStarMutation,
   useSearchQuery,
   useNewReviewsQuery,
+  useCreateRecommendationMutation,
   useCreateQueryMutation,
 } = apiSlice;
 

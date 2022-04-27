@@ -1,8 +1,13 @@
 import React, { SyntheticEvent } from "react";
 import { Dropdown } from "semantic-ui-react";
-import { useAppDispatch } from "../../../../store/root";
+import { useAppDispatch, useAppSelector } from "../../../../store/root";
+import {
+  getUserIDFromToken,
+  useCreateRecommendationMutation,
+} from "../../../../api";
 import { setCuisineType } from "../../../../store/search";
 import styles from "./filter.module.css";
+import { v4 as uuid } from "uuid";
 
 const options = [
   {
@@ -52,8 +57,23 @@ const options = [
   },
 ];
 
-const SelectFilter: React.FC<{}> = () => {
+interface Props {
+  searchQuery?: string;
+}
+
+const CuisineFilter: React.FC<Props> = ({ searchQuery }) => {
   const dispatch = useAppDispatch();
+  const [createRecommendation] = useCreateRecommendationMutation();
+  const token = useAppSelector((state) => state.token.token);
+
+  let userID = null as string | null;
+  if (token) {
+    userID = getUserIDFromToken(token);
+  }
+
+  if (token === null) {
+    throw new Error("token is null");
+  }
 
   return (
     <Dropdown
@@ -64,9 +84,22 @@ const SelectFilter: React.FC<{}> = () => {
       selection
       options={options}
       className={styles.filter}
-      onChange={(e, data) => dispatch(setCuisineType(data.value as string[]))}
+      onChange={(e, data) => {
+        dispatch(setCuisineType(data.value as string[]));
+        const userID = getUserIDFromToken(token);
+        let relevantWord = searchQuery?.split(" ").pop();
+
+        if (relevantWord) {
+          createRecommendation({
+            ID: uuid(),
+            UserID: userID,
+            RelevantSearchWord: relevantWord,
+            CuisineType: data.value as string,
+          });
+        }
+      }}
     />
   );
 };
 
-export default SelectFilter;
+export default CuisineFilter;
