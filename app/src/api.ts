@@ -635,6 +635,12 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Recommendation"],
     }),
+    recommendation: builder.query<PreviousQueryForRec, string>({
+      query: (userID) => ({
+        url: `/recommended?userID=${encode(userID)}`,
+        providesTags: ["Recommendation"],
+      }),
+    }),
     // Returns search result for given search string.
     search: builder.query<OpenSearchVendor[], ReviewFilters>({
       queryFn: async (searchParams, api) => {
@@ -801,6 +807,7 @@ export const {
   useSearchQuery,
   useNewReviewsQuery,
   useCreateRecommendationMutation,
+  useRecommendationQuery,
   useCreateQueryMutation,
 } = apiSlice;
 

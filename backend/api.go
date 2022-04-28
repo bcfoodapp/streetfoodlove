@@ -92,6 +92,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/queries/:id", a.Query)
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
+	// router.PUT("/recommend/:id", GetToken, a.RecommendationPut)
+
 }
 
 // errorHandler writes any errors to response.
@@ -939,3 +941,23 @@ func (a *API) Query(c *gin.Context) {
 
 	c.JSON(http.StatusOK, query)
 }
+
+// func (a *API) RecommendationPut(c *gin.Context) {
+// 	id, err := uuid.Parse(c.Param("id"))
+// 	if err != nil {
+// 		c.Error(err)
+// 		return
+// 	}
+
+// 	recommendation := &database.PastSearch{}
+
+// 	if err := c.ShouldBindJSON(vendor); err != nil {
+// 		c.Error(err)
+// 		return
+// 	}
+
+// 	if id != query.ID {
+// 		c.Error(errIDsDoNotMatch)
+// 		return
+// 	}
+// }
