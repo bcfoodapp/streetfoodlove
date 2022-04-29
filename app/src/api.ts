@@ -752,6 +752,9 @@ export const apiSlice = createApi({
         body: query,
       }),
     }),
+    discount: builder.query<Discount, string>({
+      query: (id) => `/discounts/${encode(id)}`,
+    }),
     discountsByUser: builder.query<Discount[], string>({
       query: (userID) => `/discounts?userID=${encode(userID)}`,
     }),
@@ -790,6 +793,7 @@ export const {
   useSearchQuery,
   useNewReviewsQuery,
   useCreateQueryMutation,
+  useDiscountQuery,
   useDiscountsByUserQuery,
 } = apiSlice;
 
