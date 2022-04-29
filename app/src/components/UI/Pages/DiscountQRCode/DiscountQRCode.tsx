@@ -2,18 +2,20 @@ import React from "react";
 import QRCode from "react-qr-code";
 import { Link, useParams } from "react-router-dom";
 import { useDiscountQuery } from "../../../../api";
-import { Container, Divider, Header } from "semantic-ui-react";
+import { Container, Header } from "semantic-ui-react";
 
 export default (): React.ReactElement => {
   const id = useParams().ID as string;
 
   const { data: discount } = useDiscountQuery(id);
-  const discountURL = `/vendor-dashboard/validate-discount/${discount?.Secret}`;
+  const discountURL = discount
+    ? `/vendor-dashboard/validate-discount/${discount.Secret}`
+    : null;
 
   return (
     <Container>
       <Header as="h1">Discount QR Code</Header>
-      {discount ? (
+      {discountURL ? (
         <>
           <Container textAlign="center">
             <QRCode value={discountURL} />
