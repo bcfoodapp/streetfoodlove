@@ -93,6 +93,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
 	router.GET("/discounts", a.Discounts)
+	router.GET("/discounts/:id", GetToken, a.Discount)
 	router.DELETE("/discounts/:id", GetToken, a.DiscountDelete)
 }
 
@@ -973,6 +974,22 @@ func (a *API) Discounts(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, discounts)
+}
+
+func (a *API) Discount(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	discount, err := a.Backend.Discount(getTokenFromContext(c), id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, discount)
 }
 
 func (a *API) DiscountDelete(c *gin.Context) {
