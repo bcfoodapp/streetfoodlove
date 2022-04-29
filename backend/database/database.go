@@ -13,6 +13,179 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// SetupTables drops all tables then recreates all tables.
+func SetupTables(db *sqlx.DB) error {
+	commands := [...]string{
+		`DROP DATABASE IF EXISTS streetfoodlove`,
+		`
+		CREATE DATABASE IF NOT EXISTS streetfoodlove
+		CHARACTER SET utf8mb4
+		COLLATE utf8mb4_unicode_ci
+		`,
+		`USE streetfoodlove`,
+		`
+		CREATE TABLE User (
+			ID CHAR(36) NOT NULL,
+			Email VARCHAR(100) NULL,
+			Username VARCHAR(100) UNIQUE NULL,
+			FirstName VARCHAR(100) NULL,
+			LastName VARCHAR(100) NULL,
+			SignUpDate DATETIME NULL,
+			LoginPassword BINARY(32) NULL,
+			UserType TINYINT NULL,
+			Photo VARCHAR(50) NOT NULL,
+			GoogleID VARCHAR(50) UNIQUE NULL,
+			LastReviewSeen CHAR(36) NULL,
+			PRIMARY KEY (ID)
+		)
+		`,
+		`
+		CREATE TABLE Vendor (
+			ID CHAR(36) NOT NULL,
+			Name VARCHAR(100) NOT NULL,
+			BusinessAddress VARCHAR(500) NULL,
+			Website VARCHAR(500) NULL,
+			BusinessHours VARCHAR(500) NOT NULL,
+			Phone VARCHAR(50) NULL,
+			BusinessLogo VARCHAR(50) NULL,
+			Latitude FLOAT NOT NULL,
+			Longitude FLOAT NOT NULL,
+			Owner CHAR(36) NOT NULL,
+			DiscountEnabled BOOLEAN NOT NULL,
+			PRIMARY KEY (ID),
+			FOREIGN KEY (Owner) REFERENCES User(ID)
+				ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`
+		CREATE TABLE Reviews (
+			ID CHAR(36) NOT NULL,
+			Text text(500) NULL,
+			VendorID CHAR(36) NOT NULL,
+			UserID CHAR(36) NOT NULL,
+			DatePosted DATETIME NULL,
+			StarRating TINYINT NULL,
+			ReplyTo CHAR(36) NULL,
+			VendorFavorite TINYINT,
+			PRIMARY KEY (ID),
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
+			ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (UserID) REFERENCES User(ID)
+				ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY(ReplyTo) REFERENCES Reviews(ID)
+				ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`
+		CREATE TABLE Photos (
+			ID VARCHAR(50) NOT NULL,
+			DatePosted DATETIME NOT NULL,
+			Text VARCHAR(500) NOT NULL,
+			LinkID CHAR(36) NOT NULL,
+			PRIMARY KEY (ID)
+		)
+		`,
+		`
+		CREATE TABLE Guide (
+			ID CHAR(36) NOT NULL,
+			Guide VARCHAR(5000) NOT NULL,
+			DatePosted DATETIME NOT NULL,
+			ArticleAuthor VARCHAR(500) NOT NULL,
+			PRIMARY KEY (ID)
+		)
+		`,
+		`
+		CREATE TABLE Link (
+			ID CHAR(36) NOT NULL,
+			Title VARCHAR(45) NOT NULL,
+			URL VARCHAR(255) NULL,
+			PRIMARY KEY (ID)
+		)
+		`,
+		`
+		CREATE TABLE Favorite (
+			ID CHAR(36) NOT NULL,
+			DatePosted DATETIME NULL,
+			VendorID CHAR(36),
+			UserID CHAR(36),
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			PRIMARY KEY (ID)
+		)
+		`,
+		`
+		CREATE TABLE Stars (
+			UserID CHAR(36) NOT NULL,
+			VendorID CHAR(36) NOT NULL,
+			PRIMARY KEY (UserID, VendorID),
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`
+		CREATE TABLE Areas (
+			VendorID CHAR(36) NOT NULL,
+			AreaName VARCHAR(45) NOT NULL, 
+			PRIMARY KEY (VendorID, AreaName),
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`
+		CREATE TABLE CuisineTypes (
+			ID CHAR(36) NOT NULL,
+			VendorID CHAR(36) NOT NULL,
+			CuisineType VARCHAR(45) NOT NULL, 
+			PRIMARY KEY (ID),
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`
+		CREATE TABLE Queries (
+			ID CHAR(36) NOT NULL,
+			UserID CHAR(36) NOT NULL,
+			QueryText VARCHAR(200) NULL,
+			DateRequested DATETIME NULL,
+			PRIMARY KEY (ID),
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`CREATE TABLE PastSearch (
+			UserID CHAR(36) NOT NULL,
+			CuisineTypes VARCHAR(36) NOT NULL,
+			RelevantSearchWord VARCHAR(255) NOT NULL,
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (CuisineTypes) REFERENCES CuisineTypes(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`
+		CREATE TABLE Discounts (
+			ID CHAR(36) NOT NULL,
+			UserID CHAR(36) NOT NULL,
+			VendorID CHAR(36) NOT NULL,
+			Secret CHAR(36) NOT NULL,
+			PRIMARY KEY(ID),
+			FOREIGN KEY (UserID) REFERENCES User(ID)
+				ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
+				ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`
+		ALTER TABLE User
+			ADD FOREIGN KEY (LastReviewSeen) REFERENCES Reviews(ID)
+			ON DELETE SET NULL ON UPDATE CASCADE
+		`,
+	}
+
+	for _, command := range commands {
+		_, err := db.Exec(command)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Database abstraction layer
 type Database struct {
 	db *sqlx.DB
@@ -38,6 +211,7 @@ type Vendor struct {
 	Latitude        float64
 	Longitude       float64
 	Owner           uuid.UUID
+	DiscountEnabled bool
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -52,7 +226,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			BusinessLogo,
 			Latitude,
 			Longitude,
-			Owner
+			Owner,
+			DiscountEnabled
 		) VALUES (
 			:ID,
 			:Name,
@@ -63,7 +238,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:BusinessLogo,
 			:Latitude,
 			:Longitude,
-			:Owner
+			:Owner,
+			:DiscountEnabled
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
@@ -112,7 +288,8 @@ func (d *Database) VendorUpdate(vendor *Vendor) error {
 			BusinessLogo = :BusinessLogo,
 			Latitude = :Latitude,
 			Longitude = :Longitude,
-			Owner = :Owner
+			Owner = :Owner,
+			DiscountEnabled = :DiscountEnabled
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &vendor)
@@ -778,6 +955,7 @@ func (d *Database) Area(vendorID uuid.UUID, areaName string) (*Areas, error) {
 }
 
 type CuisineTypes struct {
+	ID          uuid.UUID
 	VendorID    uuid.UUID
 	CuisineType string
 }
@@ -785,9 +963,11 @@ type CuisineTypes struct {
 func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
 	const command = `
 		INSERT INTO CuisineTypes (
+			ID,
 			VendorID,
 			CuisineType
 		) VALUES (
+			:ID,
 			:VendorID,
 			:CuisineType
 		)
@@ -820,13 +1000,13 @@ func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, er
 	return result, rows.Err()
 }
 
-func (d *Database) CuisineType(vendorID uuid.UUID, cuisineType string) (*CuisineTypes, error) {
+func (d *Database) CuisineType(ID uuid.UUID) (*CuisineTypes, error) {
 	const command = `
 		SELECT * FROM CuisineTypes WHERE VendorID=? AND CuisineType=?
 	`
 
 	CuisineType := &CuisineTypes{}
-	err := d.db.QueryRowx(command, &vendorID, &cuisineType).StructScan(CuisineType)
+	err := d.db.QueryRowx(command, &ID).StructScan(CuisineType)
 	return CuisineType, err
 }
 
@@ -897,4 +1077,122 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	result := 0
 	err := d.db.QueryRowx(command, &userID).Scan(&result)
 	return result, err
+}
+
+type PastSearch struct {
+	UserID             uuid.UUID
+	CuisineTypes       string
+	RelevantSearchWord string
+}
+
+func (d *Database) PastSearchCreate(pastSearch *PastSearch) error {
+	const command = `
+		INSERT INTO PastSearch (
+			UserID,
+			CuisineTypes,
+			RelevantSearchWord
+		) VALUES (
+			:UserID,
+			:CuisineTypes,
+			:RelevantSearchWord
+		)
+	`
+
+	_, err := d.db.NamedExec(command, pastSearch)
+	return err
+}
+
+func (d *Database) PastSearch(id uuid.UUID) (*PastSearch, error) {
+	const command = `
+		SELECT * FROM PastSearch WHERE ID=?
+	`
+	pastSearch := &PastSearch{}
+	err := d.db.QueryRowx(command, &id).StructScan(pastSearch)
+
+	return pastSearch, err
+}
+
+type Discount struct {
+	ID       uuid.UUID
+	UserID   uuid.UUID
+	VendorID uuid.UUID
+	Secret   uuid.UUID
+}
+
+func (d *Database) Discount(id uuid.UUID) (*Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE ID=?
+	`
+
+	result := &Discount{}
+	err := d.db.QueryRowx(command, &id).StructScan(result)
+	return result, err
+}
+
+func (d *Database) DiscountCreate(discount *Discount) error {
+	const command = `
+		INSERT INTO Discounts (
+			ID,
+			UserID,
+			VendorID,
+			Secret
+		) VALUES (
+			:ID,
+			:UserID,
+			:VendorID,
+			:Secret
+		)
+	`
+
+	_, err := d.db.NamedExec(command, discount)
+	return err
+}
+
+func (d *Database) DiscountsByUser(userID uuid.UUID) ([]Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE UserID=?
+	`
+
+	rows, err := d.db.Queryx(command, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Discount, 0)
+
+	for rows.Next() {
+		result = append(result, Discount{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) DiscountBySecret(secret uuid.UUID) (*Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE Secret=?
+	`
+
+	query := &Discount{}
+	err := d.db.QueryRowx(command, &secret).StructScan(query)
+	return query, err
+}
+
+func (d *Database) DiscountDelete(id uuid.UUID) error {
+	const command = `
+		DELETE FROM Discounts
+		WHERE ID=?
+	`
+
+	_, err := d.db.Exec(command, &id)
+	return err
 }

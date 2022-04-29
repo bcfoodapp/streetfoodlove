@@ -41,16 +41,6 @@ const LandingPageSidebar: React.FC = () => {
       skip: !searchQuery,
     });
 
-  const handleChange = (
-    e: SyntheticEvent<HTMLElement, Event>,
-    data: string[]
-  ) => {
-    setCuisineSelection([...data]);
-  };
-
-  // console.log("query result: " + JSON.stringify(resultVendors, null, 2));
-  console.log("cuisine selection:" + cuisineSelection);
-
   const dispatch = useAppDispatch();
 
   return (
