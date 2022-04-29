@@ -373,6 +373,7 @@ const EditVendorPage: React.FC = () => {
                 label="Vendor Description"
                 placeholder="Vendor Description"
               />
+              <strong>Discount exchange</strong>
               <Form.Checkbox
                 name="discountEnabled"
                 label="Reward discount in exchange for review"
@@ -381,7 +382,7 @@ const EditVendorPage: React.FC = () => {
                   setFieldValue("discountEnabled", data.checked)
                 }
               />
-              <p>
+              <p style={{ marginLeft: 25 }}>
                 Enable this option if you would like to reward a discount to
                 your business for posting a review on your vendor page.
               </p>
