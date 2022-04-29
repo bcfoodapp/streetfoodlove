@@ -7,6 +7,7 @@ import {
 import React, { useState } from "react";
 import { Header } from "semantic-ui-react";
 import { VendorName } from "../AccountProfileStars/AccountProfileStars";
+import { Link } from "react-router-dom";
 
 export default (): React.ReactElement => {
   const [getToken] = useGetTokenMutation();
@@ -32,7 +33,9 @@ export default (): React.ReactElement => {
       <Header as="h1">Discounts</Header>
       <p>Select a vendor to claim the discount.</p>
       {discounts?.map((discount, i) => (
-        <VendorName key={i} vendorID={discount.VendorID} />
+        <Link to={`/account-profile/discount/${discount.ID}`}>
+          <VendorName key={i} vendorID={discount.VendorID} />
+        </Link>
       ))}
     </>
   );
