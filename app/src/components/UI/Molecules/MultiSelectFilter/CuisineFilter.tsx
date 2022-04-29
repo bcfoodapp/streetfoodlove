@@ -85,10 +85,9 @@ const CuisineFilter: React.FC<Props> = ({ searchQuery }) => {
         if (token === null) {
           throw new Error("token is null");
         }
-        const userID = getUserIDFromToken(token);
         let relevantWord = searchQuery?.split(" ").pop();
 
-        if (relevantWord) {
+        if (relevantWord && userID) {
           createRecommendation({
             ID: uuid(),
             UserID: userID,
