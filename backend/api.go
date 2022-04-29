@@ -94,6 +94,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	// router.PUT("/recommend/:id", GetToken, a.RecommendationPut)
 
+	router.GET("/discounts", a.Discounts)
+	router.DELETE("/discounts/:id", GetToken, a.DiscountDelete)
 }
 
 // errorHandler writes any errors to response.
@@ -773,6 +775,7 @@ func (a *API) StarsCountForVendor(c *gin.Context) {
 }
 
 func (a *API) StarsDelete(c *gin.Context) {
+	// TODO need to authorize user
 	star, err := ParseStarKey(c.Param("id"))
 	if err != nil {
 		c.Error(err)
@@ -785,7 +788,6 @@ func (a *API) StarsDelete(c *gin.Context) {
 	}
 }
 
-// ParseStarKey splits key into userID and vendorID
 func ParseAreaKey(key string) (*database.Areas, error) {
 	const uuidLength = 81
 
@@ -961,3 +963,48 @@ func (a *API) Query(c *gin.Context) {
 // 		return
 // 	}
 // }
+func (a *API) Discounts(c *gin.Context) {
+	var discounts []database.Discount
+
+	if c.Query("userID") != "" {
+		userID, err := uuid.Parse(c.Query("userID"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		discounts, err = a.Backend.DiscountsByUser(userID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+	} else {
+		secret, err := uuid.Parse(c.Query("secret"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		discount, err := a.Backend.DiscountsBySecret(secret)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+		discounts = []database.Discount{*discount}
+	}
+
+	c.JSON(http.StatusOK, discounts)
+}
+
+func (a *API) DiscountDelete(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := a.Backend.DiscountDelete(getTokenFromContext(c), id); err != nil {
+		c.Error(err)
+		return
+	}
+}
