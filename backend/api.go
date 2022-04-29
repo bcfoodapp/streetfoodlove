@@ -82,7 +82,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/stars/:id", a.Star)
 	router.PUT("/stars/:id", GetToken, a.StarPut)
 	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
-	router.DELETE("/stars/:id", a.StarsDelete)
+	router.DELETE("/stars/:id", GetToken, a.StarsDelete)
 	router.GET("/areas/", a.Areas)
 	router.PUT("/areas/:id", GetToken, a.AreaPut)
 	router.GET("/cuisinetypes/", a.CuisineType)
@@ -774,10 +774,14 @@ func (a *API) StarsCountForVendor(c *gin.Context) {
 }
 
 func (a *API) StarsDelete(c *gin.Context) {
-	// TODO need to authorize user
 	star, err := ParseStarKey(c.Param("id"))
 	if err != nil {
 		c.Error(err)
+		return
+	}
+
+	if star.UserID != getTokenFromContext(c) {
+		c.Error(unauthorized)
 		return
 	}
 
