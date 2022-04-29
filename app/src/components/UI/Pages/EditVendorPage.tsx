@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Container,
   Form,
   Header,
@@ -36,6 +37,7 @@ interface inputValues {
   businessHours: string;
   website: string;
   // vendorOperationAreas: []
+  discountEnabled: boolean;
 }
 
 const businessHours = [
@@ -68,7 +70,7 @@ const cuisineTypes = [
 const EditVendorPage: React.FC = () => {
   const [updateVendor] = useUpdateVendorMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  const [getToken] = useGetTokenMutation();
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
   const [coordinatesChanged, setCoordinatesChanged] = useState(false);
@@ -95,6 +97,7 @@ const EditVendorPage: React.FC = () => {
     businessHours: "",
     website: "",
     // vendorOperationAreas: []
+    discountEnabled: false,
   } as inputValues);
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -110,6 +113,7 @@ const EditVendorPage: React.FC = () => {
         phoneNumber: vendor!.Phone,
         businessHours: vendor!.BusinessHours,
         website: vendor!.Website,
+        discountEnabled: vendor!.DiscountEnabled,
       });
     }
   }, [vendorQueryIsSuccess]);
@@ -128,6 +132,7 @@ const EditVendorPage: React.FC = () => {
     phoneNumber: Yup.string().required("Required"),
     businessHours: Yup.string().required("Required"),
     website: Yup.string(),
+    discountEnabled: Yup.boolean(),
   });
 
   const onSubmit = async (data: inputValues) => {
@@ -154,7 +159,8 @@ const EditVendorPage: React.FC = () => {
       BusinessLogo: photoID,
       Latitude: data.latitude,
       Longitude: data.longitude,
-      Owner: userID!,
+      Owner: vendor!.Owner,
+      DiscountEnabled: data.discountEnabled,
     };
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {
@@ -367,6 +373,18 @@ const EditVendorPage: React.FC = () => {
                 label="Vendor Description"
                 placeholder="Vendor Description"
               />
+              <Form.Checkbox
+                name="discountEnabled"
+                label="Reward discount in exchange for review"
+                checked={values.discountEnabled}
+                onChange={(_, data) =>
+                  setFieldValue("discountEnabled", data.checked)
+                }
+              />
+              <p>
+                Enable this option if you would like to reward a discount to
+                your business for posting a review on your vendor page.
+              </p>
               <Buttons
                 edit
                 color="green"

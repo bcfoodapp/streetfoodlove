@@ -5,6 +5,7 @@ import { Tab } from "semantic-ui-react";
 import AccountSettingsFormGroup from "../Molecules/Form Group/AccountSettingsFormGroup";
 import Buttons from "../Atoms/Button/Buttons";
 import AccountProfileStars from "../Organisms/AccountProfileStars/AccountProfileStars";
+import AccountDiscounts from "../Organisms/AccountDiscounts/AccountDiscounts";
 
 const AccountProfile: React.FC = () => {
   const [disabledForm, setDisabledForm] = useState<boolean>(true);
@@ -32,6 +33,14 @@ const AccountProfile: React.FC = () => {
       render: () => (
         <Tab.Pane className={styles.pane}>
           <AccountProfileStars />
+        </Tab.Pane>
+      ),
+    },
+    {
+      menuItem: "Discounts",
+      render: () => (
+        <Tab.Pane className={styles.pane}>
+          <AccountDiscounts />
         </Tab.Pane>
       ),
     },
