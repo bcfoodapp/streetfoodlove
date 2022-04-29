@@ -27,6 +27,7 @@ export interface Vendor {
   Longitude: number;
   Owner: string;
   // vendorOperationAreas: string[]
+  DiscountEnabled: boolean;
 }
 
 export interface Areas {
@@ -141,6 +142,13 @@ export interface Query {
   UserID: string;
   QueryText: string;
   DateRequested: DateTime;
+}
+
+export interface Discount {
+  ID: string;
+  UserID: string;
+  VendorID: string;
+  Secret: string;
 }
 
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
@@ -744,6 +752,9 @@ export const apiSlice = createApi({
         body: query,
       }),
     }),
+    discountsByUser: builder.query<Discount[], string>({
+      query: (userID) => `/discounts?userID=${encode(userID)}`,
+    }),
   }),
 });
 
@@ -779,6 +790,7 @@ export const {
   useSearchQuery,
   useNewReviewsQuery,
   useCreateQueryMutation,
+  useDiscountsByUserQuery,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
