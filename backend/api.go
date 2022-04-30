@@ -92,7 +92,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/queries/:id", a.Query)
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
-	// router.PUT("/recommend/:id", GetToken, a.RecommendationPut)
+	router.GET("/past-search/:id", GetToken, a.PastSearch)
+	router.PUT("/past-search/:id", GetToken, a.PastSearchPut)
 
 	router.GET("/discounts", a.Discounts)
 	router.GET("/discounts/:id", GetToken, a.Discount)
@@ -949,25 +950,46 @@ func (a *API) Query(c *gin.Context) {
 	c.JSON(http.StatusOK, query)
 }
 
-// func (a *API) RecommendationPut(c *gin.Context) {
-// 	id, err := uuid.Parse(c.Param("id"))
-// 	if err != nil {
-// 		c.Error(err)
-// 		return
-// 	}
+func (a *API) PastSearch(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
 
-// 	recommendation := &database.PastSearch{}
+	pastSearch, err := a.Backend.PastSearch(getTokenFromContext(c), id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
 
-// 	if err := c.ShouldBindJSON(vendor); err != nil {
-// 		c.Error(err)
-// 		return
-// 	}
+	c.JSON(http.StatusOK, pastSearch)
+}
 
-// 	if id != query.ID {
-// 		c.Error(errIDsDoNotMatch)
-// 		return
-// 	}
-// }
+func (a *API) PastSearchPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	pastSearch := &database.PastSearch{}
+	if err := c.ShouldBindJSON(pastSearch); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != pastSearch.ID {
+		c.Error(errIDsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.PastSearchCreate(getTokenFromContext(c), pastSearch); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
 func (a *API) Discounts(c *gin.Context) {
 	var discounts []database.Discount
 
