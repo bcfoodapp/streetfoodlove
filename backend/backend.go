@@ -321,6 +321,27 @@ func (b *Backend) Query(id uuid.UUID) (*database.Query, error) {
 	return b.Database.Query(id)
 }
 
+func (b *Backend) PastSearchCreate(userID uuid.UUID, pastSearch *database.PastSearch) error {
+	if pastSearch.UserID != userID {
+		return unauthorized
+	}
+
+	return b.Database.PastSearchCreate(pastSearch)
+}
+
+func (b *Backend) PastSearch(userID uuid.UUID, id uuid.UUID) (*database.PastSearch, error) {
+	pastSearch, err := b.Database.PastSearch(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if pastSearch.UserID != userID {
+		return nil, unauthorized
+	}
+
+	return pastSearch, nil
+}
+
 func (b *Backend) Discount(userID uuid.UUID, id uuid.UUID) (*database.Discount, error) {
 	discount, err := b.Database.Discount(id)
 	if err != nil {
