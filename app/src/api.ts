@@ -279,6 +279,7 @@ export const apiSlice = createApi({
     "UserStars",
     "CurrentUser",
     "Recommendation",
+    "Discounts",
   ],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
@@ -403,7 +404,7 @@ export const apiSlice = createApi({
         method: PUT,
         body: review,
       }),
-      invalidatesTags: ["Review"],
+      invalidatesTags: ["Review", "Discounts"],
     }),
     updateReview: builder.mutation<undefined, Review>({
       query: (review) => ({
@@ -779,8 +780,13 @@ export const apiSlice = createApi({
         body: query,
       }),
     }),
+    discount: builder.query<Discount, string>({
+      query: (id) => `/discounts/${encode(id)}`,
+      providesTags: ["Discounts"],
+    }),
     discountsByUser: builder.query<Discount[], string>({
       query: (userID) => `/discounts?userID=${encode(userID)}`,
+      providesTags: ["Discounts"],
     }),
   }),
 });
@@ -819,6 +825,7 @@ export const {
   useCreatePastSearchMutation,
   usePastSearchQuery,
   useCreateQueryMutation,
+  useDiscountQuery,
   useDiscountsByUserQuery,
 } = apiSlice;
 

@@ -19,6 +19,7 @@ import VendorPhotosUploader from "./components/UI/Pages/VendorPhotosUploader";
 import NewReviews from "./components/UI/Pages/NewReviews/NewReviews";
 import Chart1 from "./components/LineRechartComponent";
 import Chart from "./components/ReviewsChart";
+import DiscountQRCode from "./components/UI/Pages/DiscountQRCode/DiscountQRCode";
 
 function App(): React.ReactElement {
   return (
@@ -35,6 +36,10 @@ function App(): React.ReactElement {
           <Route path="/account-selection" element={<AccountSelection />} />
           <Route path="/vendor-signup" element={<VendorAppForm />} />
           <Route path="/account-profile" element={<AccountProfile />} />
+          <Route
+            path="/account-profile/discount/:ID"
+            element={<DiscountQRCode />}
+          />
           <Route path="/your-acct-user" element={<YourAccountUser />} />
           <Route path="/business-guide" element={<BusinessGuides />} />
           <Route path="/vendor-dashboard" element={<VendorDashBoard />} />
