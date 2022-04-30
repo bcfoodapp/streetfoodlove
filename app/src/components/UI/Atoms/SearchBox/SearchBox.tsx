@@ -2,12 +2,9 @@ import React, { useState } from "react";
 import { Form, Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
 import {
-  getCredentialsEntry,
   getUserIDFromToken,
-  Query,
   useCreateQueryMutation,
-  useCreateRecommendationMutation,
-  useEffectAsync,
+  useCreatePastSearchMutation,
   useGetTokenMutation,
   useVendorsQuery,
   Vendor,
@@ -29,7 +26,7 @@ export const SearchBox: React.FC = () => {
   const dispatch = useAppDispatch();
   const [getToken] = useGetTokenMutation();
   const [createQuery] = useCreateQueryMutation();
-  const [createRecommendation] = useCreateRecommendationMutation();
+  const [createPastSearch] = useCreatePastSearchMutation();
 
   const enterQueryHandler = async () => {
     let resultSet = new Set([searchString, ...recentSearchResult]);
@@ -70,11 +67,11 @@ export const SearchBox: React.FC = () => {
       await createQuery(query);
 
       let relevantWord = searchString.split(" ").pop()!;
-      createRecommendation({
+      createPastSearch({
         ID: uuid(),
         UserID: getUserIDFromToken(tokenResponse.data),
         RelevantSearchWord: relevantWord,
-        CuisineType: "",
+        CuisineTypes: "",
       });
     }
   };
