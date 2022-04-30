@@ -5,12 +5,15 @@ import {
 } from "../../../api";
 import { Container, Header } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
+import { useState } from "react";
 
 export default (): React.ReactElement => {
   const secret = useParams().secret as string;
 
   const { data: discounts } = useDiscountsBySecretQuery(secret);
   const [deleteDiscount] = useDeleteDiscountMutation();
+
+  const [discountDeleted, setDiscountDeleted] = useState(false);
 
   if (!discounts) {
     return <p>Loading</p>;
@@ -19,7 +22,9 @@ export default (): React.ReactElement => {
   return (
     <Container>
       <Header as="h1">Validate Discount</Header>
-      {discounts.length === 0 ? (
+      {discountDeleted ? (
+        <p>Discount has been deleted.</p>
+      ) : discounts.length === 0 ? (
         <p>Discount is invalid.</p>
       ) : (
         <>
@@ -28,6 +33,7 @@ export default (): React.ReactElement => {
             signup
             clicked={() => {
               deleteDiscount(discounts[0].ID);
+              setDiscountDeleted(true);
             }}
           >
             Claim and delete discount
