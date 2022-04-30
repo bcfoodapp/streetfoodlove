@@ -266,7 +266,7 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review", "VendorPhotos", "UserStars", "CurrentUser"],
+  tagTypes: ["Review", "VendorPhotos", "UserStars", "CurrentUser", "Discounts"],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -390,7 +390,7 @@ export const apiSlice = createApi({
         method: PUT,
         body: review,
       }),
-      invalidatesTags: ["Review"],
+      invalidatesTags: ["Review", "Discounts"],
     }),
     updateReview: builder.mutation<undefined, Review>({
       query: (review) => ({
@@ -754,9 +754,11 @@ export const apiSlice = createApi({
     }),
     discount: builder.query<Discount, string>({
       query: (id) => `/discounts/${encode(id)}`,
+      providesTags: ["Discounts"],
     }),
     discountsByUser: builder.query<Discount[], string>({
       query: (userID) => `/discounts?userID=${encode(userID)}`,
+      providesTags: ["Discounts"],
     }),
   }),
 });
