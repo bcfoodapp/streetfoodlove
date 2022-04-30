@@ -1,11 +1,16 @@
 import { useParams } from "react-router-dom";
-import { useDiscountsBySecretQuery } from "../../../api";
+import {
+  useDeleteDiscountMutation,
+  useDiscountsBySecretQuery,
+} from "../../../api";
 import { Container, Header } from "semantic-ui-react";
+import Buttons from "../Atoms/Button/Buttons";
 
 export default (): React.ReactElement => {
   const secret = useParams().secret as string;
 
   const { data: discounts } = useDiscountsBySecretQuery(secret);
+  const [deleteDiscount] = useDeleteDiscountMutation();
 
   if (!discounts) {
     return <p>Loading</p>;
@@ -17,7 +22,17 @@ export default (): React.ReactElement => {
       {discounts.length === 0 ? (
         <p>Discount is invalid.</p>
       ) : (
-        <p>Discount is valid.</p>
+        <>
+          <p>Discount is valid.</p>
+          <Buttons
+            signup
+            clicked={() => {
+              deleteDiscount(discounts[0].ID);
+            }}
+          >
+            Claim and delete discount
+          </Buttons>
+        </>
       )}
     </Container>
   );
