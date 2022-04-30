@@ -144,12 +144,11 @@ export interface Query {
   DateRequested: DateTime;
 }
 
-export interface PreviousQueryForRec {
-  //for recommendation based on previous queries
+export interface PastSearch {
   ID: string;
   UserID: string;
   RelevantSearchWord: string;
-  CuisineType: string;
+  CuisineTypes: string;
 }
 
 export interface Discount {
@@ -635,17 +634,17 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["UserStars"],
     }),
-    createRecommendation: builder.mutation<void, PreviousQueryForRec>({
-      query: (rec) => ({
-        url: `/recommended/${encode(rec.ID + rec.UserID)}`,
+    createPastSearch: builder.mutation<void, PastSearch>({
+      query: (pastSearch) => ({
+        url: `/past-search/${encode(pastSearch.ID)}`,
         method: PUT,
-        body: rec,
+        body: pastSearch,
       }),
       invalidatesTags: ["Recommendation"],
     }),
-    recommendation: builder.query<PreviousQueryForRec, string>({
-      query: (userID) => ({
-        url: `/recommended?userID=${encode(userID)}`,
+    pastSearch: builder.query<PastSearch, string>({
+      query: (id) => ({
+        url: `/past-search/${id}`,
         providesTags: ["Recommendation"],
       }),
     }),
@@ -817,8 +816,8 @@ export const {
   useDeleteStarMutation,
   useSearchQuery,
   useNewReviewsQuery,
-  useCreateRecommendationMutation,
-  useRecommendationQuery,
+  useCreatePastSearchMutation,
+  usePastSearchQuery,
   useCreateQueryMutation,
   useDiscountsByUserQuery,
 } = apiSlice;
