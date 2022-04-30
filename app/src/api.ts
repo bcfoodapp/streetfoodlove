@@ -144,6 +144,14 @@ export interface Query {
   DateRequested: DateTime;
 }
 
+export interface PreviousQueryForRec {
+  //for recommendation based on previous queries
+  ID: string;
+  UserID: string;
+  RelevantSearchWord: string;
+  CuisineType: string;
+}
+
 export interface Discount {
   ID: string;
   UserID: string;
@@ -266,7 +274,14 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review", "VendorPhotos", "UserStars", "CurrentUser", "Discounts"],
+  tagTypes: [
+    "Review",
+    "VendorPhotos",
+    "UserStars",
+    "CurrentUser",
+    "Recommendation",
+    "Discounts",
+  ],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -621,6 +636,20 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["UserStars"],
     }),
+    createRecommendation: builder.mutation<void, PreviousQueryForRec>({
+      query: (rec) => ({
+        url: `/recommended/${encode(rec.ID + rec.UserID)}`,
+        method: PUT,
+        body: rec,
+      }),
+      invalidatesTags: ["Recommendation"],
+    }),
+    recommendation: builder.query<PreviousQueryForRec, string>({
+      query: (userID) => ({
+        url: `/recommended?userID=${encode(userID)}`,
+        providesTags: ["Recommendation"],
+      }),
+    }),
     // Returns search result for given search string.
     search: builder.query<OpenSearchVendor[], ReviewFilters>({
       queryFn: async (searchParams, api) => {
@@ -794,6 +823,8 @@ export const {
   useDeleteStarMutation,
   useSearchQuery,
   useNewReviewsQuery,
+  useCreateRecommendationMutation,
+  useRecommendationQuery,
   useCreateQueryMutation,
   useDiscountQuery,
   useDiscountsByUserQuery,
