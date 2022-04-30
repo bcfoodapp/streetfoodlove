@@ -89,7 +89,7 @@ const CuisineFilter: React.FC<Props> = ({ searchQuery }) => {
             ID: uuid(),
             UserID: userID,
             RelevantSearchWord: relevantWord,
-            CuisineTypes: data.value as string,
+            CuisineTypes: (data.value as string[]).join(" "),
           });
         }
       }}
