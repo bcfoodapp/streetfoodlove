@@ -991,11 +991,16 @@ func (a *API) Discounts(c *gin.Context) {
 		}
 
 		discount, err := a.Backend.DiscountsBySecret(secret)
-		if err != nil {
-			c.Error(err)
-			return
+		// Return empty array if not found
+		if errors.Is(err, sql.ErrNoRows) {
+			discounts = []database.Discount{}
+		} else {
+			if err != nil {
+				c.Error(err)
+				return
+			}
+			discounts = []database.Discount{*discount}
 		}
-		discounts = []database.Discount{*discount}
 	}
 
 	c.JSON(http.StatusOK, discounts)
