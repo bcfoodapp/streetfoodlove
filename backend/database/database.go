@@ -150,9 +150,11 @@ func SetupTables(db *sqlx.DB) error {
 		)
 		`,
 		`CREATE TABLE PastSearch (
+			ID CHAR(36) NOT NULL,
 			UserID CHAR(36) NOT NULL,
 			CuisineTypes VARCHAR(36) NOT NULL,
 			RelevantSearchWord VARCHAR(255) NOT NULL,
+			PRIMARY KEY (ID),
 			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY (CuisineTypes) REFERENCES CuisineTypes(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)

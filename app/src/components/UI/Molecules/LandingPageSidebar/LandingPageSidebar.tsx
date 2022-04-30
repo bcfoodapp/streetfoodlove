@@ -9,7 +9,7 @@ import {
   DropdownProps,
 } from "semantic-ui-react";
 import { useAppDispatch, useAppSelector } from "../../../../store/root";
-import SelectFilter from "../MultiSelectFilter/SelectFilter";
+import CuisineFilter from "../MultiSelectFilter/CuisineFilter";
 import styles from "./sidebar.module.css";
 import { useSearchQuery } from "../../../../api";
 import { Link } from "react-router-dom";
@@ -71,7 +71,11 @@ const LandingPageSidebar: React.FC = () => {
         <h3 className={styles.header}>Filters</h3>
         <h3 className={styles.header}>Cuisine</h3>
 
-        <SelectFilter />
+        {searchQuery !== null ? (
+          <CuisineFilter searchQuery={searchQuery} />
+        ) : (
+          <CuisineFilter />
+        )}
 
         <h3 className={styles.header}>Prices</h3>
         <Checkbox
