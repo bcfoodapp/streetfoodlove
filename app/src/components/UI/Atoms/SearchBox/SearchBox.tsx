@@ -6,6 +6,7 @@ import {
   getUserIDFromToken,
   Query,
   useCreateQueryMutation,
+  useCreateRecommendationMutation,
   useEffectAsync,
   useGetTokenMutation,
   useVendorsQuery,
@@ -28,6 +29,7 @@ export const SearchBox: React.FC = () => {
   const dispatch = useAppDispatch();
   const [getToken] = useGetTokenMutation();
   const [createQuery] = useCreateQueryMutation();
+  const [createRecommendation] = useCreateRecommendationMutation();
 
   const enterQueryHandler = async () => {
     let resultSet = new Set([searchString, ...recentSearchResult]);
@@ -66,6 +68,14 @@ export const SearchBox: React.FC = () => {
         DateRequested: DateTime.now(),
       };
       await createQuery(query);
+
+      let relevantWord = searchString.split(" ").pop()!;
+      createRecommendation({
+        ID: uuid(),
+        UserID: getUserIDFromToken(tokenResponse.data),
+        RelevantSearchWord: relevantWord,
+        CuisineType: "",
+      });
     }
   };
 

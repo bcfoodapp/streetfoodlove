@@ -82,9 +82,6 @@ const CuisineFilter: React.FC<Props> = ({ searchQuery }) => {
       className={styles.filter}
       onChange={(e, data) => {
         dispatch(setCuisineType(data.value as string[]));
-        if (token === null) {
-          throw new Error("token is null");
-        }
         let relevantWord = searchQuery?.split(" ").pop();
 
         if (relevantWord && userID) {
