@@ -321,6 +321,20 @@ func (b *Backend) Query(id uuid.UUID) (*database.Query, error) {
 	return b.Database.Query(id)
 }
 
+func (b *Backend) Discount(userID uuid.UUID, id uuid.UUID) (*database.Discount, error) {
+	discount, err := b.Database.Discount(id)
+	if err != nil {
+		return nil, err
+	}
+
+	// The discount secret is private
+	if discount.UserID != userID {
+		return nil, unauthorized
+	}
+
+	return discount, nil
+}
+
 func (b *Backend) DiscountsByUser(userID uuid.UUID) ([]database.Discount, error) {
 	return b.Database.DiscountsByUser(userID)
 }
