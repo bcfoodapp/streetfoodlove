@@ -1082,6 +1082,7 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 }
 
 type PastSearch struct {
+	ID                 uuid.UUID
 	UserID             uuid.UUID
 	CuisineTypes       string
 	RelevantSearchWord string
@@ -1090,10 +1091,12 @@ type PastSearch struct {
 func (d *Database) PastSearchCreate(pastSearch *PastSearch) error {
 	const command = `
 		INSERT INTO PastSearch (
+			ID,
 			UserID,
 			CuisineTypes,
 			RelevantSearchWord
 		) VALUES (
+			:ID,
 			:UserID,
 			:CuisineTypes,
 			:RelevantSearchWord
