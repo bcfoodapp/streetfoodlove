@@ -3,7 +3,7 @@ import { Dropdown } from "semantic-ui-react";
 import { useAppDispatch, useAppSelector } from "../../../../store/root";
 import {
   getUserIDFromToken,
-  useCreateRecommendationMutation,
+  useCreatePastSearchMutation,
 } from "../../../../api";
 import { setCuisineType } from "../../../../store/search";
 import styles from "./filter.module.css";
@@ -63,7 +63,7 @@ interface Props {
 
 const CuisineFilter: React.FC<Props> = ({ searchQuery }) => {
   const dispatch = useAppDispatch();
-  const [createRecommendation] = useCreateRecommendationMutation();
+  const [createPastSearch] = useCreatePastSearchMutation();
   const token = useAppSelector((state) => state.token.token);
 
   let userID = null as string | null;
@@ -85,11 +85,11 @@ const CuisineFilter: React.FC<Props> = ({ searchQuery }) => {
         let relevantWord = searchQuery?.split(" ").pop();
 
         if (relevantWord && userID) {
-          createRecommendation({
+          createPastSearch({
             ID: uuid(),
             UserID: userID,
             RelevantSearchWord: relevantWord,
-            CuisineType: data.value as string,
+            CuisineTypes: (data.value as string[]).join(" "),
           });
         }
       }}

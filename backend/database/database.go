@@ -155,8 +155,7 @@ func SetupTables(db *sqlx.DB) error {
 			CuisineTypes VARCHAR(36) NOT NULL,
 			RelevantSearchWord VARCHAR(255) NOT NULL,
 			PRIMARY KEY (ID),
-			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE,
-			FOREIGN KEY (CuisineTypes) REFERENCES CuisineTypes(ID) ON DELETE CASCADE ON UPDATE CASCADE
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
@@ -1082,6 +1081,7 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 }
 
 type PastSearch struct {
+	ID                 uuid.UUID
 	UserID             uuid.UUID
 	CuisineTypes       string
 	RelevantSearchWord string
@@ -1090,10 +1090,12 @@ type PastSearch struct {
 func (d *Database) PastSearchCreate(pastSearch *PastSearch) error {
 	const command = `
 		INSERT INTO PastSearch (
+			ID,
 			UserID,
 			CuisineTypes,
 			RelevantSearchWord
 		) VALUES (
+			:ID,
 			:UserID,
 			:CuisineTypes,
 			:RelevantSearchWord
