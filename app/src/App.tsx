@@ -20,7 +20,7 @@ import NewReviews from "./components/UI/Pages/NewReviews/NewReviews";
 import Chart1 from "./components/LineRechartComponent";
 import Chart from "./components/ReviewsChart";
 import DiscountQRCode from "./components/UI/Pages/DiscountQRCode/DiscountQRCode";
-import ValidateDiscount from "./components/UI/Pages/ValidateDiscount";
+import ValidateDiscount from "./components/UI/Pages/ValidateDiscount/ValidateDiscount";
 
 function App(): React.ReactElement {
   return (

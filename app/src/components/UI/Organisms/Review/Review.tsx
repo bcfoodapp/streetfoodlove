@@ -14,8 +14,8 @@ import {
   useCreateReviewMutation,
   usePhotosByLinkIDQuery,
   useUserQuery,
-  useVendorByOwnerIDQuery,
   useUpdateReviewMutation,
+  useVendorQuery,
 } from "../../../../api";
 import { FinalStarRating } from "../../Atoms/StarRating/FinalStarRating";
 import React, { useEffect, useState } from "react";
@@ -44,6 +44,7 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   const token = useAppSelector((state) => state.token.token);
   const { data: user } = useUserQuery(review.UserID);
   const { data: photos } = usePhotosByLinkIDQuery(review.ID);
+  const { data: vendor } = useVendorQuery(vendorID);
 
   useEffect(() => {
     styleComments();
@@ -53,8 +54,6 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   if (token) {
     userID = getUserIDFromToken(token);
   }
-
-  const { data: vendor } = useVendorByOwnerIDQuery(userID as string);
 
   const completedCommentHandler = () => {
     setOpenCommentForm(false);
@@ -113,7 +112,7 @@ export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
                 </b>
               ) : null}
 
-              {vendor ? (
+              {vendor && vendor.Owner === userID ? (
                 <Rating
                   icon="heart"
                   defaultRating={+review.VendorFavorite}

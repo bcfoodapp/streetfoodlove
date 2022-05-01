@@ -2,9 +2,9 @@ import { useParams } from "react-router-dom";
 import {
   useDeleteDiscountMutation,
   useDiscountsBySecretQuery,
-} from "../../../api";
+} from "../../../../api";
 import { Container, Header } from "semantic-ui-react";
-import Buttons from "../Atoms/Button/Buttons";
+import Buttons from "../../Atoms/Button/Buttons";
 import { useState } from "react";
 
 export default (): React.ReactElement => {
@@ -23,12 +23,12 @@ export default (): React.ReactElement => {
     <Container>
       <Header as="h1">Validate Discount</Header>
       {discountDeleted ? (
-        <p>Discount has been deleted.</p>
+        <p>Discount has been claimed.</p>
       ) : discounts.length === 0 ? (
-        <p>Discount is invalid.</p>
+        <p>🚫️ Discount is invalid.</p>
       ) : (
         <>
-          <p>Discount is valid.</p>
+          <p>✅️ Discount is valid.</p>
           <Buttons
             signup
             clicked={() => {
