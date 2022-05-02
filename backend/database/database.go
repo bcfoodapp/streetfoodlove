@@ -726,6 +726,29 @@ func (d *Database) GuideCreate(guide *Guide) error {
 	return err
 }
 
+func (d *Database) Guides() ([]Guide, error) {
+	const command = `
+		SELECT * FROM Guide
+	`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Guide, 0)
+
+	for rows.Next() {
+		result = append(result, Guide{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
 func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
 	const command = `
 		SELECT * FROM Guide WHERE ID=?

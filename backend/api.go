@@ -72,6 +72,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/photos/:id", a.Photo)
 	router.PUT("/photos/:id", GetToken, a.PhotoPut)
 
+	router.GET("/guides", a.Guides)
 	router.GET("/guides/:id", a.Guide)
 	router.POST("/guides/:id", GetToken, a.GuidePost)
 
@@ -582,6 +583,16 @@ func (a *API) PhotoPut(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+}
+
+func (a *API) Guides(c *gin.Context) {
+	guides, err := a.Backend.Guides()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, guides)
 }
 
 func (a *API) Guide(c *gin.Context) {
