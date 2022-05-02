@@ -788,6 +788,18 @@ export const apiSlice = createApi({
       query: (userID) => `/discounts?userID=${encode(userID)}`,
       providesTags: ["Discounts"],
     }),
+    // Returns discounts that are associated with the secret. It returns 0 or 1 discounts.
+    discountsBySecret: builder.query<Discount[], string>({
+      query: (secret) => `/discounts?secret=${encode(secret)}`,
+      providesTags: ["Discounts"],
+    }),
+    deleteDiscount: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/discounts/${encode(id)}`,
+        method: DELETE,
+      }),
+      invalidatesTags: ["Discounts"],
+    }),
   }),
 });
 
@@ -827,6 +839,8 @@ export const {
   useCreateQueryMutation,
   useDiscountQuery,
   useDiscountsByUserQuery,
+  useDiscountsBySecretQuery,
+  useDeleteDiscountMutation,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
