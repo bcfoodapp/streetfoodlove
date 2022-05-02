@@ -979,7 +979,7 @@ func (a *API) PastSearchPut(c *gin.Context) {
 		return
 	}
 
-	if id != pastSearch.ID {
+	if id != pastSearch.UserID {
 		c.Error(errIDsDoNotMatch)
 		return
 	}
