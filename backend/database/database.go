@@ -728,7 +728,9 @@ func (d *Database) GuideCreate(guide *Guide) error {
 
 func (d *Database) Guides() ([]Guide, error) {
 	const command = `
-		SELECT * FROM Guide
+		SELECT *
+		FROM Guide
+		ORDER BY DatePosted DESC
 	`
 
 	rows, err := d.db.Queryx(command)
