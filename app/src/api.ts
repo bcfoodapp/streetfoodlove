@@ -643,6 +643,12 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Recommendation"],
     }),
+    pastSearchByUserID: builder.query<PastSearch[], string>({
+      query: (userID) => ({
+        url: `/past-search/?userID=${encode(userID)}`,
+        providesTags: ["Recommendation"],
+      }),
+    }),
     pastSearch: builder.query<PastSearch, string>({
       query: (id) => ({
         url: `/past-search/${id}`,
@@ -836,6 +842,7 @@ export const {
   useNewReviewsQuery,
   useCreatePastSearchMutation,
   usePastSearchQuery,
+  usePastSearchByUserIDQuery,
   useCreateQueryMutation,
   useDiscountQuery,
   useDiscountsByUserQuery,
