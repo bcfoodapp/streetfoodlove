@@ -643,7 +643,7 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Recommendation"],
     }),
-    pastSearchByUserID: builder.query<PastSearch, string>({
+    pastSearchByUserID: builder.query<PastSearch[], string>({
       query: (userID) => ({
         url: `/past-search/?userID=${encode(userID)}`,
         providesTags: ["Recommendation"],
