@@ -9,6 +9,10 @@ import (
 // UUID is a wrapper for uuid.UUID.
 type UUID uuid.UUID
 
+func New() UUID {
+	return UUID(uuid.New())
+}
+
 func Parse(s string) (UUID, error) {
 	u, err := uuid.Parse(s)
 	return UUID(u), err

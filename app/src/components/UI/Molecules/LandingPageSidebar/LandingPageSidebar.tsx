@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Sidebar,
   Menu,
@@ -8,15 +8,20 @@ import {
   Container,
 } from "semantic-ui-react";
 import { useAppDispatch, useAppSelector } from "../../../../store/root";
-import SelectFilter from "../MultiSelectFilter/SelectFilter";
+import CuisineFilter from "../MultiSelectFilter/CuisineFilter";
 import styles from "./sidebar.module.css";
-import { useSearchQuery } from "../../../../api";
+import {
+  useSearchQuery,
+  usePastSearchQuery,
+  getUserIDFromToken,
+} from "../../../../api";
 import { Link } from "react-router-dom";
 import {
   hideSideBar,
   addPriceRange,
   deletePriceRangeFilter,
 } from "../../../../store/search";
+import RecommendedList from "../RecommendedList/RecommendedList";
 
 const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector(
@@ -26,6 +31,7 @@ const LandingPageSidebar: React.FC = () => {
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
   const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
   const priceRangeFilter = useAppSelector(({ search }) => search.priceRange);
+  const token = useAppSelector((state) => state.token.token);
 
   let searchParams = {
     SearchString: searchQuery,
@@ -33,9 +39,10 @@ const LandingPageSidebar: React.FC = () => {
     PriceRange: priceRangeFilter,
   };
 
-  const { data: resultVendors } = useSearchQuery(searchParams!, {
-    skip: !searchQuery,
-  });
+  const { data: searchResult, isLoading: searchQueryIsLoading } =
+    useSearchQuery(searchParams!, {
+      skip: !searchQuery,
+    });
 
   const dispatch = useAppDispatch();
 
@@ -57,6 +64,11 @@ const LandingPageSidebar: React.FC = () => {
       >
         <Icon name="close" size="big" color="grey" />
       </Button>
+      <Menu.Item as="div" className={styles.recommend}>
+        <h3>Recommended Vendors</h3>
+        <Checkbox toggle />
+        {searchQuery ? <RecommendedList /> : null}
+      </Menu.Item>
       <Menu.Item as="div" className={styles.menuItem}>
         <Icon
           name="caret down"
@@ -67,7 +79,11 @@ const LandingPageSidebar: React.FC = () => {
         <h3 className={styles.header}>Filters</h3>
         <h3 className={styles.header}>Cuisine</h3>
 
-        <SelectFilter />
+        {searchQuery !== null ? (
+          <CuisineFilter searchQuery={searchQuery} />
+        ) : (
+          <CuisineFilter />
+        )}
 
         <h3 className={styles.header}>Prices</h3>
         <Checkbox
@@ -105,8 +121,9 @@ const LandingPageSidebar: React.FC = () => {
       </Menu.Item>
 
       <Container textAlign="left">
-        {resultVendors
-          ? resultVendors.map((vendor) => {
+        {searchQueryIsLoading ? <p>Loading</p> : null}
+        {searchResult
+          ? searchResult.map((vendor) => {
               return (
                 <Container key={vendor.ID}>
                   <Container className={styles.vendorInfo}>
@@ -127,36 +144,3 @@ const LandingPageSidebar: React.FC = () => {
 };
 
 export default LandingPageSidebar;
-
-// GET _search
-// {
-//  "query": {
-//  "bool": {
-//  "must": [
-//  {
-//  "match": {
-//  "text_entry": "Bellevue"
-//  }
-//  }
-//  ],
-//  "should": [
-//  {
-//  "match": {
-//  "text_entry": "Korean"
-//  }
-//  }
-//  ],
-//  "minimum_should_match": 1,
-//  "must_not": [
-//  {
-//  "match": {
-//  "PriceRange": "Gourmet"
-//  }
-//  ],
-//  "filter": {
-//  "term": {
-//  "Cuisine Type": "Cheap"
-//  }
-//  }
-//  }
-// }

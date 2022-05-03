@@ -76,8 +76,8 @@ jobs:
       - name: reset_database
         run: go run .
         working-directory: backend/reset_database
-      - name: Server test
-        run: go test -run ^TestServer$
+      - name: Tests
+        run: go test .
         working-directory: backend
   golint:
     name: Lint Go

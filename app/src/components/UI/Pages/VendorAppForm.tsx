@@ -76,6 +76,7 @@ export default function VendorAppForm(): React.ReactElement {
       Latitude: 0,
       Longitude: 0,
       Owner: userID,
+      DiscountEnabled: false,
     };
     const response = await createVendor(vendor);
     if ("data" in response) {
