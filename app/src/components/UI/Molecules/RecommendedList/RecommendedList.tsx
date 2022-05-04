@@ -46,21 +46,20 @@ const RecommendedList: React.FC = () => {
   return (
     <Container textAlign="left">
       {recommendedResult.map((vendor, index) => {
-        if (index === 5) {
-          return;
-        }
-        return (
-          <Container key={vendor.ID}>
-            <Container className={styles.vendorInfo}>
-              <h2>
-                <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
-              </h2>
-              <p>Address: {vendor.BusinessAddress}</p>
-              <p>Business Hours: {vendor.BusinessHours}</p>
+        if (index < 5) {
+          return (
+            <Container key={vendor.ID}>
+              <Container className={styles.vendorInfo}>
+                <h2>
+                  <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+                </h2>
+                <p>Address: {vendor.BusinessAddress}</p>
+                <p>Business Hours: {vendor.BusinessHours}</p>
+              </Container>
+              <Container className={styles.divider} />
             </Container>
-            <Container className={styles.divider} />
-          </Container>
-        );
+          );
+        }
       })}
     </Container>
   );
