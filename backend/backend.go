@@ -386,3 +386,7 @@ func (b *Backend) DiscountDelete(userID uuid.UUID, id uuid.UUID) error {
 
 	return b.Database.DiscountDelete(id)
 }
+
+func (b *Backend) NewChart() ([]database.NewChart, error) {
+	return b.Database.NewChart()
+}
