@@ -35,11 +35,10 @@ import { s3Prefix, uploadToS3 } from "../../../aws";
 import { TwitterShareButton, TwitterIcon } from "react-share";
 import VendorStar from "../Molecules/VendorStar/VendorStar";
 
-
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
  */
- function averageRating(reviews: Review[] | undefined): string | null {
+function averageRating(reviews: Review[] | undefined): string | null {
   if (reviews && reviews.length > 0) {
     let avgRating = 0;
 
@@ -120,9 +119,6 @@ export function Vendor(): React.ReactElement {
     setIsSubmitting(false);
   };
 
-
-  
-  
   let averageReviewRating = null as string | null;
 
   averageReviewRating = averageRating(reviews);
@@ -142,7 +138,9 @@ export function Vendor(): React.ReactElement {
                 style={{ width: 60, height: 60, objectFit: "cover" }}
               />
             ) : null}
-            <h1 className={styles.name}>{vendor?.Name} {averageReviewRating} { countReviews}) </h1>
+            <h1 className={styles.name}>
+              {vendor?.Name} {averageReviewRating} {countReviews}){" "}
+            </h1>
             <VendorStar vendorID={vendorID} />
           </Grid.Row>
           <Grid.Row textAlign="center">

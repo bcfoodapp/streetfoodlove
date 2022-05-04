@@ -115,7 +115,7 @@ const EditVendorPage: React.FC = () => {
         businessHours: vendor!.BusinessHours,
         website: vendor!.Website,
         description: vendor!.Description,
-        socialmedialink: vendor!.SocialMediaLink
+        socialmedialink: vendor!.SocialMediaLink,
       });
     }
   }, [vendorQueryIsSuccess]);
@@ -135,7 +135,7 @@ const EditVendorPage: React.FC = () => {
     businessHours: Yup.string().required("Required"),
     website: Yup.string(),
     description: Yup.string(),
-    socialmedialink: Yup.string()
+    socialmedialink: Yup.string(),
   });
 
   const onSubmit = async (data: inputValues) => {

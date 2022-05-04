@@ -29,7 +29,6 @@ export interface Vendor {
   // vendorOperationAreas: string[]
   Description: string;
   SocialMediaLink: string;
-  
 }
 
 export interface Areas {
