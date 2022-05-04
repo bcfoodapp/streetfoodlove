@@ -1116,6 +1116,29 @@ func (d *Database) PastSearch(id uuid.UUID) (*PastSearch, error) {
 	return pastSearch, err
 }
 
+func (d *Database) PastSearchByUserID(userID uuid.UUID) ([]PastSearch, error) {
+	const command = `
+		SELECT * FROM PastSearch WHERE UserID=?
+	`
+
+	rows, err := d.db.Queryx(command, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]PastSearch, 0)
+
+	for rows.Next() {
+		result = append(result, PastSearch{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
 type Discount struct {
 	ID       uuid.UUID
 	UserID   uuid.UUID
