@@ -64,7 +64,7 @@ const LandingPageSidebar: React.FC = () => {
       <Menu.Item as="div" className={styles.recommend}>
         <h3>Recommended Vendors</h3>
         <Checkbox toggle onChange={(e, data) => setToggle(data.checked)} />
-        {toggle ? React.createElement(RecommendedList) : null}
+        {toggle ? <RecommendedList /> : null}
       </Menu.Item>
       <Menu.Item as="div" className={styles.menuItem}>
         <Icon

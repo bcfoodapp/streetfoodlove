@@ -45,7 +45,10 @@ const RecommendedList: React.FC = () => {
 
   return (
     <Container textAlign="left">
-      {recommendedResult.map((vendor) => {
+      {recommendedResult.map((vendor, index) => {
+        if (index === 5) {
+          return;
+        }
         return (
           <Container key={vendor.ID}>
             <Container className={styles.vendorInfo}>
