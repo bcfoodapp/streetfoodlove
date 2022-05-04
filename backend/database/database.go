@@ -1058,3 +1058,31 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	err := d.db.QueryRowx(command, &userID).Scan(&result)
 	return result, err
 }
+
+type NewChart struct {
+	StarRating      int
+	CountStarRating int
+}
+
+func (d *Database) NewChart() ([]NewChart, error) {
+	const command = `
+SELECT StarRating ,count(StarRating) as 'CountStarRating'
+	FROM reviews
+	where DatePosted >= date_sub(current_date, INTERVAL 1 MONTH)
+	group by StarRating;
+	`
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		defer rows.Close()
+	}
+
+	result := make([]NewChart, 0)
+
+	for rows.Next() {
+		result = append(result, NewChart{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+	return result, rows.Err()
+}

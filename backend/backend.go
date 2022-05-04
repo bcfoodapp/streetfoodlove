@@ -298,3 +298,7 @@ func (b *Backend) QueryByUserID(userID uuid.UUID) ([]database.Query, error) {
 func (b *Backend) Query(id uuid.UUID) (*database.Query, error) {
 	return b.Database.Query(id)
 }
+
+func (b *Backend) NewChart() ([]database.NewChart, error) {
+	return b.Database.NewChart()
+}
