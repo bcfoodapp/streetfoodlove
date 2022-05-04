@@ -75,6 +75,8 @@ export default function VendorAppForm(): React.ReactElement {
       BusinessLogo: "",
       Latitude: 0,
       Longitude: 0,
+      Description: "",
+      SocialMediaLink: "",
       Owner: userID,
       DiscountEnabled: false,
     };

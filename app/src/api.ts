@@ -28,6 +28,8 @@ export interface Vendor {
   Owner: string;
   // vendorOperationAreas: string[]
   DiscountEnabled: boolean;
+  Description: string;
+  SocialMediaLink: string;
 }
 
 export interface Areas {
