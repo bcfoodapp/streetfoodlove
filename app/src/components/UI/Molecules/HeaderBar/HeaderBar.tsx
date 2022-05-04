@@ -57,7 +57,7 @@ export default function HeaderBar(): React.ReactElement {
         <Menu.Item>
           <h2 className={styles.title}>
             <Image
-              src="/logo.svg"
+              src="/streetfoodlove/logo.svg"
               alt="StreetFoodLove logo"
               style={{ width: 200 }}
             />

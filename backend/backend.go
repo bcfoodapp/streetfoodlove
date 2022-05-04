@@ -342,6 +342,10 @@ func (b *Backend) PastSearch(userID uuid.UUID, id uuid.UUID) (*database.PastSear
 	return pastSearch, nil
 }
 
+func (b *Backend) PastSearchByUserID(userID uuid.UUID) ([]database.PastSearch, error) {
+	return b.Database.PastSearchByUserID(userID)
+}
+
 func (b *Backend) Discount(userID uuid.UUID, id uuid.UUID) (*database.Discount, error) {
 	discount, err := b.Database.Discount(id)
 	if err != nil {

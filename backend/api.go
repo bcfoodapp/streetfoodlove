@@ -92,6 +92,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/queries/:id", a.Query)
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
+	router.GET("/past-search", GetToken, a.PastSearches)
 	router.GET("/past-search/:id", GetToken, a.PastSearch)
 	router.PUT("/past-search/:id", GetToken, a.PastSearchPut)
 
@@ -950,6 +951,27 @@ func (a *API) Query(c *gin.Context) {
 	c.JSON(http.StatusOK, query)
 }
 
+func (a *API) PastSearches(c *gin.Context) {
+	userID, err := uuid.Parse(c.Query("userID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if getTokenFromContext(c) != userID {
+		c.Error(unauthorized)
+		return
+	}
+
+	result, err := a.Backend.PastSearchByUserID(userID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (a *API) PastSearch(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -1013,11 +1035,16 @@ func (a *API) Discounts(c *gin.Context) {
 		}
 
 		discount, err := a.Backend.DiscountsBySecret(secret)
-		if err != nil {
-			c.Error(err)
-			return
+		// Return empty array if not found
+		if errors.Is(err, sql.ErrNoRows) {
+			discounts = []database.Discount{}
+		} else {
+			if err != nil {
+				c.Error(err)
+				return
+			}
+			discounts = []database.Discount{*discount}
 		}
-		discounts = []database.Discount{*discount}
 	}
 
 	c.JSON(http.StatusOK, discounts)
