@@ -18,7 +18,9 @@ export default (): React.ReactElement => {
       {discountURL ? (
         <>
           <Container textAlign="center">
-            <QRCode value={discountURL} />
+            <QRCode
+              value={`${window.location.origin}/streetfoodlove${discountURL}`}
+            />
           </Container>
 
           <p>URL for testing:</p>

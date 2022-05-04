@@ -54,7 +54,6 @@ export const SearchBox: React.FC = () => {
     setRecentSearchResult([...array, ...recentSearchResult]);
 
     dispatch(showSideBar());
-    dispatch(setSearchQuery(searchString));
 
     const tokenResponse = await getToken();
     if ("data" in tokenResponse && tokenResponse.data) {
@@ -73,6 +72,8 @@ export const SearchBox: React.FC = () => {
         RelevantSearchWord: relevantWord,
         CuisineTypes: "",
       });
+      console.log("finished");
+      dispatch(setSearchQuery(searchString));
     }
   };
 
