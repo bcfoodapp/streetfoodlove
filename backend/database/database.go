@@ -1231,15 +1231,16 @@ type NewChart struct {
 
 func (d *Database) NewChart() ([]NewChart, error) {
 	const command = `
-SELECT StarRating ,count(StarRating) as 'CountStarRating'
-	FROM reviews
-	where DatePosted >= date_sub(current_date, INTERVAL 1 MONTH)
-	group by StarRating;
+		SELECT StarRating ,count(StarRating) as 'CountStarRating'
+		FROM Reviews
+		where DatePosted >= date_sub(current_date, INTERVAL 1 MONTH)
+		group by StarRating;
 	`
 	rows, err := d.db.Queryx(command)
 	if err != nil {
-		defer rows.Close()
+		return nil, err
 	}
+	defer rows.Close()
 
 	result := make([]NewChart, 0)
 
