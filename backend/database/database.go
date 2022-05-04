@@ -1072,8 +1072,3 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	err := d.db.QueryRowx(command, &userID).Scan(&result)
 	return result, err
 }
-
-
-
-
-
