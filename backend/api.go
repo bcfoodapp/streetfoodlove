@@ -92,6 +92,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/queries/:id", a.Query)
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
+	router.GET("/past-search", GetToken, a.PastSearches)
 	router.GET("/past-search/:id", GetToken, a.PastSearch)
 	router.PUT("/past-search/:id", GetToken, a.PastSearchPut)
 
@@ -948,6 +949,27 @@ func (a *API) Query(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, query)
+}
+
+func (a *API) PastSearches(c *gin.Context) {
+	userID, err := uuid.Parse(c.Query("userID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if getTokenFromContext(c) != userID {
+		c.Error(unauthorized)
+		return
+	}
+
+	result, err := a.Backend.PastSearchByUserID(userID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
 }
 
 func (a *API) PastSearch(c *gin.Context) {

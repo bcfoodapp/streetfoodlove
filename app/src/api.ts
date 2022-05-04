@@ -645,7 +645,7 @@ export const apiSlice = createApi({
     }),
     pastSearchByUserID: builder.query<PastSearch[], string>({
       query: (userID) => ({
-        url: `/past-search/?userID=${encode(userID)}`,
+        url: `/past-search?userID=${encode(userID)}`,
         providesTags: ["Recommendation"],
       }),
     }),
