@@ -60,6 +60,8 @@ func SetupTables(db *sqlx.DB) error {
 			BusinessLogo VARCHAR(50) NULL,
 			Latitude FLOAT NOT NULL,
 			Longitude FLOAT NOT NULL,
+			Description VARCHAR(1500) NULL,
+			SocialMediaLink VARCHAR(500) NULL,
 			Owner CHAR(36) NOT NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (Owner) REFERENCES User(ID)
@@ -198,6 +200,8 @@ type Vendor struct {
 	BusinessLogo    *string
 	Latitude        float64
 	Longitude       float64
+	Description     string
+	SocialMediaLink string
 	Owner           uuid.UUID
 }
 
@@ -213,6 +217,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			BusinessLogo,
 			Latitude,
 			Longitude,
+			Description,
+			SocialMediaLink,
 			Owner
 		) VALUES (
 			:ID,
@@ -224,6 +230,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:BusinessLogo,
 			:Latitude,
 			:Longitude,
+			:Description,
+			:SocialMediaLink,
 			:Owner
 	   )
 	`
@@ -273,7 +281,9 @@ func (d *Database) VendorUpdate(vendor *Vendor) error {
 			BusinessLogo = :BusinessLogo,
 			Latitude = :Latitude,
 			Longitude = :Longitude,
-			Owner = :Owner
+			Owner = :Owner,
+			Description = :Description,
+			SocialMediaLink = :SocialMediaLink
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &vendor)
@@ -1062,3 +1072,8 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	err := d.db.QueryRowx(command, &userID).Scan(&result)
 	return result, err
 }
+
+
+
+
+
