@@ -233,7 +233,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			Longitude,
 			Description,
 			SocialMediaLink,
-			Owner
+			Owner,
+			DiscountEnabled
 		) VALUES (
 			:ID,
 			:Name,
@@ -246,7 +247,8 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:Longitude,
 			:Description,
 			:SocialMediaLink,
-			:Owner
+			:Owner,
+			DiscountEnabled
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
