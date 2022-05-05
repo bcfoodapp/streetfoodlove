@@ -12,6 +12,7 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
+  Review,
 } from "../../../api";
 import {
   Container,
@@ -22,7 +23,7 @@ import {
   Segment,
 } from "semantic-ui-react";
 import VendorDetailCards from "../Atoms/VendorDetailCards/VendorDetailCards";
-import { Review } from "../Organisms/Review/Review";
+import { Reviews } from "../Organisms/Review/Reviews";
 import { ReviewForm } from "../Organisms/ReviewForm/ReviewForm";
 import { v4 as uuid } from "uuid";
 import { useAppSelector } from "../../../store/root";
@@ -37,6 +38,22 @@ import VendorStar from "../Molecules/VendorStar/VendorStar";
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
  */
+function averageRating(reviews: Review[] | undefined): string | null {
+  if (reviews && reviews.length > 0) {
+    let avgRating = 0;
+
+    for (const review of reviews) {
+      if (review.StarRating) {
+        avgRating += review.StarRating;
+      }
+    }
+
+    return (avgRating / reviews.length).toFixed(1);
+  }
+
+  return null;
+}
+
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
   const { data: vendor } = useVendorQuery(vendorID);
@@ -102,6 +119,12 @@ export function Vendor(): React.ReactElement {
     setIsSubmitting(false);
   };
 
+  let averageReviewRating = null as string | null;
+
+  averageReviewRating = averageRating(reviews);
+
+  let countReviews = reviews?.length;
+
   return (
     <>
       <Container textAlign="center">
@@ -115,7 +138,9 @@ export function Vendor(): React.ReactElement {
                 style={{ width: 60, height: 60, objectFit: "cover" }}
               />
             ) : null}
-            <h1 className={styles.name}>{vendor?.Name}</h1>
+            <h1 className={styles.name}>
+              {vendor?.Name} {averageReviewRating} {countReviews}){" "}
+            </h1>
             <VendorStar vendorID={vendorID} />
           </Grid.Row>
           <Grid.Row textAlign="center">
@@ -167,6 +192,28 @@ export function Vendor(): React.ReactElement {
               </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={6}>
+              <VendorDetailCards heading="business-hours">
+                {vendor?.BusinessHours}
+              </VendorDetailCards>
+            </Grid.Column>
+            <Grid.Column width={6}>
+              <VendorDetailCards heading="website">
+                {vendor?.Website}
+              </VendorDetailCards>
+              <VendorDetailCards heading="social-media-links">
+                {vendor?.SocialMediaLink}
+              </VendorDetailCards>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={12}>
+              <VendorDetailCards heading="description">
+                {vendor?.Description}
+              </VendorDetailCards>
+            </Grid.Column>
+          </Grid.Row>
         </Grid>
       </Container>
       <Divider hidden />
@@ -179,7 +226,7 @@ export function Vendor(): React.ReactElement {
             // console.log("Reviews: " + JSON.stringify(review, null, 2));
             if (review.ReplyTo === null) {
               return (
-                <Review
+                <Reviews
                   key={i}
                   review={review}
                   reviewID={review.ID}

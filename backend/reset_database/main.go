@@ -347,6 +347,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "123-123-1234",
 			Latitude:        47.619303,
 			Longitude:       -122.33482,
+			Description:     "Great tacos with special homemade chicken and fish, super delicious",
+			SocialMediaLink: "www.twitter0.com",
 			Owner:           uuid.MustParse("c8936fa6-69b7-4bf8-a033-a1056c80682a"),
 		},
 		{
@@ -358,6 +360,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "559-743-3566",
 			Latitude:        47.610378,
 			Longitude:       -122.200676,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter1.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -369,6 +373,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "559-743-3566",
 			Latitude:        47.663732,
 			Longitude:       -122.313783,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter2.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -380,6 +386,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "559-743-3566",
 			Latitude:        47.653782,
 			Longitude:       -122.319393,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter3.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -391,6 +399,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "559-743-3566",
 			Latitude:        47.657383,
 			Longitude:       -122.33383,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter4.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -402,6 +412,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "424-234-2393",
 			Latitude:        47.610219,
 			Longitude:       -122.200428,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter5.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -413,6 +425,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "566-122-3452",
 			Latitude:        47.610356,
 			Longitude:       -122.200135,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter6.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -424,6 +438,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "342-229-1232",
 			Latitude:        47.6108395,
 			Longitude:       -122.201395,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter7.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -435,6 +451,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "206-237-8912",
 			Latitude:        47.6102495,
 			Longitude:       -122.2014594,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter8.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -446,6 +464,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "425-123-3113",
 			Latitude:        47.610594,
 			Longitude:       -122.2015935,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter9.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -457,6 +477,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "373-237-1203",
 			Latitude:        47.610495,
 			Longitude:       -122.2009302,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter10.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -468,6 +490,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "293-239-2013",
 			Latitude:        47.6104856,
 			Longitude:       -122.2018996,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter11.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -479,6 +503,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "401-130-1930",
 			Latitude:        47.6109099,
 			Longitude:       -122.2001394,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter12.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -490,6 +516,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "398-120-1390",
 			Latitude:        47.6149967,
 			Longitude:       -122.19305955,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter13.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -501,6 +529,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "839-393-1939",
 			Latitude:        47.618713,
 			Longitude:       -122.131431,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter14.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -512,6 +542,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "393-330-2201",
 			Latitude:        47.615173,
 			Longitude:       -122.122602,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter15.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -523,6 +555,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "402-930-2931",
 			Latitude:        47.576382,
 			Longitude:       -122.168412,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter16.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -534,6 +568,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "890-229-1901",
 			Latitude:        47.577986,
 			Longitude:       -122.164002,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter17.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -545,6 +581,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "930-291-9012",
 			Latitude:        47.635297,
 			Longitude:       -122.146545,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter18.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -556,6 +594,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "490-293-1293",
 			Latitude:        47.678909,
 			Longitude:       -122.128078,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter19.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -567,6 +607,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "390-290-2001",
 			Latitude:        47.678371,
 			Longitude:       -122.123115,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter20.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -578,6 +620,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "784-290-2291",
 			Latitude:        47.695793,
 			Longitude:       -122.032421,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter21.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -589,6 +633,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "890-110-2291",
 			Latitude:        47.694467,
 			Longitude:       -122.076844,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter22.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -600,6 +646,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "839-220-1101",
 			Latitude:        47.691689,
 			Longitude:       -122.03337,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter23.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -611,6 +659,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "673-382-2999",
 			Latitude:        47.655611,
 			Longitude:       -122.024332,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter24.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -622,6 +672,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "492-293-2000",
 			Latitude:        47.698145,
 			Longitude:       -122.132172,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter25.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -633,6 +685,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "893-221-3932",
 			Latitude:        47.695789,
 			Longitude:       -122.1324566,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter26.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -644,6 +698,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "428-392-1193",
 			Latitude:        47.6967493,
 			Longitude:       -122.1348294,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter27.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -655,6 +711,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "290-201-3021",
 			Latitude:        47.6930485,
 			Longitude:       -122.133035,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter28.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -666,6 +724,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "319-201-2213",
 			Latitude:        47.6953894,
 			Longitude:       -122.1329485,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter29.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -677,6 +737,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "289-288-3987",
 			Latitude:        47.6983958,
 			Longitude:       -122.1349385,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter30.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -688,6 +750,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "789-222-2012",
 			Latitude:        47.6983954,
 			Longitude:       -122.1359305,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter31.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -699,6 +763,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "206-788-1231",
 			Latitude:        47.69594034,
 			Longitude:       -122.1349945,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter32.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -710,6 +776,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "445-230-1231",
 			Latitude:        47.6929484,
 			Longitude:       -122.035945,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter33.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -721,6 +789,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "450-231-2331",
 			Latitude:        47.708037,
 			Longitude:       -122.179536,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter34.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -732,6 +802,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "667-302-4451",
 			Latitude:        47.703794,
 			Longitude:       -122.16994,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter35.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -743,6 +815,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "450-231-2290",
 			Latitude:        47.718395,
 			Longitude:       -122.179304,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter36.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -754,6 +828,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "679-229-9012",
 			Latitude:        47.7177394,
 			Longitude:       -122.1789305,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter37.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -765,6 +841,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "780-234-1123",
 			Latitude:        47.7178394,
 			Longitude:       -122.1788774,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter38.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -776,6 +854,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "423-129-2201",
 			Latitude:        47.713023,
 			Longitude:       -122.179472,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter39.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -787,6 +867,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "783-223-1103",
 			Latitude:        47.706481,
 			Longitude:       -122.186044,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter40.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -798,6 +880,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "390-239-1121",
 			Latitude:        47.678455,
 			Longitude:       -122.20717,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter41.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -809,6 +893,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "445-221-9023",
 			Latitude:        47.7078394,
 			Longitude:       -122.18799304,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter42.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -820,6 +906,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "789-231-2212",
 			Latitude:        47.70453789,
 			Longitude:       -122.185789,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter43.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -831,6 +919,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "349-330-2212",
 			Latitude:        47.673940234,
 			Longitude:       -122.2036845,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter44.com",
 			Owner:           uuid.MustParse("baf75627-1fbe-45fe-a420-1e475ef6d24b"),
 		},
 		{
@@ -842,6 +932,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "890-223-2209",
 			Latitude:        47.745332,
 			Longitude:       -122.207799,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter45.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -853,6 +945,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "667-334-8902",
 			Latitude:        47.689403,
 			Longitude:       -122.20228493,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter46.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -864,6 +958,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "789-223-1220",
 			Latitude:        47.6738923,
 			Longitude:       -122.20118394,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter47.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -875,6 +971,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "449-234-2390",
 			Latitude:        47.676018,
 			Longitude:       -122.202929,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter48.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -886,6 +984,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "678-2399-2044",
 			Latitude:        47.7623204,
 			Longitude:       -122.20540349999999,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter49.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -897,6 +997,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "459-332-1103",
 			Latitude:        47.809785,
 			Longitude:       -122.209475,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter50.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -908,6 +1010,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "490-233-2901",
 			Latitude:        47.839593,
 			Longitude:       -122.207483,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter51.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -919,6 +1023,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "442-009-4229",
 			Latitude:        47.8439485,
 			Longitude:       -122.2011935,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter52.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -930,6 +1036,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "433-220-2947",
 			Latitude:        47.839458,
 			Longitude:       -122.2013394,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter53.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -941,6 +1049,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "883-229-2942",
 			Latitude:        47.8249583,
 			Longitude:       -122.2015893,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter54.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -952,6 +1062,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "775-339-2294",
 			Latitude:        47.828492,
 			Longitude:       -122.201249334,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter55.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -963,6 +1075,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "893-229-4567",
 			Latitude:        47.8492033,
 			Longitude:       -122.201394045,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter56.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -974,6 +1088,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "748-294-2129",
 			Latitude:        47.8434293,
 			Longitude:       -122.20159303,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter57.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -985,6 +1101,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "783-239-3392",
 			Latitude:        47.8453923,
 			Longitude:       -122.20179394,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter58.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -996,6 +1114,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "338-473-2945",
 			Latitude:        47.859304,
 			Longitude:       -122.2015934,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter59.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -1007,6 +1127,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "429-349-7003",
 			Latitude:        47.8443839,
 			Longitude:       -122.20163394,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter60.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -1018,6 +1140,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "349-789-9990",
 			Latitude:        47.858394,
 			Longitude:       -122.20179395,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter61.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -1029,6 +1153,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "449-239-3393",
 			Latitude:        47.8411834,
 			Longitude:       -122.20159394,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter62.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -1040,6 +1166,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "447-339-7492",
 			Latitude:        47.8493033,
 			Longitude:       -122.20169304,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter63.com",
 			Owner:           uuid.MustParse("74fc6a6e-5283-4ca9-9666-3a67b2e267d5"),
 		},
 		{
@@ -1051,6 +1179,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "783-339-7485",
 			Latitude:        47.8638342,
 			Longitude:       -122.20159394,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter64.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1062,6 +1192,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "454-559-3402",
 			Latitude:        47.848394,
 			Longitude:       -122.20129495,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter65.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1073,6 +1205,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "890-339-3892",
 			Latitude:        47.856384,
 			Longitude:       -122.20111284,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter66.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1084,6 +1218,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "573-339-9204",
 			Latitude:        47.8523829,
 			Longitude:       -122.2013821,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter67.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1095,6 +1231,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "677-495-4902",
 			Latitude:        47.86331211,
 			Longitude:       -122.201638492,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter68.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1106,6 +1244,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "668-684-3894",
 			Latitude:        47.866672,
 			Longitude:       -122.20153839,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter69.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1117,6 +1257,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "783-784-4554",
 			Latitude:        47.8611282,
 			Longitude:       -122.20178232,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter70.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1128,6 +1270,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "455-390-3950",
 			Latitude:        47.8691123,
 			Longitude:       -122.20153637,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter71.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1139,6 +1283,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "849-305-3593",
 			Latitude:        47.8701238,
 			Longitude:       -122.20163122,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter72.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1150,6 +1296,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "559-304-3390",
 			Latitude:        47.8722821,
 			Longitude:       -122.2018392,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter73.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1161,6 +1309,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "893-493-0093",
 			Latitude:        47.8693853,
 			Longitude:       -122.201819304,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter74.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1172,6 +1322,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "449-783-3394",
 			Latitude:        47.8729384,
 			Longitude:       -122.2017393,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter75.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1183,6 +1335,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "467-399-3902",
 			Latitude:        47.9791223,
 			Longitude:       -122.2018392,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter76.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1194,6 +1348,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "738-393-3390",
 			Latitude:        47.813297,
 			Longitude:       -122.18346,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter77.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 
@@ -1206,6 +1362,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "884-393-3294",
 			Latitude:        47.816702,
 			Longitude:       -122.3272,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter78.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1217,6 +1375,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "139-395-3944",
 			Latitude:        47.812591,
 			Longitude:       -122.383078,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter79.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1228,6 +1388,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "749-300-0039",
 			Latitude:        47.813484,
 			Longitude:       -122.384932,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter80.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1239,6 +1401,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "456-393-30502",
 			Latitude:        47.82394,
 			Longitude:       -122.49302,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter81.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1250,6 +1414,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "344-393-3305",
 			Latitude:        47.821283,
 			Longitude:       -122.11193,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter82.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1261,6 +1427,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "556-383-3933",
 			Latitude:        47.82372,
 			Longitude:       -122.213829,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter83.com",
 			Owner:           uuid.MustParse("01a37f1b-10af-4c93-b86e-463776a7f465"),
 		},
 		{
@@ -1272,6 +1440,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "233-234-2930",
 			Latitude:        47.82432883,
 			Longitude:       -122.227383,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter84.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1283,6 +1453,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "373-395-3302",
 			Latitude:        47.8257383,
 			Longitude:       -122.2930443,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter85.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1294,6 +1466,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "373-389-3004",
 			Latitude:        47.821475,
 			Longitude:       -122.283421,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter86.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 
@@ -1306,6 +1480,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "738-449-3994",
 			Latitude:        47.827133,
 			Longitude:       -122.277137,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter87.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1317,6 +1493,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "389-349-3304",
 			Latitude:        47.826382,
 			Longitude:       -122.278391,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter88.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1328,6 +1506,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "653-394-2293",
 			Latitude:        47.6062095,
 			Longitude:       -122.3320708,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter89.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 
@@ -1340,6 +1520,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "344-393-9903",
 			Latitude:        47.605362,
 			Longitude:       -122.334839,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter90.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1351,6 +1533,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "344-394-2201",
 			Latitude:        47.618393,
 			Longitude:       -122.35839,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter91.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1362,6 +1546,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "637-229-3392",
 			Latitude:        47.62839,
 			Longitude:       -122.3193023,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter92.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1373,6 +1559,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "329-229-4491",
 			Latitude:        47.623283,
 			Longitude:       -122.3222383,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter93.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1384,6 +1572,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "492-333-2203",
 			Latitude:        47.6392,
 			Longitude:       -122.309293,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter94.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1395,6 +1585,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "448-339-2291",
 			Latitude:        47.6233413,
 			Longitude:       -122.2839302,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter95.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1406,6 +1598,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "673-233-3397",
 			Latitude:        47.6283992,
 			Longitude:       -122.18392,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter96.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1417,6 +1611,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "733-992-4923",
 			Latitude:        47.620293,
 			Longitude:       -122.113839,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter97.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1428,6 +1624,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "647-390-2224",
 			Latitude:        47.639493,
 			Longitude:       -122.10384,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter98.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1439,6 +1637,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "445-339-4452",
 			Latitude:        47.648392,
 			Longitude:       -122.119383,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter99.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1450,6 +1650,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "477-223-3453",
 			Latitude:        47.662638,
 			Longitude:       -122.283265,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter100.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1461,6 +1663,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "239-483-3395",
 			Latitude:        47.656673,
 			Longitude:       -122.311338,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter101.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1472,6 +1676,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "205-359-8894",
 			Latitude:        47.66511,
 			Longitude:       -122.301522,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter102.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 		{
@@ -1483,6 +1689,8 @@ func addTestData(db *database.Database) error {
 			Phone:           "485-359-3903",
 			Latitude:        47.6648293,
 			Longitude:       -122.318392,
+			Description:     "Special made bread with various BBQ meat",
+			SocialMediaLink: "www.twitter103.com",
 			Owner:           uuid.MustParse("47cc01f8-23ec-47ec-b3f8-4ca615718782"),
 		},
 	}
