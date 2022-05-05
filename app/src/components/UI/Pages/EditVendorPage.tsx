@@ -36,6 +36,8 @@ interface inputValues {
   phoneNumber: string;
   businessHours: string;
   website: string;
+  description: string;
+  socialmedialink: string;
   // vendorOperationAreas: []
   discountEnabled: boolean;
 }
@@ -96,6 +98,8 @@ const EditVendorPage: React.FC = () => {
     phoneNumber: "",
     businessHours: "",
     website: "",
+    description: "",
+    socialmedialink: "",
     // vendorOperationAreas: []
     discountEnabled: false,
   } as inputValues);
@@ -113,6 +117,8 @@ const EditVendorPage: React.FC = () => {
         phoneNumber: vendor!.Phone,
         businessHours: vendor!.BusinessHours,
         website: vendor!.Website,
+        description: vendor!.Description,
+        socialmedialink: vendor!.SocialMediaLink,
         discountEnabled: vendor!.DiscountEnabled,
       });
     }
@@ -133,6 +139,8 @@ const EditVendorPage: React.FC = () => {
     businessHours: Yup.string().required("Required"),
     website: Yup.string(),
     discountEnabled: Yup.boolean(),
+    description: Yup.string(),
+    socialmedialink: Yup.string(),
   });
 
   const onSubmit = async (data: inputValues) => {
@@ -159,6 +167,8 @@ const EditVendorPage: React.FC = () => {
       BusinessLogo: photoID,
       Latitude: data.latitude,
       Longitude: data.longitude,
+      Description: data.description,
+      SocialMediaLink: data.socialmedialink,
       Owner: vendor!.Owner,
       DiscountEnabled: data.discountEnabled,
     };

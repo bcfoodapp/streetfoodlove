@@ -36,7 +36,7 @@ interface Props {
 /**
  * Displays a review card that contains the information from a completed review of a vendor
  */
-export const Review: React.FC<Props> = ({ review, reviewID, vendorID }) => {
+export const Reviews: React.FC<Props> = ({ review, reviewID, vendorID }) => {
   const [openCommentForm, setOpenCommentForm] = useState(false);
   const [CommentInput, setCommentInput] = useState("");
   const [submitReview] = useCreateReviewMutation();
