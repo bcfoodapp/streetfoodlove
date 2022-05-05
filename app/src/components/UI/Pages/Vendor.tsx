@@ -12,6 +12,7 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
+  useNewChartQuery,
   Review,
 } from "../../../api";
 import {
@@ -65,8 +66,9 @@ export function Vendor(): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
   const [getS3Credentials] = useS3CredentialsMutation();
+  const { data: charStar } = useNewChartQuery();
 
-  console.log("Reviews: " + JSON.stringify(reviews, null, 2));
+  console.log("char stars: " + JSON.stringify(charStar));
 
   const completedReviewHandler = async ({
     text,
