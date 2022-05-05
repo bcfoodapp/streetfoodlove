@@ -100,7 +100,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/discounts/:id", GetToken, a.Discount)
 	router.DELETE("/discounts/:id", GetToken, a.DiscountDelete)
 
-	router.GET("/newchart", a.NewChart)
+	router.GET("/charts/starsumchart", a.NewChart)
 }
 
 // errorHandler writes any errors to response.

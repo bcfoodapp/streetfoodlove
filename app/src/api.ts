@@ -818,7 +818,7 @@ export const apiSlice = createApi({
       invalidatesTags: ["Discounts"],
     }),
     newChart: builder.query<NewChart, void>({
-      query: () => `/newchart`,
+      query: () => `/charts/starsumchart`,
       providesTags: ["NewChart"],
     }),
   }),
