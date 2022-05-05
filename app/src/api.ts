@@ -158,6 +158,14 @@ export interface Discount {
   Secret: string;
 }
 
+export interface NewChart {
+  One: number;
+  Two: number;
+  Three: number;
+  Four: number;
+  Five: number;
+}
+
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
 
 export const tokenSlice = createSlice({
@@ -280,6 +288,7 @@ export const apiSlice = createApi({
     "CurrentUser",
     "Recommendation",
     "Discounts",
+    "NewChart",
   ],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
@@ -806,6 +815,10 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Discounts"],
     }),
+    newChart: builder.query<NewChart, void>({
+      query: () => `/newchart`,
+      providesTags: ["NewChart"],
+    }),
   }),
 });
 
@@ -848,6 +861,7 @@ export const {
   useDiscountsByUserQuery,
   useDiscountsBySecretQuery,
   useDeleteDiscountMutation,
+  useNewChartQuery,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {

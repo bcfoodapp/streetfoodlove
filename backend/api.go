@@ -99,6 +99,8 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/discounts", a.Discounts)
 	router.GET("/discounts/:id", GetToken, a.Discount)
 	router.DELETE("/discounts/:id", GetToken, a.DiscountDelete)
+
+	router.GET("/newchart", a.NewChart)
 }
 
 // errorHandler writes any errors to response.
@@ -1077,4 +1079,15 @@ func (a *API) DiscountDelete(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+}
+
+func (a *API) NewChart(c *gin.Context) {
+
+	chartStars, err := a.Backend.NewChart()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, chartStars)
 }
