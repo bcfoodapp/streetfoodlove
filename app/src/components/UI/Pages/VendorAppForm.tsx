@@ -78,6 +78,7 @@ export default function VendorAppForm(): React.ReactElement {
       Description: "",
       SocialMediaLink: "",
       Owner: userID,
+      DiscountEnabled: false,
     };
     const response = await createVendor(vendor);
     if ("data" in response) {

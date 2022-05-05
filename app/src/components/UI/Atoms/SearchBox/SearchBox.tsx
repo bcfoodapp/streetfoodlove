@@ -2,11 +2,9 @@ import React, { useState } from "react";
 import { Form, Input, Menu, Search, SearchProps } from "semantic-ui-react";
 import styles from "./searchbox.module.css";
 import {
-  getCredentialsEntry,
   getUserIDFromToken,
-  Query,
   useCreateQueryMutation,
-  useEffectAsync,
+  useCreatePastSearchMutation,
   useGetTokenMutation,
   useVendorsQuery,
   Vendor,
@@ -28,6 +26,7 @@ export const SearchBox: React.FC = () => {
   const dispatch = useAppDispatch();
   const [getToken] = useGetTokenMutation();
   const [createQuery] = useCreateQueryMutation();
+  const [createPastSearch] = useCreatePastSearchMutation();
 
   const enterQueryHandler = async () => {
     let resultSet = new Set([searchString, ...recentSearchResult]);
@@ -55,7 +54,6 @@ export const SearchBox: React.FC = () => {
     setRecentSearchResult([...array, ...recentSearchResult]);
 
     dispatch(showSideBar());
-    dispatch(setSearchQuery(searchString));
 
     const tokenResponse = await getToken();
     if ("data" in tokenResponse && tokenResponse.data) {
@@ -66,6 +64,16 @@ export const SearchBox: React.FC = () => {
         DateRequested: DateTime.now(),
       };
       await createQuery(query);
+
+      let relevantWord = searchString.split(" ").pop()!;
+      createPastSearch({
+        ID: uuid(),
+        UserID: getUserIDFromToken(tokenResponse.data),
+        RelevantSearchWord: relevantWord,
+        CuisineTypes: "",
+      });
+      console.log("finished");
+      dispatch(setSearchQuery(searchString));
     }
   };
 

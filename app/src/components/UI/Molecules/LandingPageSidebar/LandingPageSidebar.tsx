@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Sidebar,
   Menu,
@@ -8,7 +8,7 @@ import {
   Container,
 } from "semantic-ui-react";
 import { useAppDispatch, useAppSelector } from "../../../../store/root";
-import SelectFilter from "../MultiSelectFilter/SelectFilter";
+import CuisineFilter from "../MultiSelectFilter/CuisineFilter";
 import styles from "./sidebar.module.css";
 import { useSearchQuery } from "../../../../api";
 import { Link } from "react-router-dom";
@@ -17,11 +17,14 @@ import {
   addPriceRange,
   deletePriceRangeFilter,
 } from "../../../../store/search";
+import RecommendedList from "../RecommendedList/RecommendedList";
 
 const LandingPageSidebar: React.FC = () => {
   const showSideBarState = useAppSelector(
     (state) => state.search.sideBarShowing
   );
+
+  const [toggle, setToggle] = useState<boolean | undefined>(false);
 
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
   const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
@@ -58,6 +61,11 @@ const LandingPageSidebar: React.FC = () => {
       >
         <Icon name="close" size="big" color="grey" />
       </Button>
+      <Menu.Item as="div" className={styles.recommend}>
+        <h3>Recommended Vendors</h3>
+        <Checkbox toggle onChange={(e, data) => setToggle(data.checked)} />
+        {toggle ? <RecommendedList /> : null}
+      </Menu.Item>
       <Menu.Item as="div" className={styles.menuItem}>
         <Icon
           name="caret down"
@@ -68,7 +76,11 @@ const LandingPageSidebar: React.FC = () => {
         <h3 className={styles.header}>Filters</h3>
         <h3 className={styles.header}>Cuisine</h3>
 
-        <SelectFilter />
+        {searchQuery !== null ? (
+          <CuisineFilter searchQuery={searchQuery} />
+        ) : (
+          <CuisineFilter />
+        )}
 
         <h3 className={styles.header}>Prices</h3>
         <Checkbox

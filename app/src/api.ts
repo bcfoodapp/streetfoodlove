@@ -29,6 +29,7 @@ export interface Vendor {
   // vendorOperationAreas: string[]
   Description: string;
   SocialMediaLink: string;
+  DiscountEnabled: boolean;
 }
 
 export interface Areas {
@@ -143,6 +144,20 @@ export interface Query {
   UserID: string;
   QueryText: string;
   DateRequested: DateTime;
+}
+
+export interface PastSearch {
+  ID: string;
+  UserID: string;
+  RelevantSearchWord: string;
+  CuisineTypes: string;
+}
+
+export interface Discount {
+  ID: string;
+  UserID: string;
+  VendorID: string;
+  Secret: string;
 }
 
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
@@ -260,7 +275,14 @@ export const apiSlice = createApi({
 
     return baseQuery(args, api, extraOptions);
   },
-  tagTypes: ["Review", "VendorPhotos", "UserStars", "CurrentUser"],
+  tagTypes: [
+    "Review",
+    "VendorPhotos",
+    "UserStars",
+    "CurrentUser",
+    "Recommendation",
+    "Discounts",
+  ],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
       query: () => `/version`,
@@ -384,7 +406,7 @@ export const apiSlice = createApi({
         method: PUT,
         body: review,
       }),
-      invalidatesTags: ["Review"],
+      invalidatesTags: ["Review", "Discounts"],
     }),
     updateReview: builder.mutation<undefined, Review>({
       query: (review) => ({
@@ -615,6 +637,26 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["UserStars"],
     }),
+    createPastSearch: builder.mutation<void, PastSearch>({
+      query: (pastSearch) => ({
+        url: `/past-search/${encode(pastSearch.ID)}`,
+        method: PUT,
+        body: pastSearch,
+      }),
+      invalidatesTags: ["Recommendation"],
+    }),
+    pastSearchByUserID: builder.query<PastSearch[], string>({
+      query: (userID) => ({
+        url: `/past-search?userID=${encode(userID)}`,
+        providesTags: ["Recommendation"],
+      }),
+    }),
+    pastSearch: builder.query<PastSearch, string>({
+      query: (id) => ({
+        url: `/past-search/${id}`,
+        providesTags: ["Recommendation"],
+      }),
+    }),
     // Returns search result for given search string.
     search: builder.query<OpenSearchVendor[], ReviewFilters>({
       queryFn: async (searchParams, api) => {
@@ -746,6 +788,26 @@ export const apiSlice = createApi({
         body: query,
       }),
     }),
+    discount: builder.query<Discount, string>({
+      query: (id) => `/discounts/${encode(id)}`,
+      providesTags: ["Discounts"],
+    }),
+    discountsByUser: builder.query<Discount[], string>({
+      query: (userID) => `/discounts?userID=${encode(userID)}`,
+      providesTags: ["Discounts"],
+    }),
+    // Returns discounts that are associated with the secret. It returns 0 or 1 discounts.
+    discountsBySecret: builder.query<Discount[], string>({
+      query: (secret) => `/discounts?secret=${encode(secret)}`,
+      providesTags: ["Discounts"],
+    }),
+    deleteDiscount: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/discounts/${encode(id)}`,
+        method: DELETE,
+      }),
+      invalidatesTags: ["Discounts"],
+    }),
   }),
 });
 
@@ -780,7 +842,14 @@ export const {
   useDeleteStarMutation,
   useSearchQuery,
   useNewReviewsQuery,
+  useCreatePastSearchMutation,
+  usePastSearchQuery,
+  usePastSearchByUserIDQuery,
   useCreateQueryMutation,
+  useDiscountQuery,
+  useDiscountsByUserQuery,
+  useDiscountsBySecretQuery,
+  useDeleteDiscountMutation,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {

@@ -1,5 +1,6 @@
 import {
   Button,
+  Checkbox,
   Container,
   Form,
   Header,
@@ -38,6 +39,7 @@ interface inputValues {
   description: string;
   socialmedialink: string;
   // vendorOperationAreas: []
+  discountEnabled: boolean;
 }
 
 const businessHours = [
@@ -70,7 +72,7 @@ const cuisineTypes = [
 const EditVendorPage: React.FC = () => {
   const [updateVendor] = useUpdateVendorMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
+  const [getToken] = useGetTokenMutation();
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
   const [coordinatesChanged, setCoordinatesChanged] = useState(false);
@@ -99,6 +101,7 @@ const EditVendorPage: React.FC = () => {
     description: "",
     socialmedialink: "",
     // vendorOperationAreas: []
+    discountEnabled: false,
   } as inputValues);
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -116,6 +119,7 @@ const EditVendorPage: React.FC = () => {
         website: vendor!.Website,
         description: vendor!.Description,
         socialmedialink: vendor!.SocialMediaLink,
+        discountEnabled: vendor!.DiscountEnabled,
       });
     }
   }, [vendorQueryIsSuccess]);
@@ -134,6 +138,7 @@ const EditVendorPage: React.FC = () => {
     phoneNumber: Yup.string().required("Required"),
     businessHours: Yup.string().required("Required"),
     website: Yup.string(),
+    discountEnabled: Yup.boolean(),
     description: Yup.string(),
     socialmedialink: Yup.string(),
   });
@@ -164,7 +169,8 @@ const EditVendorPage: React.FC = () => {
       Longitude: data.longitude,
       Description: data.description,
       SocialMediaLink: data.socialmedialink,
-      Owner: userID!,
+      Owner: vendor!.Owner,
+      DiscountEnabled: data.discountEnabled,
     };
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {
@@ -377,6 +383,19 @@ const EditVendorPage: React.FC = () => {
                 label="Vendor Description"
                 placeholder="Vendor Description"
               />
+              <strong>Discount exchange</strong>
+              <Form.Checkbox
+                name="discountEnabled"
+                label="Reward discount in exchange for review"
+                checked={values.discountEnabled}
+                onChange={(_, data) =>
+                  setFieldValue("discountEnabled", data.checked)
+                }
+              />
+              <p style={{ marginLeft: 25 }}>
+                Enable this option if you would like to reward a discount to
+                your business for posting a review on your vendor page.
+              </p>
               <Buttons
                 edit
                 color="green"

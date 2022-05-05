@@ -1,21 +1,13 @@
 import {
   getUserIDFromToken,
+  useDiscountsByUserQuery,
   useEffectAsync,
   useGetTokenMutation,
-  useStarsByUserIDQuery,
-  useVendorQuery,
 } from "../../../../api";
 import React, { useState } from "react";
 import { Header } from "semantic-ui-react";
-
-export function VendorName({
-  vendorID,
-}: {
-  vendorID: string;
-}): React.ReactElement {
-  const { data: vendor } = useVendorQuery(vendorID);
-  return <p>{vendor?.Name}</p>;
-}
+import { VendorName } from "../AccountProfileStars/AccountProfileStars";
+import { Link } from "react-router-dom";
 
 export default (): React.ReactElement => {
   const [getToken] = useGetTokenMutation();
@@ -28,7 +20,7 @@ export default (): React.ReactElement => {
     }
   }, []);
 
-  const { data: stars } = useStarsByUserIDQuery(userID!, {
+  const { data: discounts } = useDiscountsByUserQuery(userID!, {
     skip: !userID,
   });
 
@@ -38,9 +30,12 @@ export default (): React.ReactElement => {
 
   return (
     <>
-      <Header as="h1">Stars</Header>
-      {stars?.map((star, index) => (
-        <VendorName key={index} vendorID={star.VendorID} />
+      <Header as="h1">Discounts</Header>
+      <p>Select a vendor to claim the discount.</p>
+      {discounts?.map((discount, i) => (
+        <Link to={`/account-profile/discount/${discount.ID}`}>
+          <VendorName key={i} vendorID={discount.VendorID} />
+        </Link>
       ))}
     </>
   );

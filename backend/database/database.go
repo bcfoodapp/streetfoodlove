@@ -13,26 +13,16 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func ResetDatabase(db *sqlx.DB) error {
-	commands := [...]string{
-		"DROP DATABASE IF EXISTS streetfoodlove",
-		`
-			CREATE DATABASE IF NOT EXISTS streetfoodlove
-			CHARACTER SET utf8mb4
-			COLLATE utf8mb4_unicode_ci
-			`,
-	}
-
-	for _, command := range commands {
-		if _, err := db.Exec(command); err != nil {
-			panic(err)
-		}
-	}
-	return nil
-}
-
+// SetupTables drops all tables then recreates all tables.
 func SetupTables(db *sqlx.DB) error {
 	commands := [...]string{
+		`DROP DATABASE IF EXISTS streetfoodlove`,
+		`
+		CREATE DATABASE IF NOT EXISTS streetfoodlove
+		CHARACTER SET utf8mb4
+		COLLATE utf8mb4_unicode_ci
+		`,
+		`USE streetfoodlove`,
 		`
 		CREATE TABLE User (
 			ID CHAR(36) NOT NULL,
@@ -63,9 +53,10 @@ func SetupTables(db *sqlx.DB) error {
 			Description VARCHAR(1500) NULL,
 			SocialMediaLink VARCHAR(500) NULL,
 			Owner CHAR(36) NOT NULL,
+			DiscountEnabled BOOLEAN NOT NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (Owner) REFERENCES User(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE
+				ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
@@ -82,9 +73,9 @@ func SetupTables(db *sqlx.DB) error {
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
 			ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY (UserID) REFERENCES User(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE,
+				ON DELETE CASCADE ON UPDATE CASCADE,
 			FOREIGN KEY(ReplyTo) REFERENCES Reviews(ID)
-			ON DELETE CASCADE ON UPDATE CASCADE
+				ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
@@ -143,7 +134,7 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE CuisineTypes (
-			ID  CHAR(36) NOT NULL,
+			ID CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
 			CuisineType VARCHAR(45) NOT NULL, 
 			PRIMARY KEY (ID),
@@ -158,6 +149,28 @@ func SetupTables(db *sqlx.DB) error {
 			DateRequested DATETIME NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`CREATE TABLE PastSearch (
+			ID CHAR(36) NOT NULL,
+			UserID CHAR(36) NOT NULL,
+			CuisineTypes VARCHAR(36) NOT NULL,
+			RelevantSearchWord VARCHAR(255) NOT NULL,
+			PRIMARY KEY (ID),
+			FOREIGN KEY (UserID) REFERENCES User(ID) ON DELETE CASCADE ON UPDATE CASCADE
+		)
+		`,
+		`
+		CREATE TABLE Discounts (
+			ID CHAR(36) NOT NULL,
+			UserID CHAR(36) NOT NULL,
+			VendorID CHAR(36) NOT NULL,
+			Secret CHAR(36) NOT NULL UNIQUE,
+			PRIMARY KEY(ID),
+			FOREIGN KEY (UserID) REFERENCES User(ID)
+				ON DELETE CASCADE ON UPDATE CASCADE,
+			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
+				ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
@@ -203,6 +216,7 @@ type Vendor struct {
 	Description     string
 	SocialMediaLink string
 	Owner           uuid.UUID
+	DiscountEnabled bool
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -1071,4 +1085,189 @@ func (d *Database) CountMostFrequentQueries(userID uuid.UUID) (int, error) {
 	result := 0
 	err := d.db.QueryRowx(command, &userID).Scan(&result)
 	return result, err
+}
+
+type PastSearch struct {
+	ID                 uuid.UUID
+	UserID             uuid.UUID
+	CuisineTypes       string
+	RelevantSearchWord string
+}
+
+func (d *Database) PastSearchCreate(pastSearch *PastSearch) error {
+	const command = `
+		INSERT INTO PastSearch (
+			ID,
+			UserID,
+			CuisineTypes,
+			RelevantSearchWord
+		) VALUES (
+			:ID,
+			:UserID,
+			:CuisineTypes,
+			:RelevantSearchWord
+		)
+	`
+
+	_, err := d.db.NamedExec(command, pastSearch)
+	return err
+}
+
+func (d *Database) PastSearch(id uuid.UUID) (*PastSearch, error) {
+	const command = `
+		SELECT * FROM PastSearch WHERE ID=?
+	`
+	pastSearch := &PastSearch{}
+	err := d.db.QueryRowx(command, &id).StructScan(pastSearch)
+
+	return pastSearch, err
+}
+
+func (d *Database) PastSearchByUserID(userID uuid.UUID) ([]PastSearch, error) {
+	const command = `
+		SELECT * FROM PastSearch WHERE UserID=?
+	`
+
+	rows, err := d.db.Queryx(command, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]PastSearch, 0)
+
+	for rows.Next() {
+		result = append(result, PastSearch{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+type Discount struct {
+	ID       uuid.UUID
+	UserID   uuid.UUID
+	VendorID uuid.UUID
+	Secret   uuid.UUID
+}
+
+func (d *Database) Discount(id uuid.UUID) (*Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE ID=?
+	`
+
+	result := &Discount{}
+	err := d.db.QueryRowx(command, &id).StructScan(result)
+	return result, err
+}
+
+func (d *Database) DiscountCreate(discount *Discount) error {
+	const command = `
+		INSERT INTO Discounts (
+			ID,
+			UserID,
+			VendorID,
+			Secret
+		) VALUES (
+			:ID,
+			:UserID,
+			:VendorID,
+			:Secret
+		)
+	`
+
+	_, err := d.db.NamedExec(command, discount)
+	return err
+}
+
+func (d *Database) DiscountsByUser(userID uuid.UUID) ([]Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE UserID=?
+	`
+
+	rows, err := d.db.Queryx(command, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Discount, 0)
+
+	for rows.Next() {
+		result = append(result, Discount{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
+func (d *Database) DiscountBySecret(secret uuid.UUID) (*Discount, error) {
+	const command = `
+		SELECT *
+		FROM Discounts
+		WHERE Secret=?
+	`
+
+	query := &Discount{}
+	err := d.db.QueryRowx(command, &secret).StructScan(query)
+	return query, err
+}
+
+func (d *Database) DiscountDelete(id uuid.UUID) error {
+	const command = `
+		DELETE FROM Discounts
+		WHERE ID=?
+	`
+
+	_, err := d.db.Exec(command, &id)
+	return err
+}
+
+type StarRatingSum struct {
+	One   int
+	Two   int
+	Three int
+	Four  int
+	Five  int
+}
+
+func (d *Database) NewChart() (StarRatingSum, error) {
+	const command = `
+		SELECT StarRating, count(StarRating) as 'CountStarRating'
+		FROM Reviews
+		where DatePosted >= date_sub(current_date, INTERVAL 1 MONTH)
+		group by StarRating;
+	`
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return StarRatingSum{}, err
+	}
+	defer rows.Close()
+
+	result := make(map[int]int)
+
+	for rows.Next() {
+		rating := 0
+		sum := 0
+		if err := rows.Scan(&rating, &sum); err != nil {
+			return StarRatingSum{}, err
+		}
+
+		result[rating] = sum
+	}
+	return StarRatingSum{
+		One:   result[1],
+		Two:   result[1],
+		Three: result[1],
+		Four:  result[1],
+		Five:  result[1],
+	}, nil
 }

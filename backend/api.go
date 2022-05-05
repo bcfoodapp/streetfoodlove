@@ -82,7 +82,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/stars/:id", a.Star)
 	router.PUT("/stars/:id", GetToken, a.StarPut)
 	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
-	router.DELETE("/stars/:id", a.StarsDelete)
+	router.DELETE("/stars/:id", GetToken, a.StarsDelete)
 	router.GET("/areas/", a.Areas)
 	router.PUT("/areas/:id", GetToken, a.AreaPut)
 	router.GET("/cuisinetypes/", a.CuisineType)
@@ -92,6 +92,13 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/queries/:id", a.Query)
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
+	router.GET("/past-search", GetToken, a.PastSearches)
+	router.GET("/past-search/:id", GetToken, a.PastSearch)
+	router.PUT("/past-search/:id", GetToken, a.PastSearchPut)
+
+	router.GET("/discounts", a.Discounts)
+	router.GET("/discounts/:id", GetToken, a.Discount)
+	router.DELETE("/discounts/:id", GetToken, a.DiscountDelete)
 }
 
 // errorHandler writes any errors to response.
@@ -777,13 +784,17 @@ func (a *API) StarsDelete(c *gin.Context) {
 		return
 	}
 
+	if star.UserID != getTokenFromContext(c) {
+		c.Error(unauthorized)
+		return
+	}
+
 	if err := a.Backend.StarDelete(star.UserID, star.VendorID); err != nil {
 		c.Error(err)
 		return
 	}
 }
 
-// ParseStarKey splits key into userID and vendorID
 func ParseAreaKey(key string) (*database.Areas, error) {
 	const uuidLength = 81
 
@@ -938,4 +949,132 @@ func (a *API) Query(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, query)
+}
+
+func (a *API) PastSearches(c *gin.Context) {
+	userID, err := uuid.Parse(c.Query("userID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if getTokenFromContext(c) != userID {
+		c.Error(unauthorized)
+		return
+	}
+
+	result, err := a.Backend.PastSearchByUserID(userID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+func (a *API) PastSearch(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	pastSearch, err := a.Backend.PastSearch(getTokenFromContext(c), id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, pastSearch)
+}
+
+func (a *API) PastSearchPut(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	pastSearch := &database.PastSearch{}
+	if err := c.ShouldBindJSON(pastSearch); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if id != pastSearch.ID {
+		c.Error(errIDsDoNotMatch)
+		return
+	}
+
+	if err := a.Backend.PastSearchCreate(getTokenFromContext(c), pastSearch); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) Discounts(c *gin.Context) {
+	var discounts []database.Discount
+
+	if c.Query("userID") != "" {
+		userID, err := uuid.Parse(c.Query("userID"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		discounts, err = a.Backend.DiscountsByUser(userID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+	} else {
+		secret, err := uuid.Parse(c.Query("secret"))
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		discount, err := a.Backend.DiscountsBySecret(secret)
+		// Return empty array if not found
+		if errors.Is(err, sql.ErrNoRows) {
+			discounts = []database.Discount{}
+		} else {
+			if err != nil {
+				c.Error(err)
+				return
+			}
+			discounts = []database.Discount{*discount}
+		}
+	}
+
+	c.JSON(http.StatusOK, discounts)
+}
+
+func (a *API) Discount(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	discount, err := a.Backend.Discount(getTokenFromContext(c), id)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, discount)
+}
+
+func (a *API) DiscountDelete(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := a.Backend.DiscountDelete(getTokenFromContext(c), id); err != nil {
+		c.Error(err)
+		return
+	}
 }

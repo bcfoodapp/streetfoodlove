@@ -2,6 +2,7 @@
 package main
 
 import (
+	"github.com/go-sql-driver/mysql"
 	"os"
 	"time"
 
@@ -11,34 +12,31 @@ import (
 )
 
 func main() {
-	var config *database.Configuration
+	var config mysql.Config
 
 	secretsFile, isProduction := os.LookupEnv("SECRETS_FILE")
 	if isProduction {
-		config = database.Production(secretsFile)
+		config = database.Production(secretsFile).MySQLConfig
 	} else {
-		config = database.Development()
+		config = database.Development().MySQLConfig
 	}
 
-	func() {
-		mysqlConfig := config.MySQLConfig
-		mysqlConfig.DBName = ""
-		db, err := sqlx.Connect("mysql", mysqlConfig.FormatDSN())
-		if err != nil {
-			panic(err)
-		}
-		defer func() {
-			if err := db.Close(); err != nil {
-				panic(err)
-			}
-		}()
+	mysqlConfig := config
+	mysqlConfig.DBName = ""
+	db, err := sqlx.Connect("mysql", mysqlConfig.FormatDSN())
+	if err != nil {
+		panic(err)
+	}
 
-		if err := database.ResetDatabase(db); err != nil {
-			return
-		}
-	}()
+	if _, err := db.Exec("CREATE DATABASE IF NOT EXISTS streetfoodlove"); err != nil {
+		panic(err)
+	}
 
-	db, err := sqlx.Connect("mysql", config.MySQLConfig.FormatDSN())
+	if err := db.Close(); err != nil {
+		panic(err)
+	}
+
+	db, err = sqlx.Connect("mysql", config.FormatDSN())
 	if err != nil {
 		panic(err)
 	}

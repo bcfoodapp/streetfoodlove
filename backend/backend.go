@@ -132,7 +132,29 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) error 
 
 	review.DatePosted = time.Now()
 
-	return b.Database.ReviewCreate(review)
+	if err := b.Database.ReviewCreate(review); err != nil {
+		return err
+	}
+
+	// Create discount if discount exchange is enabled
+	vendor, err := b.Database.Vendor(review.VendorID)
+	if err != nil {
+		return err
+	}
+
+	if vendor.DiscountEnabled {
+		discount := &database.Discount{
+			ID:       uuid.New(),
+			UserID:   review.UserID,
+			VendorID: review.VendorID,
+			Secret:   uuid.New(),
+		}
+		if err := b.Database.DiscountCreate(discount); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (b *Backend) ReviewUpdate(userID uuid.UUID, review *database.Review) error {
@@ -297,4 +319,74 @@ func (b *Backend) QueryByUserID(userID uuid.UUID) ([]database.Query, error) {
 
 func (b *Backend) Query(id uuid.UUID) (*database.Query, error) {
 	return b.Database.Query(id)
+}
+
+func (b *Backend) PastSearchCreate(userID uuid.UUID, pastSearch *database.PastSearch) error {
+	if pastSearch.UserID != userID {
+		return unauthorized
+	}
+
+	return b.Database.PastSearchCreate(pastSearch)
+}
+
+func (b *Backend) PastSearch(userID uuid.UUID, id uuid.UUID) (*database.PastSearch, error) {
+	pastSearch, err := b.Database.PastSearch(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if pastSearch.UserID != userID {
+		return nil, unauthorized
+	}
+
+	return pastSearch, nil
+}
+
+func (b *Backend) PastSearchByUserID(userID uuid.UUID) ([]database.PastSearch, error) {
+	return b.Database.PastSearchByUserID(userID)
+}
+
+func (b *Backend) Discount(userID uuid.UUID, id uuid.UUID) (*database.Discount, error) {
+	discount, err := b.Database.Discount(id)
+	if err != nil {
+		return nil, err
+	}
+
+	// The discount secret is private
+	if discount.UserID != userID {
+		return nil, unauthorized
+	}
+
+	return discount, nil
+}
+
+func (b *Backend) DiscountsByUser(userID uuid.UUID) ([]database.Discount, error) {
+	return b.Database.DiscountsByUser(userID)
+}
+
+func (b *Backend) DiscountsBySecret(secret uuid.UUID) (*database.Discount, error) {
+	return b.Database.DiscountBySecret(secret)
+}
+
+func (b *Backend) DiscountDelete(userID uuid.UUID, id uuid.UUID) error {
+	// Only the vendor owner can delete the discount
+	discount, err := b.Database.Discount(id)
+	if err != nil {
+		return err
+	}
+
+	vendor, err := b.Database.Vendor(discount.VendorID)
+	if err != nil {
+		return err
+	}
+
+	if vendor.Owner != userID {
+		return unauthorized
+	}
+
+	return b.Database.DiscountDelete(id)
+}
+
+func (b *Backend) NewChart() (database.StarRatingSum, error) {
+	return b.Database.NewChart()
 }
