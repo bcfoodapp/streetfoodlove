@@ -50,6 +50,8 @@ func SetupTables(db *sqlx.DB) error {
 			BusinessLogo VARCHAR(50) NULL,
 			Latitude FLOAT NOT NULL,
 			Longitude FLOAT NOT NULL,
+			Description VARCHAR(1500) NULL,
+			SocialMediaLink VARCHAR(500) NULL,
 			Owner CHAR(36) NOT NULL,
 			DiscountEnabled BOOLEAN NOT NULL,
 			PRIMARY KEY (ID),
@@ -211,6 +213,8 @@ type Vendor struct {
 	BusinessLogo    *string
 	Latitude        float64
 	Longitude       float64
+	Description     string
+	SocialMediaLink string
 	Owner           uuid.UUID
 	DiscountEnabled bool
 }
@@ -227,8 +231,9 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			BusinessLogo,
 			Latitude,
 			Longitude,
-			Owner,
-			DiscountEnabled
+			Description,
+			SocialMediaLink,
+			Owner
 		) VALUES (
 			:ID,
 			:Name,
@@ -239,8 +244,9 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:BusinessLogo,
 			:Latitude,
 			:Longitude,
-			:Owner,
-			:DiscountEnabled
+			:Description,
+			:SocialMediaLink,
+			:Owner
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
@@ -290,7 +296,8 @@ func (d *Database) VendorUpdate(vendor *Vendor) error {
 			Latitude = :Latitude,
 			Longitude = :Longitude,
 			Owner = :Owner,
-			DiscountEnabled = :DiscountEnabled
+			Description = :Description,
+			SocialMediaLink = :SocialMediaLink
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &vendor)
