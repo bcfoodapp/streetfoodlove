@@ -27,7 +27,7 @@ const RecommendedList: React.FC = () => {
   if (pastSearch) {
     //generate a random number which will be used to randomly get a previous search entry
     let length = pastSearch.length - 1;
-    random = Math.ceil(Math.random() * length - 1);
+    random = Math.floor(Math.random() * length);
     relevantWord = pastSearch[random]?.RelevantSearchWord;
   }
 
