@@ -1224,30 +1224,43 @@ func (d *Database) DiscountDelete(id uuid.UUID) error {
 	return err
 }
 
-type NewChart struct {
-	StarRating      int
-	CountStarRating int
+type StarRatingSum struct {
+	One   int
+	Two   int
+	Three int
+	Four  int
+	Five  int
 }
 
-func (d *Database) NewChart() ([]NewChart, error) {
+func (d *Database) NewChart() (StarRatingSum, error) {
 	const command = `
-SELECT StarRating ,count(StarRating) as 'CountStarRating'
-	FROM reviews
-	where DatePosted >= date_sub(current_date, INTERVAL 1 MONTH)
-	group by StarRating;
+		SELECT StarRating, count(StarRating) as 'CountStarRating'
+		FROM Reviews
+		where DatePosted >= date_sub(current_date, INTERVAL 1 MONTH)
+		group by StarRating;
 	`
 	rows, err := d.db.Queryx(command)
 	if err != nil {
-		defer rows.Close()
+		return StarRatingSum{}, err
 	}
+	defer rows.Close()
 
-	result := make([]NewChart, 0)
+	result := make(map[int]int)
 
 	for rows.Next() {
-		result = append(result, NewChart{})
-		if err := rows.StructScan(&result[len(result)-1]); err != nil {
-			return nil, err
+		rating := 0
+		sum := 0
+		if err := rows.Scan(&rating, &sum); err != nil {
+			return StarRatingSum{}, err
 		}
+
+		result[rating] = sum
 	}
-	return result, rows.Err()
+	return StarRatingSum{
+		One:   result[1],
+		Two:   result[1],
+		Three: result[1],
+		Four:  result[1],
+		Five:  result[1],
+	}, nil
 }
