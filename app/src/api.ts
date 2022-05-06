@@ -475,6 +475,16 @@ export const apiSlice = createApi({
         url: `/map/view/${rectangle.northWestLat}/${rectangle.northWestLng}/${rectangle.southEastLat}/${rectangle.southEastLng}`,
       }),
     }),
+    guides: builder.query<Guide[], void>({
+      query: () => ({
+        url: `/guides`,
+      }),
+      transformResponse: (guides: any[]) =>
+        guides.map((guide) => ({
+          ...guide,
+          DatePosted: DateTime.fromISO(guide.DatePosted),
+        })),
+    }),
     guide: builder.query<Guide, string>({
       query: (id) => ({
         url: `/guides/${id}`,
@@ -843,6 +853,7 @@ export const {
   useGetTokenMutation,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
+  useGuidesQuery,
   useGuideQuery,
   useSignInWithGoogleMutation,
   usePhotosByLinkIDQuery,
