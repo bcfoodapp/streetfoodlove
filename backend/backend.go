@@ -125,21 +125,25 @@ func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {
 	return b.Database.Review(id)
 }
 
-func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) error {
+type ReviewCreateResponse struct {
+	DiscountCreated bool
+}
+
+func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) (*ReviewCreateResponse, error) {
 	if review.UserID != userID {
-		return unauthorized
+		return nil, unauthorized
 	}
 
 	review.DatePosted = time.Now()
 
 	if err := b.Database.ReviewCreate(review); err != nil {
-		return err
+		return nil, err
 	}
 
 	// Create discount if discount exchange is enabled
 	vendor, err := b.Database.Vendor(review.VendorID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if vendor.DiscountEnabled {
@@ -150,11 +154,11 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) error 
 			Secret:   uuid.New(),
 		}
 		if err := b.Database.DiscountCreate(discount); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	return nil
+	return &ReviewCreateResponse{DiscountCreated: vendor.DiscountEnabled}, nil
 }
 
 func (b *Backend) ReviewUpdate(userID uuid.UUID, review *database.Review) error {

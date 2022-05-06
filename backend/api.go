@@ -397,10 +397,13 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.ReviewCreate(getTokenFromContext(c), review); err != nil {
+	response, err := a.Backend.ReviewCreate(getTokenFromContext(c), review)
+	if err != nil {
 		c.Error(err)
 		return
 	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (a *API) ReviewPost(c *gin.Context) {
