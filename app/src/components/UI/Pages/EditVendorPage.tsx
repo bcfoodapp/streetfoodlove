@@ -117,9 +117,9 @@ const EditVendorPage: React.FC = () => {
         phoneNumber: vendor!.Phone,
         businessHours: vendor!.BusinessHours,
         website: vendor!.Website,
-        discountEnabled: vendor!.DiscountEnabled,
         description: vendor!.Description,
         socialmedialink: vendor!.SocialMediaLink,
+        discountEnabled: vendor!.DiscountEnabled,
       });
     }
   }, [vendorQueryIsSuccess]);
@@ -167,11 +167,10 @@ const EditVendorPage: React.FC = () => {
       BusinessLogo: photoID,
       Latitude: data.latitude,
       Longitude: data.longitude,
-      // Owner: vendor!.Owner,
-      DiscountEnabled: data.discountEnabled,
       Description: data.description,
       SocialMediaLink: data.socialmedialink,
-      Owner: userID!,
+      Owner: vendor!.Owner,
+      DiscountEnabled: data.discountEnabled,
     };
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {

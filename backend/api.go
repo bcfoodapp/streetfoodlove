@@ -72,6 +72,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/photos/:id", a.Photo)
 	router.PUT("/photos/:id", GetToken, a.PhotoPut)
 
+	router.GET("/guides", a.Guides)
 	router.GET("/guides/:id", a.Guide)
 	router.POST("/guides/:id", GetToken, a.GuidePost)
 
@@ -92,12 +93,15 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/queries/:id", a.Query)
 	router.PUT("/queries/:id", GetToken, a.QueryPut)
 
+	router.GET("/past-search", GetToken, a.PastSearches)
 	router.GET("/past-search/:id", GetToken, a.PastSearch)
 	router.PUT("/past-search/:id", GetToken, a.PastSearchPut)
 
 	router.GET("/discounts", a.Discounts)
 	router.GET("/discounts/:id", GetToken, a.Discount)
 	router.DELETE("/discounts/:id", GetToken, a.DiscountDelete)
+
+	router.GET("/charts/starsumchart", a.NewChart)
 }
 
 // errorHandler writes any errors to response.
@@ -584,6 +588,16 @@ func (a *API) PhotoPut(c *gin.Context) {
 	}
 }
 
+func (a *API) Guides(c *gin.Context) {
+	guides, err := a.Backend.Guides()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, guides)
+}
+
 func (a *API) Guide(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -950,6 +964,27 @@ func (a *API) Query(c *gin.Context) {
 	c.JSON(http.StatusOK, query)
 }
 
+func (a *API) PastSearches(c *gin.Context) {
+	userID, err := uuid.Parse(c.Query("userID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if getTokenFromContext(c) != userID {
+		c.Error(unauthorized)
+		return
+	}
+
+	result, err := a.Backend.PastSearchByUserID(userID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (a *API) PastSearch(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -1055,4 +1090,15 @@ func (a *API) DiscountDelete(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+}
+
+func (a *API) NewChart(c *gin.Context) {
+
+	chartStars, err := a.Backend.NewChart()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, chartStars)
 }

@@ -134,11 +134,7 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE CuisineTypes (
-<<<<<<< HEAD
-			ID CHAR(36) NOT NULL,
-=======
 			ID  CHAR(36) NOT NULL,
->>>>>>> 2c1cf7f7ab77357d2c7d02df4c920269318ef2e8
 			VendorID CHAR(36) NOT NULL,
 			CuisineType VARCHAR(45) NOT NULL, 
 			PRIMARY KEY (ID),
@@ -236,6 +232,11 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			Latitude,
 			Longitude,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+			Description,
+			SocialMediaLink,
+>>>>>>> 52ff7ea8ed0a0cefe962ac281aa020fe1bbcad2b
 			Owner,
 			DiscountEnabled
 =======
@@ -254,6 +255,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:Latitude,
 			:Longitude,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			:Owner,
 			:DiscountEnabled
 =======
@@ -261,6 +263,12 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:SocialMediaLink,
 			:Owner
 >>>>>>> 2c1cf7f7ab77357d2c7d02df4c920269318ef2e8
+=======
+			:Description,
+			:SocialMediaLink,
+			:Owner,
+			DiscountEnabled
+>>>>>>> 52ff7ea8ed0a0cefe962ac281aa020fe1bbcad2b
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
@@ -310,6 +318,8 @@ func (d *Database) VendorUpdate(vendor *Vendor) error {
 			Latitude = :Latitude,
 			Longitude = :Longitude,
 			Owner = :Owner,
+			Description = :Description,
+			SocialMediaLink = :SocialMediaLink,
 			DiscountEnabled = :DiscountEnabled
 			Description = :Description,
 			SocialMediaLink = :SocialMediaLink
@@ -748,6 +758,31 @@ func (d *Database) GuideCreate(guide *Guide) error {
 	return err
 }
 
+func (d *Database) Guides() ([]Guide, error) {
+	const command = `
+		SELECT *
+		FROM Guide
+		ORDER BY DatePosted DESC
+	`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Guide, 0)
+
+	for rows.Next() {
+		result = append(result, Guide{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
 func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
 	const command = `
 		SELECT * FROM Guide WHERE ID=?
@@ -1138,6 +1173,29 @@ func (d *Database) PastSearch(id uuid.UUID) (*PastSearch, error) {
 	return pastSearch, err
 }
 
+func (d *Database) PastSearchByUserID(userID uuid.UUID) ([]PastSearch, error) {
+	const command = `
+		SELECT * FROM PastSearch WHERE UserID=?
+	`
+
+	rows, err := d.db.Queryx(command, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]PastSearch, 0)
+
+	for rows.Next() {
+		result = append(result, PastSearch{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
+}
+
 type Discount struct {
 	ID       uuid.UUID
 	UserID   uuid.UUID
@@ -1221,4 +1279,45 @@ func (d *Database) DiscountDelete(id uuid.UUID) error {
 
 	_, err := d.db.Exec(command, &id)
 	return err
+}
+
+type StarRatingSum struct {
+	One   int
+	Two   int
+	Three int
+	Four  int
+	Five  int
+}
+
+func (d *Database) NewChart() (StarRatingSum, error) {
+	const command = `
+		SELECT StarRating, count(StarRating) as 'CountStarRating'
+		FROM Reviews
+		where DatePosted >= date_sub(current_date, INTERVAL 1 MONTH)
+		group by StarRating;
+	`
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return StarRatingSum{}, err
+	}
+	defer rows.Close()
+
+	result := make(map[int]int)
+
+	for rows.Next() {
+		rating := 0
+		sum := 0
+		if err := rows.Scan(&rating, &sum); err != nil {
+			return StarRatingSum{}, err
+		}
+
+		result[rating] = sum
+	}
+	return StarRatingSum{
+		One:   result[1],
+		Two:   result[1],
+		Three: result[1],
+		Four:  result[1],
+		Five:  result[1],
+	}, nil
 }

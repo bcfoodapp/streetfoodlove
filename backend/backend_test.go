@@ -248,3 +248,9 @@ func (b *BackendTestSuite) TestReviewCreate() {
 		b.NoError(b.backend.DiscountDelete(vendor.Owner, discount.ID))
 	}
 }
+
+func (b *BackendTestSuite) TestNewChart() {
+	result, err := b.backend.Database.NewChart()
+	b.NoError(err)
+	b.Empty(result)
+}

@@ -229,6 +229,10 @@ func (b *Backend) PhotoCreate(userID uuid.UUID, photo *database.Photo) error {
 	return b.Database.PhotoCreate(photo)
 }
 
+func (b *Backend) Guides() ([]database.Guide, error) {
+	return b.Database.Guides()
+}
+
 func (b *Backend) Guide(id uuid.UUID) (*database.Guide, error) {
 	return b.Database.Guide(id)
 }
@@ -342,6 +346,10 @@ func (b *Backend) PastSearch(userID uuid.UUID, id uuid.UUID) (*database.PastSear
 	return pastSearch, nil
 }
 
+func (b *Backend) PastSearchByUserID(userID uuid.UUID) ([]database.PastSearch, error) {
+	return b.Database.PastSearchByUserID(userID)
+}
+
 func (b *Backend) Discount(userID uuid.UUID, id uuid.UUID) (*database.Discount, error) {
 	discount, err := b.Database.Discount(id)
 	if err != nil {
@@ -381,4 +389,8 @@ func (b *Backend) DiscountDelete(userID uuid.UUID, id uuid.UUID) error {
 	}
 
 	return b.Database.DiscountDelete(id)
+}
+
+func (b *Backend) NewChart() (database.StarRatingSum, error) {
+	return b.Database.NewChart()
 }
