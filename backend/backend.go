@@ -129,6 +129,15 @@ type ReviewCreateResponse struct {
 	DiscountCreated bool
 }
 
+func ContainsVendor(discounts []database.Discount, vendorID uuid.UUID) bool {
+	for _, discount := range discounts {
+		if discount.VendorID == vendorID {
+			return true
+		}
+	}
+	return false
+}
+
 func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) (*ReviewCreateResponse, error) {
 	if review.UserID != userID {
 		return nil, unauthorized
@@ -146,19 +155,28 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) (*Revi
 		return nil, err
 	}
 
+	discountCreated := false
 	if vendor.DiscountEnabled && review.ReplyTo == nil {
-		discount := &database.Discount{
-			ID:       uuid.New(),
-			UserID:   review.UserID,
-			VendorID: review.VendorID,
-			Secret:   uuid.New(),
-		}
-		if err := b.Database.DiscountCreate(discount); err != nil {
+		discounts, err := b.Database.DiscountsByUser(review.UserID)
+		if err != nil {
 			return nil, err
+		}
+
+		if !ContainsVendor(discounts, review.VendorID) {
+			discount := &database.Discount{
+				ID:       uuid.New(),
+				UserID:   review.UserID,
+				VendorID: review.VendorID,
+				Secret:   uuid.New(),
+			}
+			if err := b.Database.DiscountCreate(discount); err != nil {
+				return nil, err
+			}
+			discountCreated = true
 		}
 	}
 
-	return &ReviewCreateResponse{DiscountCreated: vendor.DiscountEnabled}, nil
+	return &ReviewCreateResponse{DiscountCreated: discountCreated}, nil
 }
 
 func (b *Backend) ReviewUpdate(userID uuid.UUID, review *database.Review) error {
