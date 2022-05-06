@@ -222,7 +222,10 @@ func (b *BackendTestSuite) TestReviewCreate() {
 
 	{
 		// Create review without discount
-		b.NoError(b.backend.ReviewCreate(user.ID, review))
+		result, err := b.backend.ReviewCreate(user.ID, review)
+		b.NoError(err)
+		b.False(result.DiscountCreated)
+
 		discounts, err := b.backend.DiscountsByUser(review.UserID)
 		b.NoError(err)
 		b.Empty(discounts)
@@ -233,7 +236,11 @@ func (b *BackendTestSuite) TestReviewCreate() {
 		require.NoError(b.T(), b.backend.VendorUpdate(user.ID, vendor))
 
 		review.ID = uuid.MustParse("f8d3093d-1c8f-49ac-8f67-e38030eddb9b")
-		b.NoError(b.backend.ReviewCreate(user.ID, review))
+
+		result, err := b.backend.ReviewCreate(user.ID, review)
+		b.NoError(err)
+		b.True(result.DiscountCreated)
+
 		discounts, err := b.backend.DiscountsByUser(review.UserID)
 		b.NoError(err)
 		b.Len(discounts, 1)
