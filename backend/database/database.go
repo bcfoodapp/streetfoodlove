@@ -231,19 +231,10 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			BusinessLogo,
 			Latitude,
 			Longitude,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 			Description,
 			SocialMediaLink,
->>>>>>> 52ff7ea8ed0a0cefe962ac281aa020fe1bbcad2b
 			Owner,
 			DiscountEnabled
-=======
-			Description,
-			SocialMediaLink,
-			Owner
->>>>>>> 2c1cf7f7ab77357d2c7d02df4c920269318ef2e8
 		) VALUES (
 			:ID,
 			:Name,
@@ -254,21 +245,10 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:BusinessLogo,
 			:Latitude,
 			:Longitude,
-<<<<<<< HEAD
-<<<<<<< HEAD
-			:Owner,
-			:DiscountEnabled
-=======
 			:Description,
 			:SocialMediaLink,
 			:Owner
->>>>>>> 2c1cf7f7ab77357d2c7d02df4c920269318ef2e8
-=======
-			:Description,
-			:SocialMediaLink,
-			:Owner,
 			DiscountEnabled
->>>>>>> 52ff7ea8ed0a0cefe962ac281aa020fe1bbcad2b
 	   )
 	`
 	_, err := d.db.NamedExec(command, vendor)
