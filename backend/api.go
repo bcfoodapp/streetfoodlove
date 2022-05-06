@@ -72,6 +72,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/photos/:id", a.Photo)
 	router.PUT("/photos/:id", GetToken, a.PhotoPut)
 
+	router.GET("/guides", a.Guides)
 	router.GET("/guides/:id", a.Guide)
 	router.POST("/guides/:id", GetToken, a.GuidePost)
 
@@ -587,6 +588,16 @@ func (a *API) PhotoPut(c *gin.Context) {
 	}
 }
 
+func (a *API) Guides(c *gin.Context) {
+	guides, err := a.Backend.Guides()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, guides)
+}
+
 func (a *API) Guide(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
@@ -1082,7 +1093,6 @@ func (a *API) DiscountDelete(c *gin.Context) {
 }
 
 func (a *API) NewChart(c *gin.Context) {
-
 	chartStars, err := a.Backend.NewChart()
 	if err != nil {
 		c.Error(err)
