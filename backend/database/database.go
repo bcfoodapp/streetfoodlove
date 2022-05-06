@@ -247,7 +247,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:Longitude,
 			:Description,
 			:SocialMediaLink,
-			:Owner
+			:Owner,
 			DiscountEnabled
 	   )
 	`
