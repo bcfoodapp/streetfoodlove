@@ -24,16 +24,19 @@ const RecommendedList: React.FC = () => {
   let relevantWord = null as string | null;
   let random = 0;
 
-  if (pastSearch) {
-    //generate a random number which will be used to randomly get a previous search entry
-    let length = pastSearch.length - 1;
-    random = Math.ceil(Math.random() * length - 1);
-    relevantWord = pastSearch[random]?.RelevantSearchWord;
+  function generateIndexingNumber() {
+    if (pastSearch) {
+      //generate a random number which will be used to randomly get a previous search entry
+      let length = pastSearch.length - 1;
+      random = Math.floor(Math.random() * length);
+      relevantWord = pastSearch[random]?.RelevantSearchWord;
+    }
   }
 
   const { data: vendors } = useVendorsQuery();
 
   useEffect(() => {
+    generateIndexingNumber();
     if (vendors && relevantWord) {
       for (const vendor of vendors) {
         if (vendor.Name.includes(relevantWord)) {
@@ -45,6 +48,9 @@ const RecommendedList: React.FC = () => {
 
   return (
     <Container textAlign="left">
+      {recommendedResult.length === 0 ? (
+        <h4 className={styles.errorMessage}>No Recommendations Available</h4>
+      ) : null}
       {recommendedResult.map((vendor, index) => {
         if (index < 5) {
           return (
