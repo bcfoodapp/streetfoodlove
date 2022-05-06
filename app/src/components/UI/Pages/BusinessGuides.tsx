@@ -1,7 +1,10 @@
 import { Container, Header, Card } from "semantic-ui-react";
 import styles from "./businessGuide.module.css";
+import { useGuidesQuery } from "../../../api";
 
 const BusinessGuides: React.FC = () => {
+  const { data: guides } = useGuidesQuery();
+
   return (
     <Container className={styles.wrapper}>
       <Header as="h2" className={styles.title}>
@@ -9,51 +12,25 @@ const BusinessGuides: React.FC = () => {
       </Header>
       <Container className={styles.content}>
         <Container>
-          <Header as="h2">Popular!</Header>
+          <Header as="h2">Popular</Header>
           <Card.Group itemsPerRow={2}>
-            <Card
-              href="#"
-              header="Business Guide 1"
-              meta="Beginner"
-              description="Business guide one description."
-            />
-            <Card
-              href="#"
-              header="Business Guide 2"
-              meta="Beginner"
-              description="Business guide one description."
-            />
-
-            <Card
-              href="#"
-              header="Business Guide 3"
-              meta="Intermediate"
-              description="Business guide one description."
-            />
+            {guides?.slice(0, 4).map((guide, i) => (
+              <Card
+                header={`Guide ${i}`}
+                description={`${guide.Guide.substring(0, 50)}...`}
+              />
+            ))}
           </Card.Group>
         </Container>
         <Container className={styles.newCards}>
-          <Header as="h2">New!</Header>
+          <Header as="h2">Recently Posted</Header>
           <Card.Group itemsPerRow={2}>
-            <Card
-              href="#"
-              header="Business Guide 4"
-              meta="Beginner"
-              description="Business guide one description."
-            />
-            <Card
-              href="#"
-              header="Business Guide 5"
-              meta="Beginner"
-              description="Business guide one description."
-            />
-
-            <Card
-              href="#"
-              header="Business Guide 6"
-              meta="Intermediate"
-              description="Business guide one description."
-            />
+            {guides?.slice(0, 4).map((guide, i) => (
+              <Card
+                header={`Guide ${i}`}
+                description={`${guide.Guide.substring(0, 50)}...`}
+              />
+            ))}
           </Card.Group>
         </Container>
       </Container>
