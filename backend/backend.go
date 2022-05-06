@@ -146,7 +146,7 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) (*Revi
 		return nil, err
 	}
 
-	if vendor.DiscountEnabled {
+	if vendor.DiscountEnabled && review.ReplyTo == nil {
 		discount := &database.Discount{
 			ID:       uuid.New(),
 			UserID:   review.UserID,
