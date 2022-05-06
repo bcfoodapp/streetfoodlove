@@ -1,6 +1,7 @@
 import { Container, Header, Card } from "semantic-ui-react";
 import styles from "./businessGuide.module.css";
 import { useGuidesQuery } from "../../../api";
+import { Link } from "react-router-dom";
 
 // Returns the first n words of string.
 export function firstWords(s: string, numberOfSpaces: number): string {
@@ -30,10 +31,12 @@ const BusinessGuides: React.FC = () => {
           <Header as="h2">Popular</Header>
           <Card.Group itemsPerRow={2}>
             {guides?.slice(0, 4).map((guide, i) => (
-              <Card
-                header={`Guide ${i}`}
-                description={`${firstWords(guide.Guide, 15)}...`}
-              />
+              <Link to={`/guides/${guide.ID}`}>
+                <Card
+                  header={`Guide ${i}`}
+                  description={`${firstWords(guide.Guide, 15)}...`}
+                />
+              </Link>
             ))}
           </Card.Group>
         </Container>
@@ -41,10 +44,12 @@ const BusinessGuides: React.FC = () => {
           <Header as="h2">Recently Posted</Header>
           <Card.Group itemsPerRow={2}>
             {guides?.map((guide, i) => (
-              <Card
-                header={`Guide ${i}`}
-                description={`${firstWords(guide.Guide, 15)}...`}
-              />
+              <Link to={`/guides/${guide.ID}`}>
+                <Card
+                  header={`Guide ${i}`}
+                  description={`${firstWords(guide.Guide, 15)}...`}
+                />
+              </Link>
             ))}
           </Card.Group>
         </Container>
