@@ -250,7 +250,10 @@ export function Vendor(): React.ReactElement {
           </Buttons>
         ) : (
           <div style={{ maxWidth: "700px" }}>
-            <ReviewForm finishedFormHandler={completedReviewHandler} />
+            <ReviewForm
+              finishedFormHandler={completedReviewHandler}
+              discountEnabled={vendor ? vendor.DiscountEnabled : false}
+            />
           </div>
         )}
         {isSubmitting ? <p>Submitting review...</p> : null}
