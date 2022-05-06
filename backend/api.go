@@ -1093,7 +1093,6 @@ func (a *API) DiscountDelete(c *gin.Context) {
 }
 
 func (a *API) NewChart(c *gin.Context) {
-
 	chartStars, err := a.Backend.NewChart()
 	if err != nil {
 		c.Error(err)
