@@ -258,7 +258,12 @@ export function Vendor(): React.ReactElement {
           </div>
         )}
         {isSubmitting ? <p>Submitting review...</p> : null}
-        {discountRewarded ? <p>Discount rewarded</p> : null}
+        {discountRewarded ? (
+          <p>
+            Discount rewarded. Check your profile settings to view your
+            discount.
+          </p>
+        ) : null}
         <Divider hidden />
       </Container>
     </>
