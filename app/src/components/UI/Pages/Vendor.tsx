@@ -66,9 +66,7 @@ export function Vendor(): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
   const [getS3Credentials] = useS3CredentialsMutation();
-  const { data: charStar } = useNewChartQuery();
-
-  console.log("char stars: " + JSON.stringify(charStar));
+  const [discountRewarded, setDiscountRewarded] = useState(false);
 
   const completedReviewHandler = async ({
     text,
@@ -92,7 +90,12 @@ export function Vendor(): React.ReactElement {
       ReplyTo: null,
       VendorFavorite: false,
     };
-    await submitReview(review);
+    const reviewResponse = await submitReview(review);
+    if ("error" in reviewResponse) {
+      return;
+    }
+
+    setDiscountRewarded(reviewResponse.data.DiscountCreated);
 
     let s3Credentials = {} as AWSCredentials;
 
@@ -121,11 +124,7 @@ export function Vendor(): React.ReactElement {
     setIsSubmitting(false);
   };
 
-  let averageReviewRating = null as string | null;
-
-  averageReviewRating = averageRating(reviews);
-
-  let countReviews = reviews?.length;
+  const averageReviewRating = averageRating(reviews);
 
   return (
     <>
@@ -140,9 +139,9 @@ export function Vendor(): React.ReactElement {
                 style={{ width: 60, height: 60, objectFit: "cover" }}
               />
             ) : null}
-            <h1 className={styles.name}>
-              {vendor?.Name} {averageReviewRating} {countReviews}){" "}
-            </h1>
+            <Header as="h1" className={styles.name}>
+              {vendor?.Name}
+            </Header>
             <VendorStar vendorID={vendorID} />
           </Grid.Row>
           <Grid.Row textAlign="center">
@@ -221,11 +220,13 @@ export function Vendor(): React.ReactElement {
       <Divider hidden />
       <Container>
         <Header as="h1">Reviews for {vendor?.Name}</Header>
+        <Header as="h3">
+          {averageReviewRating} stars ({reviews?.length} reviews)
+        </Header>
         {reviews?.length === 0 ? (
           <p>No one has posted a review for this vendor. Yet...</p>
         ) : (
           reviews?.map((review, i) => {
-            // console.log("Reviews: " + JSON.stringify(review, null, 2));
             if (review.ReplyTo === null) {
               return (
                 <Reviews
@@ -257,6 +258,7 @@ export function Vendor(): React.ReactElement {
           </div>
         )}
         {isSubmitting ? <p>Submitting review...</p> : null}
+        {discountRewarded ? <p>Discount rewarded</p> : null}
         <Divider hidden />
       </Container>
     </>
