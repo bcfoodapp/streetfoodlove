@@ -168,6 +168,10 @@ export interface NewChart {
   Five: number;
 }
 
+export interface ReviewCreateResponse {
+  DiscountCreated: boolean;
+}
+
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
 
 export const tokenSlice = createSlice({
@@ -409,7 +413,7 @@ export const apiSlice = createApi({
         })),
       providesTags: ["Review"],
     }),
-    createReview: builder.mutation<undefined, Review>({
+    createReview: builder.mutation<ReviewCreateResponse, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
         method: PUT,
