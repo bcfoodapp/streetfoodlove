@@ -36,25 +36,18 @@ import { s3Prefix, uploadToS3 } from "../../../aws";
 import { TwitterShareButton, TwitterIcon } from "react-share";
 import VendorStar from "../Molecules/VendorStar/VendorStar";
 
+function averageRating(reviews: Review[]): string {
+  const ratings = reviews
+    .map((review) => review.StarRating)
+    .filter((rating) => rating !== null);
+
+  const sum = ratings.reduce((prev, rating) => (rating ? prev + rating : 0), 0);
+  return (sum / ratings.length).toFixed(1);
+}
+
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
  */
-function averageRating(reviews: Review[] | undefined): string | null {
-  if (reviews && reviews.length > 0) {
-    let avgRating = 0;
-
-    for (const review of reviews) {
-      if (review.StarRating) {
-        avgRating += review.StarRating;
-      }
-    }
-
-    return (avgRating / reviews.length).toFixed(1);
-  }
-
-  return null;
-}
-
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
   const { data: vendor } = useVendorQuery(vendorID);
@@ -123,8 +116,6 @@ export function Vendor(): React.ReactElement {
     }
     setIsSubmitting(false);
   };
-
-  const averageReviewRating = averageRating(reviews);
 
   return (
     <>
@@ -220,9 +211,15 @@ export function Vendor(): React.ReactElement {
       <Divider hidden />
       <Container>
         <Header as="h1">Reviews for {vendor?.Name}</Header>
-        <Header as="h3">
-          {averageReviewRating} stars ({reviews?.length} reviews)
-        </Header>
+
+        {reviews && reviews.length > 0 ? (
+          <Header as="h3">
+            {averageRating(reviews)} stars (
+            {reviews.filter((review) => review.StarRating !== null).length}
+            &nbsp;reviews)
+          </Header>
+        ) : null}
+
         {reviews?.length === 0 ? (
           <p>No one has posted a review for this vendor. Yet...</p>
         ) : (
