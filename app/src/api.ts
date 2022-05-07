@@ -106,6 +106,7 @@ export interface GeoRectangle {
 
 export interface Guide {
   ID: string;
+  Title: string;
   Guide: string;
   DatePosted: DateTime;
   ArticleAuthor: string;
