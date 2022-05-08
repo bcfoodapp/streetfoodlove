@@ -133,7 +133,12 @@ export function Vendor(): React.ReactElement {
               <Image
                 src={s3Prefix + vendor.BusinessLogo}
                 alt="logo"
-                style={{ width: 60, height: 60, objectFit: "cover" }}
+                style={{
+                  width: 60,
+                  height: 60,
+                  marginRight: 20,
+                  objectFit: "cover",
+                }}
               />
             ) : null}
             <Header as="h1" className={styles.name}>
