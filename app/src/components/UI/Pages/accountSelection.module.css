@@ -3,13 +3,10 @@
   background-image: url("http://cdn.cnn.com/cnnnext/dam/assets/160712175134-street-food-city-beijing3.jpg");
   background-size: cover;
   height: 91vh !important;
-  /* margin-top: -200px; */
   padding-top: 5px;
 }
 
 .selectBox {
-  /* position: absolute; */
-  /* top: 30%; */
   border: 2px solid black;
   background-color: lightgray;
   width: 50% !important;
