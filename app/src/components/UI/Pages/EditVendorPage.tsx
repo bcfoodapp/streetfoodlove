@@ -19,12 +19,13 @@ import {
   Vendor,
   useS3CredentialsMutation,
   getExtension,
+  useUploadToS3Mutation,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import React, { useEffect, useState } from "react";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
-import { s3Prefix, uploadToS3 } from "../../../aws";
+import { s3Prefix } from "../../../aws";
 import { v4 as uuid } from "uuid";
 
 interface inputValues {
@@ -125,6 +126,7 @@ const EditVendorPage: React.FC = () => {
   }, [vendorQueryIsSuccess]);
 
   const [getS3Credentials] = useS3CredentialsMutation();
+  const [uploadToS3] = useUploadToS3Mutation();
 
   if (userID === null) {
     return <p>Not logged in</p>;
@@ -154,7 +156,11 @@ const EditVendorPage: React.FC = () => {
       }
 
       photoID = `${uuid()}.${getExtension(logoFile.name)}`;
-      await uploadToS3(s3Response.data, photoID, logoFile);
+      await uploadToS3({
+        credentials: s3Response.data,
+        objectKey: photoID,
+        file: logoFile,
+      });
     }
 
     const updatedVendor: Vendor = {

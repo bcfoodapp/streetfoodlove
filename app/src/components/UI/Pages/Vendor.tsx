@@ -14,6 +14,7 @@ import {
   AWSCredentials,
   useNewChartQuery,
   Review,
+  useUploadToS3Mutation,
 } from "../../../api";
 import {
   Container,
@@ -32,7 +33,7 @@ import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
-import { s3Prefix, uploadToS3 } from "../../../aws";
+import { s3Prefix } from "../../../aws";
 import { TwitterShareButton, TwitterIcon } from "react-share";
 import VendorStar from "../Molecules/VendorStar/VendorStar";
 
@@ -60,6 +61,7 @@ export function Vendor(): React.ReactElement {
   const [createPhoto] = useCreatePhotoMutation();
   const [getS3Credentials] = useS3CredentialsMutation();
   const [discountRewarded, setDiscountRewarded] = useState(false);
+  const [uploadToS3] = useUploadToS3Mutation();
 
   const completedReviewHandler = async ({
     text,
@@ -102,7 +104,11 @@ export function Vendor(): React.ReactElement {
 
     for (const file of files) {
       const photoID = `${uuid()}.${getExtension(file.name)}`;
-      await uploadToS3(s3Credentials, photoID, file);
+      await uploadToS3({
+        credentials: s3Credentials,
+        objectKey: photoID,
+        file,
+      });
       const photo: Photo = {
         ID: photoID,
         DatePosted: DateTime.now(),
@@ -127,7 +133,12 @@ export function Vendor(): React.ReactElement {
               <Image
                 src={s3Prefix + vendor.BusinessLogo}
                 alt="logo"
-                style={{ width: 60, height: 60, objectFit: "cover" }}
+                style={{
+                  width: 60,
+                  height: 60,
+                  marginRight: 20,
+                  objectFit: "cover",
+                }}
               />
             ) : null}
             <Header as="h1" className={styles.name}>
