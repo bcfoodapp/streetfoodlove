@@ -90,6 +90,7 @@ func SetupTables(db *sqlx.DB) error {
 		`
 		CREATE TABLE Guide (
 			ID CHAR(36) NOT NULL,
+			Title VARCHAR(500) NOT NULL,
 			Guide VARCHAR(5000) NOT NULL,
 			DatePosted DATETIME NOT NULL,
 			ArticleAuthor VARCHAR(500) NOT NULL,
@@ -715,6 +716,7 @@ func (d *Database) GetOwnerOfLink(linkID uuid.UUID) (uuid.UUID, error) {
 
 type Guide struct {
 	ID            uuid.UUID
+	Title         string
 	Guide         string
 	DatePosted    time.Time
 	ArticleAuthor string
@@ -724,11 +726,13 @@ func (d *Database) GuideCreate(guide *Guide) error {
 	const command = `
 		INSERT INTO Guide (
 			ID,
+			Title,
 			Guide,
 			DatePosted,
 			ArticleAuthor
 		) VALUES (
 			:ID,
+			:Title,
 			:Guide,
 			:DatePosted,
 			:ArticleAuthor
