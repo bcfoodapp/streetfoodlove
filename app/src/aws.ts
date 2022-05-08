@@ -6,6 +6,7 @@ import {
   LocationClient,
   SearchPlaceIndexForTextCommand,
 } from "@aws-sdk/client-location";
+import { LatLngExpression } from "leaflet";
 
 function convertCredentials(
   c: AWSCredentials
@@ -48,11 +49,11 @@ export async function uploadToS3(
 // The S3 bucket URL
 export const s3Prefix = "https://streetfoodlove.s3.us-west-2.amazonaws.com/";
 
-// Returns the coordinates of the best match for the given address.
+// Returns the coordinates of the best match for the given address, if found.
 export async function addressToCoordinates(
   credentials: AWSCredentials,
   text: string
-) {
+): Promise<LatLngExpression | null> {
   const client = new LocationClient({
     region: "us-west-2",
     credentials: fromTemporaryCredentials({
@@ -73,6 +74,12 @@ export async function addressToCoordinates(
     MaxResults: 1,
   });
 
-  const output = await client.send(command);
-  console.log(output);
+  const response = await client.send(command);
+  if (!response.Results || response.Results.length < 0) {
+    return null;
+  }
+
+  // Lat and long are switched
+  const point = response.Results[0].Place!.Geometry!.Point!;
+  return [point[1], point[0]];
 }
