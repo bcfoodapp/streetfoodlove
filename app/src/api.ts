@@ -106,6 +106,7 @@ export interface GeoRectangle {
 
 export interface Guide {
   ID: string;
+  Title: string;
   Guide: string;
   DatePosted: DateTime;
   ArticleAuthor: string;
@@ -166,6 +167,10 @@ export interface NewChart {
   Three: number;
   Four: number;
   Five: number;
+}
+
+export interface ReviewCreateResponse {
+  DiscountCreated: boolean;
 }
 
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
@@ -409,7 +414,7 @@ export const apiSlice = createApi({
         })),
       providesTags: ["Review"],
     }),
-    createReview: builder.mutation<undefined, Review>({
+    createReview: builder.mutation<ReviewCreateResponse, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
         method: PUT,

@@ -7,13 +7,6 @@
   font-size: 3rem !important;
 }
 
-.postInfo {
-  width: 30% !important;
-  position: absolute;
-  top: 10%;
-  left: 53%;
-}
-
 .postDate,
 .author {
   color: darkblue !important;
