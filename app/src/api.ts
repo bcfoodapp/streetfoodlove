@@ -626,6 +626,13 @@ export const apiSlice = createApi({
         return { data: undefined };
       },
     }),
+    // Returns credentials for using Location Service.
+    locationRole: builder.mutation<AWSCredentials, string>({
+      query: (userID) => ({
+        url: `/users/${encode(userID)}/location-role`,
+        method: POST,
+      }),
+    }),
     // Returns true if star exists
     starExists: builder.query<boolean, Star>({
       queryFn: async (star, api) => {
@@ -875,6 +882,7 @@ export const {
   useCreatePhotoMutation,
   useS3CredentialsMutation,
   useUploadToS3Mutation,
+  useLocationRoleMutation,
   useStarExistsQuery,
   useStarsByUserIDQuery,
   useCreateStarMutation,
