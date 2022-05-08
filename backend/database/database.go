@@ -302,8 +302,6 @@ func (d *Database) VendorUpdate(vendor *Vendor) error {
 			Description = :Description,
 			SocialMediaLink = :SocialMediaLink,
 			DiscountEnabled = :DiscountEnabled
-			Description = :Description,
-			SocialMediaLink = :SocialMediaLink
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &vendor)
