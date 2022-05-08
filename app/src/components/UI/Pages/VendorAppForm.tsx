@@ -147,182 +147,188 @@ export default function VendorAppForm(): React.ReactElement {
   });
 
   return (
-    <Container className={styles.signUpWrapper}>
-      <h1>Sign Up Form (Vendor account)</h1>
+    <Container className={styles.wrapper}>
+      <Container className={styles.signUpWrapper}>
+        <h1>Sign Up Form (Vendor account)</h1>
+        <Formik
+          enableReinitialize
+          onSubmit={onSubmit}
+          validateOnChange={true}
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+        >
+          {(formProps: FormikProps<inputValues>) => {
+            const {
+              dirty,
+              isValid,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              touched,
+              errors,
+              values,
+              handleReset,
+              setFieldValue,
+            } = formProps;
 
-      <Formik
-        enableReinitialize
-        onSubmit={onSubmit}
-        validateOnChange={true}
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-      >
-        {(formProps: FormikProps<inputValues>) => {
-          const {
-            dirty,
-            isValid,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            touched,
-            errors,
-            values,
-            handleReset,
-            setFieldValue,
-          } = formProps;
-
-          return (
-            <Form
-              className={styles.form}
-              onSubmit={handleSubmit}
-              onReset={handleReset}
-            >
-              <Form.Input
-                fluid
-                label="Vendor Name"
-                placeholder="Vendor Name"
-                name="name"
-                required
-                width={5}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.name}
-                error={touched.name && Boolean(errors.name)}
-              />
-              <Form.Input
-                fluid
-                label="Business Address"
-                placeholder="Business Address"
-                required
-                width={5}
-                name="businessAddress"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.businessAddress}
-                error={
-                  touched.businessAddress && Boolean(errors.businessAddress)
-                }
-              />
-              <Form.Field
-                id="vendorArea"
-                fluid
-                width={5}
-                control={Select}
-                multiple
-                options={vendorOperatingAreas}
-                placeholder="Operation Areas"
-                searched
-                required
-                onBlur={handleBlur}
-                label="Vendor Operating Areas"
-                // onChange={(_, area) => {
-                //   setFieldValue("")
-                // }}
-              />
-              <Form.Field
-                id="cuisineTypes"
-                fluid
-                width={5}
-                control={Select}
-                multiple
-                options={cuisineTypes}
-                placeholder="Cuisine Types"
-                searched
-                required
-                onBlur={handleBlur}
-                label="Cuisine Types"
-                // onChange={(_, area) => {
-                //   setFieldValue("")
-                // }}
-              />
-              <Form.Input
-                fluid
-                label="Website URL"
-                placeholder="Website URL"
-                width={5}
-                name="website"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.website}
-                error={touched.website && Boolean(errors.website)}
-              />
-              <h5>Business Hours: </h5>
-              <Dropdown
-                placeholder="From"
-                selection
-                options={startTimeOptions}
-                name="fromHour"
-                onBlur={handleBlur}
-                error={touched.fromHour && Boolean(errors.fromHour)}
-                value={values.fromHour}
-                required
-                onChange={(_, fromHour) => {
-                  setFieldValue("fromHour", fromHour.value);
-                }}
-              />
-              <Dropdown
-                placeholder="To"
-                search
-                selection
-                options={endTimeOptions}
-                className={styles.dropdown}
-                name="toHour"
-                onBlur={handleBlur}
-                error={touched.toHour && Boolean(errors.toHour)}
-                value={values.toHour}
-                required
-                onChange={(_, toHour) => {
-                  setFieldValue("toHour", toHour.value);
-                }}
-              />
-              <Form.Input
-                // error='Please enter your last name'
-                fluid
-                label="Phone"
-                placeholder="Phone"
-                name="phoneNumber"
-                required
-                width={5}
-                className={styles.phoneInput}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.phoneNumber}
-                error={touched.phoneNumber && Boolean(errors.phoneNumber)}
-              />
-              <h5>Logo Upload</h5>
-              <input type="file" className={styles.fileInput} name="myfile" />
-
-              <label htmlFor="agreedConditions">
-                <Field
-                  type="checkbox"
-                  name="agreedConditions"
-                  label="I agree to the terms and conditions"
-                  error={touched.agreedConditions && errors.agreedConditions}
+            return (
+              <Form
+                className={styles.form}
+                onSubmit={handleSubmit}
+                onReset={handleReset}
+              >
+                <Form.Input
+                  fluid
+                  label="Vendor Name"
+                  placeholder="Vendor Name"
+                  name="name"
                   required
-                  onChange={(e: { target: { checked: any } }) =>
-                    setFieldValue("agreedConditions", e.target.checked)
+                  width={10}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.name}
+                  error={touched.name && Boolean(errors.name)}
+                />
+                <Form.Input
+                  fluid
+                  label="Business Address"
+                  placeholder="Business Address"
+                  required
+                  width={10}
+                  name="businessAddress"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.businessAddress}
+                  error={
+                    touched.businessAddress && Boolean(errors.businessAddress)
                   }
-                  checked={values.agreedConditions}
-                  className={styles.field}
                 />
-                I agree to the terms and conditions
-              </label>
-              <Container className={styles.errContainer}>
-                <ErrorMessage
-                  name="agreedConditions"
-                  component="span"
-                  className={styles.error}
+                <Form.Field
+                  id="vendorArea"
+                  fluid
+                  width={10}
+                  control={Select}
+                  multiple
+                  options={vendorOperatingAreas}
+                  placeholder="Operation Areas"
+                  searched
+                  required
+                  onBlur={handleBlur}
+                  label="Vendor Operating Areas"
+                  // onChange={(_, area) => {
+                  //   setFieldValue("")
+                  // }}
                 />
-              </Container>
-              <Container className={styles.btnContainer}>
-                <Buttons color="green" signup dirty={dirty} valid={isValid}>
-                  Sign Up
-                </Buttons>
-              </Container>
-            </Form>
-          );
-        }}
-      </Formik>
+                <Form.Field
+                  id="cuisineTypes"
+                  fluid
+                  width={10}
+                  control={Select}
+                  multiple
+                  options={cuisineTypes}
+                  placeholder="Cuisine Types"
+                  searched
+                  required
+                  onBlur={handleBlur}
+                  label="Cuisine Types"
+                  // onChange={(_, area) => {
+                  //   setFieldValue("")
+                  // }}
+                />
+                <Form.Input
+                  fluid
+                  label="Website URL"
+                  placeholder="Website URL"
+                  width={10}
+                  name="website"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.website}
+                  error={touched.website && Boolean(errors.website)}
+                />
+                <h5>Business Hours: </h5>
+                <Dropdown
+                  placeholder="From"
+                  selection
+                  options={startTimeOptions}
+                  name="fromHour"
+                  onBlur={handleBlur}
+                  error={touched.fromHour && Boolean(errors.fromHour)}
+                  value={values.fromHour}
+                  required
+                  onChange={(_, fromHour) => {
+                    setFieldValue("fromHour", fromHour.value);
+                  }}
+                />
+                <Dropdown
+                  placeholder="To"
+                  search
+                  selection
+                  options={endTimeOptions}
+                  className={styles.dropdown}
+                  name="toHour"
+                  onBlur={handleBlur}
+                  error={touched.toHour && Boolean(errors.toHour)}
+                  value={values.toHour}
+                  required
+                  onChange={(_, toHour) => {
+                    setFieldValue("toHour", toHour.value);
+                  }}
+                />
+                <Form.Input
+                  // error='Please enter your last name'
+                  fluid
+                  label="Phone"
+                  placeholder="Phone"
+                  name="phoneNumber"
+                  required
+                  width={5}
+                  className={styles.phoneInput}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.phoneNumber}
+                  error={touched.phoneNumber && Boolean(errors.phoneNumber)}
+                />
+                <h5>Logo Upload</h5>
+                <input
+                  type="file"
+                  className={styles.fileInput}
+                  name="myfile"
+                  width={15}
+                />
+
+                <label htmlFor="agreedConditions">
+                  <Field
+                    type="checkbox"
+                    name="agreedConditions"
+                    label="I agree to the terms and conditions"
+                    error={touched.agreedConditions && errors.agreedConditions}
+                    required
+                    onChange={(e: { target: { checked: any } }) =>
+                      setFieldValue("agreedConditions", e.target.checked)
+                    }
+                    checked={values.agreedConditions}
+                    className={styles.field}
+                  />
+                  I agree to the terms and conditions
+                </label>
+                <Container className={styles.errContainer}>
+                  <ErrorMessage
+                    name="agreedConditions"
+                    component="span"
+                    className={styles.error}
+                  />
+                </Container>
+                <Container className={styles.btnContainer}>
+                  <Buttons color="green" signup dirty={dirty} valid={isValid}>
+                    Sign Up
+                  </Buttons>
+                </Container>
+              </Form>
+            );
+          }}
+        </Formik>
+      </Container>
     </Container>
   );
 }

@@ -1,10 +1,9 @@
-
-.background{
+.background {
   width: 100% !important;
   height: 91vh !important;
   background-color: green;
   padding-top: 50px;
-  background-image: url("https://reason.com/wp-content/uploads/2020/06/NYC_Street_Food-1200x630.jpg");
+  background-image: url("../../../../public/Loginpagepic.jpg");
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -16,7 +15,7 @@
   margin-top: 200px;
   width: 30% !important;
   min-width: 30% !important;
-  opacity: 0.90;
+  opacity: 0.9;
 }
 
 .ui.center.container {
