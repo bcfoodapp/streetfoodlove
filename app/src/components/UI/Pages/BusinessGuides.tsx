@@ -31,10 +31,10 @@ const BusinessGuides: React.FC = () => {
           <Header as="h2">Popular</Header>
           <Card.Group itemsPerRow={2}>
             {guides?.slice(0, 4).map((guide, i) => (
-              <Link to={`/guides/${guide.ID}`}>
+              <Link key={i} to={`/guides/${guide.ID}`}>
                 <Card
-                  header={`Guide ${i}`}
-                  description={`${firstWords(guide.Guide, 15)}...`}
+                  header={guide.Title}
+                  description={`${firstWords(guide.Guide, 20)}...`}
                 />
               </Link>
             ))}
@@ -44,9 +44,9 @@ const BusinessGuides: React.FC = () => {
           <Header as="h2">Recently Posted</Header>
           <Card.Group itemsPerRow={2}>
             {guides?.map((guide, i) => (
-              <Link to={`/guides/${guide.ID}`}>
+              <Link key={i} to={`/guides/${guide.ID}`}>
                 <Card
-                  header={`Guide ${i}`}
+                  header={guide.Title}
                   description={`${firstWords(guide.Guide, 15)}...`}
                 />
               </Link>

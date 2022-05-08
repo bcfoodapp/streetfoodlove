@@ -730,7 +730,7 @@ func (d *Database) GuideCreate(guide *Guide) error {
 			ArticleAuthor
 		) VALUES (
 			:ID,
-			Title,
+			:Title,
 			:Guide,
 			:DatePosted,
 			:ArticleAuthor
