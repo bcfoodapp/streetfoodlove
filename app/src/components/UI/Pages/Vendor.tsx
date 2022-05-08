@@ -36,25 +36,18 @@ import { s3Prefix, uploadToS3 } from "../../../aws";
 import { TwitterShareButton, TwitterIcon } from "react-share";
 import VendorStar from "../Molecules/VendorStar/VendorStar";
 
+function averageRating(reviews: Review[]): string {
+  const ratings = reviews
+    .map((review) => review.StarRating)
+    .filter((rating) => rating !== null);
+
+  const sum = ratings.reduce((prev, rating) => (rating ? prev + rating : 0), 0);
+  return (sum / ratings.length).toFixed(1);
+}
+
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
  */
-function averageRating(reviews: Review[] | undefined): string | null {
-  if (reviews && reviews.length > 0) {
-    let avgRating = 0;
-
-    for (const review of reviews) {
-      if (review.StarRating) {
-        avgRating += review.StarRating;
-      }
-    }
-
-    return (avgRating / reviews.length).toFixed(1);
-  }
-
-  return null;
-}
-
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
   const { data: vendor } = useVendorQuery(vendorID);
@@ -66,9 +59,7 @@ export function Vendor(): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
   const [getS3Credentials] = useS3CredentialsMutation();
-  const { data: charStar } = useNewChartQuery();
-
-  console.log("char stars: " + JSON.stringify(charStar));
+  const [discountRewarded, setDiscountRewarded] = useState(false);
 
   const completedReviewHandler = async ({
     text,
@@ -92,7 +83,12 @@ export function Vendor(): React.ReactElement {
       ReplyTo: null,
       VendorFavorite: false,
     };
-    await submitReview(review);
+    const reviewResponse = await submitReview(review);
+    if ("error" in reviewResponse) {
+      return;
+    }
+
+    setDiscountRewarded(reviewResponse.data.DiscountCreated);
 
     let s3Credentials = {} as AWSCredentials;
 
@@ -121,12 +117,6 @@ export function Vendor(): React.ReactElement {
     setIsSubmitting(false);
   };
 
-  let averageReviewRating = null as string | null;
-
-  averageReviewRating = averageRating(reviews);
-
-  let countReviews = reviews?.length;
-
   return (
     <>
       <Container textAlign="center">
@@ -140,9 +130,9 @@ export function Vendor(): React.ReactElement {
                 style={{ width: 60, height: 60, objectFit: "cover" }}
               />
             ) : null}
-            <h1 className={styles.name}>
-              {vendor?.Name} {averageReviewRating} {countReviews}){" "}
-            </h1>
+            <Header as="h1" className={styles.name}>
+              {vendor?.Name}
+            </Header>
             <VendorStar vendorID={vendorID} />
           </Grid.Row>
           <Grid.Row textAlign="center">
@@ -221,11 +211,19 @@ export function Vendor(): React.ReactElement {
       <Divider hidden />
       <Container>
         <Header as="h1">Reviews for {vendor?.Name}</Header>
+
+        {reviews && reviews.length > 0 ? (
+          <Header as="h3">
+            {averageRating(reviews)} stars (
+            {reviews.filter((review) => review.StarRating !== null).length}
+            &nbsp;reviews)
+          </Header>
+        ) : null}
+
         {reviews?.length === 0 ? (
           <p>No one has posted a review for this vendor. Yet...</p>
         ) : (
           reviews?.map((review, i) => {
-            // console.log("Reviews: " + JSON.stringify(review, null, 2));
             if (review.ReplyTo === null) {
               return (
                 <Reviews
@@ -250,10 +248,19 @@ export function Vendor(): React.ReactElement {
           </Buttons>
         ) : (
           <div style={{ maxWidth: "700px" }}>
-            <ReviewForm finishedFormHandler={completedReviewHandler} />
+            <ReviewForm
+              finishedFormHandler={completedReviewHandler}
+              discountEnabled={vendor ? vendor.DiscountEnabled : false}
+            />
           </div>
         )}
         {isSubmitting ? <p>Submitting review...</p> : null}
+        {discountRewarded ? (
+          <p>
+            Discount rewarded. Check your profile settings to view your
+            discount.
+          </p>
+        ) : null}
         <Divider hidden />
       </Container>
     </>
