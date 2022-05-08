@@ -11,9 +11,9 @@ import {
   useVendorByOwnerIDQuery,
   useEffectAsync,
   getExtension,
+  useUploadToS3Mutation,
 } from "../../../api";
 import Gallery from "../Organisms/VendorGallery/Gallery";
-import { uploadToS3 } from "../../../aws";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
@@ -43,6 +43,7 @@ export default (): React.ReactElement => {
   const [s3Credentials, setS3Credentials] = useState(
     null as AWSCredentials | null
   );
+  const [uploadToS3] = useUploadToS3Mutation();
 
   useEffectAsync(async () => {
     if (userID) {
@@ -59,7 +60,16 @@ export default (): React.ReactElement => {
     for (const file of files) {
       setUploading(true);
       const photoID = `${uuid()}.${getExtension(file.name)}`;
-      await uploadToS3(s3Credentials!, photoID, file);
+
+      if (s3Credentials === null) {
+        throw new Error("s3Credentials is null");
+      }
+
+      await uploadToS3({
+        credentials: s3Credentials,
+        objectKey: photoID,
+        file,
+      });
       const photo: Photo = {
         ID: photoID,
         Text: "",

@@ -14,6 +14,7 @@ import jwtDecode from "jwt-decode";
 import config from "./configuration.json";
 import { v4 as uuid } from "uuid";
 import { DependencyList, useEffect } from "react";
+import { uploadToS3 } from "./aws";
 
 export interface Vendor {
   ID: string;
@@ -616,6 +617,15 @@ export const apiSlice = createApi({
         method: POST,
       }),
     }),
+    uploadToS3: builder.mutation<
+      undefined,
+      { credentials: AWSCredentials; objectKey: string; file: File }
+    >({
+      queryFn: async ({ credentials, objectKey, file }) => {
+        await uploadToS3(credentials, objectKey, file);
+        return { data: undefined };
+      },
+    }),
     // Returns true if star exists
     starExists: builder.query<boolean, Star>({
       queryFn: async (star, api) => {
@@ -864,6 +874,7 @@ export const {
   usePhotosByLinkIDQuery,
   useCreatePhotoMutation,
   useS3CredentialsMutation,
+  useUploadToS3Mutation,
   useStarExistsQuery,
   useStarsByUserIDQuery,
   useCreateStarMutation,
