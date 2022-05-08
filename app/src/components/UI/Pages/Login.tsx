@@ -63,7 +63,6 @@ export default function Login(): React.ReactElement {
 
   return (
     <Container className={styles.background}>
-      <Image className={styles.image} src="https://www.pccart.org/wp-content/uploads/2021/01/ArtApples2019-220-900x600.jpg" fluid />
       <Container className={styles.wrapper}>
         <Grid centered>
           <Grid.Column className={styles.test}>

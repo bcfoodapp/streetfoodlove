@@ -1,5 +1,8 @@
 .wrapper {
   width: 110% !important;
+  /* background-image: url("https://media.cntraveller.com/photos/611bf4ca22be3ca7e5c01162/16:9/w_1280,c_limit/rickshaw_cnt_19oct12_pr.jpg");
+  background-size: cover;
+  height: 90vh !important; */
 }
 
 .selectBox {
