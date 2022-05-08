@@ -262,6 +262,8 @@ export function Vendor(): React.ReactElement {
           </p>
         ) : null}
         <Divider hidden />
+        <Divider hidden />
+        <Divider hidden />
       </Container>
     </>
   );
