@@ -27,7 +27,6 @@ export interface Vendor {
   Latitude: number;
   Longitude: number;
   Owner: string;
-  // vendorOperationAreas: string[]
   Description: string;
   SocialMediaLink: string;
   DiscountEnabled: boolean;
