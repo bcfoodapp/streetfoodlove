@@ -1297,9 +1297,9 @@ func (d *Database) NewChart() (StarRatingSum, error) {
 	}
 	return StarRatingSum{
 		One:   result[1],
-		Two:   result[1],
-		Three: result[1],
-		Four:  result[1],
-		Five:  result[1],
+		Two:   result[2],
+		Three: result[3],
+		Four:  result[4],
+		Five:  result[5],
 	}, nil
 }
