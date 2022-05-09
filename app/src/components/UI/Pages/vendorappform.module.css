@@ -1,9 +1,19 @@
-.signUpWrapper {
+.wrapper {
   width: 100% !important;
+  height: 92vh;
+  background-image: url("../../../../public/vendorsignuppic.png");
+  background-size: cover;
+  padding-top: 15px !important;
+}
+.signUpWrapper {
+  width: 30% !important;
+  height: 97% !important;
+  background-color: lightgray;
+  opacity: 0.95;
 }
 
 .form {
-  margin-left: 40% !important;
+  margin-left: 2% !important;
   margin-top: 5% !important;
   padding-bottom: 20px !important;
 }
@@ -18,7 +28,7 @@
 }
 
 .signUpWrapper > h1 {
-  margin-left: 40%;
+  margin-left: 10%;
 }
 
 .dropdown {
@@ -29,6 +39,7 @@
   position: relative;
   right: 12px;
   border: none !important;
+  background: none !important;
 }
 
 .checkBox,
