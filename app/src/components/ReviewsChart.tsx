@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { NewChart, useNewChartQuery } from "../api";
+import { useEffect, useState } from "react";
+import { useNewChartQuery } from "../api";
 import {
   BarChart,
   Bar,
@@ -10,21 +10,11 @@ import {
   Legend,
 } from "recharts";
 
-let data = [
-
-  {
-    ID: "30f15697-8c12-41cf-83d9-a9ccfe07c43e",
-    name: "Stars",
-    "1-star": 2,
-    "2-star": 3,
-  },
-];
 export default function ReviewsChart() {
   const {data: stars} = useNewChartQuery()
   const [starCount, setStarCount] = useState([] as any)
 
   useEffect(() => {
-    // console.log('adsfasdfad');
     if (stars) {
       let obj = {
         ID: "30f15697-8c12-41cf-83d9-a9ccfe07c43e",
