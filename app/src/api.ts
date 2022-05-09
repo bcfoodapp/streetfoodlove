@@ -14,7 +14,8 @@ import jwtDecode from "jwt-decode";
 import config from "./configuration.json";
 import { v4 as uuid } from "uuid";
 import { DependencyList, useEffect } from "react";
-import { uploadToS3 } from "./aws";
+import { addressToCoordinates, uploadToS3 } from "./aws";
+import { LatLngExpression } from "leaflet";
 
 export interface Vendor {
   ID: string;
@@ -626,6 +627,21 @@ export const apiSlice = createApi({
         return { data: undefined };
       },
     }),
+    // Returns credentials for using Location Service.
+    locationRole: builder.mutation<AWSCredentials, string>({
+      query: (userID) => ({
+        url: `/users/${encode(userID)}/location-role`,
+        method: POST,
+      }),
+    }),
+    addressToCoordinates: builder.query<
+      LatLngExpression | null,
+      { credentials: AWSCredentials; text: string }
+    >({
+      queryFn: async ({ credentials, text }) => {
+        return { data: await addressToCoordinates(credentials, text) };
+      },
+    }),
     // Returns true if star exists
     starExists: builder.query<boolean, Star>({
       queryFn: async (star, api) => {
@@ -875,6 +891,8 @@ export const {
   useCreatePhotoMutation,
   useS3CredentialsMutation,
   useUploadToS3Mutation,
+  useLocationRoleMutation,
+  useLazyAddressToCoordinatesQuery,
   useStarExistsQuery,
   useStarsByUserIDQuery,
   useCreateStarMutation,
