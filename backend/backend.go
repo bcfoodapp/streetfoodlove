@@ -121,6 +121,15 @@ func (b *Backend) UserS3Credentials(ctx context.Context, userID uuid.UUID) (*typ
 	return b.AWS.GetS3Role(ctx)
 }
 
+// UserLocationRole returns temporary credentials which allows access to the Location service.
+func (b *Backend) UserLocationRole(ctx context.Context, userID uuid.UUID) (*types.Credentials, error) {
+	if _, err := b.Database.User(userID); err != nil {
+		return nil, err
+	}
+
+	return b.AWS.GetLocationRole(ctx)
+}
+
 func (b *Backend) Review(id uuid.UUID) (*database.Review, error) {
 	return b.Database.Review(id)
 }

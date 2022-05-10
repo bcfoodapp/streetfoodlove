@@ -53,6 +53,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
 	router.PUT("/users/:id/protected", a.UserProtectedPut)
 	router.POST("/users/:id/s3-credentials", GetToken, a.UserS3CredentialsPost)
+	router.POST("/users/:id/location-role", GetToken, a.UserLocationRolePost)
 
 	router.GET("/reviews", a.Reviews)
 	router.GET("/reviews/:id", a.Review)
@@ -323,6 +324,16 @@ func (a *API) UserProtectedPut(c *gin.Context) {
 
 func (a *API) UserS3CredentialsPost(c *gin.Context) {
 	credentials, err := a.Backend.UserS3Credentials(c, getTokenFromContext(c))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, credentials)
+}
+
+func (a *API) UserLocationRolePost(c *gin.Context) {
+	credentials, err := a.Backend.UserLocationRole(c, getTokenFromContext(c))
 	if err != nil {
 		c.Error(err)
 		return
@@ -811,28 +822,8 @@ func (a *API) StarsDelete(c *gin.Context) {
 	}
 }
 
-func ParseAreaKey(key string) (*database.Areas, error) {
-	const uuidLength = 81
-
-	if len(key) != uuidLength {
-		return nil, fmt.Errorf("key must be length 36 but is of length %v", len(key))
-	}
-
-	vendorID, err := uuid.Parse(key[:uuidLength])
-	if err != nil {
-		return nil, err
-	}
-
-	AreaName := key[uuidLength:]
-
-	return &database.Areas{
-		VendorID: vendorID,
-		AreaName: AreaName,
-	}, nil
-}
-
 func (a *API) AreaPut(c *gin.Context) {
-	key, err := ParseAreaKey(c.Param("id"))
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.Error(err)
 		return
@@ -844,7 +835,7 @@ func (a *API) AreaPut(c *gin.Context) {
 		return
 	}
 
-	if *key != *area {
+	if id != area.ID {
 		c.Error(fmt.Errorf("ID in path does not match body ID"))
 		return
 	}
