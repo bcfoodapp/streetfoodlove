@@ -299,6 +299,8 @@ export const apiSlice = createApi({
     "Recommendation",
     "Discounts",
     "NewChart",
+    "Areas",
+    "CuisineTypes",
   ],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
@@ -863,12 +865,28 @@ export const apiSlice = createApi({
       query: () => `/charts/starsumchart`,
       providesTags: ["NewChart"],
     }),
+    areasByVendorID: builder.query<Areas[], string>({
+      query: (vendorID) => `/areas?vendorID=${encode(vendorID)}`,
+      providesTags: ["Areas"],
+    }),
     createArea: builder.mutation<void, Areas>({
       query: (area) => ({
         url: `/areas/${encode(area.ID)}`,
         method: PUT,
         body: area,
       }),
+      invalidatesTags: ["Areas"],
+    }),
+    deleteArea: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/areas/${encode(id)}`,
+        method: DELETE,
+      }),
+      invalidatesTags: ["Areas"],
+    }),
+    cuisineTypesByVendorID: builder.query<CuisineTypes[], string>({
+      query: (vendorID) => `/cuisinetypes?vendorID=${encode(vendorID)}`,
+      providesTags: ["CuisineTypes"],
     }),
     createCuisineType: builder.mutation<void, CuisineTypes>({
       query: (cuisine) => ({
@@ -876,6 +894,14 @@ export const apiSlice = createApi({
         method: PUT,
         body: cuisine,
       }),
+      invalidatesTags: ["CuisineTypes"],
+    }),
+    deleteCuisineType: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/cuisinetypes/${encode(id)}`,
+        method: DELETE,
+      }),
+      invalidatesTags: ["CuisineTypes"],
     }),
   }),
 });
@@ -924,8 +950,12 @@ export const {
   useDiscountsBySecretQuery,
   useDeleteDiscountMutation,
   useNewChartQuery,
+  useAreasByVendorIDQuery,
   useCreateAreaMutation,
+  useDeleteAreaMutation,
+  useCuisineTypesByVendorIDQuery,
   useCreateCuisineTypeMutation,
+  useDeleteCuisineTypeMutation,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
