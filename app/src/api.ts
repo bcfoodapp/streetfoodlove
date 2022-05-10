@@ -863,6 +863,20 @@ export const apiSlice = createApi({
       query: () => `/charts/starsumchart`,
       providesTags: ["NewChart"],
     }),
+    createArea: builder.mutation<void, Areas>({
+      query: (area) => ({
+        url: `/areas/${encode(area.ID)}`,
+        method: PUT,
+        body: area,
+      }),
+    }),
+    createCuisineType: builder.mutation<void, CuisineTypes>({
+      query: (cuisine) => ({
+        url: `/cuisinetypes/${encode(cuisine.ID)}`,
+        method: PUT,
+        body: cuisine,
+      }),
+    }),
   }),
 });
 
@@ -910,6 +924,8 @@ export const {
   useDiscountsBySecretQuery,
   useDeleteDiscountMutation,
   useNewChartQuery,
+  useCreateAreaMutation,
+  useCreateCuisineTypeMutation,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
