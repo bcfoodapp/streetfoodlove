@@ -88,9 +88,11 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/areas/", a.Areas)
 	router.PUT("/areas/:id", GetToken, a.AreaPut)
+	router.DELETE("/areas/:id", GetToken, a.AreaDelete)
 
 	router.GET("/cuisinetypes", a.CuisineTypes)
 	router.PUT("/cuisinetypes/:id", GetToken, a.CuisineTypePut)
+	router.DELETE("/cuisinetypes/:id", GetToken, a.CuisineTypeDelete)
 
 	router.GET("/queries", a.Queries)
 	router.GET("/queries/:id", a.Query)
@@ -842,7 +844,7 @@ func (a *API) AreaPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.Database.AreasCreate(area); err != nil {
+	if err := a.Backend.AreaCreate(getTokenFromContext(c), area); err != nil {
 		c.Error(err)
 		return
 	}
@@ -862,6 +864,19 @@ func (a *API) Areas(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, areas)
+}
+
+func (a *API) AreaDelete(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := a.Backend.AreaDelete(getTokenFromContext(c), id); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) CuisineTypePut(c *gin.Context) {
@@ -902,6 +917,19 @@ func (a *API) CuisineTypes(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, cuisines)
+}
+
+func (a *API) CuisineTypeDelete(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := a.Backend.CuisineTypeDelete(getTokenFromContext(c), id); err != nil {
+		c.Error(err)
+		return
+	}
 }
 
 func (a *API) QueryPut(c *gin.Context) {
