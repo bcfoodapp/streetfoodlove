@@ -86,7 +86,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
 	router.DELETE("/stars/:id", GetToken, a.StarsDelete)
 
-	router.GET("/areas/", a.Areas)
+	router.GET("/areas", a.Areas)
 	router.PUT("/areas/:id", GetToken, a.AreaPut)
 	router.DELETE("/areas/:id", GetToken, a.AreaDelete)
 
