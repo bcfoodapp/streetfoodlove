@@ -329,6 +329,24 @@ func (b *Backend) AreasByVendorID(vendorID uuid.UUID) ([]database.Areas, error) 
 	return b.Database.AreasByVendorID(vendorID)
 }
 
+func (b *Backend) AreaDelete(userID uuid.UUID, id uuid.UUID) error {
+	vendor, err := b.Database.VendorByOwnerID(userID)
+	if err != nil {
+		return err
+	}
+
+	area, err := b.Database.Area(id)
+	if err != nil {
+		return err
+	}
+
+	if vendor.ID != area.VendorID {
+		return unauthorized
+	}
+
+	return b.Database.AreasDelete(id)
+}
+
 func (b *Backend) CuisineTypeCreate(userID uuid.UUID, cuisineType *database.CuisineTypes) error {
 	vendor, err := b.Database.VendorByOwnerID(userID)
 	if err != nil {
@@ -344,6 +362,24 @@ func (b *Backend) CuisineTypeCreate(userID uuid.UUID, cuisineType *database.Cuis
 
 func (b *Backend) CuisineTypeByVendorID(vendorID uuid.UUID) ([]database.CuisineTypes, error) {
 	return b.Database.CuisineTypeByVendorID(vendorID)
+}
+
+func (b *Backend) CuisineTypeDelete(userID uuid.UUID, id uuid.UUID) error {
+	vendor, err := b.Database.VendorByOwnerID(userID)
+	if err != nil {
+		return err
+	}
+
+	cuisineType, err := b.Database.CuisineType(id)
+	if err != nil {
+		return err
+	}
+
+	if vendor.ID != cuisineType.VendorID {
+		return unauthorized
+	}
+
+	return b.Database.CuisineTypesDelete(id)
 }
 
 func (b *Backend) QueryCreate(userID uuid.UUID, query *database.Query) error {
