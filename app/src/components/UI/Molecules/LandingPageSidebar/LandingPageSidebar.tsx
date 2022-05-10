@@ -6,6 +6,7 @@ import {
   Button,
   Checkbox,
   Container,
+  DropdownProps,
 } from "semantic-ui-react";
 import { useAppDispatch, useAppSelector } from "../../../../store/root";
 import CuisineFilter from "../MultiSelectFilter/CuisineFilter";
@@ -20,6 +21,8 @@ import {
 import RecommendedList from "../RecommendedList/RecommendedList";
 
 const LandingPageSidebar: React.FC = () => {
+  const [cuisineSelection, setCuisineSelection] = useState<string[]>([]);
+
   const showSideBarState = useAppSelector(
     (state) => state.search.sideBarShowing
   );

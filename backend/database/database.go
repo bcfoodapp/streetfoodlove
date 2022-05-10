@@ -136,7 +136,7 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE CuisineTypes (
-			ID CHAR(36) NOT NULL,
+			ID  CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
 			CuisineType VARCHAR(45) NOT NULL, 
 			PRIMARY KEY (ID),
