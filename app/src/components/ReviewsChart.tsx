@@ -11,8 +11,8 @@ import {
 } from "recharts";
 
 export default function ReviewsChart() {
-  const {data: stars} = useNewChartQuery()
-  const [starCount, setStarCount] = useState([] as any)
+  const { data: stars } = useNewChartQuery();
+  const [starCount, setStarCount] = useState([] as any);
 
   useEffect(() => {
     if (stars) {
@@ -23,28 +23,26 @@ export default function ReviewsChart() {
         "2-star": stars.Two,
         "3-star": stars.Three,
         "4-star": stars.Four,
-        "5-star": stars.Five
-      }
+        "5-star": stars.Five,
+      };
 
-      setStarCount([obj])
+      setStarCount([obj]);
     }
-  }, [stars])
+  }, [stars]);
 
   return (
-      <BarChart width={800} height={500} data={starCount}>
-        /* <CartesianGrid strokeDasharray="3 3" />
-        */
-        <XAxis dataKey="Stars" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="1-star" fill="#FF6347" width={1}/>
-        <Bar dataKey="2-star" fill="#0000FF" />
-        <Bar dataKey="3-star" fill="#FF00FF" />
-        <Bar dataKey="4-star" fill="#4B0082" />
-        <Bar dataKey="5-star" fill="#FFA500" />
-      </BarChart>
-
-  )
-
+    <BarChart width={800} height={500} data={starCount}>
+      /* <CartesianGrid strokeDasharray="3 3" />
+      */
+      <XAxis dataKey="Stars" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="1-star" fill="#FF6347" width={1} />
+      <Bar dataKey="2-star" fill="#0000FF" />
+      <Bar dataKey="3-star" fill="#FF00FF" />
+      <Bar dataKey="4-star" fill="#4B0082" />
+      <Bar dataKey="5-star" fill="#FFA500" />
+    </BarChart>
+  );
 }
