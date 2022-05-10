@@ -85,10 +85,14 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/stars/:id", GetToken, a.StarPut)
 	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
 	router.DELETE("/stars/:id", GetToken, a.StarsDelete)
-	router.GET("/areas/", a.Areas)
+
+	router.GET("/areas", a.Areas)
 	router.PUT("/areas/:id", GetToken, a.AreaPut)
-	router.GET("/cuisinetypes/", a.CuisineType)
+	router.DELETE("/areas/:id", GetToken, a.AreaDelete)
+
+	router.GET("/cuisinetypes", a.CuisineTypes)
 	router.PUT("/cuisinetypes/:id", GetToken, a.CuisineTypePut)
+	router.DELETE("/cuisinetypes/:id", GetToken, a.CuisineTypeDelete)
 
 	router.GET("/queries", a.Queries)
 	router.GET("/queries/:id", a.Query)
@@ -840,7 +844,7 @@ func (a *API) AreaPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.Database.AreasCreate(area); err != nil {
+	if err := a.Backend.AreaCreate(getTokenFromContext(c), area); err != nil {
 		c.Error(err)
 		return
 	}
@@ -862,20 +866,17 @@ func (a *API) Areas(c *gin.Context) {
 	c.JSON(http.StatusOK, areas)
 }
 
-func (a *API) CuisineType(c *gin.Context) {
+func (a *API) AreaDelete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	cuisineType, err := a.Backend.CuisineType(id)
-	if err != nil {
+	if err := a.Backend.AreaDelete(getTokenFromContext(c), id); err != nil {
 		c.Error(err)
 		return
 	}
-
-	c.JSON(http.StatusOK, cuisineType)
 }
 
 func (a *API) CuisineTypePut(c *gin.Context) {
@@ -897,6 +898,35 @@ func (a *API) CuisineTypePut(c *gin.Context) {
 	}
 
 	if err := a.Backend.CuisineTypeCreate(getTokenFromContext(c), cuisineType); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) CuisineTypes(c *gin.Context) {
+	vendorID, err := uuid.Parse(c.Query("vendorID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	cuisines, err := a.Backend.CuisineTypeByVendorID(vendorID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, cuisines)
+}
+
+func (a *API) CuisineTypeDelete(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := a.Backend.CuisineTypeDelete(getTokenFromContext(c), id); err != nil {
 		c.Error(err)
 		return
 	}

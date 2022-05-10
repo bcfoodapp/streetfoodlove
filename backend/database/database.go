@@ -964,6 +964,16 @@ func (d *Database) AreasCreate(area *Areas) error {
 	return err
 }
 
+func (d *Database) Area(id uuid.UUID) (*Areas, error) {
+	const command = `
+		SELECT * FROM Areas WHERE ID=?
+	`
+
+	Area := &Areas{}
+	err := d.db.QueryRowx(command, &id).StructScan(Area)
+	return Area, err
+}
+
 func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
 	const command = `
 		SELECT *
@@ -988,14 +998,13 @@ func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
 	return result, rows.Err()
 }
 
-func (d *Database) Area(vendorID uuid.UUID, areaName string) (*Areas, error) {
+func (d *Database) AreasDelete(id uuid.UUID) error {
 	const command = `
-		SELECT * FROM Areas WHERE VendorID=? AND AreaName=?
+		DELETE FROM Areas WHERE ID=?
 	`
 
-	Area := &Areas{}
-	err := d.db.QueryRowx(command, &vendorID, &areaName).StructScan(Area)
-	return Area, err
+	_, err := d.db.Exec(command, &id)
+	return err
 }
 
 type CuisineTypes struct {
@@ -1018,6 +1027,16 @@ func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
 	`
 	_, err := d.db.NamedExec(command, cuisineType)
 	return err
+}
+
+func (d *Database) CuisineType(id uuid.UUID) (*CuisineTypes, error) {
+	const command = `
+		SELECT * FROM CuisineTypes WHERE ID=?
+	`
+
+	CuisineType := &CuisineTypes{}
+	err := d.db.QueryRowx(command, &id).StructScan(CuisineType)
+	return CuisineType, err
 }
 
 func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, error) {
@@ -1044,14 +1063,13 @@ func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, er
 	return result, rows.Err()
 }
 
-func (d *Database) CuisineType(ID uuid.UUID) (*CuisineTypes, error) {
+func (d *Database) CuisineTypesDelete(id uuid.UUID) error {
 	const command = `
-		SELECT * FROM CuisineTypes WHERE VendorID=? AND CuisineType=?
+		DELETE FROM CuisineTypes WHERE ID=?
 	`
 
-	CuisineType := &CuisineTypes{}
-	err := d.db.QueryRowx(command, &ID).StructScan(CuisineType)
-	return CuisineType, err
+	_, err := d.db.Exec(command, &id)
+	return err
 }
 
 type Query struct {
