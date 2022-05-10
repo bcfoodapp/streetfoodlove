@@ -312,19 +312,48 @@ func (b *Backend) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
 	return b.Database.StarDelete(userID, vendorID)
 }
 
-//Area
+func (b *Backend) AreaCreate(userID uuid.UUID, area *database.Areas) error {
+	vendor, err := b.Database.VendorByOwnerID(userID)
+	if err != nil {
+		return err
+	}
+
+	if vendor.ID != area.VendorID {
+		return unauthorized
+	}
+
+	return b.Database.AreasCreate(area)
+}
 
 func (b *Backend) AreasByVendorID(vendorID uuid.UUID) ([]database.Areas, error) {
 	return b.Database.AreasByVendorID(vendorID)
 }
 
-func (b *Backend) Area(vendorID uuid.UUID, areaName string) (*database.Areas, error) {
-	return b.Database.Area(vendorID, areaName)
+func (b *Backend) AreaDelete(userID uuid.UUID, id uuid.UUID) error {
+	vendor, err := b.Database.VendorByOwnerID(userID)
+	if err != nil {
+		return err
+	}
+
+	area, err := b.Database.Area(id)
+	if err != nil {
+		return err
+	}
+
+	if vendor.ID != area.VendorID {
+		return unauthorized
+	}
+
+	return b.Database.AreasDelete(id)
 }
 
-//CuisineTypes
-func (b *Backend) CuisineTypeCreate(vendorID uuid.UUID, cuisineType *database.CuisineTypes) error {
-	if cuisineType.VendorID != vendorID {
+func (b *Backend) CuisineTypeCreate(userID uuid.UUID, cuisineType *database.CuisineTypes) error {
+	vendor, err := b.Database.VendorByOwnerID(userID)
+	if err != nil {
+		return err
+	}
+
+	if vendor.ID != cuisineType.VendorID {
 		return unauthorized
 	}
 
@@ -335,11 +364,24 @@ func (b *Backend) CuisineTypeByVendorID(vendorID uuid.UUID) ([]database.CuisineT
 	return b.Database.CuisineTypeByVendorID(vendorID)
 }
 
-func (b *Backend) CuisineType(id uuid.UUID) (*database.CuisineTypes, error) {
-	return b.Database.CuisineType(id)
+func (b *Backend) CuisineTypeDelete(userID uuid.UUID, id uuid.UUID) error {
+	vendor, err := b.Database.VendorByOwnerID(userID)
+	if err != nil {
+		return err
+	}
+
+	cuisineType, err := b.Database.CuisineType(id)
+	if err != nil {
+		return err
+	}
+
+	if vendor.ID != cuisineType.VendorID {
+		return unauthorized
+	}
+
+	return b.Database.CuisineTypesDelete(id)
 }
 
-//Query
 func (b *Backend) QueryCreate(userID uuid.UUID, query *database.Query) error {
 	if query.UserID != userID {
 		return unauthorized
