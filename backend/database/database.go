@@ -127,9 +127,10 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE Areas (
+			ID CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
 			AreaName VARCHAR(45) NOT NULL, 
-			PRIMARY KEY (VendorID, AreaName),
+			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
@@ -942,6 +943,7 @@ func (d *Database) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
 }
 
 type Areas struct {
+	ID       uuid.UUID
 	VendorID uuid.UUID
 	AreaName string
 }
@@ -949,9 +951,11 @@ type Areas struct {
 func (d *Database) AreasCreate(area *Areas) error {
 	const command = `
 		INSERT INTO Areas (
+			ID,
 			VendorID,
 			AreaName
 		) VALUES (
+			:ID,
 			:VendorID,
 			:AreaName
 		)

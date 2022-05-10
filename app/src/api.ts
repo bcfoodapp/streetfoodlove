@@ -35,11 +35,13 @@ export interface Vendor {
 }
 
 export interface Areas {
+  ID: string;
   VendorID: string;
   AreaName: string;
 }
 
 export interface CuisineTypes {
+  ID: string;
   VendorID: string;
   CuisineType: string;
 }
