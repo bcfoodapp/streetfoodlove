@@ -988,16 +988,6 @@ func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
 	return result, rows.Err()
 }
 
-func (d *Database) Area(vendorID uuid.UUID, areaName string) (*Areas, error) {
-	const command = `
-		SELECT * FROM Areas WHERE VendorID=? AND AreaName=?
-	`
-
-	Area := &Areas{}
-	err := d.db.QueryRowx(command, &vendorID, &areaName).StructScan(Area)
-	return Area, err
-}
-
 type CuisineTypes struct {
 	ID          uuid.UUID
 	VendorID    uuid.UUID
@@ -1042,16 +1032,6 @@ func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, er
 	}
 
 	return result, rows.Err()
-}
-
-func (d *Database) CuisineType(ID uuid.UUID) (*CuisineTypes, error) {
-	const command = `
-		SELECT * FROM CuisineTypes WHERE VendorID=? AND CuisineType=?
-	`
-
-	CuisineType := &CuisineTypes{}
-	err := d.db.QueryRowx(command, &ID).StructScan(CuisineType)
-	return CuisineType, err
 }
 
 type Query struct {
