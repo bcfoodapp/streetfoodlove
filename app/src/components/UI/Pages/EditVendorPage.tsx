@@ -30,6 +30,7 @@ import React, { useEffect, useState } from "react";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 import { s3Prefix } from "../../../aws";
 import { v4 as uuid } from "uuid";
+import * as aws from "../../../aws";
 
 interface inputValues {
   name: string;
@@ -193,10 +194,23 @@ const EditVendorPage: React.FC = () => {
       DiscountEnabled: data.discountEnabled,
     };
 
-    if (locationOption === "address" && addressToCoordinatesResult) {
+    if (locationOption === "address") {
       // Since location input is address, set coordinate using address
-      updatedVendor.Latitude = addressToCoordinatesResult[0];
-      updatedVendor.Longitude = addressToCoordinatesResult[1];
+      const locationRoleResponse = await getLocationRole(userID);
+      if ("error" in locationRoleResponse) {
+        return;
+      }
+
+      // For some reason, useLazyQuery does not return the result, so aws.addressToCoordinates() is
+      // called directly.
+      const coordinates = await aws.addressToCoordinates(
+        locationRoleResponse.data,
+        data.businessAddress
+      );
+      if (coordinates) {
+        updatedVendor.Latitude = coordinates[0];
+        updatedVendor.Longitude = coordinates[1];
+      }
     }
 
     const response = await updateVendor(updatedVendor);
