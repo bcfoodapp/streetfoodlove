@@ -519,7 +519,7 @@ func (d *Database) ReviewCreate(review *Review) error {
 			DatePosted,
 			StarRating,
 			ReplyTo,
-		    VendorFavorite,
+			VendorFavorite,
 			ReceivedDiscount
 		) VALUES (
 			:ID,

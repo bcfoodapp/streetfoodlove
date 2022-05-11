@@ -81,6 +81,7 @@ const CommentCard: React.FC<{
       StarRating: null,
       ReplyTo: commentID,
       VendorFavorite: false,
+      ReceivedDiscount: false,
     });
   };
 
