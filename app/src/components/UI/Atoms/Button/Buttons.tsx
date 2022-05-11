@@ -26,6 +26,7 @@ interface ButtonsProps {
   dirty?: boolean;
   loading?: boolean;
   type?: string;
+  fluid?: boolean;
 }
 
 export default function Buttons(props: ButtonsProps): React.ReactElement {
@@ -54,6 +55,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
           onClick={props.clicked}
           loading={props.loading}
           type={props.type}
+          fluid={props.fluid}
         >
           <span>{props.children}</span>
         </Button>
@@ -64,6 +66,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
           onClick={props.clicked}
           disabled={!props.valid || !props.dirty}
           loading={props.loading}
+          fluid={props.fluid}
         >
           <span>{props.children}</span>
         </Button>

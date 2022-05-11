@@ -2,6 +2,7 @@ import {
   Button,
   Checkbox,
   Container,
+  Dropdown,
   Form,
   Header,
   Image,
@@ -131,6 +132,10 @@ const EditVendorPage: React.FC = () => {
   const [getLocationRole] = useLocationRoleMutation();
   const [addressToCoordinates, { data: addressToCoordinatesResult }] =
     useLazyAddressToCoordinatesQuery();
+
+  const [locationOption, setLocationOption] = useState(
+    "address" as "address" | "coordinates"
+  );
 
   if (userID === null) {
     return <p>Not logged in</p>;
@@ -271,39 +276,61 @@ const EditVendorPage: React.FC = () => {
                   <br />
                 </>
               ) : null}
-              <Form.Input
-                name="businessAddress"
-                onChange={handleChange}
-                label="Business Address"
-                placeholder="Business Address"
-                onBlur={async (e) => {
-                  handleBlur(e);
-                  const locationRoleResponse = await getLocationRole(userID);
-                  if ("error" in locationRoleResponse) {
-                    return;
-                  }
-                  addressToCoordinates({
-                    credentials: locationRoleResponse.data,
-                    text: e.target.value,
-                  });
+              <strong>
+                Location <span style={{ color: "#db2828" }}>*</span>
+              </strong>
+              <Dropdown
+                options={[
+                  { value: "address", text: "Use address" },
+                  { value: "coordinates", text: "Use my coordinates" },
+                ]}
+                onChange={(_, data) => {
+                  setLocationOption(data.value as any);
                 }}
-                error={
-                  touched.businessAddress && Boolean(errors.businessAddress)
-                }
-                value={values.businessAddress}
-                loading={vendorQueryIsLoading}
-                required
+                placeholder="Location input options"
+                fluid
+                selection
+                defaultValue={locationOption}
               />
-              {addressToCoordinatesResult}
+              {locationOption === "address" ? (
+                <Form.Input
+                  name="businessAddress"
+                  onChange={handleChange}
+                  placeholder="Business Address"
+                  onBlur={async (e) => {
+                    handleBlur(e);
+                    const locationRoleResponse = await getLocationRole(userID);
+                    if ("error" in locationRoleResponse) {
+                      return;
+                    }
+                    addressToCoordinates({
+                      credentials: locationRoleResponse.data,
+                      text: e.target.value,
+                    });
+                  }}
+                  error={
+                    touched.businessAddress && Boolean(errors.businessAddress)
+                  }
+                  value={values.businessAddress}
+                  loading={vendorQueryIsLoading}
+                  required
+                />
+              ) : (
+                <Buttons
+                  getLocation
+                  clicked={onGetCoordinates}
+                  type="button"
+                  fluid
+                >
+                  Get my coordinates
+                </Buttons>
+              )}
+
               <ErrorMessage
                 name="businessAddress"
                 component="span"
                 className={styles.error}
               />
-              <Buttons getLocation clicked={onGetCoordinates} type="button">
-                Get my coordinates
-              </Buttons>
-              <br />
               <p>
                 Current coordinate: {values.latitude}, {values.longitude}
               </p>
