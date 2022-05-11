@@ -130,8 +130,13 @@ const EditVendorPage: React.FC = () => {
   const [getS3Credentials] = useS3CredentialsMutation();
   const [uploadToS3] = useUploadToS3Mutation();
   const [getLocationRole] = useLocationRoleMutation();
-  const [addressToCoordinates, { data: addressToCoordinatesResult }] =
-    useLazyAddressToCoordinatesQuery();
+  const [
+    addressToCoordinates,
+    {
+      data: addressToCoordinatesResult,
+      isLoading: addressToCoordinatesIsLoading,
+    },
+  ] = useLazyAddressToCoordinatesQuery();
 
   const [locationOption, setLocationOption] = useState(
     "address" as "address" | "coordinates"
@@ -312,7 +317,9 @@ const EditVendorPage: React.FC = () => {
                     touched.businessAddress && Boolean(errors.businessAddress)
                   }
                   value={values.businessAddress}
-                  loading={vendorQueryIsLoading}
+                  loading={
+                    vendorQueryIsLoading || addressToCoordinatesIsLoading
+                  }
                   required
                 />
               ) : (
@@ -331,9 +338,18 @@ const EditVendorPage: React.FC = () => {
                 component="span"
                 className={styles.error}
               />
-              <p>
-                Current coordinate: {values.latitude}, {values.longitude}
-              </p>
+              {addressToCoordinatesResult ? (
+                <p>
+                  Current coordinate: {addressToCoordinatesResult[0].toFixed(6)}
+                  ,&nbsp;
+                  {addressToCoordinatesResult[1].toFixed(6)}
+                </p>
+              ) : (
+                <p>
+                  Current coordinate: {values.latitude}, {values.longitude}
+                </p>
+              )}
+
               <Form.Field
                 id="vendorArea"
                 control={Select}
