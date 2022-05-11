@@ -1014,6 +1014,7 @@ type CuisineTypes struct {
 }
 
 func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
+	print("hello?")
 	const command = `
 		INSERT INTO CuisineTypes (
 			ID,

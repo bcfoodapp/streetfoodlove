@@ -11,6 +11,10 @@ import {
   useCreateVendorMutation,
   useGetTokenMutation,
   Vendor,
+  useCreateCuisineTypeMutation,
+  useCreateAreaMutation,
+  CuisineTypes,
+  Areas,
 } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
@@ -44,6 +48,8 @@ interface inputValues {
   toHour: string;
   website: string;
   agreedConditions: boolean;
+  cuisines: string[];
+  areaNames: string[];
 }
 
 export default function VendorAppForm(): React.ReactElement {
@@ -51,6 +57,8 @@ export default function VendorAppForm(): React.ReactElement {
   const [createVendor] = useCreateVendorMutation();
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
   const [token, setToken] = useState(null as string | null);
+  const [submitCuisine] = useCreateCuisineTypeMutation();
+  const [submitArea] = useCreateAreaMutation();
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -82,6 +90,26 @@ export default function VendorAppForm(): React.ReactElement {
     };
     const response = await createVendor(vendor);
     if ("data" in response) {
+      for (const cuisine of data.cuisines) {
+        const cuisineTypes: CuisineTypes = {
+          ID: uuid(),
+          VendorID: vendor.ID,
+          CuisineType: cuisine,
+        };
+
+        await submitCuisine(cuisineTypes);
+      }
+
+      for (const area of data.areaNames) {
+        const areas: Areas = {
+          ID: uuid(),
+          VendorID: vendor.ID,
+          AreaName: area,
+        };
+
+        await submitArea(areas);
+      }
+
       navigate("/vendor-dashboard");
     }
   };
@@ -134,9 +162,11 @@ export default function VendorAppForm(): React.ReactElement {
     toHour: "",
     phoneNumber: "",
     agreedConditions: false,
+    cuisines: [],
+    areaNames: [],
   };
 
-  const validationSchema = Yup.object({
+  const validationSchema = Yup.object().shape({
     name: Yup.string().required("Required"),
     businessAddress: Yup.string().required("Required"),
     website: Yup.string(),
@@ -144,6 +174,8 @@ export default function VendorAppForm(): React.ReactElement {
     toHour: Yup.string().required("Required"),
     phoneNumber: Yup.string().required("Required"),
     agreedConditions: Yup.bool().oneOf([true], "Required"),
+    cuisines: Yup.array().min(1).required("Required"),
+    areaNames: Yup.array().min(1).required("Required"),
   });
 
   return (
@@ -152,10 +184,10 @@ export default function VendorAppForm(): React.ReactElement {
         <h1>Sign Up Form (Vendor account)</h1>
         <Formik
           enableReinitialize
-          onSubmit={onSubmit}
-          validateOnChange={true}
           initialValues={initialValues}
           validationSchema={validationSchema}
+          onSubmit={onSubmit}
+          validateOnChange={true}
         >
           {(formProps: FormikProps<inputValues>) => {
             const {
@@ -205,6 +237,7 @@ export default function VendorAppForm(): React.ReactElement {
                 />
                 <Form.Field
                   id="vendorArea"
+                  name="vendorArea"
                   fluid
                   width={10}
                   control={Select}
@@ -215,12 +248,14 @@ export default function VendorAppForm(): React.ReactElement {
                   required
                   onBlur={handleBlur}
                   label="Vendor Operating Areas"
-                  // onChange={(_, area) => {
-                  //   setFieldValue("")
-                  // }}
+                  error={touched.areaNames && Boolean(errors.areaNames)}
+                  onChange={(e, data) => {
+                    setFieldValue("areaNames", data.value);
+                  }}
                 />
                 <Form.Field
                   id="cuisineTypes"
+                  name="cuisineTypes"
                   fluid
                   width={10}
                   control={Select}
@@ -231,9 +266,10 @@ export default function VendorAppForm(): React.ReactElement {
                   required
                   onBlur={handleBlur}
                   label="Cuisine Types"
-                  // onChange={(_, area) => {
-                  //   setFieldValue("")
-                  // }}
+                  error={touched.cuisines && Boolean(errors.cuisines)}
+                  onChange={(e, data) => {
+                    setFieldValue("cuisines", data.value);
+                  }}
                 />
                 <Form.Input
                   fluid

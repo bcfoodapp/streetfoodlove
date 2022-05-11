@@ -15,6 +15,8 @@ import {
   useNewChartQuery,
   Review,
   useUploadToS3Mutation,
+  useCreateCuisineTypeMutation,
+  useCreateAreaMutation,
 } from "../../../api";
 import {
   Container,
@@ -62,9 +64,10 @@ export function Vendor(): React.ReactElement {
   const [getS3Credentials] = useS3CredentialsMutation();
   const [discountRewarded, setDiscountRewarded] = useState(false);
   const [uploadToS3] = useUploadToS3Mutation();
-  const { data: newchart } = useNewChartQuery();
 
-  console.log("newchart: " + JSON.stringify(newchart));
+  // const { data: newchart } = useNewChartQuery();
+
+  // console.log("newchart: " + JSON.stringify(newchart));
 
   const completedReviewHandler = async ({
     text,
