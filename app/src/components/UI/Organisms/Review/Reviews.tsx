@@ -72,6 +72,7 @@ export const Reviews: React.FC<Props> = ({ review, reviewID, vendorID }) => {
       StarRating: null,
       ReplyTo: reviewID,
       VendorFavorite: false,
+      ReceivedDiscount: false,
     });
   };
 
@@ -90,6 +91,7 @@ export const Reviews: React.FC<Props> = ({ review, reviewID, vendorID }) => {
       StarRating: review.StarRating,
       ReplyTo: null,
       VendorFavorite: !review.VendorFavorite,
+      ReceivedDiscount: false,
     });
   };
 
