@@ -315,7 +315,7 @@ const EditVendorPage: React.FC = () => {
                     if ("error" in locationRoleResponse) {
                       return;
                     }
-                    addressToCoordinates({
+                    await addressToCoordinates({
                       credentials: locationRoleResponse.data,
                       text: e.target.value,
                     });
@@ -464,7 +464,7 @@ const EditVendorPage: React.FC = () => {
                 edit
                 color="green"
                 dirty
-                valid={isValid}
+                valid={isValid && !addressToCoordinatesIsLoading}
                 loading={isSubmitting}
               >
                 Edit
