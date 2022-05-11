@@ -192,6 +192,13 @@ const EditVendorPage: React.FC = () => {
       Owner: vendor!.Owner,
       DiscountEnabled: data.discountEnabled,
     };
+
+    if (locationOption === "address" && addressToCoordinatesResult) {
+      // Since location input is address, set coordinate using address
+      updatedVendor.Latitude = addressToCoordinatesResult[0];
+      updatedVendor.Longitude = addressToCoordinatesResult[1];
+    }
+
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {
       setShowSuccess(true);
