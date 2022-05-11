@@ -68,7 +68,8 @@ func SetupTables(db *sqlx.DB) error {
 			DatePosted DATETIME NULL,
 			StarRating TINYINT NULL,
 			ReplyTo CHAR(36) NULL,
-			VendorFavorite TINYINT,
+			VendorFavorite BOOLEAN,
+			ReceivedDiscount BOOLEAN,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
 			ON DELETE CASCADE ON UPDATE CASCADE,
@@ -497,14 +498,15 @@ func (d *Database) UserIDByGoogleID(googleID string) (uuid.UUID, error) {
 }
 
 type Review struct {
-	ID             uuid.UUID
-	Text           string
-	VendorID       uuid.UUID
-	UserID         uuid.UUID
-	DatePosted     time.Time
-	StarRating     *int
-	ReplyTo        *uuid.UUID
-	VendorFavorite bool
+	ID               uuid.UUID
+	Text             string
+	VendorID         uuid.UUID
+	UserID           uuid.UUID
+	DatePosted       time.Time
+	StarRating       *int
+	ReplyTo          *uuid.UUID
+	VendorFavorite   bool
+	ReceivedDiscount bool
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -517,7 +519,8 @@ func (d *Database) ReviewCreate(review *Review) error {
 			DatePosted,
 			StarRating,
 			ReplyTo,
-		    VendorFavorite
+		    VendorFavorite,
+			ReceivedDiscount
 		) VALUES (
 			:ID,
 			:Text,
@@ -526,7 +529,8 @@ func (d *Database) ReviewCreate(review *Review) error {
 			:DatePosted,
 			:StarRating,
 			:ReplyTo,
-			:VendorFavorite
+			:VendorFavorite,
+			:ReceivedDiscount
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
@@ -552,7 +556,8 @@ func (d *Database) ReviewUpdate(review *Review) error {
 			DatePosted = :DatePosted,
 			StarRating = :StarRating,
 			ReplyTo = :ReplyTo,
-			VendorFavorite = :VendorFavorite
+			VendorFavorite = :VendorFavorite,
+			ReceivedDiscount = :ReceivedDiscount
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &review)
