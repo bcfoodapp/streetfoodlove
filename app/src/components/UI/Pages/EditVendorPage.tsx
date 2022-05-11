@@ -20,6 +20,8 @@ import {
   useS3CredentialsMutation,
   getExtension,
   useUploadToS3Mutation,
+  useLazyAddressToCoordinatesQuery,
+  useLocationRoleMutation,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -126,6 +128,9 @@ const EditVendorPage: React.FC = () => {
 
   const [getS3Credentials] = useS3CredentialsMutation();
   const [uploadToS3] = useUploadToS3Mutation();
+  const [getLocationRole] = useLocationRoleMutation();
+  const [addressToCoordinates, { data: addressToCoordinatesResult }] =
+    useLazyAddressToCoordinatesQuery();
 
   if (userID === null) {
     return <p>Not logged in</p>;
@@ -271,8 +276,16 @@ const EditVendorPage: React.FC = () => {
                 onChange={handleChange}
                 label="Business Address"
                 placeholder="Business Address"
-                onBlur={(e) => {
+                onBlur={async (e) => {
                   handleBlur(e);
+                  const locationRoleResponse = await getLocationRole(userID);
+                  if ("error" in locationRoleResponse) {
+                    return;
+                  }
+                  addressToCoordinates({
+                    credentials: locationRoleResponse.data,
+                    text: e.target.value,
+                  });
                 }}
                 error={
                   touched.businessAddress && Boolean(errors.businessAddress)
@@ -281,6 +294,7 @@ const EditVendorPage: React.FC = () => {
                 loading={vendorQueryIsLoading}
                 required
               />
+              {addressToCoordinatesResult}
               <ErrorMessage
                 name="businessAddress"
                 component="span"
@@ -291,7 +305,7 @@ const EditVendorPage: React.FC = () => {
               </Buttons>
               <br />
               <p>
-                Currently set coordinates: {values.latitude}, {values.longitude}
+                Current coordinate: {values.latitude}, {values.longitude}
               </p>
               <Form.Field
                 id="vendorArea"
