@@ -23,6 +23,7 @@ import {
   useUploadToS3Mutation,
   useLazyAddressToCoordinatesQuery,
   useLocationRoleMutation,
+  AWSCredentials,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -143,6 +144,11 @@ const EditVendorPage: React.FC = () => {
     "address" as "address" | "coordinates"
   );
 
+  // Credentials to use for addressToCoordinates(). It is null when uninitialized.
+  const [locationRole, setLocationRole] = useState(
+    null as AWSCredentials | null
+  );
+
   if (userID === null) {
     return <p>Not logged in</p>;
   }
@@ -196,15 +202,19 @@ const EditVendorPage: React.FC = () => {
 
     if (locationOption === "address") {
       // Since location input is address, set coordinate using address
-      const locationRoleResponse = await getLocationRole(userID);
-      if ("error" in locationRoleResponse) {
-        return;
+      let credentials = locationRole;
+      if (!credentials) {
+        const locationRoleResponse = await getLocationRole(userID);
+        if ("error" in locationRoleResponse) {
+          return;
+        }
+        credentials = locationRoleResponse.data;
       }
 
       // For some reason, useLazyQuery does not return the result, so aws.addressToCoordinates() is
       // called directly.
       const coordinates = await aws.addressToCoordinates(
-        locationRoleResponse.data,
+        credentials,
         data.businessAddress
       );
       if (coordinates) {
@@ -325,12 +335,21 @@ const EditVendorPage: React.FC = () => {
                   placeholder="Business Address"
                   onBlur={async (e) => {
                     handleBlur(e);
-                    const locationRoleResponse = await getLocationRole(userID);
-                    if ("error" in locationRoleResponse) {
-                      return;
+
+                    let credentials = locationRole;
+                    if (!credentials) {
+                      const locationRoleResponse = await getLocationRole(
+                        userID
+                      );
+                      if ("error" in locationRoleResponse) {
+                        return;
+                      }
+                      credentials = locationRoleResponse.data;
+                      setLocationRole(credentials);
                     }
+
                     await addressToCoordinates({
-                      credentials: locationRoleResponse.data,
+                      credentials,
                       text: e.target.value,
                     });
                   }}
