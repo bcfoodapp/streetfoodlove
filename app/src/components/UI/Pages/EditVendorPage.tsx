@@ -76,7 +76,6 @@ const EditVendorPage: React.FC = () => {
   const [getToken] = useGetTokenMutation();
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
-  const [coordinatesChanged, setCoordinatesChanged] = useState(false);
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -217,7 +216,6 @@ const EditVendorPage: React.FC = () => {
               (position) => {
                 setFieldValue("latitude", position.coords.latitude);
                 setFieldValue("longitude", position.coords.longitude);
-                setCoordinatesChanged(true);
               },
               (e) => {
                 throw new Error(e.message);
@@ -273,7 +271,9 @@ const EditVendorPage: React.FC = () => {
                 onChange={handleChange}
                 label="Business Address"
                 placeholder="Business Address"
-                onBlur={handleBlur}
+                onBlur={(e) => {
+                  handleBlur(e);
+                }}
                 error={
                   touched.businessAddress && Boolean(errors.businessAddress)
                 }
@@ -286,19 +286,13 @@ const EditVendorPage: React.FC = () => {
                 component="span"
                 className={styles.error}
               />
-              <strong>Coordinates</strong>
-              <br />
               <Buttons getLocation clicked={onGetCoordinates} type="button">
-                Get current location
+                Get my coordinates
               </Buttons>
-              {coordinatesChanged ? (
-                <>
-                  <br />
-                  {values.latitude}, {values.longitude}
-                </>
-              ) : null}
               <br />
-              <br />
+              <p>
+                Currently set coordinates: {values.latitude}, {values.longitude}
+              </p>
               <Form.Field
                 id="vendorArea"
                 control={Select}
