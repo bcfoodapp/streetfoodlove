@@ -15,7 +15,7 @@ import config from "./configuration.json";
 import { v4 as uuid } from "uuid";
 import { DependencyList, useEffect } from "react";
 import { addressToCoordinates, uploadToS3 } from "./aws";
-import { LatLngExpression } from "leaflet";
+import { LatLngTuple } from "leaflet";
 
 export interface Vendor {
   ID: string;
@@ -639,7 +639,7 @@ export const apiSlice = createApi({
       }),
     }),
     addressToCoordinates: builder.query<
-      LatLngExpression | null,
+      LatLngTuple | null,
       { credentials: AWSCredentials; text: string }
     >({
       queryFn: async ({ credentials, text }) => {
