@@ -80,6 +80,7 @@ export interface Review {
   // Contains the ID of the parent review, or null if there is no parent.
   ReplyTo: string | null;
   VendorFavorite: boolean;
+  ReceivedDiscount: boolean;
 }
 
 export interface ReviewFilters {
