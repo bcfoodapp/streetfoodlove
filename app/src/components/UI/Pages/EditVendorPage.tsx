@@ -49,8 +49,8 @@ interface inputValues {
   description: string;
   socialmedialink: string;
   discountEnabled: boolean;
-  cuisines: CuisineTypes[];
-  areaNames: Areas[];
+  cuisines: string[];
+  areaNames: string[];
 }
 
 const businessHours = [
@@ -141,8 +141,8 @@ const EditVendorPage: React.FC = () => {
         description: vendor!.Description,
         socialmedialink: vendor!.SocialMediaLink,
         discountEnabled: vendor!.DiscountEnabled,
-        cuisines: cuisines!,
-        areaNames: areas!,
+        cuisines: [""],
+        areaNames: [""],
       });
     }
   }, [vendorQueryIsSuccess]);
@@ -235,24 +235,24 @@ const EditVendorPage: React.FC = () => {
       // console.log(data.cuisines);
 
       for (const cuisine of data.cuisines) {
-        console.log(cuisine)
-
-        // console.log(cuisineTypes);
-        // const cuisines = {
-        //   ID: uuid(),
-        //   VendorID: vendor!.ID,
-        //   CuisineType: cuisine
-        // }
-
         // console.log(cuisine)
 
-        // await submitCuisine({ID: uuid(), CuisineType: cuisine});
+        // console.log(cuisineTypes);
+        const cuisines = {
+          ID: uuid(),
+          VendorID: vendor!.ID,
+          CuisineType: cuisine
+        }
+
+        console.log(typeof cuisine === "string")
+
+        await submitCuisine(cuisines);
       }
 
-      for (const area of data.areaNames) {
+      // for (const area of data.areaNames) {
 
-        await submitArea(area);
-      }
+      //   await submitArea(area);
+      // }
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
