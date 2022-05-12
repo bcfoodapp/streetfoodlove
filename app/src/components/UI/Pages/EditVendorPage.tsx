@@ -1,6 +1,4 @@
 import {
-  Button,
-  Checkbox,
   Container,
   Form,
   Header,
@@ -20,6 +18,13 @@ import {
   useS3CredentialsMutation,
   getExtension,
   useUploadToS3Mutation,
+  useCuisineTypesByVendorIDQuery,
+  CuisineTypes,
+  Areas,
+  useAreasByVendorIDQuery,
+  useCreateCuisineTypeMutation,
+  useCreateAreaMutation,
+  useLocationRoleMutation,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -27,6 +32,10 @@ import React, { useEffect, useState } from "react";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 import { s3Prefix } from "../../../aws";
 import { v4 as uuid } from "uuid";
+import * as aws from "../../../aws";
+import LocationInput, {
+  LocationInputDropdownValue,
+} from "../Molecules/LocationInput/LocationInput";
 
 interface inputValues {
   name: string;
@@ -39,8 +48,9 @@ interface inputValues {
   website: string;
   description: string;
   socialmedialink: string;
-  // vendorOperationAreas: []
   discountEnabled: boolean;
+  cuisines: string[];
+  areaNames: string[];
 }
 
 const businessHours = [
@@ -77,6 +87,8 @@ const EditVendorPage: React.FC = () => {
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
   const [coordinatesChanged, setCoordinatesChanged] = useState(false);
+  const [submitCuisine] = useCreateCuisineTypeMutation()
+  const [submitArea] = useCreateAreaMutation()
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -91,6 +103,12 @@ const EditVendorPage: React.FC = () => {
     isLoading: vendorQueryIsLoading,
   } = useVendorByOwnerIDQuery(userID!, { skip: !userID });
 
+  const { data: cuisines } = useCuisineTypesByVendorIDQuery(userID!, {
+    skip: !userID,
+  });
+
+  const { data: areas } = useAreasByVendorIDQuery(userID!, { skip: !userID });
+
   const [initialValues, setInitalValues] = useState({
     name: "",
     businessAddress: "",
@@ -101,8 +119,10 @@ const EditVendorPage: React.FC = () => {
     website: "",
     description: "",
     socialmedialink: "",
-    // vendorOperationAreas: []
     discountEnabled: false,
+    cuisines: [],
+    areaNames: [],
+    businessLogo: "",
   } as inputValues);
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -121,12 +141,19 @@ const EditVendorPage: React.FC = () => {
         description: vendor!.Description,
         socialmedialink: vendor!.SocialMediaLink,
         discountEnabled: vendor!.DiscountEnabled,
+        cuisines: [""],
+        areaNames: [""],
       });
     }
   }, [vendorQueryIsSuccess]);
 
   const [getS3Credentials] = useS3CredentialsMutation();
   const [uploadToS3] = useUploadToS3Mutation();
+  const [getLocationRole] = useLocationRoleMutation();
+
+  const [locationInputOption, setLocationInputOption] = useState(
+    "address" as LocationInputDropdownValue
+  );
 
   if (userID === null) {
     return <p>Not logged in</p>;
@@ -143,6 +170,8 @@ const EditVendorPage: React.FC = () => {
     discountEnabled: Yup.boolean(),
     description: Yup.string(),
     socialmedialink: Yup.string(),
+    cuisines: Yup.array().min(1).required("Required"),
+    areaNames: Yup.array().min(1).required("Required"),
   });
 
   const onSubmit = async (data: inputValues) => {
@@ -178,8 +207,52 @@ const EditVendorPage: React.FC = () => {
       Owner: vendor!.Owner,
       DiscountEnabled: data.discountEnabled,
     };
+
+    switch (locationInputOption) {
+      case "address":
+        // Since location input is address, set coordinate using address
+        const locationRoleResponse = await getLocationRole(userID);
+        if ("error" in locationRoleResponse) {
+          return;
+        }
+
+        // For some reason, useLazyQuery does not return the result, so aws.addressToCoordinates() is
+        // called directly.
+        const coordinates = await aws.addressToCoordinates(
+          locationRoleResponse.data,
+          data.businessAddress
+        );
+        if (coordinates) {
+          updatedVendor.Latitude = coordinates[0];
+          updatedVendor.Longitude = coordinates[1];
+        }
+        break;
+    }
+
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {
+      // console.log(data)
+      // console.log(data.cuisines);
+
+      for (const cuisine of data.cuisines) {
+        // console.log(cuisine)
+
+        // console.log(cuisineTypes);
+        const cuisines = {
+          ID: uuid(),
+          VendorID: vendor!.ID,
+          CuisineType: cuisine
+        }
+
+        console.log(typeof cuisine === "string")
+
+        await submitCuisine(cuisines);
+      }
+
+      // for (const area of data.areaNames) {
+
+      //   await submitArea(area);
+      // }
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
@@ -211,18 +284,6 @@ const EditVendorPage: React.FC = () => {
             values,
             setFieldValue,
           } = formProps;
-
-          const onGetCoordinates = () =>
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                setFieldValue("latitude", position.coords.latitude);
-                setFieldValue("longitude", position.coords.longitude);
-                setCoordinatesChanged(true);
-              },
-              (e) => {
-                throw new Error(e.message);
-              }
-            );
 
           return (
             <Form
@@ -268,37 +329,34 @@ const EditVendorPage: React.FC = () => {
                   <br />
                 </>
               ) : null}
-              <Form.Input
-                name="businessAddress"
-                onChange={handleChange}
-                label="Business Address"
-                placeholder="Business Address"
-                onBlur={handleBlur}
-                error={
-                  touched.businessAddress && Boolean(errors.businessAddress)
+              <strong>
+                Location <span style={{ color: "#db2828" }}>*</span>
+              </strong>
+              <LocationInput
+                userID={userID}
+                onBlur={(e) => {
+                  handleBlur(e);
+                }}
+                dropdownOption={locationInputOption}
+                onDropdownOptionChange={setLocationInputOption}
+                businessAddress={values.businessAddress}
+                onBusinessAddressChange={(value) =>
+                  setFieldValue("businessAddress", value)
                 }
-                value={values.businessAddress}
+                coordinates={[values.latitude, values.longitude]}
+                onCoordinateChange={(value) => {
+                  setFieldValue("latitude", value[0]);
+                  setFieldValue("longitude", value[1]);
+                }}
+                error={Boolean(errors["businessAddress"])}
                 loading={vendorQueryIsLoading}
-                required
               />
               <ErrorMessage
                 name="businessAddress"
                 component="span"
                 className={styles.error}
               />
-              <strong>Coordinates</strong>
-              <br />
-              <Buttons getLocation clicked={onGetCoordinates} type="button">
-                Get current location
-              </Buttons>
-              {coordinatesChanged ? (
-                <>
-                  <br />
-                  {values.latitude}, {values.longitude}
-                </>
-              ) : null}
-              <br />
-              <br />
+
               <Form.Field
                 id="vendorArea"
                 control={Select}
@@ -310,9 +368,9 @@ const EditVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 label="Vendor Operating Areas"
                 loading={vendorQueryIsLoading}
-                // onChange={(_, area) => {
-                //   setFieldValue("")
-                // }}
+                onChange={(_, data) => {
+                  setFieldValue("areaNames", data.value);
+                }}
               />
               <Form.Field
                 id="cuisineTypes"
@@ -325,9 +383,9 @@ const EditVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 label="Cuisine Types"
                 loading={vendorQueryIsLoading}
-                // onChange={(_, area) => {
-                //   setFieldValue("")
-                // }}
+                onChange={(_, data) => {
+                  setFieldValue("cuisines", data.value);
+                }}
               />
               <Form.Input
                 name="phoneNumber"
