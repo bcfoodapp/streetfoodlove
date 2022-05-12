@@ -87,8 +87,8 @@ const EditVendorPage: React.FC = () => {
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
   const [coordinatesChanged, setCoordinatesChanged] = useState(false);
-  const [submitCuisine] = useCreateCuisineTypeMutation()
-  const [submitArea] = useCreateAreaMutation()
+  const [submitCuisine] = useCreateCuisineTypeMutation();
+  const [submitArea] = useCreateAreaMutation();
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -231,28 +231,26 @@ const EditVendorPage: React.FC = () => {
 
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {
-      // console.log(data)
-      // console.log(data.cuisines);
-
       for (const cuisine of data.cuisines) {
-        // console.log(cuisine)
-
-        // console.log(cuisineTypes);
         const cuisines = {
           ID: uuid(),
           VendorID: vendor!.ID,
-          CuisineType: cuisine
-        }
-
-        console.log(typeof cuisine === "string")
+          CuisineType: cuisine,
+        };
 
         await submitCuisine(cuisines);
       }
 
-      // for (const area of data.areaNames) {
+      for (const area of data.areaNames) {
+        const areas = {
+          ID: uuid(),
+          VendorID: vendor!.ID,
+          AreaName: area,
+        };
 
-      //   await submitArea(area);
-      // }
+        await submitArea(areas);
+      }
+
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
