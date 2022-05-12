@@ -90,6 +90,7 @@ export function Vendor(): React.ReactElement {
       StarRating: starRating,
       ReplyTo: null,
       VendorFavorite: false,
+      ReceivedDiscount: false,
     };
     const reviewResponse = await submitReview(review);
     if ("error" in reviewResponse) {

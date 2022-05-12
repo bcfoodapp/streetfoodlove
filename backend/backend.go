@@ -152,11 +152,9 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) (*Revi
 		return nil, unauthorized
 	}
 
+	// Assume discount was not created for now
+	review.ReceivedDiscount = false
 	review.DatePosted = time.Now()
-
-	if err := b.Database.ReviewCreate(review); err != nil {
-		return nil, err
-	}
 
 	// Create discount if discount exchange is enabled
 	vendor, err := b.Database.Vendor(review.VendorID)
@@ -164,7 +162,6 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) (*Revi
 		return nil, err
 	}
 
-	discountCreated := false
 	if vendor.DiscountEnabled && review.ReplyTo == nil {
 		discounts, err := b.Database.DiscountsByUser(review.UserID)
 		if err != nil {
@@ -181,11 +178,16 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) (*Revi
 			if err := b.Database.DiscountCreate(discount); err != nil {
 				return nil, err
 			}
-			discountCreated = true
+			review.ReceivedDiscount = true
 		}
 	}
 
-	return &ReviewCreateResponse{DiscountCreated: discountCreated}, nil
+	if err := b.Database.ReviewCreate(review); err != nil {
+		return nil, err
+	}
+
+	// TODO return review object instead of ReviewCreateResponse
+	return &ReviewCreateResponse{DiscountCreated: review.ReceivedDiscount}, nil
 }
 
 func (b *Backend) ReviewUpdate(userID uuid.UUID, review *database.Review) error {
