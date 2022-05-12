@@ -15,7 +15,7 @@ import config from "./configuration.json";
 import { v4 as uuid } from "uuid";
 import { DependencyList, useEffect } from "react";
 import { addressToCoordinates, uploadToS3 } from "./aws";
-import { LatLngExpression, LatLngTuple } from "leaflet";
+import { LatLngTuple } from "leaflet";
 
 export interface Vendor {
   ID: string;

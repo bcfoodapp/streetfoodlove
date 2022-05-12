@@ -1,8 +1,5 @@
 import {
-  Button,
-  Checkbox,
   Container,
-  Dropdown,
   Form,
   Header,
   Image,
@@ -21,9 +18,7 @@ import {
   useS3CredentialsMutation,
   getExtension,
   useUploadToS3Mutation,
-  useLazyAddressToCoordinatesQuery,
   useLocationRoleMutation,
-  AWSCredentials,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -32,6 +27,9 @@ import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 import { s3Prefix } from "../../../aws";
 import { v4 as uuid } from "uuid";
 import * as aws from "../../../aws";
+import LocationInput, {
+  LocationInputDropdownValue,
+} from "../Molecules/LocationInput/LocationInput";
 
 interface inputValues {
   name: string;
@@ -132,21 +130,9 @@ const EditVendorPage: React.FC = () => {
   const [getS3Credentials] = useS3CredentialsMutation();
   const [uploadToS3] = useUploadToS3Mutation();
   const [getLocationRole] = useLocationRoleMutation();
-  const [
-    addressToCoordinates,
-    {
-      data: addressToCoordinatesResult,
-      isLoading: addressToCoordinatesIsLoading,
-    },
-  ] = useLazyAddressToCoordinatesQuery();
 
-  const [locationOption, setLocationOption] = useState(
-    "address" as "address" | "coordinates"
-  );
-
-  // Credentials to use for addressToCoordinates(). It is null when uninitialized.
-  const [locationRole, setLocationRole] = useState(
-    null as AWSCredentials | null
+  const [locationInputOption, setLocationInputOption] = useState(
+    "address" as LocationInputDropdownValue
   );
 
   if (userID === null) {
@@ -200,21 +186,17 @@ const EditVendorPage: React.FC = () => {
       DiscountEnabled: data.discountEnabled,
     };
 
-    if (locationOption === "address") {
+    if (locationInputOption === "address") {
       // Since location input is address, set coordinate using address
-      let credentials = locationRole;
-      if (!credentials) {
-        const locationRoleResponse = await getLocationRole(userID);
-        if ("error" in locationRoleResponse) {
-          return;
-        }
-        credentials = locationRoleResponse.data;
+      const locationRoleResponse = await getLocationRole(userID);
+      if ("error" in locationRoleResponse) {
+        return;
       }
 
       // For some reason, useLazyQuery does not return the result, so aws.addressToCoordinates() is
       // called directly.
       const coordinates = await aws.addressToCoordinates(
-        credentials,
+        locationRoleResponse.data,
         data.businessAddress
       );
       if (coordinates) {
@@ -256,17 +238,6 @@ const EditVendorPage: React.FC = () => {
             values,
             setFieldValue,
           } = formProps;
-
-          const onGetCoordinates = () =>
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                setFieldValue("latitude", position.coords.latitude);
-                setFieldValue("longitude", position.coords.longitude);
-              },
-              (e) => {
-                throw new Error(e.message);
-              }
-            );
 
           return (
             <Form
@@ -315,80 +286,30 @@ const EditVendorPage: React.FC = () => {
               <strong>
                 Location <span style={{ color: "#db2828" }}>*</span>
               </strong>
-              <Dropdown
-                options={[
-                  { value: "address", text: "Use address" },
-                  { value: "coordinates", text: "Use my coordinates" },
-                ]}
-                onChange={(_, data) => {
-                  setLocationOption(data.value as any);
+              <LocationInput
+                userID={userID}
+                onBlur={(e) => {
+                  handleBlur(e);
                 }}
-                placeholder="Location input options"
-                fluid
-                selection
-                defaultValue={locationOption}
+                dropdownOption={locationInputOption}
+                onDropdownOptionChange={setLocationInputOption}
+                businessAddress={values.businessAddress}
+                onBusinessAddressChange={(value) =>
+                  setFieldValue("businessAddress", value)
+                }
+                coordinates={[values.latitude, values.longitude]}
+                onCoordinateChange={(value) => {
+                  setFieldValue("latitude", value[0]);
+                  setFieldValue("longitude", value[1]);
+                }}
+                error={Boolean(errors["businessAddress"])}
+                loading={vendorQueryIsLoading}
               />
-              {locationOption === "address" ? (
-                <Form.Input
-                  name="businessAddress"
-                  onChange={handleChange}
-                  placeholder="Business Address"
-                  onBlur={async (e) => {
-                    handleBlur(e);
-
-                    let credentials = locationRole;
-                    if (!credentials) {
-                      const locationRoleResponse = await getLocationRole(
-                        userID
-                      );
-                      if ("error" in locationRoleResponse) {
-                        return;
-                      }
-                      credentials = locationRoleResponse.data;
-                      setLocationRole(credentials);
-                    }
-
-                    await addressToCoordinates({
-                      credentials,
-                      text: e.target.value,
-                    });
-                  }}
-                  error={
-                    touched.businessAddress && Boolean(errors.businessAddress)
-                  }
-                  value={values.businessAddress}
-                  loading={
-                    vendorQueryIsLoading || addressToCoordinatesIsLoading
-                  }
-                  required
-                />
-              ) : (
-                <Buttons
-                  getLocation
-                  clicked={onGetCoordinates}
-                  type="button"
-                  fluid
-                >
-                  Get my coordinates
-                </Buttons>
-              )}
-
               <ErrorMessage
                 name="businessAddress"
                 component="span"
                 className={styles.error}
               />
-              {addressToCoordinatesResult ? (
-                <p>
-                  Current coordinate: {addressToCoordinatesResult[0].toFixed(6)}
-                  ,&nbsp;
-                  {addressToCoordinatesResult[1].toFixed(6)}
-                </p>
-              ) : (
-                <p>
-                  Current coordinate: {values.latitude}, {values.longitude}
-                </p>
-              )}
 
               <Form.Field
                 id="vendorArea"
@@ -497,7 +418,7 @@ const EditVendorPage: React.FC = () => {
                 edit
                 color="green"
                 dirty
-                valid={isValid && !addressToCoordinatesIsLoading}
+                valid={isValid}
                 loading={isSubmitting}
               >
                 Edit

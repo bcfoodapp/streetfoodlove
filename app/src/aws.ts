@@ -6,7 +6,7 @@ import {
   LocationClient,
   SearchPlaceIndexForTextCommand,
 } from "@aws-sdk/client-location";
-import { LatLngExpression, LatLngTuple } from "leaflet";
+import { LatLngTuple } from "leaflet";
 
 function convertCredentials(
   c: AWSCredentials

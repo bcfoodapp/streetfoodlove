@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input } from "semantic-ui-react";
+import { Dropdown, Form, Input } from "semantic-ui-react";
 import {
   AWSCredentials,
   useLazyAddressToCoordinatesQuery,
@@ -14,7 +14,7 @@ interface Props {
   userID: string;
   onBlur: (event: React.FocusEvent<Input>) => void;
   dropdownOption: LocationInputDropdownValue;
-  onDropdownOptionChange: LocationInputDropdownValue;
+  onDropdownOptionChange: (value: LocationInputDropdownValue) => void;
   businessAddress: string;
   onBusinessAddressChange: (address: string) => void;
   coordinates: LatLngTuple;
@@ -26,6 +26,8 @@ interface Props {
 export default ({
   userID,
   onBlur,
+  dropdownOption,
+  onDropdownOptionChange,
   businessAddress,
   onBusinessAddressChange,
   coordinates,
@@ -33,9 +35,6 @@ export default ({
   error,
   loading,
 }: Props): React.ReactElement => {
-  const [locationOption, setLocationOption] = useState(
-    "address" as "address" | "coordinates"
-  );
   // Credentials to use for addressToCoordinates(). It is null when uninitialized.
   const [locationRole, setLocationRole] = useState(
     null as AWSCredentials | null
@@ -85,7 +84,7 @@ export default ({
 
   let input: React.ReactElement = <></>;
 
-  switch (locationOption) {
+  switch (dropdownOption) {
     case "address":
       input = (
         <Form.Input
@@ -116,6 +115,19 @@ export default ({
 
   return (
     <>
+      <Dropdown
+        options={[
+          { value: "address", text: "Use address" },
+          { value: "coordinates", text: "Use my coordinates" },
+        ]}
+        onChange={(_, data) => {
+          onDropdownOptionChange(data.value as LocationInputDropdownValue);
+        }}
+        value={dropdownOption}
+        placeholder="Location input options"
+        fluid
+        selection
+      />
       {input}
       <p>
         Current coordinate: {displayedCoordinates[0].toFixed(6)},&nbsp;
