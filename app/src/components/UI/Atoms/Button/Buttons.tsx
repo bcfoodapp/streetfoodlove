@@ -20,7 +20,7 @@ interface ButtonsProps {
   getLocation?: boolean;
   color?: ButtonProps["color"];
   create?: boolean;
-  clicked?: () => void | ((values: any) => void);
+  clicked?: () => void;
   children: React.ReactNode;
   valid?: boolean;
   dirty?: boolean;

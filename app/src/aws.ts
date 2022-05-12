@@ -6,7 +6,7 @@ import {
   LocationClient,
   SearchPlaceIndexForTextCommand,
 } from "@aws-sdk/client-location";
-import { LatLngExpression } from "leaflet";
+import { LatLngExpression, LatLngTuple } from "leaflet";
 
 function convertCredentials(
   c: AWSCredentials
@@ -53,7 +53,7 @@ export const s3Prefix = "https://streetfoodlove.s3.us-west-2.amazonaws.com/";
 export async function addressToCoordinates(
   credentials: AWSCredentials,
   text: string
-): Promise<LatLngExpression | null> {
+): Promise<LatLngTuple | null> {
   const client = new LocationClient({
     region: "us-west-2",
     credentials: fromTemporaryCredentials({
