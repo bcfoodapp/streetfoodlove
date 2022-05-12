@@ -25,6 +25,8 @@ import {
   useCreateCuisineTypeMutation,
   useCreateAreaMutation,
   useLocationRoleMutation,
+  useDeleteAreaMutation,
+  useDeleteCuisineTypeMutation,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -89,6 +91,8 @@ const EditVendorPage: React.FC = () => {
   const [coordinatesChanged, setCoordinatesChanged] = useState(false);
   const [submitCuisine] = useCreateCuisineTypeMutation();
   const [submitArea] = useCreateAreaMutation();
+  const [deleteArea] = useDeleteAreaMutation();
+  const [deleteCuisineType] = useDeleteCuisineTypeMutation();
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -103,11 +107,19 @@ const EditVendorPage: React.FC = () => {
     isLoading: vendorQueryIsLoading,
   } = useVendorByOwnerIDQuery(userID!, { skip: !userID });
 
-  const { data: cuisines } = useCuisineTypesByVendorIDQuery(userID!, {
-    skip: !userID,
-  });
+  const {
+    data: cuisines,
+    isSuccess: cuisineQueryIsSuccess,
+    isLoading: cuisineQueryIsLoading,
+  } = useCuisineTypesByVendorIDQuery(vendor?.ID!, { skip: !vendor });
 
-  const { data: areas } = useAreasByVendorIDQuery(userID!, { skip: !userID });
+  const {
+    data: areas,
+    isSuccess: areaQueryIsSuccess,
+    isLoading: areaQueryIsLoading,
+  } = useAreasByVendorIDQuery(vendor?.ID!, {
+    skip: !vendor,
+  });
 
   const [initialValues, setInitalValues] = useState({
     name: "",
@@ -128,7 +140,23 @@ const EditVendorPage: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    if (vendorQueryIsSuccess) {
+    if (vendorQueryIsSuccess && cuisineQueryIsSuccess && areaQueryIsSuccess) {
+      console.log(cuisines);
+      console.log(areas);
+
+      let currentCuisines: string[] = [];
+      let currentAreas: string[] = [];
+
+      for (const element of cuisines!) {
+        currentCuisines.push(element.CuisineType);
+      }
+
+      for (const element of areas!) {
+        currentAreas.push(element.AreaName);
+      }
+
+      console.log(currentCuisines);
+
       setInitalValues({
         businessLogo: vendor!.BusinessLogo,
         name: vendor!.Name,
@@ -141,11 +169,11 @@ const EditVendorPage: React.FC = () => {
         description: vendor!.Description,
         socialmedialink: vendor!.SocialMediaLink,
         discountEnabled: vendor!.DiscountEnabled,
-        cuisines: [""],
-        areaNames: [""],
+        cuisines: currentCuisines,
+        areaNames: currentAreas,
       });
     }
-  }, [vendorQueryIsSuccess]);
+  }, [vendorQueryIsSuccess, cuisineQueryIsSuccess, areaQueryIsSuccess]);
 
   const [getS3Credentials] = useS3CredentialsMutation();
   const [uploadToS3] = useUploadToS3Mutation();
@@ -232,7 +260,7 @@ const EditVendorPage: React.FC = () => {
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {
       for (const cuisine of data.cuisines) {
-        const cuisines = {
+        const cuisines: CuisineTypes = {
           ID: uuid(),
           VendorID: vendor!.ID,
           CuisineType: cuisine,
@@ -242,7 +270,7 @@ const EditVendorPage: React.FC = () => {
       }
 
       for (const area of data.areaNames) {
-        const areas = {
+        const areas: Areas = {
           ID: uuid(),
           VendorID: vendor!.ID,
           AreaName: area,
@@ -365,7 +393,8 @@ const EditVendorPage: React.FC = () => {
                 required
                 onBlur={handleBlur}
                 label="Vendor Operating Areas"
-                loading={vendorQueryIsLoading}
+                loading={areaQueryIsLoading}
+                value={initialValues.areaNames}
                 onChange={(_, data) => {
                   setFieldValue("areaNames", data.value);
                 }}
@@ -380,7 +409,8 @@ const EditVendorPage: React.FC = () => {
                 required
                 onBlur={handleBlur}
                 label="Cuisine Types"
-                loading={vendorQueryIsLoading}
+                loading={cuisineQueryIsLoading}
+                value={initialValues.cuisines}
                 onChange={(_, data) => {
                   setFieldValue("cuisines", data.value);
                 }}
