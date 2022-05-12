@@ -1,6 +1,4 @@
 import {
-  Button,
-  Checkbox,
   Container,
   Form,
   Header,
@@ -20,6 +18,12 @@ import {
   useS3CredentialsMutation,
   getExtension,
   useUploadToS3Mutation,
+  useCuisineTypesByVendorIDQuery,
+  CuisineTypes,
+  Areas,
+  useAreasByVendorIDQuery,
+  useCreateCuisineTypeMutation,
+  useCreateAreaMutation
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -39,8 +43,9 @@ interface inputValues {
   website: string;
   description: string;
   socialmedialink: string;
-  // vendorOperationAreas: []
   discountEnabled: boolean;
+  cuisines: CuisineTypes[];
+  areaNames: Areas[];
 }
 
 const businessHours = [
@@ -77,6 +82,8 @@ const EditVendorPage: React.FC = () => {
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
   const [coordinatesChanged, setCoordinatesChanged] = useState(false);
+  const [submitCuisine] = useCreateCuisineTypeMutation()
+  const [submitArea] = useCreateAreaMutation()
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -91,6 +98,12 @@ const EditVendorPage: React.FC = () => {
     isLoading: vendorQueryIsLoading,
   } = useVendorByOwnerIDQuery(userID!, { skip: !userID });
 
+  const { data: cuisines } = useCuisineTypesByVendorIDQuery(userID!, {
+    skip: !userID,
+  });
+
+  const { data: areas } = useAreasByVendorIDQuery(userID!, { skip: !userID });
+
   const [initialValues, setInitalValues] = useState({
     name: "",
     businessAddress: "",
@@ -101,8 +114,10 @@ const EditVendorPage: React.FC = () => {
     website: "",
     description: "",
     socialmedialink: "",
-    // vendorOperationAreas: []
     discountEnabled: false,
+    cuisines: [],
+    areaNames: [],
+    businessLogo: "",
   } as inputValues);
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -121,6 +136,8 @@ const EditVendorPage: React.FC = () => {
         description: vendor!.Description,
         socialmedialink: vendor!.SocialMediaLink,
         discountEnabled: vendor!.DiscountEnabled,
+        cuisines: cuisines!,
+        areaNames: areas!,
       });
     }
   }, [vendorQueryIsSuccess]);
@@ -143,6 +160,8 @@ const EditVendorPage: React.FC = () => {
     discountEnabled: Yup.boolean(),
     description: Yup.string(),
     socialmedialink: Yup.string(),
+    cuisines: Yup.array().min(1).required("Required"),
+    areaNames: Yup.array().min(1).required("Required"),
   });
 
   const onSubmit = async (data: inputValues) => {
@@ -180,6 +199,27 @@ const EditVendorPage: React.FC = () => {
     };
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {
+      // console.log(data)
+      // console.log(data.cuisines);
+
+      for (const cuisine of data.cuisines) {
+
+        // console.log(cuisineTypes);
+        // const cuisines = {
+        //   ID: uuid(),
+        //   VendorID: vendor!.ID,
+        //   CuisineType: cuisine
+        // }
+
+        // console.log(cuisine)
+
+        await submitCuisine({ID: uuid(), CuisineType: cuisine});
+      }
+
+      for (const area of data.areaNames) {
+
+        await submitArea(area);
+      }
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
@@ -310,9 +350,9 @@ const EditVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 label="Vendor Operating Areas"
                 loading={vendorQueryIsLoading}
-                // onChange={(_, area) => {
-                //   setFieldValue("")
-                // }}
+                onChange={(_, data) => {
+                  setFieldValue("areaNames", data.value);
+                }}
               />
               <Form.Field
                 id="cuisineTypes"
@@ -325,9 +365,9 @@ const EditVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 label="Cuisine Types"
                 loading={vendorQueryIsLoading}
-                // onChange={(_, area) => {
-                //   setFieldValue("")
-                // }}
+                onChange={(_, data) => {
+                  setFieldValue("cuisines", data.value);
+                }}
               />
               <Form.Input
                 name="phoneNumber"
