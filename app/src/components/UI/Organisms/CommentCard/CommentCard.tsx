@@ -144,7 +144,6 @@ const CommentCard: React.FC<{
         ) : null}
       </Container>
       <Container>
-        {" "}
         <CommentCardContainer commentID={commentID} vendorID={vendorID} />
       </Container>
     </>
