@@ -24,6 +24,7 @@ import {
   useAreasByVendorIDQuery,
   useCreateCuisineTypeMutation,
   useCreateAreaMutation
+  useLocationRoleMutation,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -31,6 +32,10 @@ import React, { useEffect, useState } from "react";
 import DragAndDrop from "../Organisms/DragAndDrop/DragAndDrop";
 import { s3Prefix } from "../../../aws";
 import { v4 as uuid } from "uuid";
+import * as aws from "../../../aws";
+import LocationInput, {
+  LocationInputDropdownValue,
+} from "../Molecules/LocationInput/LocationInput";
 
 interface inputValues {
   name: string;
@@ -144,6 +149,11 @@ const EditVendorPage: React.FC = () => {
 
   const [getS3Credentials] = useS3CredentialsMutation();
   const [uploadToS3] = useUploadToS3Mutation();
+  const [getLocationRole] = useLocationRoleMutation();
+
+  const [locationInputOption, setLocationInputOption] = useState(
+    "address" as LocationInputDropdownValue
+  );
 
   if (userID === null) {
     return <p>Not logged in</p>;
@@ -197,6 +207,28 @@ const EditVendorPage: React.FC = () => {
       Owner: vendor!.Owner,
       DiscountEnabled: data.discountEnabled,
     };
+
+    switch (locationInputOption) {
+      case "address":
+        // Since location input is address, set coordinate using address
+        const locationRoleResponse = await getLocationRole(userID);
+        if ("error" in locationRoleResponse) {
+          return;
+        }
+
+        // For some reason, useLazyQuery does not return the result, so aws.addressToCoordinates() is
+        // called directly.
+        const coordinates = await aws.addressToCoordinates(
+          locationRoleResponse.data,
+          data.businessAddress
+        );
+        if (coordinates) {
+          updatedVendor.Latitude = coordinates[0];
+          updatedVendor.Longitude = coordinates[1];
+        }
+        break;
+    }
+
     const response = await updateVendor(updatedVendor);
     if ("data" in response) {
       // console.log(data)
@@ -252,18 +284,6 @@ const EditVendorPage: React.FC = () => {
             setFieldValue,
           } = formProps;
 
-          const onGetCoordinates = () =>
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                setFieldValue("latitude", position.coords.latitude);
-                setFieldValue("longitude", position.coords.longitude);
-                setCoordinatesChanged(true);
-              },
-              (e) => {
-                throw new Error(e.message);
-              }
-            );
-
           return (
             <Form
               onSubmit={handleSubmit}
@@ -308,37 +328,34 @@ const EditVendorPage: React.FC = () => {
                   <br />
                 </>
               ) : null}
-              <Form.Input
-                name="businessAddress"
-                onChange={handleChange}
-                label="Business Address"
-                placeholder="Business Address"
-                onBlur={handleBlur}
-                error={
-                  touched.businessAddress && Boolean(errors.businessAddress)
+              <strong>
+                Location <span style={{ color: "#db2828" }}>*</span>
+              </strong>
+              <LocationInput
+                userID={userID}
+                onBlur={(e) => {
+                  handleBlur(e);
+                }}
+                dropdownOption={locationInputOption}
+                onDropdownOptionChange={setLocationInputOption}
+                businessAddress={values.businessAddress}
+                onBusinessAddressChange={(value) =>
+                  setFieldValue("businessAddress", value)
                 }
-                value={values.businessAddress}
+                coordinates={[values.latitude, values.longitude]}
+                onCoordinateChange={(value) => {
+                  setFieldValue("latitude", value[0]);
+                  setFieldValue("longitude", value[1]);
+                }}
+                error={Boolean(errors["businessAddress"])}
                 loading={vendorQueryIsLoading}
-                required
               />
               <ErrorMessage
                 name="businessAddress"
                 component="span"
                 className={styles.error}
               />
-              <strong>Coordinates</strong>
-              <br />
-              <Buttons getLocation clicked={onGetCoordinates} type="button">
-                Get current location
-              </Buttons>
-              {coordinatesChanged ? (
-                <>
-                  <br />
-                  {values.latitude}, {values.longitude}
-                </>
-              ) : null}
-              <br />
-              <br />
+
               <Form.Field
                 id="vendorArea"
                 control={Select}

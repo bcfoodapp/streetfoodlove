@@ -186,7 +186,6 @@ func (b *Backend) ReviewCreate(userID uuid.UUID, review *database.Review) (*Revi
 		return nil, err
 	}
 
-	// TODO return review object instead of ReviewCreateResponse
 	return &ReviewCreateResponse{DiscountCreated: review.ReceivedDiscount}, nil
 }
 
