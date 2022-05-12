@@ -62,6 +62,9 @@ export function Vendor(): React.ReactElement {
   const [getS3Credentials] = useS3CredentialsMutation();
   const [discountRewarded, setDiscountRewarded] = useState(false);
   const [uploadToS3] = useUploadToS3Mutation();
+  const { data: newchart } = useNewChartQuery();
+
+  console.log("newchart: " + JSON.stringify(newchart));
 
   const completedReviewHandler = async ({
     text,
@@ -84,6 +87,7 @@ export function Vendor(): React.ReactElement {
       StarRating: starRating,
       ReplyTo: null,
       VendorFavorite: false,
+      ReceivedDiscount: false,
     };
     const reviewResponse = await submitReview(review);
     if ("error" in reviewResponse) {

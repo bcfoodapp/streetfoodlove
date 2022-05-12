@@ -68,7 +68,8 @@ func SetupTables(db *sqlx.DB) error {
 			DatePosted DATETIME NULL,
 			StarRating TINYINT NULL,
 			ReplyTo CHAR(36) NULL,
-			VendorFavorite TINYINT,
+			VendorFavorite BOOLEAN,
+			ReceivedDiscount BOOLEAN,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
 			ON DELETE CASCADE ON UPDATE CASCADE,
@@ -127,9 +128,10 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE Areas (
+			ID CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
 			AreaName VARCHAR(45) NOT NULL, 
-			PRIMARY KEY (VendorID, AreaName),
+			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
@@ -496,14 +498,15 @@ func (d *Database) UserIDByGoogleID(googleID string) (uuid.UUID, error) {
 }
 
 type Review struct {
-	ID             uuid.UUID
-	Text           string
-	VendorID       uuid.UUID
-	UserID         uuid.UUID
-	DatePosted     time.Time
-	StarRating     *int
-	ReplyTo        *uuid.UUID
-	VendorFavorite bool
+	ID               uuid.UUID
+	Text             string
+	VendorID         uuid.UUID
+	UserID           uuid.UUID
+	DatePosted       time.Time
+	StarRating       *int
+	ReplyTo          *uuid.UUID
+	VendorFavorite   bool
+	ReceivedDiscount bool
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -516,7 +519,8 @@ func (d *Database) ReviewCreate(review *Review) error {
 			DatePosted,
 			StarRating,
 			ReplyTo,
-		    VendorFavorite
+			VendorFavorite,
+			ReceivedDiscount
 		) VALUES (
 			:ID,
 			:Text,
@@ -525,7 +529,8 @@ func (d *Database) ReviewCreate(review *Review) error {
 			:DatePosted,
 			:StarRating,
 			:ReplyTo,
-			:VendorFavorite
+			:VendorFavorite,
+			:ReceivedDiscount
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
@@ -551,7 +556,8 @@ func (d *Database) ReviewUpdate(review *Review) error {
 			DatePosted = :DatePosted,
 			StarRating = :StarRating,
 			ReplyTo = :ReplyTo,
-			VendorFavorite = :VendorFavorite
+			VendorFavorite = :VendorFavorite,
+			ReceivedDiscount = :ReceivedDiscount
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &review)
@@ -942,6 +948,7 @@ func (d *Database) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
 }
 
 type Areas struct {
+	ID       uuid.UUID
 	VendorID uuid.UUID
 	AreaName string
 }
@@ -949,15 +956,27 @@ type Areas struct {
 func (d *Database) AreasCreate(area *Areas) error {
 	const command = `
 		INSERT INTO Areas (
+			ID,
 			VendorID,
 			AreaName
 		) VALUES (
+			:ID,
 			:VendorID,
 			:AreaName
 		)
 	`
 	_, err := d.db.NamedExec(command, area)
 	return err
+}
+
+func (d *Database) Area(id uuid.UUID) (*Areas, error) {
+	const command = `
+		SELECT * FROM Areas WHERE ID=?
+	`
+
+	Area := &Areas{}
+	err := d.db.QueryRowx(command, &id).StructScan(Area)
+	return Area, err
 }
 
 func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
@@ -984,14 +1003,13 @@ func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
 	return result, rows.Err()
 }
 
-func (d *Database) Area(vendorID uuid.UUID, areaName string) (*Areas, error) {
+func (d *Database) AreasDelete(id uuid.UUID) error {
 	const command = `
-		SELECT * FROM Areas WHERE VendorID=? AND AreaName=?
+		DELETE FROM Areas WHERE ID=?
 	`
 
-	Area := &Areas{}
-	err := d.db.QueryRowx(command, &vendorID, &areaName).StructScan(Area)
-	return Area, err
+	_, err := d.db.Exec(command, &id)
+	return err
 }
 
 type CuisineTypes struct {
@@ -1014,6 +1032,16 @@ func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
 	`
 	_, err := d.db.NamedExec(command, cuisineType)
 	return err
+}
+
+func (d *Database) CuisineType(id uuid.UUID) (*CuisineTypes, error) {
+	const command = `
+		SELECT * FROM CuisineTypes WHERE ID=?
+	`
+
+	CuisineType := &CuisineTypes{}
+	err := d.db.QueryRowx(command, &id).StructScan(CuisineType)
+	return CuisineType, err
 }
 
 func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, error) {
@@ -1040,14 +1068,13 @@ func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, er
 	return result, rows.Err()
 }
 
-func (d *Database) CuisineType(ID uuid.UUID) (*CuisineTypes, error) {
+func (d *Database) CuisineTypesDelete(id uuid.UUID) error {
 	const command = `
-		SELECT * FROM CuisineTypes WHERE VendorID=? AND CuisineType=?
+		DELETE FROM CuisineTypes WHERE ID=?
 	`
 
-	CuisineType := &CuisineTypes{}
-	err := d.db.QueryRowx(command, &ID).StructScan(CuisineType)
-	return CuisineType, err
+	_, err := d.db.Exec(command, &id)
+	return err
 }
 
 type Query struct {
