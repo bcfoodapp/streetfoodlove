@@ -23,6 +23,8 @@ interface Props {
   loading: boolean;
 }
 
+// For inputting location data. Has a dropdown menu and either an address input or get coordinates
+// button.
 export default ({
   userID,
   onBlur,
@@ -82,14 +84,14 @@ export default ({
     );
   };
 
-  let input: React.ReactElement = <></>;
+  let input = <></>;
 
   switch (dropdownOption) {
     case "address":
       input = (
         <Form.Input
           name="businessAddress"
-          onChange={(_, data) => onBusinessAddressChange(data.value)}
+          onChange={(_, { value }) => onBusinessAddressChange(value)}
           placeholder="Business Address"
           onBlur={onAddressBlur}
           error={error}
@@ -120,8 +122,8 @@ export default ({
           { value: "address", text: "Use address" },
           { value: "coordinates", text: "Use my coordinates" },
         ]}
-        onChange={(_, data) => {
-          onDropdownOptionChange(data.value as LocationInputDropdownValue);
+        onChange={(_, { value }) => {
+          onDropdownOptionChange(value as LocationInputDropdownValue);
         }}
         value={dropdownOption}
         placeholder="Location input options"
