@@ -23,7 +23,7 @@ import {
   Areas,
   useAreasByVendorIDQuery,
   useCreateCuisineTypeMutation,
-  useCreateAreaMutation
+  useCreateAreaMutation,
   useLocationRoleMutation,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
@@ -235,6 +235,7 @@ const EditVendorPage: React.FC = () => {
       // console.log(data.cuisines);
 
       for (const cuisine of data.cuisines) {
+        console.log(cuisine)
 
         // console.log(cuisineTypes);
         // const cuisines = {
