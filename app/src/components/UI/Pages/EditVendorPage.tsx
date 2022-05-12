@@ -213,7 +213,7 @@ const EditVendorPage: React.FC = () => {
 
         // console.log(cuisine)
 
-        await submitCuisine({ID: uuid(), CuisineType: cuisine});
+        // await submitCuisine({ID: uuid(), CuisineType: cuisine});
       }
 
       for (const area of data.areaNames) {
