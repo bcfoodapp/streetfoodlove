@@ -14,7 +14,7 @@ import jwtDecode from "jwt-decode";
 import config from "./configuration.json";
 import { v4 as uuid } from "uuid";
 import { DependencyList, useEffect } from "react";
-import { addressToCoordinates, uploadToS3 } from "./aws";
+import { addressToCoordinates, coordinatesToAddress, uploadToS3 } from "./aws";
 import { LatLngTuple } from "leaflet";
 
 export interface Vendor {
@@ -646,6 +646,14 @@ export const apiSlice = createApi({
         return { data: await addressToCoordinates(credentials, text) };
       },
     }),
+    coordinatesToAddress: builder.query<
+      string | null,
+      { credentials: AWSCredentials; coordinates: LatLngTuple }
+    >({
+      queryFn: async ({ credentials, coordinates }) => {
+        return { data: await coordinatesToAddress(credentials, coordinates) };
+      },
+    }),
     // Returns true if star exists
     starExists: builder.query<boolean, Star>({
       queryFn: async (star, api) => {
@@ -935,6 +943,7 @@ export const {
   useUploadToS3Mutation,
   useLocationRoleMutation,
   useLazyAddressToCoordinatesQuery,
+  useLazyCoordinatesToAddressQuery,
   useStarExistsQuery,
   useStarsByUserIDQuery,
   useCreateStarMutation,
