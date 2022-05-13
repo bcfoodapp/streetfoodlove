@@ -49,12 +49,8 @@ export async function uploadToS3(
 // The S3 bucket URL
 export const s3Prefix = "https://streetfoodlove.s3.us-west-2.amazonaws.com/";
 
-// Returns the coordinates of the best match for the given address, if found.
-export async function addressToCoordinates(
-  credentials: AWSCredentials,
-  text: string
-): Promise<LatLngTuple | null> {
-  const client = new LocationClient({
+function locationClient(credentials: AWSCredentials) {
+  return new LocationClient({
     region: "us-west-2",
     credentials: fromTemporaryCredentials({
       clientConfig: {
@@ -66,6 +62,14 @@ export async function addressToCoordinates(
       },
     }),
   });
+}
+
+// Returns the coordinates of the best match for the given address, if found.
+export async function addressToCoordinates(
+  credentials: AWSCredentials,
+  text: string
+): Promise<LatLngTuple | null> {
+  const client = locationClient(credentials);
 
   const command = new SearchPlaceIndexForTextCommand({
     IndexName: "sfl-place",
