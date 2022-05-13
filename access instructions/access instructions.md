@@ -13,4 +13,4 @@ Hello, and thanks for choosing to participate in our usability test! Since we do
 There is no guarantee of security in our app, so please follow these rules:
 
 - Use a new password, not a password you use anywhere else, if you want to create an account.
-- Do not use the Sign-in with Google feature on the login page. While we are proud of this feature, it is not guaranteed to be secure on our app.
+- Do not use the Sign-in with Google feature on the login page. While we are proud of this feature, it is not guaranteed to be secure.
