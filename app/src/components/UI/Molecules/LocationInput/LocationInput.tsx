@@ -3,6 +3,7 @@ import { Dropdown, Form, Input } from "semantic-ui-react";
 import {
   AWSCredentials,
   useLazyAddressToCoordinatesQuery,
+  useLazyCoordinatesToAddressQuery,
   useLocationRoleMutation,
 } from "../../../../api";
 import Buttons from "../../Atoms/Button/Buttons";
@@ -50,22 +51,33 @@ export default ({
       isLoading: addressToCoordinatesIsLoading,
     },
   ] = useLazyAddressToCoordinatesQuery();
+  const [
+    coordinatesToAddress,
+    {
+      data: coordinatesToAddressResult,
+      isLoading: coordinatesToAddressIsLoading,
+    },
+  ] = useLazyCoordinatesToAddressQuery();
+
+  // Returns cached credentials.
+  const cachedLocationRole = async () => {
+    if (locationRole) {
+      return locationRole;
+    }
+
+    const locationRoleResponse = await getLocationRole(userID);
+    if ("error" in locationRoleResponse) {
+      throw new Error("LocationRoleMutation threw error");
+    }
+    setLocationRole(locationRoleResponse.data);
+    return locationRoleResponse.data;
+  };
 
   const onAddressBlur = async (e) => {
     onBlur(e);
 
-    let credentials = locationRole;
-    if (!credentials) {
-      const locationRoleResponse = await getLocationRole(userID);
-      if ("error" in locationRoleResponse) {
-        return;
-      }
-      credentials = locationRoleResponse.data;
-      setLocationRole(credentials);
-    }
-
     await addressToCoordinates({
-      credentials,
+      credentials: await cachedLocationRole(),
       text: e.target.value,
     });
   };
