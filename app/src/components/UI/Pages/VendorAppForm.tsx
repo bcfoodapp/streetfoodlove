@@ -331,7 +331,9 @@ export default function VendorAppForm(): React.ReactElement {
                   value={values.website}
                   error={touched.website && Boolean(errors.website)}
                 />
-                <h5>Business Hours: </h5>
+                <h5>
+                  Business Hours <span style={{ color: "#db2828" }}>*</span>
+                </h5>
                 <Dropdown
                   placeholder="From"
                   selection
