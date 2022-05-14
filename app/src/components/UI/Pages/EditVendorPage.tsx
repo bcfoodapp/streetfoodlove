@@ -113,8 +113,6 @@ const EditVendorPage: React.FC = () => {
     isLoading: cuisineQueryIsLoading,
   } = useCuisineTypesByVendorIDQuery(vendor?.ID!, { skip: !vendor });
 
-  console.log(cuisines);
-
   const {
     data: areas,
     isSuccess: areaQueryIsSuccess,
@@ -143,9 +141,6 @@ const EditVendorPage: React.FC = () => {
 
   useEffect(() => {
     if (vendorQueryIsSuccess && cuisineQueryIsSuccess && areaQueryIsSuccess) {
-      console.log(cuisines);
-      console.log(areas);
-
       let currentCuisines: string[] = [];
       let currentAreas: string[] = [];
 
@@ -156,8 +151,6 @@ const EditVendorPage: React.FC = () => {
       for (const element of areas!) {
         currentAreas.push(element.AreaName);
       }
-
-      console.log(currentCuisines);
 
       setInitalValues({
         businessLogo: vendor!.BusinessLogo,
@@ -262,8 +255,6 @@ const EditVendorPage: React.FC = () => {
     const response = await updateVendor(updatedVendor);
 
     if ("data" in response) {
-      // await deleteCuisineType(data.cuisines[0].)
-
       for (let queriedCuisines of cuisines!) {
         await deleteCuisineType(queriedCuisines.ID);
       }
@@ -425,10 +416,7 @@ const EditVendorPage: React.FC = () => {
                 loading={cuisineQueryIsLoading}
                 value={values.cuisines}
                 onChange={(_, cuisine) => {
-                  console.log(values.cuisines);
                   setFieldValue("cuisines", cuisine.value);
-                  console.log(initialValues.cuisines);
-                  console.log(cuisine.value);
                 }}
               />
               <Form.Input
