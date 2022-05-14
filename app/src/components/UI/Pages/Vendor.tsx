@@ -62,9 +62,6 @@ export function Vendor(): React.ReactElement {
   const [getS3Credentials] = useS3CredentialsMutation();
   const [discountRewarded, setDiscountRewarded] = useState(false);
   const [uploadToS3] = useUploadToS3Mutation();
-  const { data: newchart } = useNewChartQuery();
-
-  console.log("newchart: " + JSON.stringify(newchart));
 
   const completedReviewHandler = async ({
     text,
@@ -190,7 +187,6 @@ export function Vendor(): React.ReactElement {
               <VendorDetailCards heading="map">
                 {vendor ? (
                   <iframe
-                    frameBorder="0"
                     style={{ border: 0, width: "100%", height: "100%" }}
                     src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAYGdHFH-OPCSqQkGrQygGw--zgcQWAv3Y&q=${vendor.Latitude},${vendor.Longitude}`}
                     allowFullScreen

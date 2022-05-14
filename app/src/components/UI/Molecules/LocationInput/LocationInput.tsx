@@ -3,6 +3,7 @@ import { Dropdown, Form, Input } from "semantic-ui-react";
 import {
   AWSCredentials,
   useLazyAddressToCoordinatesQuery,
+  useLazyCoordinatesToAddressQuery,
   useLocationRoleMutation,
 } from "../../../../api";
 import Buttons from "../../Atoms/Button/Buttons";
@@ -50,33 +51,45 @@ export default ({
       isLoading: addressToCoordinatesIsLoading,
     },
   ] = useLazyAddressToCoordinatesQuery();
+  const [coordinatesToAddress, { data: coordinatesToAddressResult }] =
+    useLazyCoordinatesToAddressQuery();
+
+  // Returns cached credentials.
+  const cachedLocationRole = async () => {
+    if (locationRole) {
+      return locationRole;
+    }
+
+    const locationRoleResponse = await getLocationRole(userID);
+    if ("error" in locationRoleResponse) {
+      throw new Error("LocationRoleMutation threw error");
+    }
+    setLocationRole(locationRoleResponse.data);
+    return locationRoleResponse.data;
+  };
 
   const onAddressBlur = async (e) => {
     onBlur(e);
 
-    let credentials = locationRole;
-    if (!credentials) {
-      const locationRoleResponse = await getLocationRole(userID);
-      if ("error" in locationRoleResponse) {
-        return;
-      }
-      credentials = locationRoleResponse.data;
-      setLocationRole(credentials);
-    }
-
     await addressToCoordinates({
-      credentials,
+      credentials: await cachedLocationRole(),
       text: e.target.value,
     });
   };
 
   const onGetCoordinates = async () => {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        onCoordinateChange([
+      async (position) => {
+        const coordinates: LatLngTuple = [
           position.coords.latitude,
           position.coords.longitude,
-        ]);
+        ];
+        onCoordinateChange(coordinates);
+
+        await coordinatesToAddress({
+          credentials: await cachedLocationRole(),
+          coordinates,
+        });
       },
       (e) => {
         throw new Error(e.message);
@@ -104,7 +117,7 @@ export default ({
     case "coordinates":
       input = (
         <Buttons getLocation clicked={onGetCoordinates} type="button" fluid>
-          Get my coordinates
+          Get GPS coordinates and address
         </Buttons>
       );
       break;
@@ -115,12 +128,17 @@ export default ({
     displayedCoordinates = addressToCoordinatesResult;
   }
 
+  let displayedAddress = businessAddress;
+  if (coordinatesToAddressResult) {
+    displayedAddress = coordinatesToAddressResult;
+  }
+
   return (
     <>
       <Dropdown
         options={[
           { value: "address", text: "Use address" },
-          { value: "coordinates", text: "Use my coordinates" },
+          { value: "coordinates", text: "Use my GPS coordinates" },
         ]}
         onChange={(_, { value }) => {
           onDropdownOptionChange(value as LocationInputDropdownValue);
@@ -132,8 +150,11 @@ export default ({
       />
       {input}
       <p>
-        Current coordinate: {displayedCoordinates[0].toFixed(6)},&nbsp;
-        {displayedCoordinates[1].toFixed(6)}
+        {dropdownOption === "address"
+          ? `Current coordinate: ${displayedCoordinates[0].toFixed(
+              6
+            )}, ${displayedCoordinates[1].toFixed(6)}`
+          : `Current address: ${displayedAddress}`}
       </p>
     </>
   );
