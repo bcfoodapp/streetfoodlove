@@ -138,7 +138,7 @@ export default ({
       <Dropdown
         options={[
           { value: "address", text: "Use address" },
-          { value: "coordinates", text: "Use my coordinates" },
+          { value: "coordinates", text: "Use GPS coordinates and address" },
         ]}
         onChange={(_, { value }) => {
           onDropdownOptionChange(value as LocationInputDropdownValue);
