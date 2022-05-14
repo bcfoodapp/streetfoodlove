@@ -88,7 +88,6 @@ const EditVendorPage: React.FC = () => {
   const [getToken] = useGetTokenMutation();
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
-  const [coordinatesChanged, setCoordinatesChanged] = useState(false);
   const [submitCuisine] = useCreateCuisineTypeMutation();
   const [submitArea] = useCreateAreaMutation();
   const [deleteArea] = useDeleteAreaMutation();
@@ -376,9 +375,7 @@ const EditVendorPage: React.FC = () => {
               </strong>
               <LocationInput
                 userID={userID}
-                onBlur={(e) => {
-                  handleBlur(e);
-                }}
+                onBlur={handleBlur}
                 dropdownOption={locationInputOption}
                 onDropdownOptionChange={setLocationInputOption}
                 businessAddress={values.businessAddress}
@@ -390,7 +387,9 @@ const EditVendorPage: React.FC = () => {
                   setFieldValue("latitude", value[0]);
                   setFieldValue("longitude", value[1]);
                 }}
-                error={Boolean(errors["businessAddress"])}
+                error={
+                  touched.businessAddress && Boolean(errors.businessAddress)
+                }
                 loading={vendorQueryIsLoading}
               />
               <ErrorMessage

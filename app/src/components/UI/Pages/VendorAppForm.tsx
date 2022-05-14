@@ -18,6 +18,9 @@ import {
 } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
+import LocationInput, {
+  LocationInputDropdownValue,
+} from "../Molecules/LocationInput/LocationInput";
 
 const vendorOperatingAreas = [
   { key: "Bothell", text: "Bothell", value: "Bothell" },
@@ -43,6 +46,8 @@ const cuisineTypes = [
 interface inputValues {
   name: string;
   businessAddress: string;
+  latitude: number;
+  longitude: number;
   phoneNumber: string;
   fromHour: string;
   toHour: string;
@@ -56,23 +61,25 @@ export default function VendorAppForm(): React.ReactElement {
   const navigate = useNavigate();
   const [createVendor] = useCreateVendorMutation();
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  const [token, setToken] = useState(null as string | null);
+  const [userID, setUserID] = useState(null as string | null);
+  const [locationInputOption, setLocationInputOption] = useState(
+    "address" as LocationInputDropdownValue
+  );
   const [submitCuisine] = useCreateCuisineTypeMutation();
   const [submitArea] = useCreateAreaMutation();
 
   useEffectAsync(async () => {
     const response = await getToken();
-    if ("data" in response) {
-      setToken(response.data);
+    if ("data" in response && response.data) {
+      setUserID(getUserIDFromToken(response.data));
     }
   }, []);
 
-  if (!tokenIsSuccess || token === null) {
+  if (userID === null) {
     return <p>Not logged in</p>;
   }
 
   const onSubmit = async (data: inputValues) => {
-    const userID = getUserIDFromToken(token);
     const vendor: Vendor = {
       ID: uuid(),
       Name: data.name,
@@ -157,6 +164,8 @@ export default function VendorAppForm(): React.ReactElement {
   const initialValues: inputValues = {
     name: "",
     businessAddress: "",
+    latitude: 0,
+    longitude: 0,
     website: "",
     fromHour: "",
     toHour: "",
@@ -187,7 +196,7 @@ export default function VendorAppForm(): React.ReactElement {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={onSubmit}
-          validateOnChange={true}
+          validateOnChange
         >
           {(formProps: FormikProps<inputValues>) => {
             const {
@@ -221,16 +230,23 @@ export default function VendorAppForm(): React.ReactElement {
                   value={values.name}
                   error={touched.name && Boolean(errors.name)}
                 />
-                <Form.Input
-                  fluid
-                  label="Business Address"
-                  placeholder="Business Address"
-                  required
-                  width={10}
-                  name="businessAddress"
-                  onChange={handleChange}
+                <strong>
+                  Location <span style={{ color: "#db2828" }}>*</span>
+                </strong>
+                <LocationInput
+                  userID={userID}
                   onBlur={handleBlur}
-                  value={values.businessAddress}
+                  dropdownOption={locationInputOption}
+                  onDropdownOptionChange={setLocationInputOption}
+                  businessAddress={values.businessAddress}
+                  onBusinessAddressChange={(value) => {
+                    setFieldValue("businessAddress", value);
+                  }}
+                  coordinates={[values.latitude, values.longitude]}
+                  onCoordinateChange={(value) => {
+                    setFieldValue("latitude", value[0]);
+                    setFieldValue("longitude", value[1]);
+                  }}
                   error={
                     touched.businessAddress && Boolean(errors.businessAddress)
                   }

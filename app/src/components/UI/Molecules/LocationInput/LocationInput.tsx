@@ -20,8 +20,8 @@ interface Props {
   onBusinessAddressChange: (address: string) => void;
   coordinates: LatLngTuple;
   onCoordinateChange: (coordinate: LatLngTuple) => void;
-  error: boolean;
-  loading: boolean;
+  error?: boolean;
+  loading?: boolean;
 }
 
 // For inputting location data. Has a dropdown menu and either an address input or get coordinates
@@ -151,10 +151,10 @@ export default ({
       {input}
       <p>
         {dropdownOption === "address"
-          ? `Current coordinate: ${displayedCoordinates[0].toFixed(
+          ? `Coordinates: ${displayedCoordinates[0].toFixed(
               6
             )}, ${displayedCoordinates[1].toFixed(6)}`
-          : `Current address: ${displayedAddress}`}
+          : `Address: ${displayedAddress}`}
       </p>
     </>
   );
