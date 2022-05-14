@@ -258,26 +258,35 @@ const EditVendorPage: React.FC = () => {
     }
 
     const response = await updateVendor(updatedVendor);
+
     if ("data" in response) {
-      for (const cuisine of data.cuisines) {
-        const cuisines: CuisineTypes = {
-          ID: uuid(),
-          VendorID: vendor!.ID,
-          CuisineType: cuisine,
-        };
+      console.log(initialValues.cuisines)
+      // console.log(initialValues.cuisines.filter(x => !data.cuisines.includes(x)))
+      let cuisinesToBeDeleted = initialValues.cuisines.filter(x => !data.cuisines.includes(x))
 
-        await submitCuisine(cuisines);
+      for (const cuisine of cuisinesToBeDeleted) {
+        await deleteCuisineType(cuisine)
       }
+      
+      // for (const cuisine of data.cuisines) {
+      //   const cuisines: CuisineTypes = {
+      //     ID: uuid(),
+      //     VendorID: vendor!.ID,
+      //     CuisineType: cuisine,
+      //   };
 
-      for (const area of data.areaNames) {
-        const areas: Areas = {
-          ID: uuid(),
-          VendorID: vendor!.ID,
-          AreaName: area,
-        };
+      //   await submitCuisine(cuisines);
+      // }
 
-        await submitArea(areas);
-      }
+      // for (const area of data.areaNames) {
+      //   const areas: Areas = {
+      //     ID: uuid(),
+      //     VendorID: vendor!.ID,
+      //     AreaName: area,
+      //   };
+
+      //   await submitArea(areas);
+      // }
 
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
@@ -394,9 +403,9 @@ const EditVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 label="Vendor Operating Areas"
                 loading={areaQueryIsLoading}
-                value={initialValues.areaNames}
-                onChange={(_, data) => {
-                  setFieldValue("areaNames", data.value);
+                value={values.areaNames}
+                onChange={(_, areas) => {
+                  setFieldValue("areaNames", areas.value);
                 }}
               />
               <Form.Field
@@ -410,9 +419,12 @@ const EditVendorPage: React.FC = () => {
                 onBlur={handleBlur}
                 label="Cuisine Types"
                 loading={cuisineQueryIsLoading}
-                value={initialValues.cuisines}
-                onChange={(_, data) => {
-                  setFieldValue("cuisines", data.value);
+                value={values.cuisines}
+                onChange={(_, cuisine) => {
+                  console.log(values.cuisines)
+                  setFieldValue("cuisines", cuisine.value);
+                  console.log(initialValues.cuisines)
+                  console.log(cuisine.value)
                 }}
               />
               <Form.Input
