@@ -113,6 +113,8 @@ const EditVendorPage: React.FC = () => {
     isLoading: cuisineQueryIsLoading,
   } = useCuisineTypesByVendorIDQuery(vendor?.ID!, { skip: !vendor });
 
+  console.log(cuisines);
+
   const {
     data: areas,
     isSuccess: areaQueryIsSuccess,
@@ -260,33 +262,35 @@ const EditVendorPage: React.FC = () => {
     const response = await updateVendor(updatedVendor);
 
     if ("data" in response) {
-      console.log(initialValues.cuisines)
-      // console.log(initialValues.cuisines.filter(x => !data.cuisines.includes(x)))
-      let cuisinesToBeDeleted = initialValues.cuisines.filter(x => !data.cuisines.includes(x))
+      // await deleteCuisineType(data.cuisines[0].)
 
-      for (const cuisine of cuisinesToBeDeleted) {
-        await deleteCuisineType(cuisine)
+      for (let queriedCuisines of cuisines!) {
+        await deleteCuisineType(queriedCuisines.ID);
       }
-      
-      // for (const cuisine of data.cuisines) {
-      //   const cuisines: CuisineTypes = {
-      //     ID: uuid(),
-      //     VendorID: vendor!.ID,
-      //     CuisineType: cuisine,
-      //   };
 
-      //   await submitCuisine(cuisines);
-      // }
+      for (const cuisine of data.cuisines) {
+        const cuisines: CuisineTypes = {
+          ID: uuid(),
+          VendorID: vendor!.ID,
+          CuisineType: cuisine,
+        };
 
-      // for (const area of data.areaNames) {
-      //   const areas: Areas = {
-      //     ID: uuid(),
-      //     VendorID: vendor!.ID,
-      //     AreaName: area,
-      //   };
+        await submitCuisine(cuisines);
+      }
 
-      //   await submitArea(areas);
-      // }
+      for (let queriedAreas of areas!) {
+        await deleteArea(queriedAreas.ID);
+      }
+
+      for (const area of data.areaNames) {
+        const areas: Areas = {
+          ID: uuid(),
+          VendorID: vendor!.ID,
+          AreaName: area,
+        };
+
+        await submitArea(areas);
+      }
 
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
@@ -421,10 +425,10 @@ const EditVendorPage: React.FC = () => {
                 loading={cuisineQueryIsLoading}
                 value={values.cuisines}
                 onChange={(_, cuisine) => {
-                  console.log(values.cuisines)
+                  console.log(values.cuisines);
                   setFieldValue("cuisines", cuisine.value);
-                  console.log(initialValues.cuisines)
-                  console.log(cuisine.value)
+                  console.log(initialValues.cuisines);
+                  console.log(cuisine.value);
                 }}
               />
               <Form.Input
