@@ -15,9 +15,14 @@ import {
   useCreateAreaMutation,
   CuisineTypes,
   Areas,
+  useLocationRoleMutation,
 } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
+import LocationInput, {
+  LocationInputDropdownValue,
+} from "../Molecules/LocationInput/LocationInput";
+import * as aws from "../../../aws";
 
 const vendorOperatingAreas = [
   { key: "Bothell", text: "Bothell", value: "Bothell" },
@@ -43,6 +48,8 @@ const cuisineTypes = [
 interface inputValues {
   name: string;
   businessAddress: string;
+  latitude: number;
+  longitude: number;
   phoneNumber: string;
   fromHour: string;
   toHour: string;
@@ -56,23 +63,26 @@ export default function VendorAppForm(): React.ReactElement {
   const navigate = useNavigate();
   const [createVendor] = useCreateVendorMutation();
   const [getToken, { isSuccess: tokenIsSuccess }] = useGetTokenMutation();
-  const [token, setToken] = useState(null as string | null);
+  const [userID, setUserID] = useState(null as string | null);
+  const [locationInputOption, setLocationInputOption] = useState(
+    "address" as LocationInputDropdownValue
+  );
   const [submitCuisine] = useCreateCuisineTypeMutation();
   const [submitArea] = useCreateAreaMutation();
+  const [getLocationRole] = useLocationRoleMutation();
 
   useEffectAsync(async () => {
     const response = await getToken();
-    if ("data" in response) {
-      setToken(response.data);
+    if ("data" in response && response.data) {
+      setUserID(getUserIDFromToken(response.data));
     }
   }, []);
 
-  if (!tokenIsSuccess || token === null) {
+  if (userID === null) {
     return <p>Not logged in</p>;
   }
 
   const onSubmit = async (data: inputValues) => {
-    const userID = getUserIDFromToken(token);
     const vendor: Vendor = {
       ID: uuid(),
       Name: data.name,
@@ -88,6 +98,36 @@ export default function VendorAppForm(): React.ReactElement {
       Owner: userID,
       DiscountEnabled: false,
     };
+
+    const locationRoleResponse = await getLocationRole(userID);
+    if ("error" in locationRoleResponse) {
+      return;
+    }
+
+    switch (locationInputOption) {
+      case "address": {
+        const coordinates = await aws.addressToCoordinates(
+          locationRoleResponse.data,
+          data.businessAddress
+        );
+        if (coordinates) {
+          vendor.Latitude = coordinates[0];
+          vendor.Longitude = coordinates[1];
+        }
+        break;
+      }
+      case "coordinates": {
+        const address = await aws.coordinatesToAddress(
+          locationRoleResponse.data,
+          [data.latitude, data.longitude]
+        );
+        if (address) {
+          vendor.BusinessAddress = address;
+        }
+        break;
+      }
+    }
+
     const response = await createVendor(vendor);
     if ("data" in response) {
       for (const cuisine of data.cuisines) {
@@ -157,6 +197,8 @@ export default function VendorAppForm(): React.ReactElement {
   const initialValues: inputValues = {
     name: "",
     businessAddress: "",
+    latitude: 0,
+    longitude: 0,
     website: "",
     fromHour: "",
     toHour: "",
@@ -187,7 +229,7 @@ export default function VendorAppForm(): React.ReactElement {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={onSubmit}
-          validateOnChange={true}
+          validateOnChange
         >
           {(formProps: FormikProps<inputValues>) => {
             const {
@@ -221,16 +263,23 @@ export default function VendorAppForm(): React.ReactElement {
                   value={values.name}
                   error={touched.name && Boolean(errors.name)}
                 />
-                <Form.Input
-                  fluid
-                  label="Business Address"
-                  placeholder="Business Address"
-                  required
-                  width={10}
-                  name="businessAddress"
-                  onChange={handleChange}
+                <strong>
+                  Location <span style={{ color: "#db2828" }}>*</span>
+                </strong>
+                <LocationInput
+                  userID={userID}
                   onBlur={handleBlur}
-                  value={values.businessAddress}
+                  dropdownOption={locationInputOption}
+                  onDropdownOptionChange={setLocationInputOption}
+                  businessAddress={values.businessAddress}
+                  onBusinessAddressChange={(value) => {
+                    setFieldValue("businessAddress", value);
+                  }}
+                  coordinates={[values.latitude, values.longitude]}
+                  onCoordinateChange={(value) => {
+                    setFieldValue("latitude", value[0]);
+                    setFieldValue("longitude", value[1]);
+                  }}
                   error={
                     touched.businessAddress && Boolean(errors.businessAddress)
                   }
@@ -282,7 +331,9 @@ export default function VendorAppForm(): React.ReactElement {
                   value={values.website}
                   error={touched.website && Boolean(errors.website)}
                 />
-                <h5>Business Hours: </h5>
+                <h5>
+                  Business Hours <span style={{ color: "#db2828" }}>*</span>
+                </h5>
                 <Dropdown
                   placeholder="From"
                   selection
