@@ -51,13 +51,8 @@ export default ({
       isLoading: addressToCoordinatesIsLoading,
     },
   ] = useLazyAddressToCoordinatesQuery();
-  const [
-    coordinatesToAddress,
-    {
-      data: coordinatesToAddressResult,
-      isLoading: coordinatesToAddressIsLoading,
-    },
-  ] = useLazyCoordinatesToAddressQuery();
+  const [coordinatesToAddress, { data: coordinatesToAddressResult }] =
+    useLazyCoordinatesToAddressQuery();
 
   // Returns cached credentials.
   const cachedLocationRole = async () => {
@@ -84,11 +79,17 @@ export default ({
 
   const onGetCoordinates = async () => {
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        onCoordinateChange([
+      async (position) => {
+        const coordinates: LatLngTuple = [
           position.coords.latitude,
           position.coords.longitude,
-        ]);
+        ];
+        onCoordinateChange(coordinates);
+
+        await coordinatesToAddress({
+          credentials: await cachedLocationRole(),
+          coordinates,
+        });
       },
       (e) => {
         throw new Error(e.message);
@@ -127,6 +128,11 @@ export default ({
     displayedCoordinates = addressToCoordinatesResult;
   }
 
+  let displayedAddress = businessAddress;
+  if (coordinatesToAddressResult) {
+    displayedAddress = coordinatesToAddressResult;
+  }
+
   return (
     <>
       <Dropdown
@@ -144,8 +150,11 @@ export default ({
       />
       {input}
       <p>
-        Current coordinate: {displayedCoordinates[0].toFixed(6)},&nbsp;
-        {displayedCoordinates[1].toFixed(6)}
+        {dropdownOption === "address"
+          ? `Current coordinate: ${displayedCoordinates[0].toFixed(
+              6
+            )}, ${displayedCoordinates[1].toFixed(6)}`
+          : `Current address: ${displayedAddress}`}
       </p>
     </>
   );
