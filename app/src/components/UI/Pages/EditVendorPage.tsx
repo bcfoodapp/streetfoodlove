@@ -231,14 +231,14 @@ const EditVendorPage: React.FC = () => {
       DiscountEnabled: data.discountEnabled,
     };
 
-    switch (locationInputOption) {
-      case "address":
-        // Since location input is address, set coordinate using address
-        const locationRoleResponse = await getLocationRole(userID);
-        if ("error" in locationRoleResponse) {
-          return;
-        }
+    const locationRoleResponse = await getLocationRole(userID);
+    if ("error" in locationRoleResponse) {
+      return;
+    }
 
+    switch (locationInputOption) {
+      case "address": {
+        // Since location input is address, set coordinate using address
         // For some reason, useLazyQuery does not return the result, so aws.addressToCoordinates() is
         // called directly.
         const coordinates = await aws.addressToCoordinates(
@@ -250,6 +250,18 @@ const EditVendorPage: React.FC = () => {
           updatedVendor.Longitude = coordinates[1];
         }
         break;
+      }
+      case "coordinates": {
+        // Set address using coordinates
+        const address = await aws.coordinatesToAddress(
+          locationRoleResponse.data,
+          [data.latitude, data.longitude]
+        );
+        if (address) {
+          updatedVendor.BusinessAddress = address;
+        }
+        break;
+      }
     }
 
     const response = await updateVendor(updatedVendor);
