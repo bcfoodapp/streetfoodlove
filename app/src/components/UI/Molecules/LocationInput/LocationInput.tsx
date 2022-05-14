@@ -117,7 +117,7 @@ export default ({
     case "coordinates":
       input = (
         <Buttons getLocation clicked={onGetCoordinates} type="button" fluid>
-          Get my coordinates
+          Get GPS coordinates and address
         </Buttons>
       );
       break;
@@ -138,7 +138,7 @@ export default ({
       <Dropdown
         options={[
           { value: "address", text: "Use address" },
-          { value: "coordinates", text: "Use GPS coordinates and address" },
+          { value: "coordinates", text: "Use my GPS coordinates" },
         ]}
         onChange={(_, { value }) => {
           onDropdownOptionChange(value as LocationInputDropdownValue);
