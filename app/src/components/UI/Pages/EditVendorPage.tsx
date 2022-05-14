@@ -25,6 +25,8 @@ import {
   useCreateCuisineTypeMutation,
   useCreateAreaMutation,
   useLocationRoleMutation,
+  useDeleteAreaMutation,
+  useDeleteCuisineTypeMutation,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -86,9 +88,10 @@ const EditVendorPage: React.FC = () => {
   const [getToken] = useGetTokenMutation();
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
-  const [coordinatesChanged, setCoordinatesChanged] = useState(false);
-  const [submitCuisine] = useCreateCuisineTypeMutation()
-  const [submitArea] = useCreateAreaMutation()
+  const [submitCuisine] = useCreateCuisineTypeMutation();
+  const [submitArea] = useCreateAreaMutation();
+  const [deleteArea] = useDeleteAreaMutation();
+  const [deleteCuisineType] = useDeleteCuisineTypeMutation();
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -103,11 +106,19 @@ const EditVendorPage: React.FC = () => {
     isLoading: vendorQueryIsLoading,
   } = useVendorByOwnerIDQuery(userID!, { skip: !userID });
 
-  const { data: cuisines } = useCuisineTypesByVendorIDQuery(userID!, {
-    skip: !userID,
-  });
+  const {
+    data: cuisines,
+    isSuccess: cuisineQueryIsSuccess,
+    isLoading: cuisineQueryIsLoading,
+  } = useCuisineTypesByVendorIDQuery(vendor?.ID!, { skip: !vendor });
 
-  const { data: areas } = useAreasByVendorIDQuery(userID!, { skip: !userID });
+  const {
+    data: areas,
+    isSuccess: areaQueryIsSuccess,
+    isLoading: areaQueryIsLoading,
+  } = useAreasByVendorIDQuery(vendor?.ID!, {
+    skip: !vendor,
+  });
 
   const [initialValues, setInitalValues] = useState({
     name: "",
@@ -128,7 +139,18 @@ const EditVendorPage: React.FC = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    if (vendorQueryIsSuccess) {
+    if (vendorQueryIsSuccess && cuisineQueryIsSuccess && areaQueryIsSuccess) {
+      let currentCuisines: string[] = [];
+      let currentAreas: string[] = [];
+
+      for (const element of cuisines!) {
+        currentCuisines.push(element.CuisineType);
+      }
+
+      for (const element of areas!) {
+        currentAreas.push(element.AreaName);
+      }
+
       setInitalValues({
         businessLogo: vendor!.BusinessLogo,
         name: vendor!.Name,
@@ -141,11 +163,11 @@ const EditVendorPage: React.FC = () => {
         description: vendor!.Description,
         socialmedialink: vendor!.SocialMediaLink,
         discountEnabled: vendor!.DiscountEnabled,
-        cuisines: [""],
-        areaNames: [""],
+        cuisines: currentCuisines,
+        areaNames: currentAreas,
       });
     }
-  }, [vendorQueryIsSuccess]);
+  }, [vendorQueryIsSuccess, cuisineQueryIsSuccess, areaQueryIsSuccess]);
 
   const [getS3Credentials] = useS3CredentialsMutation();
   const [uploadToS3] = useUploadToS3Mutation();
@@ -242,29 +264,36 @@ const EditVendorPage: React.FC = () => {
     }
 
     const response = await updateVendor(updatedVendor);
+
     if ("data" in response) {
-      // console.log(data)
-      // console.log(data.cuisines);
+      for (let queriedCuisines of cuisines!) {
+        await deleteCuisineType(queriedCuisines.ID);
+      }
 
       for (const cuisine of data.cuisines) {
-        // console.log(cuisine)
-
-        // console.log(cuisineTypes);
-        const cuisines = {
+        const cuisines: CuisineTypes = {
           ID: uuid(),
           VendorID: vendor!.ID,
-          CuisineType: cuisine
-        }
-
-        console.log(typeof cuisine === "string")
+          CuisineType: cuisine,
+        };
 
         await submitCuisine(cuisines);
       }
 
-      // for (const area of data.areaNames) {
+      for (let queriedAreas of areas!) {
+        await deleteArea(queriedAreas.ID);
+      }
 
-      //   await submitArea(area);
-      // }
+      for (const area of data.areaNames) {
+        const areas: Areas = {
+          ID: uuid(),
+          VendorID: vendor!.ID,
+          AreaName: area,
+        };
+
+        await submitArea(areas);
+      }
+
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
@@ -346,9 +375,7 @@ const EditVendorPage: React.FC = () => {
               </strong>
               <LocationInput
                 userID={userID}
-                onBlur={(e) => {
-                  handleBlur(e);
-                }}
+                onBlur={handleBlur}
                 dropdownOption={locationInputOption}
                 onDropdownOptionChange={setLocationInputOption}
                 businessAddress={values.businessAddress}
@@ -360,7 +387,9 @@ const EditVendorPage: React.FC = () => {
                   setFieldValue("latitude", value[0]);
                   setFieldValue("longitude", value[1]);
                 }}
-                error={Boolean(errors["businessAddress"])}
+                error={
+                  touched.businessAddress && Boolean(errors.businessAddress)
+                }
                 loading={vendorQueryIsLoading}
               />
               <ErrorMessage
@@ -379,9 +408,10 @@ const EditVendorPage: React.FC = () => {
                 required
                 onBlur={handleBlur}
                 label="Vendor Operating Areas"
-                loading={vendorQueryIsLoading}
-                onChange={(_, data) => {
-                  setFieldValue("areaNames", data.value);
+                loading={areaQueryIsLoading}
+                value={values.areaNames}
+                onChange={(_, areas) => {
+                  setFieldValue("areaNames", areas.value);
                 }}
               />
               <Form.Field
@@ -394,9 +424,10 @@ const EditVendorPage: React.FC = () => {
                 required
                 onBlur={handleBlur}
                 label="Cuisine Types"
-                loading={vendorQueryIsLoading}
-                onChange={(_, data) => {
-                  setFieldValue("cuisines", data.value);
+                loading={cuisineQueryIsLoading}
+                value={values.cuisines}
+                onChange={(_, cuisine) => {
+                  setFieldValue("cuisines", cuisine.value);
                 }}
               />
               <Form.Input

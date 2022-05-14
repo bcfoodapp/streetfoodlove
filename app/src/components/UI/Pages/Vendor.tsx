@@ -15,6 +15,8 @@ import {
   useNewChartQuery,
   Review,
   useUploadToS3Mutation,
+  useCreateCuisineTypeMutation,
+  useCreateAreaMutation,
 } from "../../../api";
 import {
   Container,
