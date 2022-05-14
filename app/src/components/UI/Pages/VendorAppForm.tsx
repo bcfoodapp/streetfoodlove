@@ -15,12 +15,14 @@ import {
   useCreateAreaMutation,
   CuisineTypes,
   Areas,
+  useLocationRoleMutation,
 } from "../../../api";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
 import LocationInput, {
   LocationInputDropdownValue,
 } from "../Molecules/LocationInput/LocationInput";
+import * as aws from "../../../aws";
 
 const vendorOperatingAreas = [
   { key: "Bothell", text: "Bothell", value: "Bothell" },
@@ -67,6 +69,7 @@ export default function VendorAppForm(): React.ReactElement {
   );
   const [submitCuisine] = useCreateCuisineTypeMutation();
   const [submitArea] = useCreateAreaMutation();
+  const [getLocationRole] = useLocationRoleMutation();
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -95,6 +98,36 @@ export default function VendorAppForm(): React.ReactElement {
       Owner: userID,
       DiscountEnabled: false,
     };
+
+    const locationRoleResponse = await getLocationRole(userID);
+    if ("error" in locationRoleResponse) {
+      return;
+    }
+
+    switch (locationInputOption) {
+      case "address": {
+        const coordinates = await aws.addressToCoordinates(
+          locationRoleResponse.data,
+          data.businessAddress
+        );
+        if (coordinates) {
+          vendor.Latitude = coordinates[0];
+          vendor.Longitude = coordinates[1];
+        }
+        break;
+      }
+      case "coordinates": {
+        const address = await aws.coordinatesToAddress(
+          locationRoleResponse.data,
+          [data.latitude, data.longitude]
+        );
+        if (address) {
+          vendor.BusinessAddress = address;
+        }
+        break;
+      }
+    }
+
     const response = await createVendor(vendor);
     if ("data" in response) {
       for (const cuisine of data.cuisines) {
