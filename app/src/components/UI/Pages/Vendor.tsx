@@ -182,7 +182,8 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="address">
-                {vendor?.BusinessAddress}
+                <p>{vendor?.BusinessAddress}</p>
+                <p>(Last updated {vendor?.LastLocationUpdate.toRelative()})</p>
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
