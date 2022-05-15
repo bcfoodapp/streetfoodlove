@@ -38,6 +38,7 @@ import * as aws from "../../../aws";
 import LocationInput, {
   LocationInputDropdownValue,
 } from "../Molecules/LocationInput/LocationInput";
+import { DateTime } from "luxon";
 
 interface inputValues {
   name: string;
@@ -224,6 +225,7 @@ const EditVendorPage: React.FC = () => {
       BusinessLogo: photoID,
       Latitude: data.latitude,
       Longitude: data.longitude,
+      LastLocationUpdate: DateTime.now(),
       Description: data.description,
       SocialMediaLink: data.socialmedialink,
       Owner: vendor!.Owner,
