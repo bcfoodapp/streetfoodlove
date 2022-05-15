@@ -27,6 +27,7 @@ export interface Vendor {
   BusinessLogo: string | null;
   Latitude: number;
   Longitude: number;
+  LastLocationUpdate: DateTime;
   Owner: string;
   Description: string;
   SocialMediaLink: string;
@@ -310,10 +311,19 @@ export const apiSlice = createApi({
     // Gets all vendors.
     vendors: builder.query<Vendor[], void>({
       query: () => `/vendors`,
+      transformResponse: (response: any[]) =>
+        response.map((vendor) => ({
+          ...vendor,
+          LastLocationUpdate: DateTime.fromISO(vendor.LastLocationUpdate),
+        })),
     }),
     // Gets vendor with specified ID.
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
+      transformResponse: (response: any) => ({
+        ...response,
+        LastLocationUpdate: DateTime.fromISO(response.LastLocationUpdate),
+      }),
     }),
     // Gets all vendors that match the given IDs.
     vendorsMultiple: builder.query<Vendor[], string[]>({
@@ -329,7 +339,11 @@ export const apiSlice = createApi({
             return response;
           }
 
-          vendors.push(response.data as Vendor);
+          const obj = response.data as any;
+          vendors.push({
+            ...obj,
+            LastLocationUpdate: DateTime.fromISO(obj.LastLocationUpdate),
+          });
         }
         return { data: vendors };
       },
@@ -337,6 +351,10 @@ export const apiSlice = createApi({
     // Returns vendor with given owner ID.
     vendorByOwnerID: builder.query<Vendor, string>({
       query: (ownerID) => `/vendors?owner=${encode(ownerID)}`,
+      transformResponse: (response: any) => ({
+        ...response,
+        LastLocationUpdate: DateTime.fromISO(response.LastLocationUpdate),
+      }),
     }),
     createVendor: builder.mutation<undefined, Vendor>({
       query: (vendor) => ({
