@@ -31,18 +31,18 @@ export default function ReviewsChart() {
   }, [stars]);
 
   return (
-      <BarChart width={800} height={500} data={starCount}>
-        /* <CartesianGrid strokeDasharray="3 3" />
-        */
-        <XAxis dataKey="Stars" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="1-star" fill="#FF6347" width={1} />
-        <Bar dataKey="2-star" fill="#0000FF" />
-        <Bar dataKey="3-star" fill="#FF00FF" />
-        <Bar dataKey="4-star" fill="#4B0082" />
-        <Bar dataKey="5-star" fill="#FFA500" />
-      </BarChart>
+    <BarChart width={800} height={500} data={starCount}>
+      /* <CartesianGrid strokeDasharray="3 3" />
+      */
+      <XAxis dataKey="Stars" />
+      <YAxis />
+      <Tooltip />
+      <Legend />
+      <Bar dataKey="1-star" fill="#FF6347" width={1} />
+      <Bar dataKey="2-star" fill="#0000FF" />
+      <Bar dataKey="3-star" fill="#FF00FF" />
+      <Bar dataKey="4-star" fill="#4B0082" />
+      <Bar dataKey="5-star" fill="#FFA500" />
+    </BarChart>
   );
 }

@@ -174,13 +174,11 @@ export interface NewChart {
   Five: number;
 }
 
-
 //for Popular vendor in neighborhood by rating
-export interface PopularVendor{
-  TotalRating: number,
+export interface PopularVendor {
+  TotalRating: number;
   Location: string;
   BusinessName: string;
-
 }
 
 export interface ReviewCreateResponse {
