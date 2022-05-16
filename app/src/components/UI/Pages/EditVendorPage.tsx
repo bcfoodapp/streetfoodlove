@@ -18,7 +18,15 @@ import {
   useS3CredentialsMutation,
   getExtension,
   useUploadToS3Mutation,
+  useCuisineTypesByVendorIDQuery,
+  CuisineTypes,
+  Areas,
+  useAreasByVendorIDQuery,
+  useCreateCuisineTypeMutation,
+  useCreateAreaMutation,
   useLocationRoleMutation,
+  useDeleteAreaMutation,
+  useDeleteCuisineTypeMutation,
 } from "../../../api";
 import { Formik, FormikProps, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -30,6 +38,7 @@ import * as aws from "../../../aws";
 import LocationInput, {
   LocationInputDropdownValue,
 } from "../Molecules/LocationInput/LocationInput";
+import { DateTime } from "luxon";
 
 interface inputValues {
   name: string;
@@ -42,8 +51,9 @@ interface inputValues {
   website: string;
   description: string;
   socialmedialink: string;
-  // vendorOperationAreas: []
   discountEnabled: boolean;
+  cuisines: string[];
+  areaNames: string[];
 }
 
 const businessHours = [
@@ -79,6 +89,10 @@ const EditVendorPage: React.FC = () => {
   const [getToken] = useGetTokenMutation();
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
+  const [submitCuisine] = useCreateCuisineTypeMutation();
+  const [submitArea] = useCreateAreaMutation();
+  const [deleteArea] = useDeleteAreaMutation();
+  const [deleteCuisineType] = useDeleteCuisineTypeMutation();
 
   useEffectAsync(async () => {
     const response = await getToken();
@@ -93,6 +107,20 @@ const EditVendorPage: React.FC = () => {
     isLoading: vendorQueryIsLoading,
   } = useVendorByOwnerIDQuery(userID!, { skip: !userID });
 
+  const {
+    data: cuisines,
+    isSuccess: cuisineQueryIsSuccess,
+    isLoading: cuisineQueryIsLoading,
+  } = useCuisineTypesByVendorIDQuery(vendor?.ID!, { skip: !vendor });
+
+  const {
+    data: areas,
+    isSuccess: areaQueryIsSuccess,
+    isLoading: areaQueryIsLoading,
+  } = useAreasByVendorIDQuery(vendor?.ID!, {
+    skip: !vendor,
+  });
+
   const [initialValues, setInitalValues] = useState({
     name: "",
     businessAddress: "",
@@ -103,14 +131,27 @@ const EditVendorPage: React.FC = () => {
     website: "",
     description: "",
     socialmedialink: "",
-    // vendorOperationAreas: []
     discountEnabled: false,
+    cuisines: [],
+    areaNames: [],
+    businessLogo: "",
   } as inputValues);
 
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
-    if (vendorQueryIsSuccess) {
+    if (vendorQueryIsSuccess && cuisineQueryIsSuccess && areaQueryIsSuccess) {
+      let currentCuisines: string[] = [];
+      let currentAreas: string[] = [];
+
+      for (const element of cuisines!) {
+        currentCuisines.push(element.CuisineType);
+      }
+
+      for (const element of areas!) {
+        currentAreas.push(element.AreaName);
+      }
+
       setInitalValues({
         businessLogo: vendor!.BusinessLogo,
         name: vendor!.Name,
@@ -123,9 +164,11 @@ const EditVendorPage: React.FC = () => {
         description: vendor!.Description,
         socialmedialink: vendor!.SocialMediaLink,
         discountEnabled: vendor!.DiscountEnabled,
+        cuisines: currentCuisines,
+        areaNames: currentAreas,
       });
     }
-  }, [vendorQueryIsSuccess]);
+  }, [vendorQueryIsSuccess, cuisineQueryIsSuccess, areaQueryIsSuccess]);
 
   const [getS3Credentials] = useS3CredentialsMutation();
   const [uploadToS3] = useUploadToS3Mutation();
@@ -150,6 +193,8 @@ const EditVendorPage: React.FC = () => {
     discountEnabled: Yup.boolean(),
     description: Yup.string(),
     socialmedialink: Yup.string(),
+    cuisines: Yup.array().min(1).required("Required"),
+    areaNames: Yup.array().min(1).required("Required"),
   });
 
   const onSubmit = async (data: inputValues) => {
@@ -180,20 +225,21 @@ const EditVendorPage: React.FC = () => {
       BusinessLogo: photoID,
       Latitude: data.latitude,
       Longitude: data.longitude,
+      LastLocationUpdate: DateTime.now(),
       Description: data.description,
       SocialMediaLink: data.socialmedialink,
       Owner: vendor!.Owner,
       DiscountEnabled: data.discountEnabled,
     };
 
-    switch (locationInputOption) {
-      case "address":
-        // Since location input is address, set coordinate using address
-        const locationRoleResponse = await getLocationRole(userID);
-        if ("error" in locationRoleResponse) {
-          return;
-        }
+    const locationRoleResponse = await getLocationRole(userID);
+    if ("error" in locationRoleResponse) {
+      return;
+    }
 
+    switch (locationInputOption) {
+      case "address": {
+        // Since location input is address, set coordinate using address
         // For some reason, useLazyQuery does not return the result, so aws.addressToCoordinates() is
         // called directly.
         const coordinates = await aws.addressToCoordinates(
@@ -205,10 +251,51 @@ const EditVendorPage: React.FC = () => {
           updatedVendor.Longitude = coordinates[1];
         }
         break;
+      }
+      case "coordinates": {
+        // Set address using coordinates
+        const address = await aws.coordinatesToAddress(
+          locationRoleResponse.data,
+          [data.latitude, data.longitude]
+        );
+        if (address) {
+          updatedVendor.BusinessAddress = address;
+        }
+        break;
+      }
     }
 
     const response = await updateVendor(updatedVendor);
+
     if ("data" in response) {
+      for (let queriedCuisines of cuisines!) {
+        await deleteCuisineType(queriedCuisines.ID);
+      }
+
+      for (const cuisine of data.cuisines) {
+        const cuisines: CuisineTypes = {
+          ID: uuid(),
+          VendorID: vendor!.ID,
+          CuisineType: cuisine,
+        };
+
+        await submitCuisine(cuisines);
+      }
+
+      for (let queriedAreas of areas!) {
+        await deleteArea(queriedAreas.ID);
+      }
+
+      for (const area of data.areaNames) {
+        const areas: Areas = {
+          ID: uuid(),
+          VendorID: vendor!.ID,
+          AreaName: area,
+        };
+
+        await submitArea(areas);
+      }
+
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     }
@@ -290,9 +377,7 @@ const EditVendorPage: React.FC = () => {
               </strong>
               <LocationInput
                 userID={userID}
-                onBlur={(e) => {
-                  handleBlur(e);
-                }}
+                onBlur={handleBlur}
                 dropdownOption={locationInputOption}
                 onDropdownOptionChange={setLocationInputOption}
                 businessAddress={values.businessAddress}
@@ -304,7 +389,9 @@ const EditVendorPage: React.FC = () => {
                   setFieldValue("latitude", value[0]);
                   setFieldValue("longitude", value[1]);
                 }}
-                error={Boolean(errors["businessAddress"])}
+                error={
+                  touched.businessAddress && Boolean(errors.businessAddress)
+                }
                 loading={vendorQueryIsLoading}
               />
               <ErrorMessage
@@ -323,10 +410,11 @@ const EditVendorPage: React.FC = () => {
                 required
                 onBlur={handleBlur}
                 label="Vendor Operating Areas"
-                loading={vendorQueryIsLoading}
-                // onChange={(_, area) => {
-                //   setFieldValue("")
-                // }}
+                loading={areaQueryIsLoading}
+                value={values.areaNames}
+                onChange={(_, areas) => {
+                  setFieldValue("areaNames", areas.value);
+                }}
               />
               <Form.Field
                 id="cuisineTypes"
@@ -338,10 +426,11 @@ const EditVendorPage: React.FC = () => {
                 required
                 onBlur={handleBlur}
                 label="Cuisine Types"
-                loading={vendorQueryIsLoading}
-                // onChange={(_, area) => {
-                //   setFieldValue("")
-                // }}
+                loading={cuisineQueryIsLoading}
+                value={values.cuisines}
+                onChange={(_, cuisine) => {
+                  setFieldValue("cuisines", cuisine.value);
+                }}
               />
               <Form.Input
                 name="phoneNumber"
