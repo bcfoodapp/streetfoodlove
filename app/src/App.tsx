@@ -20,6 +20,8 @@ import NewReviews from "./components/UI/Pages/NewReviews/NewReviews";
 import Chart from "./components/ReviewsChart";
 import Chart1 from "./components/LineRechartComponent";
 import Chart2 from "./components/PopularVendor";
+import DiscountQRCode from "./components/UI/Pages/DiscountQRCode/DiscountQRCode";
+import ValidateDiscount from "./components/UI/Pages/ValidateDiscount/ValidateDiscount";
 
 function App(): React.ReactElement {
   return (
@@ -36,6 +38,10 @@ function App(): React.ReactElement {
           <Route path="/account-selection" element={<AccountSelection />} />
           <Route path="/vendor-signup" element={<VendorAppForm />} />
           <Route path="/account-profile" element={<AccountProfile />} />
+          <Route
+              path="/account-profile/discount/:ID"
+              element={<DiscountQRCode />}
+          />
           <Route path="/your-acct-user" element={<YourAccountUser />} />
           <Route path="/business-guide" element={<BusinessGuides />} />
           <Route path="/vendor-dashboard" element={<VendorDashBoard />} />
@@ -46,6 +52,10 @@ function App(): React.ReactElement {
           <Route
             path="/vendor-dashboard/new-reviews"
             element={<NewReviews />}
+          />
+          <Route
+              path="/vendor-dashboard/validate-discount/:secret"
+              element={<ValidateDiscount />}
           />
           <Route path="/edit-vendor-page" element={<EditVendorPage />} />
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
