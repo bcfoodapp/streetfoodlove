@@ -107,6 +107,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.DELETE("/discounts/:id", GetToken, a.DiscountDelete)
 
 	router.GET("/charts/starsumchart", a.NewChart)
+	router.GET("/charts/areabyrating", a.PopularVendor)
 }
 
 // errorHandler writes any errors to response.
@@ -1124,4 +1125,15 @@ func (a *API) NewChart(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, chartStars)
+}
+
+//Chart for popular vendors in neighborhood by reviews
+func (a *API) PopularVendor(c *gin.Context) {
+	chartArea, err := a.Backend.PopularVendor()
+	if err != nil {
+		c.Error(err)
+		return
+
+	}
+	c.JSON(http.StatusOK, chartArea)
 }

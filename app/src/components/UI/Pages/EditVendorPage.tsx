@@ -38,6 +38,7 @@ import * as aws from "../../../aws";
 import LocationInput, {
   LocationInputDropdownValue,
 } from "../Molecules/LocationInput/LocationInput";
+import { DateTime } from "luxon";
 
 interface inputValues {
   name: string;
@@ -88,7 +89,6 @@ const EditVendorPage: React.FC = () => {
   const [getToken] = useGetTokenMutation();
   const [userID, setUserID] = useState(null as string | null);
   const [logoFile, setLogoFile] = useState(null as File | null);
-  const [coordinatesChanged, setCoordinatesChanged] = useState(false);
   const [submitCuisine] = useCreateCuisineTypeMutation();
   const [submitArea] = useCreateAreaMutation();
   const [deleteArea] = useDeleteAreaMutation();
@@ -225,6 +225,7 @@ const EditVendorPage: React.FC = () => {
       BusinessLogo: photoID,
       Latitude: data.latitude,
       Longitude: data.longitude,
+      LastLocationUpdate: DateTime.now(),
       Description: data.description,
       SocialMediaLink: data.socialmedialink,
       Owner: vendor!.Owner,
@@ -376,9 +377,7 @@ const EditVendorPage: React.FC = () => {
               </strong>
               <LocationInput
                 userID={userID}
-                onBlur={(e) => {
-                  handleBlur(e);
-                }}
+                onBlur={handleBlur}
                 dropdownOption={locationInputOption}
                 onDropdownOptionChange={setLocationInputOption}
                 businessAddress={values.businessAddress}
@@ -390,7 +389,9 @@ const EditVendorPage: React.FC = () => {
                   setFieldValue("latitude", value[0]);
                   setFieldValue("longitude", value[1]);
                 }}
-                error={Boolean(errors["businessAddress"])}
+                error={
+                  touched.businessAddress && Boolean(errors.businessAddress)
+                }
                 loading={vendorQueryIsLoading}
               />
               <ErrorMessage

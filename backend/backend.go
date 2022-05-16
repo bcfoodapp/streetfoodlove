@@ -468,3 +468,7 @@ func (b *Backend) DiscountDelete(userID uuid.UUID, id uuid.UUID) error {
 func (b *Backend) NewChart() (database.StarRatingSum, error) {
 	return b.Database.NewChart()
 }
+
+func (b *Backend) PopularVendor() ([]database.AreaByRating, error) {
+	return b.Database.PopularVendor()
+}
