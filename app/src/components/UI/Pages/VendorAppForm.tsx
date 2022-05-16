@@ -365,7 +365,6 @@ export default function VendorAppForm(): React.ReactElement {
                   }}
                 />
                 <Form.Input
-                  // error='Please enter your last name'
                   fluid
                   label="Phone"
                   placeholder="Phone"
