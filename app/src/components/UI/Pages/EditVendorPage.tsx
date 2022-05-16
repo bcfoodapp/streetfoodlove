@@ -177,6 +177,8 @@ const EditVendorPage: React.FC = () => {
   const [locationInputOption, setLocationInputOption] = useState(
     "address" as LocationInputDropdownValue
   );
+  // True if the address and/or coordinates were changed.
+  const [locationChanged, setLocationChanged] = useState(false);
 
   if (userID === null) {
     return <p>Not logged in</p>;
@@ -225,7 +227,9 @@ const EditVendorPage: React.FC = () => {
       BusinessLogo: photoID,
       Latitude: data.latitude,
       Longitude: data.longitude,
-      LastLocationUpdate: DateTime.now(),
+      LastLocationUpdate: locationChanged
+        ? DateTime.now()
+        : vendor!.LastLocationUpdate,
       Description: data.description,
       SocialMediaLink: data.socialmedialink,
       Owner: vendor!.Owner,
@@ -381,13 +385,15 @@ const EditVendorPage: React.FC = () => {
                 dropdownOption={locationInputOption}
                 onDropdownOptionChange={setLocationInputOption}
                 businessAddress={values.businessAddress}
-                onBusinessAddressChange={(value) =>
-                  setFieldValue("businessAddress", value)
-                }
+                onBusinessAddressChange={(value) => {
+                  setFieldValue("businessAddress", value);
+                  setLocationChanged(true);
+                }}
                 coordinates={[values.latitude, values.longitude]}
                 onCoordinateChange={(value) => {
                   setFieldValue("latitude", value[0]);
                   setFieldValue("longitude", value[1]);
+                  setLocationChanged(true);
                 }}
                 error={
                   touched.businessAddress && Boolean(errors.businessAddress)
