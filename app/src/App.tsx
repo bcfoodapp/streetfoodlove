@@ -39,8 +39,8 @@ function App(): React.ReactElement {
           <Route path="/vendor-signup" element={<VendorAppForm />} />
           <Route path="/account-profile" element={<AccountProfile />} />
           <Route
-              path="/account-profile/discount/:ID"
-              element={<DiscountQRCode />}
+            path="/account-profile/discount/:ID"
+            element={<DiscountQRCode />}
           />
           <Route path="/your-acct-user" element={<YourAccountUser />} />
           <Route path="/business-guide" element={<BusinessGuides />} />
@@ -54,8 +54,8 @@ function App(): React.ReactElement {
             element={<NewReviews />}
           />
           <Route
-              path="/vendor-dashboard/validate-discount/:secret"
-              element={<ValidateDiscount />}
+            path="/vendor-dashboard/validate-discount/:secret"
+            element={<ValidateDiscount />}
           />
           <Route path="/edit-vendor-page" element={<EditVendorPage />} />
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
