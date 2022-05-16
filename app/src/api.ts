@@ -902,7 +902,7 @@ export const apiSlice = createApi({
       query: () => `/charts/starsumchart`,
       providesTags: ["NewChart"],
     }),
-    popularVendor: builder.query<PopularVendor, void>({
+    popularVendor: builder.query<PopularVendor[], void>({
       query: () => `/charts/areabyrating`,
       providesTags: ["PopularVendor"],
     }),
