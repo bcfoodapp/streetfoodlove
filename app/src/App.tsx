@@ -17,8 +17,9 @@ import MessageError from "./components/UI/Atoms/Message/MessageError";
 import LoginWrapper from "./components/UI/Pages/Login";
 import VendorPhotosUploader from "./components/UI/Pages/VendorPhotosUploader";
 import NewReviews from "./components/UI/Pages/NewReviews/NewReviews";
-import Chart1 from "./components/LineRechartComponent";
 import Chart from "./components/ReviewsChart";
+import Chart1 from "./components/LineRechartComponent";
+import Chart2 from "./components/PopularVendor";
 import DiscountQRCode from "./components/UI/Pages/DiscountQRCode/DiscountQRCode";
 import ValidateDiscount from "./components/UI/Pages/ValidateDiscount/ValidateDiscount";
 
@@ -60,6 +61,7 @@ function App(): React.ReactElement {
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
           <Route path="/chart" element={<Chart />} />
           <Route path="/chart1" element={<Chart1 />} />
+          <Route path="/chart2" element={<Chart2 />} />
         </Routes>
       </BrowserRouter>
     </ErrorBoundary>

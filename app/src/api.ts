@@ -174,6 +174,13 @@ export interface NewChart {
   Five: number;
 }
 
+//for Popular vendor in neighborhood by rating
+export interface PopularVendor {
+  TotalRating: number;
+  Location: string;
+  BusinessName: string;
+}
+
 export interface ReviewCreateResponse {
   DiscountCreated: boolean;
 }
@@ -301,6 +308,7 @@ export const apiSlice = createApi({
     "Recommendation",
     "Discounts",
     "NewChart",
+    "PopularVendor",
     "Areas",
     "CuisineTypes",
   ],
@@ -892,6 +900,10 @@ export const apiSlice = createApi({
       query: () => `/charts/starsumchart`,
       providesTags: ["NewChart"],
     }),
+    popularVendor: builder.query<PopularVendor[], void>({
+      query: () => `/charts/areabyrating`,
+      providesTags: ["PopularVendor"],
+    }),
     areasByVendorID: builder.query<Areas[], string>({
       query: (vendorID) => `/areas?vendorID=${encode(vendorID)}`,
       providesTags: ["Areas"],
@@ -978,6 +990,7 @@ export const {
   useDiscountsBySecretQuery,
   useDeleteDiscountMutation,
   useNewChartQuery,
+  usePopularVendorQuery,
   useAreasByVendorIDQuery,
   useCreateAreaMutation,
   useDeleteAreaMutation,
