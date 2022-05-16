@@ -127,10 +127,11 @@ func (b *BackendTestSuite) TestVendorCreate() {
 	}
 
 	vendor := &database.Vendor{
-		ID:        uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
-		Latitude:  10,
-		Longitude: 20,
-		Owner:     user.ID,
+		ID:                 uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
+		Latitude:           10,
+		Longitude:          20,
+		LastLocationUpdate: time.Date(2022, 5, 15, 9, 39, 0, 0, time.UTC),
+		Owner:              user.ID,
 	}
 
 	{
@@ -169,10 +170,11 @@ func (b *BackendTestSuite) TestVendorsByCoordinateBounds() {
 	require.NoError(b.T(), b.backend.UserProtectedCreate(user, ""))
 
 	vendor := &database.Vendor{
-		ID:        uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
-		Latitude:  10,
-		Longitude: 20,
-		Owner:     user.ID,
+		ID:                 uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
+		Latitude:           10,
+		Longitude:          20,
+		LastLocationUpdate: time.Date(2022, 5, 15, 9, 39, 0, 0, time.UTC),
+		Owner:              user.ID,
 	}
 
 	require.NoError(b.T(), b.backend.VendorCreate(user.ID, vendor))
@@ -209,8 +211,9 @@ func (b *BackendTestSuite) TestReviewCreate() {
 	require.NoError(b.T(), b.backend.UserProtectedCreate(user, ""))
 
 	vendor := &database.Vendor{
-		ID:    uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
-		Owner: user.ID,
+		ID:                 uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
+		Owner:              user.ID,
+		LastLocationUpdate: time.Date(2022, 5, 15, 9, 39, 0, 0, time.UTC),
 	}
 	require.NoError(b.T(), b.backend.VendorCreate(user.ID, vendor))
 
