@@ -378,13 +378,15 @@ export default function VendorAppForm(): React.ReactElement {
                   value={values.phoneNumber}
                   error={touched.phoneNumber && Boolean(errors.phoneNumber)}
                 />
-                <h5>Logo Upload</h5>
-                <input
-                  type="file"
-                  className={styles.fileInput}
-                  name="myfile"
-                  width={15}
-                />
+                <Container className={styles.fileUpload}>
+                  <h5>Logo Upload</h5>
+                  <input
+                    type="file"
+                    className={styles.fileInput}
+                    name="myfile"
+                    width={15}
+                  />
+                </Container>
 
                 <label htmlFor="agreedConditions">
                   <Field
