@@ -23,6 +23,7 @@ import LocationInput, {
   LocationInputDropdownValue,
 } from "../Molecules/LocationInput/LocationInput";
 import * as aws from "../../../aws";
+import { DateTime } from "luxon";
 
 const vendorOperatingAreas = [
   { key: "Bothell", text: "Bothell", value: "Bothell" },
@@ -93,6 +94,7 @@ export default function VendorAppForm(): React.ReactElement {
       BusinessLogo: "",
       Latitude: 0,
       Longitude: 0,
+      LastLocationUpdate: DateTime.now(),
       Description: "",
       SocialMediaLink: "",
       Owner: userID,

@@ -50,6 +50,7 @@ func SetupTables(db *sqlx.DB) error {
 			BusinessLogo VARCHAR(50) NULL,
 			Latitude FLOAT NOT NULL,
 			Longitude FLOAT NOT NULL,
+			LastLocationUpdate DATETIME NOT NULL,
 			Description VARCHAR(1500) NULL,
 			SocialMediaLink VARCHAR(500) NULL,
 			Owner CHAR(36) NOT NULL,
@@ -207,19 +208,20 @@ func (d *Database) Close() error {
 }
 
 type Vendor struct {
-	ID              uuid.UUID
-	Name            string
-	BusinessAddress string
-	Website         string
-	BusinessHours   string
-	Phone           string
-	BusinessLogo    *string
-	Latitude        float64
-	Longitude       float64
-	Description     string
-	SocialMediaLink string
-	Owner           uuid.UUID
-	DiscountEnabled bool
+	ID                 uuid.UUID
+	Name               string
+	BusinessAddress    string
+	Website            string
+	BusinessHours      string
+	Phone              string
+	BusinessLogo       *string
+	Latitude           float64
+	Longitude          float64
+	LastLocationUpdate time.Time
+	Description        string
+	SocialMediaLink    string
+	Owner              uuid.UUID
+	DiscountEnabled    bool
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -234,6 +236,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			BusinessLogo,
 			Latitude,
 			Longitude,
+			LastLocationUpdate,
 			Description,
 			SocialMediaLink,
 			Owner,
@@ -248,6 +251,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:BusinessLogo,
 			:Latitude,
 			:Longitude,
+			:LastLocationUpdate,
 			:Description,
 			:SocialMediaLink,
 			:Owner,
@@ -300,6 +304,7 @@ func (d *Database) VendorUpdate(vendor *Vendor) error {
 			BusinessLogo = :BusinessLogo,
 			Latitude = :Latitude,
 			Longitude = :Longitude,
+			LastLocationUpdate = :LastLocationUpdate,
 			Owner = :Owner,
 			Description = :Description,
 			SocialMediaLink = :SocialMediaLink,
