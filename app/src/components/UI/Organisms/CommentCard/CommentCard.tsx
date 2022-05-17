@@ -81,6 +81,7 @@ const CommentCard: React.FC<{
       StarRating: null,
       ReplyTo: commentID,
       VendorFavorite: false,
+      ReceivedDiscount: false,
     });
   };
 
@@ -143,7 +144,6 @@ const CommentCard: React.FC<{
         ) : null}
       </Container>
       <Container>
-        {" "}
         <CommentCardContainer commentID={commentID} vendorID={vendorID} />
       </Container>
     </>

@@ -9,7 +9,7 @@ import {
   useUserProtectedQuery,
   useUpdateUserMutation,
 } from "../../../../api";
-import { Review } from "../../Organisms/Review/Review";
+import { Reviews } from "../../Organisms/Review/Reviews";
 import Buttons from "../../Atoms/Button/Buttons";
 
 export default (): React.ReactElement => {
@@ -39,7 +39,7 @@ export default (): React.ReactElement => {
         reviews.length > 0 ? (
           <>
             {reviews.map((review, i) => (
-              <Review
+              <Reviews
                 key={i}
                 review={review}
                 reviewID={review.ID}

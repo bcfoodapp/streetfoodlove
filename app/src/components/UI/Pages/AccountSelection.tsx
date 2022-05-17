@@ -8,8 +8,8 @@ import { Link } from "react-router-dom";
 const AccountSelection: React.FC = () => {
   return (
     <Container className={styles.wrapper}>
-      <h2>Choose Account Type</h2>
       <Container className={styles.selectBox}>
+        <h2>Choose Account Type</h2>
         <Link to="/signup">
           <Container className={styles.customerBox}>
             <h3>Customer</h3>

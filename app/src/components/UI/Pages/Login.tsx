@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { Container, Form, Header } from "semantic-ui-react";
+import { Container, Form, Header, Image } from "semantic-ui-react";
 import Buttons from "../Atoms/Button/Buttons";
 import styles from "./login.module.css";
 import { Grid } from "semantic-ui-react";
 import {
-  UserType,
   useSetCredentialsAndGetTokenMutation,
   useSignInWithGoogleMutation,
 } from "../../../api";
@@ -63,7 +62,7 @@ export default function Login(): React.ReactElement {
   };
 
   return (
-    <>
+    <Container className={styles.background}>
       <Container className={styles.wrapper}>
         <Grid centered>
           <Grid.Column className={styles.test}>
@@ -150,6 +149,6 @@ export default function Login(): React.ReactElement {
           </Grid.Column>
         </Grid>
       </Container>
-    </>
+    </Container>
   );
 }

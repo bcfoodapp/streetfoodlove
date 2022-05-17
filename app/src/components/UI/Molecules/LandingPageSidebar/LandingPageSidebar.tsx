@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Sidebar,
   Menu,
@@ -6,15 +6,12 @@ import {
   Button,
   Checkbox,
   Container,
+  DropdownProps,
 } from "semantic-ui-react";
 import { useAppDispatch, useAppSelector } from "../../../../store/root";
 import CuisineFilter from "../MultiSelectFilter/CuisineFilter";
 import styles from "./sidebar.module.css";
-import {
-  useSearchQuery,
-  usePastSearchQuery,
-  getUserIDFromToken,
-} from "../../../../api";
+import { useSearchQuery } from "../../../../api";
 import { Link } from "react-router-dom";
 import {
   hideSideBar,
@@ -24,14 +21,17 @@ import {
 import RecommendedList from "../RecommendedList/RecommendedList";
 
 const LandingPageSidebar: React.FC = () => {
+  const [cuisineSelection, setCuisineSelection] = useState<string[]>([]);
+
   const showSideBarState = useAppSelector(
     (state) => state.search.sideBarShowing
   );
 
+  const [toggle, setToggle] = useState<boolean | undefined>(false);
+
   const searchQuery = useAppSelector(({ search }) => search.searchQuery);
   const cuisineTypeFilter = useAppSelector(({ search }) => search.cuisineType);
   const priceRangeFilter = useAppSelector(({ search }) => search.priceRange);
-  const token = useAppSelector((state) => state.token.token);
 
   let searchParams = {
     SearchString: searchQuery,
@@ -66,8 +66,8 @@ const LandingPageSidebar: React.FC = () => {
       </Button>
       <Menu.Item as="div" className={styles.recommend}>
         <h3>Recommended Vendors</h3>
-        <Checkbox toggle />
-        {searchQuery ? <RecommendedList /> : null}
+        <Checkbox toggle onChange={(e, data) => setToggle(data.checked)} />
+        {toggle ? <RecommendedList /> : null}
       </Menu.Item>
       <Menu.Item as="div" className={styles.menuItem}>
         <Icon

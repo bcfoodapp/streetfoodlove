@@ -127,10 +127,11 @@ func (b *BackendTestSuite) TestVendorCreate() {
 	}
 
 	vendor := &database.Vendor{
-		ID:        uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
-		Latitude:  10,
-		Longitude: 20,
-		Owner:     user.ID,
+		ID:                 uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
+		Latitude:           10,
+		Longitude:          20,
+		LastLocationUpdate: time.Date(2022, 5, 15, 9, 39, 0, 0, time.UTC),
+		Owner:              user.ID,
 	}
 
 	{
@@ -169,10 +170,11 @@ func (b *BackendTestSuite) TestVendorsByCoordinateBounds() {
 	require.NoError(b.T(), b.backend.UserProtectedCreate(user, ""))
 
 	vendor := &database.Vendor{
-		ID:        uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
-		Latitude:  10,
-		Longitude: 20,
-		Owner:     user.ID,
+		ID:                 uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
+		Latitude:           10,
+		Longitude:          20,
+		LastLocationUpdate: time.Date(2022, 5, 15, 9, 39, 0, 0, time.UTC),
+		Owner:              user.ID,
 	}
 
 	require.NoError(b.T(), b.backend.VendorCreate(user.ID, vendor))
@@ -209,8 +211,9 @@ func (b *BackendTestSuite) TestReviewCreate() {
 	require.NoError(b.T(), b.backend.UserProtectedCreate(user, ""))
 
 	vendor := &database.Vendor{
-		ID:    uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
-		Owner: user.ID,
+		ID:                 uuid.MustParse("b1e2fbe3-3572-49d4-aad3-581f603ef357"),
+		Owner:              user.ID,
+		LastLocationUpdate: time.Date(2022, 5, 15, 9, 39, 0, 0, time.UTC),
 	}
 	require.NoError(b.T(), b.backend.VendorCreate(user.ID, vendor))
 
@@ -222,7 +225,10 @@ func (b *BackendTestSuite) TestReviewCreate() {
 
 	{
 		// Create review without discount
-		b.NoError(b.backend.ReviewCreate(user.ID, review))
+		result, err := b.backend.ReviewCreate(user.ID, review)
+		b.NoError(err)
+		b.False(result.DiscountCreated)
+
 		discounts, err := b.backend.DiscountsByUser(review.UserID)
 		b.NoError(err)
 		b.Empty(discounts)
@@ -233,7 +239,11 @@ func (b *BackendTestSuite) TestReviewCreate() {
 		require.NoError(b.T(), b.backend.VendorUpdate(user.ID, vendor))
 
 		review.ID = uuid.MustParse("f8d3093d-1c8f-49ac-8f67-e38030eddb9b")
-		b.NoError(b.backend.ReviewCreate(user.ID, review))
+
+		result, err := b.backend.ReviewCreate(user.ID, review)
+		b.NoError(err)
+		b.True(result.DiscountCreated)
+
 		discounts, err := b.backend.DiscountsByUser(review.UserID)
 		b.NoError(err)
 		b.Len(discounts, 1)
@@ -247,4 +257,10 @@ func (b *BackendTestSuite) TestReviewCreate() {
 		b.Error(b.backend.DiscountDelete(uuid.UUID{}, discount.ID))
 		b.NoError(b.backend.DiscountDelete(vendor.Owner, discount.ID))
 	}
+}
+
+func (b *BackendTestSuite) TestNewChart() {
+	result, err := b.backend.Database.NewChart()
+	b.NoError(err)
+	b.Empty(result)
 }
