@@ -12,11 +12,8 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
-  useNewChartQuery,
   Review,
   useUploadToS3Mutation,
-  useCreateCuisineTypeMutation,
-  useCreateAreaMutation,
 } from "../../../api";
 import {
   Container,
@@ -205,12 +202,12 @@ export function Vendor(): React.ReactElement {
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
-              <VendorDetailCards heading="website">
-                {vendor?.Website}
+              <VendorDetailCards heading="website/social media">
+                Website: {vendor?.Website}
+                <Container>Social Media: {vendor?.SocialMediaLink}</Container>
               </VendorDetailCards>
-              <VendorDetailCards heading="social-media-links">
-                {vendor?.SocialMediaLink}
-              </VendorDetailCards>
+              {/* <VendorDetailCards heading="social-media-links">
+              </VendorDetailCards> */}
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

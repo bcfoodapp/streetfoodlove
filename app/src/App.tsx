@@ -21,6 +21,7 @@ import Chart1 from "./components/LineRechartComponent";
 import Chart2 from "./components/PopularVendor";
 import DiscountQRCode from "./components/UI/Pages/DiscountQRCode/DiscountQRCode";
 import ValidateDiscount from "./components/UI/Pages/ValidateDiscount/ValidateDiscount";
+import ArticleTemplate from "./components/UI/Pages/ArticleTemplate";
 
 function App(): React.ReactElement {
   return (
@@ -60,6 +61,7 @@ function App(): React.ReactElement {
           <Route path="/chart" element={<Chart />} />
           <Route path="/chart1" element={<Chart1 />} />
           <Route path="/chart2" element={<Chart2 />} />
+          <Route path="/article-template" element={<ArticleTemplate />} />
         </Routes>
       </BrowserRouter>
     </ErrorBoundary>
