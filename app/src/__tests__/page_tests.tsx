@@ -13,7 +13,6 @@ import Signup from "../components/UI/Pages/Signup";
 import { Vendor } from "../components/UI/Pages/Vendor";
 import VendorAppForm from "../components/UI/Pages/VendorAppForm";
 import VendorDashboard from "../components/UI/Pages/VendorDashboard";
-import YourAccountUser from "../components/UI/Pages/YourAccountUser";
 import App from "../App";
 import VendorPhotosUploader from "../components/UI/Pages/VendorPhotosUploader";
 
@@ -130,14 +129,6 @@ test("VendorPhotosUploader", () => {
   renderer.create(
     <MockEnvironment>
       <VendorPhotosUploader />
-    </MockEnvironment>
-  );
-});
-
-test("YourAccountUser", () => {
-  renderer.create(
-    <MockEnvironment>
-      <YourAccountUser />
     </MockEnvironment>
   );
 });
