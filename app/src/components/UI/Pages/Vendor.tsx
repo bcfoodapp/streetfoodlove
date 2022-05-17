@@ -204,10 +204,7 @@ export function Vendor(): React.ReactElement {
             <Grid.Column width={6}>
               <VendorDetailCards heading="website/social media">
                 Website: {vendor?.Website}
-                <Container>
-                Social Media: {vendor?.SocialMediaLink}
-
-                </Container>
+                <Container>Social Media: {vendor?.SocialMediaLink}</Container>
               </VendorDetailCards>
               {/* <VendorDetailCards heading="social-media-links">
               </VendorDetailCards> */}
