@@ -1,12 +1,12 @@
 .wrapper {
-  width: 100% !important;
-  height: 92vh;
+  width: 110% !important;
+  height: 93vh;
   background-image: url("../../../../public/vendorsignuppic.png");
   background-size: cover;
   padding-top: 15px !important;
 }
 .signUpWrapper {
-  width: 30% !important;
+  width: 58% !important;
   height: 97% !important;
   background-color: lightgray;
   opacity: 0.95;
@@ -14,8 +14,9 @@
 
 .form {
   margin-left: 2% !important;
-  margin-top: 5% !important;
+  margin-top: 2% !important;
   padding-bottom: 20px !important;
+  padding-right: 40px !important;
 }
 
 .btnContainer.ui.container {
@@ -28,16 +29,26 @@
 }
 
 .signUpWrapper > h1 {
-  margin-left: 10%;
+  margin-left: 30%;
 }
 
 .dropdown {
   margin-left: 10px !important;
 }
 
+.fileUpload {
+  display: flex !important;
+}
+
+.fileUpload > h5 {
+  white-space: nowrap;
+  margin-top: 10px;
+}
+
 .fileInput {
+  margin-left: 20px !important;
   position: relative;
-  right: 12px;
+  right: 10px;
   border: none !important;
   background: none !important;
 }
