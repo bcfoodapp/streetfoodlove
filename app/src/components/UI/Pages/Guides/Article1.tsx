@@ -1,6 +1,6 @@
 import { Container, Header } from "semantic-ui-react";
 
-export default function ArticleTemplate() {
+export default function AddArticle1() {
   return (
     <Container>
       <Header as="h2"> How to start a food cart business?</Header>
