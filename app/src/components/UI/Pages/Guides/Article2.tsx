@@ -44,13 +44,13 @@ export default function AddArticle2() {
         your target market, local ordinances, licensing and permit demands,
         parking permit regulations, and what type of equipment your menu
         requires.Most food truck entrepreneurs need to apply for financing or a
-        loan to offset food truck startup costs.{" "}
+        loan to offset food truck startup costs.
       </p>
       <p>
         Before heading to your bank, know your credit score and based on your
         food truck business plan, know how much owning a food truck business
         will cost you.Once you are approved for a loan, you will know your
-        budget and can start shopping for a food truck.{" "}
+        budget and can start shopping for a food truck.
       </p>
       <p>There are three paths to owning a food truck business: </p>
       <ul>
@@ -65,7 +65,7 @@ export default function AddArticle2() {
         of each choice, it ultimately comes down to what your budget is and how
         much you can afford upfront. We'll go over the pros and cons of buying
         new and used food trucks, so you can make the best decision for your
-        financial status.{" "}
+        financial status.
       </p>
       <h4>Buying a New Food Truck</h4>
       <p>
