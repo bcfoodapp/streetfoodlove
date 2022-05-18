@@ -7,6 +7,7 @@ import {
 } from "../../../../api";
 import { Container, Header, Table } from "semantic-ui-react";
 import { DateTime } from "luxon";
+import { Link } from "react-router-dom";
 
 function VendorList({ vendors }: { vendors: Vendor[] }): React.ReactElement {
   return (
@@ -15,13 +16,15 @@ function VendorList({ vendors }: { vendors: Vendor[] }): React.ReactElement {
         <Table.Row>
           <Table.HeaderCell>Name</Table.HeaderCell>
           <Table.HeaderCell>Location</Table.HeaderCell>
-          <Table.HeaderCell></Table.HeaderCell>
+          <Table.HeaderCell />
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {vendors.map((vendor, i) => (
-          <Table.Row key={i}>
-            <Table.Cell>{vendor.Name}</Table.Cell>
+        {vendors.map((vendor) => (
+          <Table.Row key={vendor.ID}>
+            <Table.Cell>
+              <Link to={`/vendors/${vendor.ID}`}>{vendor.Name}</Link>
+            </Table.Cell>
             <Table.Cell>{vendor.BusinessAddress}</Table.Cell>
             <Table.Cell>
               {vendor.LastLocationUpdate > DateTime.now().minus({ week: 1 })
@@ -81,7 +84,9 @@ export default (): React.ReactElement => {
               a.LastLocationUpdate.toSeconds()
           )}
         />
-      ) : null}
+      ) : (
+        <p>Loading</p>
+      )}
     </Container>
   );
 };
