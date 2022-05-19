@@ -1340,16 +1340,7 @@ type AreaByRating struct {
 	BusinessName string
 	Location     string
 	TotalRatings int
-
-	/*One   int
-	Two   int
-	Three int
-	Four  int
-	Five  int*/
 }
-
-/*Name     string
-AreaName string*/
 
 func (d *Database) PopularVendor() ([]AreaByRating, error) {
 	const command = `
@@ -1378,47 +1369,3 @@ func (d *Database) PopularVendor() ([]AreaByRating, error) {
 	}
 	return result, rows.Err()
 }
-
-/*result := make(map[int]int)
-for rows.Next() {
-	rating := 0
-	sum := 0
-	err := rows.Scan(&Name, &AreaName, &sum)
-	if err != nil {
-		return []AreaByRating{}, err
-	}
-	result[rating] = sum
-}
-
-return []AreaByRating{
-	Name:     Name,
-	AreaName: AreaName,
-	StarRating: result[0],
-	/*One:      result[1],
-	Two:      result[2],
-	Three:    result[3],
-	Four:     result[4],
-	Five:     result[5],*/
-
-/*return []AreaByRating{
-	BusinessName =['Business Name'],
-	AreaName = ['Location'],
-}, nil*/
-
-/*
-
-	rows, err := d.db.Queryx(command)
-	if err != nil {
-
-		defer rows.Close()
-	}
-	result := make([string]string)
-
-	for rows.Next() {
-		result = append(Name,AreaName)
-		if err := rows.StructScan(&result[len(result)-1]); err != nil {
-			return nil, err
-		}
-	}
-	return result, rows.Err()
-}*/
