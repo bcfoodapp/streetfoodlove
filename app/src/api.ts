@@ -181,7 +181,6 @@ export interface PopularVendor {
   Location: string;
 }
 
-
 export interface ReviewCreateResponse {
   DiscountCreated: boolean;
 }
