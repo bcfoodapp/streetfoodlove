@@ -1,46 +1,60 @@
-import { useEffect, useState } from "react";
-import { usePopularVendorQuery } from "../api";
+//with query
+import React, { useEffect, useState } from "react";
+import { usePopularVendorQuery, PopularVendor} from "../api";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from "recharts";
+    BarChart,
+    Bar,
+    ResponsiveContainer,
+    XAxis,
+    YAxis,
+    ZAxis,
+    Tooltip,
+    Legend,
+} from 'recharts';
+
+
 
 export default function PopularVendor() {
-  const { data: area } = usePopularVendorQuery();
-  const [vendorByArea, setVendorByArea] = useState([] as any);
+    const {data: popularVendor} = usePopularVendorQuery();
+    const [vendorByArea, setVendorByArea] = useState([] as any);
+    useEffect(() => {
+        if (popularVendor) {
+            let temp = [] as PopularVendor[]
+            for (const Vendor of popularVendor) {
+                let obj = {
+                    TotalRatings: Vendor.TotalRatings,
+                    BusinessName: Vendor.BusinessName,
+                    Location: Vendor.Location,
 
-  useEffect(() => {
-    if (area) {
-      let obj = {
-        ID: "30f15697-8c12-41cf-83d9-a9ccfe07c43e",
-        name: "Areas",
-        /* "Fish Taco": area.BusinessName,
-                "Bellevue": area.AreaName,
-                "TotalRating": area.One,*/
-      };
+                };
 
-      setVendorByArea([obj]);
+                temp.push(obj)
+            }
+
+            setVendorByArea(temp);
+        }
+    }, [popularVendor]);
+
+    console.log(vendorByArea)
+
+        return (
+
+            <BarChart width={600} height={400} data={popularVendor} layout={"vertical"}
+                      margin={{top: 20, right: 30, left: 30, bottom: 5}}>
+                <XAxis type={'number'} />
+                <YAxis type ="category" dataKey="BusinessName"/>
+
+                <Tooltip/>
+                <Legend/>
+                <Bar  dataKey={'TotalRatings'} fill="#FF6347"/>
+                <Bar   dataKey="Location" fill="#FFA500"/>
+
+
+
+
+
+            </BarChart>
+
+
+        );
     }
-  }, [area]);
-
-  return (
-    <BarChart width={800} height={500} data={vendorByArea}>
-      /* <CartesianGrid strokeDasharray="3 3" />
-      */
-      <XAxis dataKey="Name" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="Name" fill="#FF6347" width={1} />
-      <Bar dataKey="Name" fill="#0000FF" />
-      <Bar dataKey="Name" fill="#FF00FF" />
-      <Bar dataKey="Name" fill="#4B0082" />
-      <Bar dataKey="Name" fill="#FFA500" />
-    </BarChart>
-  );
-}
