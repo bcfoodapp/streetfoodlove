@@ -1,6 +1,6 @@
 import { Container, Header } from "semantic-ui-react";
 
-export default function ArticleTemplate() {
+export default function AddArticle4() {
   return (
     <Container>
       <Header as="h2">How to Start an Ice Cream Cart Business</Header>
@@ -16,7 +16,7 @@ export default function ArticleTemplate() {
         that are specific to this niche. Hopefully, by the time you finish
         reading this post, you'll have a clear idea of exactly what you need to
         do in order to turn your appreciation of ice cream into a fresh source
-        of monthly income.{" "}
+        of monthly income.
       </p>
       <h3>Things to Consider: Challenges and Hidden Opportunities</h3>
       <p>
