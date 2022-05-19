@@ -29,16 +29,17 @@ export default function HeaderBar(): React.ReactElement {
     {
       key: "profile",
       text: "Profile Settings",
-      onClick: () => {
-        navigate("/account-profile");
-      },
+      onClick: () => navigate("/account-profile"),
+    },
+    {
+      key: "nearby-vendors",
+      text: "Vendors Near You",
+      onClick: () => navigate("/nearby-vendors"),
     },
     {
       key: "page",
       text: "Vendor Dashboard",
-      onClick: () => {
-        navigate("/vendor-dashboard");
-      },
+      onClick: () => navigate("/vendor-dashboard"),
     },
     { key: "help", text: "Help" },
     {
