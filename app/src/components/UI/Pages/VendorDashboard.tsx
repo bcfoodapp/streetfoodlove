@@ -112,7 +112,7 @@ const VendorDashBoard: React.FC = () => {
             </Card.Content>
           </Card>
         </Link>
-        <Link to="/business-guide">
+        <Link to="/guides">
           <Card className={styles.card}>
             <Icon name="book" size="huge" className={styles.icon} />
             <Card.Content className={styles.content}>

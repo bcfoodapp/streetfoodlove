@@ -35,3 +35,18 @@ func (a *AWS) GetS3Role(ctx context.Context) (*types.Credentials, error) {
 
 	return response.Credentials, nil
 }
+
+func (a *AWS) GetLocationRole(ctx context.Context) (*types.Credentials, error) {
+	params := &sts.AssumeRoleInput{
+		RoleArn:         aws.String("arn:aws:iam::907229944921:role/SFLLocationRole"),
+		RoleSessionName: aws.String("streetfoodlove"),
+		DurationSeconds: aws.Int32(900),
+	}
+
+	response, err := a.client.AssumeRole(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.Credentials, nil
+}
