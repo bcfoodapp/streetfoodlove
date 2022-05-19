@@ -41,7 +41,9 @@ export default function VendorDetailCards(
   } else if (props.heading === "social-media-links") {
     headingContent = <h2 className={styles.header}>Social Media Links</h2>;
   } else if (props.heading === "website/social media") {
-    headingContent = <h2 className={styles.header}>Website And Social Media</h2>;
+    headingContent = (
+      <h2 className={styles.header}>Website And Social Media</h2>
+    );
   } else if (props.heading === "cuisine-types") {
     headingContent = <h2 className={styles.header}>Cuisine Types</h2>;
   } else if (props.heading === "review-count") {
