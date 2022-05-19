@@ -23,6 +23,12 @@ import DiscountQRCode from "./components/UI/Pages/DiscountQRCode/DiscountQRCode"
 import ValidateDiscount from "./components/UI/Pages/ValidateDiscount/ValidateDiscount";
 import ArticleTemplate from "./components/UI/Pages/ArticleTemplate";
 import NearbyVendors from "./components/UI/Pages/NearbyVendors/NearbyVendors";
+import Article1 from "./components/UI/Pages/Guides/Article1";
+import Article2 from "./components/UI/Pages/Guides/Article2";
+import Article3 from "./components/UI/Pages/Guides/Article3";
+import Article4 from "./components/UI/Pages/Guides/Article4";
+import Article5 from "./components/UI/Pages/Guides/Article5";
+import Article6 from "./components/UI/Pages/Guides/Article6";
 
 function App(): React.ReactElement {
   return (
@@ -64,6 +70,12 @@ function App(): React.ReactElement {
           <Route path="/chart2" element={<Chart2 />} />
           <Route path="/article-template" element={<ArticleTemplate />} />
           <Route path="/nearby-vendors" element={<NearbyVendors />} />
+          <Route path="/article1" element={<Article1 />} />
+          <Route path="/article2" element={<Article2 />} />
+          <Route path="/article3" element={<Article3 />} />
+          <Route path="/article4" element={<Article4 />} />
+          <Route path="/article5" element={<Article5 />} />
+          <Route path="/article6" element={<Article6 />} />
         </Routes>
       </BrowserRouter>
     </ErrorBoundary>

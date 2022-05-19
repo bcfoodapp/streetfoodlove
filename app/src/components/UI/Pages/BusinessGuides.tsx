@@ -38,6 +38,15 @@ const BusinessGuides: React.FC = () => {
                 />
               </Link>
             ))}
+            <Container style={{ marginTop: "30px" }}>
+              <Link to={`/article1`}>How to start a food cart business?</Link>
+            </Container>
+            <Container style={{ marginTop: "30px" }}>
+              <Link to={`/article2`}>How to Buy a Food Truck?</Link>
+            </Container>
+            <Container style={{ marginTop: "30px" }}>
+              <Link to={`/article3`}>Food Truck Start Up Cost?</Link>
+            </Container>
           </Card.Group>
         </Container>
         <Container className={styles.newCards}>
@@ -52,6 +61,17 @@ const BusinessGuides: React.FC = () => {
               </Link>
             ))}
           </Card.Group>
+        </Container>
+        <Container style={{ marginTop: "30px" }}>
+          <Link to={`/article4`}>How to Start an Ice Cream Cart Business?</Link>
+        </Container>
+        <Container style={{ marginTop: "30px" }}>
+          <Link to={`/article5`}>
+            10 Tips for Running a Successful Food Truck Business
+          </Link>
+        </Container>
+        <Container style={{ marginTop: "30px" }}>
+          <Link to={`/article6`}>Steps to start a hot dog cart business</Link>
         </Container>
       </Container>
     </Container>
