@@ -167,7 +167,7 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
-                Name: {vendor?.Name}
+                {vendor?.Name}
                 <Container>{vendor?.Description}</Container>
               </VendorDetailCards>
             </Grid.Column>
@@ -175,17 +175,19 @@ export function Vendor(): React.ReactElement {
               <VendorDetailCards heading="contact">
                 {vendor?.Phone}
                 <Container>{vendor?.BusinessHours}</Container>
+                <Container>
+                  <p>{vendor?.BusinessAddress}</p>
+                </Container>
               </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="map">
-                <p>{vendor?.BusinessAddress}</p>
                 <p>(Last updated {vendor?.LastLocationUpdate.toRelative()})</p>
                 {vendor ? (
                   <iframe
-                    style={{ border: 0, width: "100%", height: "82px" }}
+                    style={{ border: 0, width: "100%", height: "118px" }}
                     src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAYGdHFH-OPCSqQkGrQygGw--zgcQWAv3Y&q=${vendor.Latitude},${vendor.Longitude}`}
                     allowFullScreen
                   />
