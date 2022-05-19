@@ -4,10 +4,8 @@ import { usePopularVendorQuery, PopularVendor} from "../api";
 import {
     BarChart,
     Bar,
-    ResponsiveContainer,
     XAxis,
     YAxis,
-    ZAxis,
     Tooltip,
     Legend,
 } from 'recharts';
@@ -43,7 +41,6 @@ export default function PopularVendor() {
                       margin={{top: 20, right: 30, left: 30, bottom: 5}}>
                 <XAxis type={'number'} />
                 <YAxis type ="category" dataKey="BusinessName"/>
-
                 <Tooltip/>
                 <Legend/>
                 <Bar  dataKey={'TotalRatings'} fill="#FF6347"/>
