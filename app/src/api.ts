@@ -176,9 +176,9 @@ export interface NewChart {
 
 //for Popular vendor in neighborhood by rating
 export interface PopularVendor {
-  TotalRating: number;
-  Location: string;
+  TotalRatings: number;
   BusinessName: string;
+  Location: string;
 }
 
 export interface ReviewCreateResponse {
