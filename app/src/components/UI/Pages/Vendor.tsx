@@ -167,7 +167,6 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
-                {vendor?.Name}
                 <Container>{vendor?.Description}</Container>
               </VendorDetailCards>
             </Grid.Column>
