@@ -24,7 +24,7 @@ export default function AddArticle1() {
         doc.addImage(imgData, "PNG", 0.4, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
-      doc.save("file.pdf");
+      doc.save("How-To-Start-Food-Cart-Business.pdf");
     });
   }
 
