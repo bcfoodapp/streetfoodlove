@@ -131,7 +131,7 @@ func SetupTables(db *sqlx.DB) error {
 		CREATE TABLE Areas (
 			ID CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
-			AreaName VARCHAR(45) NOT NULL, 
+			AreaName VARCHAR(45) NOT NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
@@ -140,7 +140,7 @@ func SetupTables(db *sqlx.DB) error {
 		CREATE TABLE CuisineTypes (
 			ID  CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
-			CuisineType VARCHAR(45) NOT NULL, 
+			CuisineType VARCHAR(45) NOT NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
@@ -1344,13 +1344,13 @@ type AreaByRating struct {
 
 func (d *Database) PopularVendor() ([]AreaByRating, error) {
 	const command = `
-					SELECT vendor.Name as 'BusinessName' , AreaName as 'Location',
+					SELECT Vendor.Name as 'BusinessName' , AreaName as 'Location',
 					count(distinct(StarRating)) as "TotalRatings"
-					FROM vendor
-					INNER JOIN areas ON vendor.ID = areas.VendorID
-					INNER JOIN reviews ON areas.VendorID = reviews.VendorID
-					GROUP BY vendor.ID
-					ORDER BY count(StarRating) DESC limit 10;
+					FROM Vendor
+					INNER JOIN Areas ON Vendor.ID = Areas.VendorID
+					INNER JOIN Reviews ON Areas.VendorID = Reviews.VendorID
+					GROUP BY Vendor.ID
+					ORDER BY count(StarRating) DESC limit 10
 					`
 
 	rows, err := d.db.Queryx(command)
