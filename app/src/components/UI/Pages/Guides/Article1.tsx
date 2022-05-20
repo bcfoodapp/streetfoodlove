@@ -1,10 +1,16 @@
-import { Button, Container, Header } from "semantic-ui-react";
-import { ImageOptions, jsPDF } from "jspdf";
+import { Container, Header } from "semantic-ui-react";
+import Buttons from "../../Atoms/Button/Buttons";
+import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import { useEffect, useRef, useState } from "react";
 
 export default function AddArticle1() {
+  const divToPrint = useRef<HTMLElement>(null);
+
   function printDocument() {
-    html2canvas(document.getElementById("divToPrint")!).then(function (canvas) {
+    // let targetDiv = divToPrint.current!
+    // console.log(targetDiv)
+    html2canvas(divToPrint.current!).then(function (canvas) {
       document.body.appendChild(canvas);
       var imgData = canvas.toDataURL("image/png");
       var imgWidth = 210;
@@ -31,9 +37,11 @@ export default function AddArticle1() {
   return (
     <Container>
       <Container>
-        <Button onClick={() => printDocument()}>Download as PDF</Button>
+        <Buttons clicked={() => printDocument()} color={"green"} downloadPdf>
+          Download as PDF
+        </Buttons>
       </Container>
-      <Container id="divToPrint">
+      <Container ref={divToPrint}>
         <Header as="h2"> How to start a food cart business?</Header>
         <p>
           The timing could not be better: it seems that the street food craze is

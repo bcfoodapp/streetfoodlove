@@ -1,6 +1,37 @@
 import { Container, Header } from "semantic-ui-react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { useRef } from "react";
 
 export default function AddArticle6() {
+  const divToPrint = useRef<HTMLElement>(null);
+
+  function printDocument() {
+    let targetDiv = divToPrint.current!;
+    html2canvas(targetDiv).then(function (canvas) {
+      document.body.appendChild(canvas);
+      var imgData = canvas.toDataURL("image/png");
+      var imgWidth = 210;
+      var pageHeight = 295;
+      var imgHeight = (canvas.height * imgWidth) / canvas.width;
+      var heightLeft = imgHeight;
+
+      var doc = new jsPDF("p", "mm");
+      var position = 5;
+
+      doc.addImage(imgData, "PNG", 0.4, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        doc.addPage();
+        doc.addImage(imgData, "PNG", 0.4, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      doc.save("How-To-Start-Food-Cart-Business.pdf");
+    });
+  }
+
   return (
     <Container>
       <Header as="h2">Steps to start a hot dog cart business</Header>
