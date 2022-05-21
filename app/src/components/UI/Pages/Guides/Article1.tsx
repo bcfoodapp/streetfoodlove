@@ -2,42 +2,54 @@ import { Container, Header } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export default function AddArticle1() {
   const divToPrint = useRef<HTMLDivElement>(null);
+  const [downloading, setDownloading] = useState(false);
 
   function printDocument() {
-    html2canvas(divToPrint.current!).then(function (canvas) {
-      document.body.appendChild(canvas);
-      var imgData = canvas.toDataURL("image/png");
-      var imgWidth = 210;
-      var pageHeight = 295;
-      var imgHeight = (canvas.height * imgWidth) / canvas.width;
-      var heightLeft = imgHeight;
+    setDownloading(true);
+    html2canvas(divToPrint.current!)
+      .then(function (canvas) {
+        document.body.appendChild(canvas);
+        var imgData = canvas.toDataURL("image/png");
+        var imgWidth = 210;
+        var pageHeight = 295;
+        var imgHeight = (canvas.height * imgWidth) / canvas.width;
+        var heightLeft = imgHeight;
 
-      var doc = new jsPDF("p", "mm");
-      var position = 5;
+        var doc = new jsPDF("p", "mm");
+        var position = 5;
 
-      doc.addImage(imgData, "PNG", 0.4, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        doc.addPage();
         doc.addImage(imgData, "PNG", 0.4, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
-      }
-      doc.save("How-To-Start-Food-Cart-Business.pdf");
-    });
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight;
+          doc.addPage();
+          doc.addImage(imgData, "PNG", 0.4, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+        doc.save("How-To-Start-Food-Cart-Business.pdf");
+      })
+      .then(() => {
+        setDownloading(false);
+      });
   }
 
   return (
     <Container>
       <Container>
-        <Buttons clicked={() => printDocument()} color={"green"} downloadPdf>
-          Download as PDF
-        </Buttons>
+        {downloading ? (
+          <Buttons color={"green"} downloadPdf loading>
+            Download as PDF
+          </Buttons>
+        ) : (
+          <Buttons clicked={() => printDocument()} color={"green"} downloadPdf>
+            Download as PDF
+          </Buttons>
+        )}
       </Container>
       <div ref={divToPrint}>
         <Header as="h2"> How to start a food cart business?</Header>
