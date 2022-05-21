@@ -108,6 +108,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 
 	router.GET("/charts/starsumchart", a.NewChart)
 	router.GET("/charts/areabyrating", a.PopularVendor)
+	router.GET("/charts/cuisinebyarea", a.PopularCuisine)
 }
 
 // errorHandler writes any errors to response.
@@ -1136,4 +1137,15 @@ func (a *API) PopularVendor(c *gin.Context) {
 
 	}
 	c.JSON(http.StatusOK, chartArea)
+}
+
+//Graph 4: Top 3 popular Cuisine Types by Area
+func (a *API) PopularCuisine(c *gin.Context) {
+	chartCuisine, err := a.Backend.PopularCuisine()
+	if err != nil {
+		c.Error(err)
+		return
+
+	}
+	c.JSON(http.StatusOK, chartCuisine)
 }

@@ -465,10 +465,17 @@ func (b *Backend) DiscountDelete(userID uuid.UUID, id uuid.UUID) error {
 	return b.Database.DiscountDelete(id)
 }
 
+//Graph 2: New Reviews generated within a certain month
 func (b *Backend) NewChart() (database.StarRatingSum, error) {
 	return b.Database.NewChart()
 }
 
+//Graph 5: Top 10 Vendors in a certain Area
 func (b *Backend) PopularVendor() ([]database.AreaByRating, error) {
 	return b.Database.PopularVendor()
+}
+
+//Graph 4: Top 3 popular Cuisine Types by Area
+func (b *Backend) PopularCuisine() ([]database.CuisineByArea, error) {
+	return b.Database.PopularCuisine()
 }

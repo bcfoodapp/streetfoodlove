@@ -1295,6 +1295,7 @@ func (d *Database) DiscountDelete(id uuid.UUID) error {
 	return err
 }
 
+//	Graph 2: New Reviews generated within a certain month
 type StarRatingSum struct {
 	One   int
 	Two   int
@@ -1336,6 +1337,7 @@ func (d *Database) NewChart() (StarRatingSum, error) {
 	}, nil
 }
 
+//Graph 5: Top 10 Vendors in a certain Area
 type AreaByRating struct {
 	BusinessName string
 	Location     string
@@ -1345,7 +1347,7 @@ type AreaByRating struct {
 func (d *Database) PopularVendor() ([]AreaByRating, error) {
 	const command = `
 					SELECT Vendor.Name as 'BusinessName' , AreaName as 'Location',
-					count(distinct(StarRating)) as "TotalRatings"
+					count(distinct(StarRating)) as "TotalRating"
 					FROM Vendor
 					INNER JOIN Areas ON Vendor.ID = Areas.VendorID
 					INNER JOIN Reviews ON Areas.VendorID = Reviews.VendorID
@@ -1363,6 +1365,39 @@ func (d *Database) PopularVendor() ([]AreaByRating, error) {
 
 	for rows.Next() {
 		result = append(result, AreaByRating{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+	return result, rows.Err()
+}
+
+type CuisineByArea struct {
+	CuisineType string
+	Location    string
+	TotalRating int
+}
+
+func (d *Database) PopularCuisine() ([]CuisineByArea, error) {
+	const command = `
+SELECT AreaName as 'Location', CuisineType,count(distinct(StarRating)) as 'TotalRating'
+FROM Areas
+inner join CuisineTypes ON Areas.VendorID = CuisineTypes.VendorID
+inner join reviews ON CuisineTypes.VendorID = Reviews.VendorID
+ group by CuisineType
+  Order by count(distinct(StarRating)) desc limit 4;
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return []CuisineByArea{}, err
+	}
+	defer rows.Close()
+
+	result := make([]CuisineByArea, 0)
+
+	for rows.Next() {
+		result = append(result, CuisineByArea{})
 		if err := rows.StructScan(&result[len(result)-1]); err != nil {
 			return nil, err
 		}
