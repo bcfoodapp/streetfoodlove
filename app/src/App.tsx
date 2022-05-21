@@ -29,6 +29,7 @@ import Article3 from "./components/UI/Pages/Guides/Article3";
 import Article4 from "./components/UI/Pages/Guides/Article4";
 import Article5 from "./components/UI/Pages/Guides/Article5";
 import Article6 from "./components/UI/Pages/Guides/Article6";
+import Article1Wrapper from "./components/UI/Pages/Guides/Article1";
 
 function App(): React.ReactElement {
   return (
@@ -70,6 +71,7 @@ function App(): React.ReactElement {
           <Route path="/chart2" element={<Chart2 />} />
           <Route path="/article-template" element={<ArticleTemplate />} />
           <Route path="/nearby-vendors" element={<NearbyVendors />} />
+          {/* <Route path="/article1" element={<Article1 />} /> */}
           <Route path="/article1" element={<Article1 />} />
           <Route path="/article2" element={<Article2 />} />
           <Route path="/article3" element={<Article3 />} />
