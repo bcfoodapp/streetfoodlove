@@ -27,6 +27,7 @@ interface ButtonsProps {
   loading?: boolean;
   type?: string;
   fluid?: boolean;
+  downloadPdf?: boolean;
 }
 
 export default function Buttons(props: ButtonsProps): React.ReactElement {
@@ -44,6 +45,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
   else if (props.save) name = classes.save;
   else if (props.create) name = classes.create;
   else if (props.getLocation) name = classes.GetLocation;
+  else if (props.downloadPdf) name = classes.DownloadPdf;
   else throw new Error("Invalid Prop");
 
   return (

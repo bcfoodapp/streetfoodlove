@@ -131,7 +131,7 @@ func SetupTables(db *sqlx.DB) error {
 		CREATE TABLE Areas (
 			ID CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
-			AreaName VARCHAR(45) NOT NULL, 
+			AreaName VARCHAR(45) NOT NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
@@ -140,7 +140,7 @@ func SetupTables(db *sqlx.DB) error {
 		CREATE TABLE CuisineTypes (
 			ID  CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
-			CuisineType VARCHAR(45) NOT NULL, 
+			CuisineType VARCHAR(45) NOT NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
@@ -1340,26 +1340,17 @@ type AreaByRating struct {
 	BusinessName string
 	Location     string
 	TotalRatings int
-
-	/*One   int
-	Two   int
-	Three int
-	Four  int
-	Five  int*/
 }
-
-/*Name     string
-AreaName string*/
 
 func (d *Database) PopularVendor() ([]AreaByRating, error) {
 	const command = `
-					SELECT vendor.Name as 'BusinessName' , AreaName as 'Location',
+					SELECT Vendor.Name as 'BusinessName' , AreaName as 'Location',
 					count(distinct(StarRating)) as "TotalRatings"
-					FROM vendor
-					INNER JOIN areas ON vendor.ID = areas.VendorID
-					INNER JOIN reviews ON areas.VendorID = reviews.VendorID
-					GROUP BY vendor.ID
-					ORDER BY count(StarRating) DESC limit 10;
+					FROM Vendor
+					INNER JOIN Areas ON Vendor.ID = Areas.VendorID
+					INNER JOIN Reviews ON Areas.VendorID = Reviews.VendorID
+					GROUP BY Vendor.ID
+					ORDER BY count(StarRating) DESC limit 10
 					`
 
 	rows, err := d.db.Queryx(command)
@@ -1378,47 +1369,3 @@ func (d *Database) PopularVendor() ([]AreaByRating, error) {
 	}
 	return result, rows.Err()
 }
-
-/*result := make(map[int]int)
-for rows.Next() {
-	rating := 0
-	sum := 0
-	err := rows.Scan(&Name, &AreaName, &sum)
-	if err != nil {
-		return []AreaByRating{}, err
-	}
-	result[rating] = sum
-}
-
-return []AreaByRating{
-	Name:     Name,
-	AreaName: AreaName,
-	StarRating: result[0],
-	/*One:      result[1],
-	Two:      result[2],
-	Three:    result[3],
-	Four:     result[4],
-	Five:     result[5],*/
-
-/*return []AreaByRating{
-	BusinessName =['Business Name'],
-	AreaName = ['Location'],
-}, nil*/
-
-/*
-
-	rows, err := d.db.Queryx(command)
-	if err != nil {
-
-		defer rows.Close()
-	}
-	result := make([string]string)
-
-	for rows.Next() {
-		result = append(Name,AreaName)
-		if err := rows.StructScan(&result[len(result)-1]); err != nil {
-			return nil, err
-		}
-	}
-	return result, rows.Err()
-}*/

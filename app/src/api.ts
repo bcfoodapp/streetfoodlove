@@ -176,9 +176,9 @@ export interface NewChart {
 
 //for Popular vendor in neighborhood by rating
 export interface PopularVendor {
-  TotalRating: number;
-  Location: string;
+  TotalRatings: number;
   BusinessName: string;
+  Location: string;
 }
 
 export interface ReviewCreateResponse {
@@ -502,6 +502,7 @@ export const apiSlice = createApi({
           RefreshToken: null,
           Name: `${user.FirstName} ${user.LastName}`,
           UserPhoto: user.Photo,
+          UserType: user.UserType,
         });
         return { data: undefined };
       },
@@ -618,6 +619,7 @@ export const apiSlice = createApi({
           RefreshToken: refreshToken,
           Name: `${user.FirstName} ${user.LastName}`,
           UserPhoto: defaultUserPhoto,
+          UserType: user.UserType,
         });
 
         return { data: null };
@@ -1002,6 +1004,7 @@ export const {
 export interface CredentialsStorageEntry extends CredentialsAndToken {
   Name: string;
   UserPhoto: string;
+  UserType: UserType;
 }
 
 // Sets credentials and name in localStorage.
