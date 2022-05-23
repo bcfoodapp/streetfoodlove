@@ -19,5 +19,3 @@
 ![Vendor Photos](./vendor-photos.png)
 ![Vendor Search](./vendor-search.png)
 ![Vendor Near You](./vendors-near-you.png)
-
-
