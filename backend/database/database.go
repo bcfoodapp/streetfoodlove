@@ -1341,7 +1341,7 @@ func (d *Database) NewChart() (StarRatingSum, error) {
 type AreaByRating struct {
 	BusinessName string
 	Location     string
-	TotalRatings int
+	TotalRating  int
 }
 
 func (d *Database) PopularVendor() ([]AreaByRating, error) {
@@ -1372,6 +1372,7 @@ func (d *Database) PopularVendor() ([]AreaByRating, error) {
 	return result, rows.Err()
 }
 
+//Graph 4: Top 3 popular Cuisine Types by Area
 type CuisineByArea struct {
 	CuisineType string
 	Location    string
