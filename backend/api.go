@@ -109,6 +109,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/charts/starsumchart", a.NewChart)
 	router.GET("/charts/areabyrating", a.PopularVendor)
 	router.GET("/charts/cuisinebyarea", a.PopularCuisine)
+	router.GET("/charts/searchinmonth", a.PopularSearch)
 }
 
 // errorHandler writes any errors to response.
@@ -1118,6 +1119,7 @@ func (a *API) DiscountDelete(c *gin.Context) {
 	}
 }
 
+//Graph 2: New Reviews generated within a certain month
 func (a *API) NewChart(c *gin.Context) {
 	chartStars, err := a.Backend.NewChart()
 	if err != nil {
@@ -1128,7 +1130,7 @@ func (a *API) NewChart(c *gin.Context) {
 	c.JSON(http.StatusOK, chartStars)
 }
 
-//Chart for popular vendors in neighborhood by reviews
+//Graph 5: Top 10 Vendors in a certain Area
 func (a *API) PopularVendor(c *gin.Context) {
 	chartArea, err := a.Backend.PopularVendor()
 	if err != nil {
@@ -1148,4 +1150,15 @@ func (a *API) PopularCuisine(c *gin.Context) {
 
 	}
 	c.JSON(http.StatusOK, chartCuisine)
+}
+
+//Graph 3: Top 5 Popular Searching Queries in a certain month
+func (a *API) PopularSearch(c *gin.Context) {
+	chartSearch, err := a.Backend.PopularSearch()
+	if err != nil {
+		c.Error(err)
+		return
+
+	}
+	c.JSON(http.StatusOK, chartSearch)
 }

@@ -479,3 +479,8 @@ func (b *Backend) PopularVendor() ([]database.AreaByRating, error) {
 func (b *Backend) PopularCuisine() ([]database.CuisineByArea, error) {
 	return b.Database.PopularCuisine()
 }
+
+//Graph 3: Top 5 Popular Searching Queries in a certain month
+func (b *Backend) PopularSearch() ([]database.SearchInMonth, error) {
+	return b.Database.PopularSearch()
+}

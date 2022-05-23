@@ -1405,3 +1405,34 @@ inner join reviews ON CuisineTypes.VendorID = Reviews.VendorID
 	}
 	return result, rows.Err()
 }
+
+//Graph 3: Top 5 Popular Searching Queries in a certain month
+type SearchInMonth struct {
+	QueryText     string
+	DateRequested time.Time
+}
+
+func (d *Database) PopularSearch() ([]SearchInMonth, error) {
+	const command = `
+SELECT QueryText, DateRequested
+FROM Queries
+WHERE QueryText IS NOT NULL
+AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH); 
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return []SearchInMonth{}, err
+	}
+	defer rows.Close()
+
+	result := make([]SearchInMonth, 0)
+
+	for rows.Next() {
+		result = append(result, SearchInMonth{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+	return result, rows.Err()
+}
