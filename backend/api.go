@@ -110,6 +110,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/charts/areabyrating", a.PopularVendor)
 	router.GET("/charts/cuisinebyarea", a.PopularCuisine)
 	router.GET("/charts/searchinmonth", a.PopularSearch)
+	router.GET("/charts/averageratingbymonth", a.AverageRating)
 }
 
 // errorHandler writes any errors to response.
@@ -1161,4 +1162,14 @@ func (a *API) PopularSearch(c *gin.Context) {
 
 	}
 	c.JSON(http.StatusOK, chartSearch)
+}
+
+//Graph 1: Timeline of Average Rating Increase or Decrease
+func (a *API) AverageRating(c *gin.Context) {
+	chartAverageRating, err := a.Backend.AverageRating()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, chartAverageRating)
 }

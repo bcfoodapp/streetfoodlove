@@ -1384,7 +1384,7 @@ func (d *Database) PopularCuisine() ([]CuisineByArea, error) {
 SELECT AreaName as 'Location', CuisineType,count(distinct(StarRating)) as 'TotalRating'
 FROM Areas
 inner join CuisineTypes ON Areas.VendorID = CuisineTypes.VendorID
-inner join reviews ON CuisineTypes.VendorID = Reviews.VendorID
+inner join Reviews ON CuisineTypes.VendorID = Reviews.VendorID
  group by CuisineType
   Order by count(distinct(StarRating)) desc limit 4;
 					`
@@ -1408,13 +1408,13 @@ inner join reviews ON CuisineTypes.VendorID = Reviews.VendorID
 
 //Graph 3: Top 5 Popular Searching Queries in a certain month
 type SearchInMonth struct {
-	QueryText     string
-	DateRequested time.Time
+	QueryText string
+	Month     time.Time
 }
 
 func (d *Database) PopularSearch() ([]SearchInMonth, error) {
 	const command = `
-SELECT QueryText, DateRequested
+SELECT QueryText, DateRequested as 'Month'
 FROM Queries
 WHERE QueryText IS NOT NULL
 AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH); 
@@ -1434,5 +1434,41 @@ AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH);
 			return nil, err
 		}
 	}
+	return result, rows.Err()
+}
+
+//Graph 1: Timeline of Average Rating Increase or Decrease
+type AverageRatingByMonth struct {
+	VendorID      uuid.UUID
+	AverageRating float64
+	Month         int8
+	Name          string
+}
+
+func (d *Database) AverageRating() ([]AverageRatingByMonth, error) {
+	const command = `
+SELECT  CAST(AVG(StarRating) as decimal(10,1))  as 'AverageRating', 
+extract(Month from DatePosted)  as 'Month', VendorID, Name
+FROM Reviews
+inner join Vendor on Reviews.VendorID = Vendor.ID 
+group by Vendor.ID
+Order by CAST(AVG(StarRating) as decimal(10,1))  DESC limit 5;
+
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	result := make([]AverageRatingByMonth, 0)
+
+	for rows.Next() {
+		result = append(result, AverageRatingByMonth{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
 	return result, rows.Err()
 }

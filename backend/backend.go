@@ -484,3 +484,8 @@ func (b *Backend) PopularCuisine() ([]database.CuisineByArea, error) {
 func (b *Backend) PopularSearch() ([]database.SearchInMonth, error) {
 	return b.Database.PopularSearch()
 }
+
+//Graph 1: Timeline of Average Rating Increase or Decrease
+func (b *Backend) AverageRating() ([]database.AverageRatingByMonth, error) {
+	return b.Database.AverageRating()
+}
