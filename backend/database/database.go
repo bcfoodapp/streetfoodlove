@@ -1295,6 +1295,7 @@ func (d *Database) DiscountDelete(id uuid.UUID) error {
 	return err
 }
 
+//	Graph 2: New Reviews generated within a certain month
 type StarRatingSum struct {
 	One   int
 	Two   int
@@ -1336,16 +1337,17 @@ func (d *Database) NewChart() (StarRatingSum, error) {
 	}, nil
 }
 
+//Graph 5: Top 10 Vendors in a certain Area
 type AreaByRating struct {
 	BusinessName string
 	Location     string
-	TotalRatings int
+	TotalRating  int
 }
 
 func (d *Database) PopularVendor() ([]AreaByRating, error) {
 	const command = `
 					SELECT Vendor.Name as 'BusinessName' , AreaName as 'Location',
-					count(distinct(StarRating)) as "TotalRatings"
+					count(distinct(StarRating)) as "TotalRating"
 					FROM Vendor
 					INNER JOIN Areas ON Vendor.ID = Areas.VendorID
 					INNER JOIN Reviews ON Areas.VendorID = Reviews.VendorID
@@ -1367,5 +1369,106 @@ func (d *Database) PopularVendor() ([]AreaByRating, error) {
 			return nil, err
 		}
 	}
+	return result, rows.Err()
+}
+
+//Graph 4: Top 3 popular Cuisine Types by Area
+type CuisineByArea struct {
+	CuisineType string
+	Location    string
+	TotalRating int
+}
+
+func (d *Database) PopularCuisine() ([]CuisineByArea, error) {
+	const command = `
+SELECT AreaName as 'Location', CuisineType,count(distinct(StarRating)) as 'TotalRating'
+FROM Areas
+inner join CuisineTypes ON Areas.VendorID = CuisineTypes.VendorID
+inner join Reviews ON CuisineTypes.VendorID = Reviews.VendorID
+ group by CuisineType
+  Order by count(distinct(StarRating)) desc limit 4;
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return []CuisineByArea{}, err
+	}
+	defer rows.Close()
+
+	result := make([]CuisineByArea, 0)
+
+	for rows.Next() {
+		result = append(result, CuisineByArea{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+	return result, rows.Err()
+}
+
+//Graph 3: Top 5 Popular Searching Queries in a certain month
+type SearchInMonth struct {
+	QueryText string
+	Month     time.Time
+}
+
+func (d *Database) PopularSearch() ([]SearchInMonth, error) {
+	const command = `
+SELECT QueryText, DateRequested as 'Month'
+FROM Queries
+WHERE QueryText IS NOT NULL
+AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH); 
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return []SearchInMonth{}, err
+	}
+	defer rows.Close()
+
+	result := make([]SearchInMonth, 0)
+
+	for rows.Next() {
+		result = append(result, SearchInMonth{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+	return result, rows.Err()
+}
+
+//Graph 1: Timeline of Average Rating Increase or Decrease
+type AverageRatingByMonth struct {
+	VendorID      uuid.UUID
+	AverageRating float64
+	Month         int8
+	Name          string
+}
+
+func (d *Database) AverageRating() ([]AverageRatingByMonth, error) {
+	const command = `
+SELECT  CAST(AVG(StarRating) as decimal(10,1))  as 'AverageRating', 
+extract(Month from DatePosted)  as 'Month', VendorID, Name
+FROM Reviews
+inner join Vendor on Reviews.VendorID = Vendor.ID 
+group by Vendor.ID
+Order by CAST(AVG(StarRating) as decimal(10,1))  DESC limit 5;
+
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	result := make([]AverageRatingByMonth, 0)
+
+	for rows.Next() {
+		result = append(result, AverageRatingByMonth{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
 	return result, rows.Err()
 }
