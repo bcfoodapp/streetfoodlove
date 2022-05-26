@@ -1,3 +1,7 @@
+# Link to Screenshots of app
+
+[App Screenshots](/app/src/App-Screenshots/images.md)
+
 # Link to app
 
 [https://bcfoodapp.github.io/streetfoodlove/](https://bcfoodapp.github.io/streetfoodlove/)
