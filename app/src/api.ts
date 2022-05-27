@@ -180,12 +180,12 @@ export interface PopularVendor {
   BusinessName: string;
   Location: string;
 }
-//Graph 4: Top 3 popular Cuisine Types by Area
+/*//Graph 4: Top 3 popular Cuisine Types by Area
 export interface PopularCuisine {
   CuisineType: string;
   TotalRating: number;
   Location: string;
-}
+}*/
 //Graph 3: Top 5 Popular Searching Queries in a certain month
 export interface PopularSearch {
   QueryText: string;
@@ -329,7 +329,7 @@ export const apiSlice = createApi({
     "Discounts",
     "NewChart",
     "PopularVendor",
-    "PopularCuisine",
+    /*"PopularCuisine",*/
     "PopularSearch",
     "AverageRating",
     "Areas",
@@ -932,11 +932,11 @@ export const apiSlice = createApi({
       providesTags: ["PopularVendor"],
     }),
 
-    //Graph 4: Top 3 popular Cuisine Types by Area
+   /* //Graph 4: Top 3 popular Cuisine Types by Area
     popularCuisine: builder.query<PopularCuisine[], void>({
       query: () => `/charts/cuisinebyarea`,
       providesTags: ["PopularCuisine"],
-    }),
+    }),*/
 
     //Graph 3: Top 5 Popular Searching Queries in a certain month
     popularSearch: builder.query<PopularSearch[], void>({
@@ -1037,7 +1037,7 @@ export const {
   useDeleteDiscountMutation,
   useNewChartQuery,
   usePopularVendorQuery,
-  usePopularCuisineQuery,
+  /*usePopularCuisineQuery,*/
   usePopularSearchQuery,
   useAverageRatingQuery,
   useAreasByVendorIDQuery,

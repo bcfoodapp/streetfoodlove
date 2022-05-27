@@ -17,7 +17,7 @@ import LoginWrapper from "./components/UI/Pages/Login";
 import VendorPhotosUploader from "./components/UI/Pages/VendorPhotosUploader";
 import NewReviews from "./components/UI/Pages/NewReviews/NewReviews";
 import Chart from "./components/ReviewsChart";
-import Chart1 from "./components/PopularCuisine";
+/*import Chart1 from "./components/PopularCuisine";*/
 import Chart2 from "./components/PopularVendor";
 import Chart3 from "./components/PopularSearch";
 import Chart4 from "./components/AverageRating";
@@ -69,7 +69,7 @@ function App(): React.ReactElement {
           <Route path="/guides" element={<BusinessGuides />} />
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
           <Route path="/chart" element={<Chart />} />
-          <Route path="/chart1" element={<Chart1 />} />
+
           <Route path="/chart2" element={<Chart2 />} />
           <Route path="/chart3" element={<Chart3 />} />
           <Route path="/chart4" element={<Chart4 />} />
