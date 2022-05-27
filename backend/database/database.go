@@ -1408,16 +1408,18 @@ inner join Reviews ON CuisineTypes.VendorID = Reviews.VendorID
 
 //Graph 3: Top 5 Popular Searching Queries in a certain month
 type SearchInMonth struct {
-	QueryText string
-	Month     time.Time
+	QueryText   string
+	Month       time.Time
+	TotalSearch int
 }
 
 func (d *Database) PopularSearch() ([]SearchInMonth, error) {
 	const command = `
-SELECT QueryText, DateRequested as 'Month'
+SELECT QueryText, DateRequested AS 'Month', count(QueryText) AS 'TotalSearch'
 FROM Queries
 WHERE QueryText IS NOT NULL
-AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH); 
+AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH)
+GROUP BY QueryText; 
 					`
 
 	rows, err := d.db.Queryx(command)
@@ -1441,14 +1443,14 @@ AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH);
 type AverageRatingByMonth struct {
 	VendorID      uuid.UUID
 	AverageRating float64
-	Month         int8
+	Month         string
 	Name          string
 }
 
 func (d *Database) AverageRating() ([]AverageRatingByMonth, error) {
 	const command = `
 SELECT  CAST(AVG(StarRating) as decimal(10,1))  as 'AverageRating', 
-extract(Month from DatePosted)  as 'Month', VendorID, Name
+date_format(DatePosted, '%M') as 'Month' , Name
 FROM Reviews
 inner join Vendor on Reviews.VendorID = Vendor.ID 
 group by Vendor.ID
