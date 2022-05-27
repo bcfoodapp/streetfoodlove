@@ -932,7 +932,7 @@ export const apiSlice = createApi({
       providesTags: ["PopularVendor"],
     }),
 
-     //Graph 4: Top 3 popular Cuisine Types by Area
+    //Graph 4: Top 3 popular Cuisine Types by Area
     popularCuisine: builder.query<PopularCuisine[], void>({
       query: () => `/charts/cuisinebyarea`,
       providesTags: ["PopularCuisine"],
