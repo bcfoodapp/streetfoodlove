@@ -17,8 +17,10 @@ import LoginWrapper from "./components/UI/Pages/Login";
 import VendorPhotosUploader from "./components/UI/Pages/VendorPhotosUploader";
 import NewReviews from "./components/UI/Pages/NewReviews/NewReviews";
 import Chart from "./components/ReviewsChart";
-import Chart1 from "./components/LineRechartComponent";
+import Chart1 from "./components/PopularCuisine";
 import Chart2 from "./components/PopularVendor";
+import Chart3 from "./components/PopularSearch";
+import Chart4 from "./components/AverageRating";
 import DiscountQRCode from "./components/UI/Pages/DiscountQRCode/DiscountQRCode";
 import ValidateDiscount from "./components/UI/Pages/ValidateDiscount/ValidateDiscount";
 import ArticleTemplate from "./components/UI/Pages/ArticleTemplate";
@@ -69,6 +71,8 @@ function App(): React.ReactElement {
           <Route path="/chart" element={<Chart />} />
           <Route path="/chart1" element={<Chart1 />} />
           <Route path="/chart2" element={<Chart2 />} />
+          <Route path="/chart3" element={<Chart3 />} />
+          <Route path="/chart4" element={<Chart4 />} />
           <Route path="/article-template" element={<ArticleTemplate />} />
           <Route path="/nearby-vendors" element={<NearbyVendors />} />
           {/* <Route path="/article1" element={<Article1 />} /> */}
