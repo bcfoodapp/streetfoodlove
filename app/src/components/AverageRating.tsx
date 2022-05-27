@@ -8,10 +8,9 @@ import {
   ZAxis,
   CartesianGrid,
   Tooltip,
-  Legend, Label,
+  Legend,
+  Label,
 } from "recharts";
-
-
 
 export default function AverageRating() {
   const { data: averageRating } = useAverageRatingQuery();
@@ -25,15 +24,13 @@ export default function AverageRating() {
           Name: Rating.Name,
           AverageRating: Rating.AverageRating,
           Month: Rating.Month,
+        };
 
-            };
-
-            temp.push(obj);
-          }
+        temp.push(obj);
+      }
 
       setAverageRatingByMonth(temp);
     }
-
   }, [averageRating]);
 
   console.log(averageRatingByMonth);
@@ -45,25 +42,33 @@ export default function AverageRating() {
       data={averageRating}
       margin={{ top: 50, right: 30, left: 20, bottom: 30 }}
     >
-      <text x={500 / 2} y={20} fill="black" textAnchor="left" dominantBaseline="central">
+      <text
+        x={500 / 2}
+        y={20}
+        fill="black"
+        textAnchor="left"
+        dominantBaseline="central"
+      >
         <tspan fontSize="20">Average Rating Over Time</tspan>
-      </text >
+      </text>
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey={"Month"} />
-      <YAxis type={"number"} dataKey={"AverageRating"} label={{
-        value: "Average Rating",
-        angle: -90,
-        position: "insideLeft",
-        textAnchor: "middle",
-      }} />
+      <YAxis
+        type={"number"}
+        dataKey={"AverageRating"}
+        label={{
+          value: "Average Rating",
+          angle: -90,
+          position: "insideLeft",
+          textAnchor: "middle",
+        }}
+      />
       <ZAxis type={"category"} dataKey={"Name"} />
 
-
-      <Legend verticalAlign="top"/>
-      <Tooltip  cursor={{ stroke: 'red', strokeWidth: 2 }} />
-      <Line  dataKey="AverageRating" stroke="#FF0000"  />
+      <Legend verticalAlign="top" />
+      <Tooltip cursor={{ stroke: "red", strokeWidth: 2 }} />
+      <Line dataKey="AverageRating" stroke="#FF0000" />
       <Line type="monotone" dataKey="Name" stroke="#FF0000" />
-
     </LineChart>
   );
 }

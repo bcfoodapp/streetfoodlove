@@ -38,10 +38,15 @@ export default function ReviewsChart() {
       barSize={"30"}
       margin={{ top: 80, right: 30, left: 30, bottom: 5 }}
     >
-
-      <text x={500 / 2} y={20} fill="black" textAnchor="left" dominantBaseline="central">
+      <text
+        x={500 / 2}
+        y={20}
+        fill="black"
+        textAnchor="left"
+        dominantBaseline="central"
+      >
         <tspan fontSize="20">New Reviews in the last Month</tspan>
-      </text >
+      </text>
       /* <CartesianGrid strokeDasharray="3 3" />
       */
       <XAxis dataKey="Stars">
@@ -55,7 +60,7 @@ export default function ReviewsChart() {
           textAnchor: "middle",
         }}
       />
-      <Legend verticalAlign="top"/>
+      <Legend verticalAlign="top" />
       <Bar dataKey="1-star" fill="#FF6347" />
       <Bar dataKey="2-star" fill="#0000FF" />
       <Bar dataKey="3-star" fill="#FF00FF" />

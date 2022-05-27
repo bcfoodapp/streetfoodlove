@@ -31,19 +31,29 @@ export default function PopularVendor(this: any) {
       layout={"vertical"}
       margin={{ top: 20, right: 30, left: 30, bottom: 5 }}
     >
-
-      <text x={500 / 2} y={20} fill="black" textAnchor="left" dominantBaseline="left">
+      <text
+        x={500 / 2}
+        y={20}
+        fill="black"
+        textAnchor="left"
+        dominantBaseline="left"
+      >
         <tspan fontSize="20">Top 10 Vendors in Certain Location</tspan>
-      </text >
+      </text>
       <XAxis type="number" />
-      <YAxis hide type={"category"} dataKey={"Location"} label={{
-        value: "Location",
-        angle: -90,
-        position: "insideLeft",
-        textAnchor: "middle",
-      }}/>
+      <YAxis
+        hide
+        type={"category"}
+        dataKey={"Location"}
+        label={{
+          value: "Location",
+          angle: -90,
+          position: "insideLeft",
+          textAnchor: "middle",
+        }}
+      />
       <Tooltip />
-      <Legend/>
+      <Legend />
       <Bar
         dataKey={"TotalRating"}
         label={{ value: "TotalRating", position: "insideRight" }}
@@ -54,8 +64,6 @@ export default function PopularVendor(this: any) {
         label={{ value: "BusinessName", position: "insideTopLeft" }}
         fill="#FF4782"
       />
-
-
     </BarChart>
   );
 }
