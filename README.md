@@ -1,3 +1,7 @@
+# Link to Screenshots of app
+
+[App Screenshots](/app/src/App-Screenshots/images.md)
+
 # Link to app
 
 [https://bcfoodapp.github.io/streetfoodlove/](https://bcfoodapp.github.io/streetfoodlove/)
@@ -44,6 +48,7 @@ Use an alternate Google account if you want to sign-in with Google! Do not use y
 1. As shown in the directory tree above, place the `.crt` and `.key` certificate files in the parent directory of `backend`.
 2. Create a file named `secrets.json` with the schema given in `backend/database.Secrets`.
 3. Clone just the `backend` directory to the same directory where the certificates are located.
+  - Steps 3 to 4 are completed through AWS CodeDeploy using the [appspec.yml](/appspec.yml) file.
 4. Run the `backend` package, passing the environment variable `SECRETS_FILE` containing the path to the `secrets.json` file. For example:
   ```
   SECRETS_FILE=~/secrets.json sudo -E go run .

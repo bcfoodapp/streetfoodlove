@@ -1,11 +1,21 @@
+.background {
+  width: 100% !important;
+  height: 91vh !important;
+  background-color: green;
+  padding-top: 50px;
+  background-image: url("../../../../public/Loginpagepic.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .wrapper {
-  position: relative;
-  background-color: antiquewhite;
+  background-color: white;
   border: 1px solid black;
   margin-left: 36%;
-  margin-top: 220px;
-  width: 40% !important;
+  margin-top: 200px;
+  width: 30% !important;
   min-width: 30% !important;
+  opacity: 0.9;
 }
 
 .ui.center.container {

@@ -50,6 +50,7 @@ func SetupTables(db *sqlx.DB) error {
 			BusinessLogo VARCHAR(50) NULL,
 			Latitude FLOAT NOT NULL,
 			Longitude FLOAT NOT NULL,
+			LastLocationUpdate DATETIME NOT NULL,
 			Description VARCHAR(1500) NULL,
 			SocialMediaLink VARCHAR(500) NULL,
 			Owner CHAR(36) NOT NULL,
@@ -68,7 +69,8 @@ func SetupTables(db *sqlx.DB) error {
 			DatePosted DATETIME NULL,
 			StarRating TINYINT NULL,
 			ReplyTo CHAR(36) NULL,
-			VendorFavorite TINYINT,
+			VendorFavorite BOOLEAN,
+			ReceivedDiscount BOOLEAN,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID)
 			ON DELETE CASCADE ON UPDATE CASCADE,
@@ -90,6 +92,7 @@ func SetupTables(db *sqlx.DB) error {
 		`
 		CREATE TABLE Guide (
 			ID CHAR(36) NOT NULL,
+			Title VARCHAR(500) NOT NULL,
 			Guide VARCHAR(5000) NOT NULL,
 			DatePosted DATETIME NOT NULL,
 			ArticleAuthor VARCHAR(500) NOT NULL,
@@ -126,17 +129,18 @@ func SetupTables(db *sqlx.DB) error {
 		`,
 		`
 		CREATE TABLE Areas (
+			ID CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
-			AreaName VARCHAR(45) NOT NULL, 
-			PRIMARY KEY (VendorID, AreaName),
+			AreaName VARCHAR(45) NOT NULL,
+			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
 		`,
 		`
 		CREATE TABLE CuisineTypes (
-			ID CHAR(36) NOT NULL,
+			ID  CHAR(36) NOT NULL,
 			VendorID CHAR(36) NOT NULL,
-			CuisineType VARCHAR(45) NOT NULL, 
+			CuisineType VARCHAR(45) NOT NULL,
 			PRIMARY KEY (ID),
 			FOREIGN KEY (VendorID) REFERENCES Vendor(ID) ON DELETE CASCADE ON UPDATE CASCADE
 		)
@@ -204,19 +208,20 @@ func (d *Database) Close() error {
 }
 
 type Vendor struct {
-	ID              uuid.UUID
-	Name            string
-	BusinessAddress string
-	Website         string
-	BusinessHours   string
-	Phone           string
-	BusinessLogo    *string
-	Latitude        float64
-	Longitude       float64
-	Description     string
-	SocialMediaLink string
-	Owner           uuid.UUID
-	DiscountEnabled bool
+	ID                 uuid.UUID
+	Name               string
+	BusinessAddress    string
+	Website            string
+	BusinessHours      string
+	Phone              string
+	BusinessLogo       *string
+	Latitude           float64
+	Longitude          float64
+	LastLocationUpdate time.Time
+	Description        string
+	SocialMediaLink    string
+	Owner              uuid.UUID
+	DiscountEnabled    bool
 }
 
 func (d *Database) VendorCreate(vendor *Vendor) error {
@@ -231,6 +236,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			BusinessLogo,
 			Latitude,
 			Longitude,
+			LastLocationUpdate,
 			Description,
 			SocialMediaLink,
 			Owner,
@@ -245,6 +251,7 @@ func (d *Database) VendorCreate(vendor *Vendor) error {
 			:BusinessLogo,
 			:Latitude,
 			:Longitude,
+			:LastLocationUpdate,
 			:Description,
 			:SocialMediaLink,
 			:Owner,
@@ -297,6 +304,7 @@ func (d *Database) VendorUpdate(vendor *Vendor) error {
 			BusinessLogo = :BusinessLogo,
 			Latitude = :Latitude,
 			Longitude = :Longitude,
+			LastLocationUpdate = :LastLocationUpdate,
 			Owner = :Owner,
 			Description = :Description,
 			SocialMediaLink = :SocialMediaLink,
@@ -495,14 +503,15 @@ func (d *Database) UserIDByGoogleID(googleID string) (uuid.UUID, error) {
 }
 
 type Review struct {
-	ID             uuid.UUID
-	Text           string
-	VendorID       uuid.UUID
-	UserID         uuid.UUID
-	DatePosted     time.Time
-	StarRating     *int
-	ReplyTo        *uuid.UUID
-	VendorFavorite bool
+	ID               uuid.UUID
+	Text             string
+	VendorID         uuid.UUID
+	UserID           uuid.UUID
+	DatePosted       time.Time
+	StarRating       *int
+	ReplyTo          *uuid.UUID
+	VendorFavorite   bool
+	ReceivedDiscount bool
 }
 
 func (d *Database) ReviewCreate(review *Review) error {
@@ -515,7 +524,8 @@ func (d *Database) ReviewCreate(review *Review) error {
 			DatePosted,
 			StarRating,
 			ReplyTo,
-		    VendorFavorite
+			VendorFavorite,
+			ReceivedDiscount
 		) VALUES (
 			:ID,
 			:Text,
@@ -524,7 +534,8 @@ func (d *Database) ReviewCreate(review *Review) error {
 			:DatePosted,
 			:StarRating,
 			:ReplyTo,
-			:VendorFavorite
+			:VendorFavorite,
+			:ReceivedDiscount
 		)
 	`
 	_, err := d.db.NamedExec(command, review)
@@ -550,7 +561,8 @@ func (d *Database) ReviewUpdate(review *Review) error {
 			DatePosted = :DatePosted,
 			StarRating = :StarRating,
 			ReplyTo = :ReplyTo,
-			VendorFavorite = :VendorFavorite
+			VendorFavorite = :VendorFavorite,
+			ReceivedDiscount = :ReceivedDiscount
 		WHERE ID = :ID
 	`
 	_, err := d.db.NamedExec(command, &review)
@@ -713,6 +725,7 @@ func (d *Database) GetOwnerOfLink(linkID uuid.UUID) (uuid.UUID, error) {
 
 type Guide struct {
 	ID            uuid.UUID
+	Title         string
 	Guide         string
 	DatePosted    time.Time
 	ArticleAuthor string
@@ -722,11 +735,13 @@ func (d *Database) GuideCreate(guide *Guide) error {
 	const command = `
 		INSERT INTO Guide (
 			ID,
+			Title,
 			Guide,
 			DatePosted,
 			ArticleAuthor
 		) VALUES (
 			:ID,
+			:Title,
 			:Guide,
 			:DatePosted,
 			:ArticleAuthor
@@ -734,6 +749,31 @@ func (d *Database) GuideCreate(guide *Guide) error {
 	`
 	_, err := d.db.NamedExec(command, guide)
 	return err
+}
+
+func (d *Database) Guides() ([]Guide, error) {
+	const command = `
+		SELECT *
+		FROM Guide
+		ORDER BY DatePosted DESC
+	`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]Guide, 0)
+
+	for rows.Next() {
+		result = append(result, Guide{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
 }
 
 func (d *Database) Guide(id uuid.UUID) (*Guide, error) {
@@ -913,6 +953,7 @@ func (d *Database) StarDelete(userID uuid.UUID, vendorID uuid.UUID) error {
 }
 
 type Areas struct {
+	ID       uuid.UUID
 	VendorID uuid.UUID
 	AreaName string
 }
@@ -920,15 +961,27 @@ type Areas struct {
 func (d *Database) AreasCreate(area *Areas) error {
 	const command = `
 		INSERT INTO Areas (
+			ID,
 			VendorID,
 			AreaName
 		) VALUES (
+			:ID,
 			:VendorID,
 			:AreaName
 		)
 	`
 	_, err := d.db.NamedExec(command, area)
 	return err
+}
+
+func (d *Database) Area(id uuid.UUID) (*Areas, error) {
+	const command = `
+		SELECT * FROM Areas WHERE ID=?
+	`
+
+	Area := &Areas{}
+	err := d.db.QueryRowx(command, &id).StructScan(Area)
+	return Area, err
 }
 
 func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
@@ -955,14 +1008,13 @@ func (d *Database) AreasByVendorID(vendorID uuid.UUID) ([]Areas, error) {
 	return result, rows.Err()
 }
 
-func (d *Database) Area(vendorID uuid.UUID, areaName string) (*Areas, error) {
+func (d *Database) AreasDelete(id uuid.UUID) error {
 	const command = `
-		SELECT * FROM Areas WHERE VendorID=? AND AreaName=?
+		DELETE FROM Areas WHERE ID=?
 	`
 
-	Area := &Areas{}
-	err := d.db.QueryRowx(command, &vendorID, &areaName).StructScan(Area)
-	return Area, err
+	_, err := d.db.Exec(command, &id)
+	return err
 }
 
 type CuisineTypes struct {
@@ -985,6 +1037,16 @@ func (d *Database) CuisineTypesCreate(cuisineType *CuisineTypes) error {
 	`
 	_, err := d.db.NamedExec(command, cuisineType)
 	return err
+}
+
+func (d *Database) CuisineType(id uuid.UUID) (*CuisineTypes, error) {
+	const command = `
+		SELECT * FROM CuisineTypes WHERE ID=?
+	`
+
+	CuisineType := &CuisineTypes{}
+	err := d.db.QueryRowx(command, &id).StructScan(CuisineType)
+	return CuisineType, err
 }
 
 func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, error) {
@@ -1011,14 +1073,13 @@ func (d *Database) CuisineTypeByVendorID(vendorID uuid.UUID) ([]CuisineTypes, er
 	return result, rows.Err()
 }
 
-func (d *Database) CuisineType(ID uuid.UUID) (*CuisineTypes, error) {
+func (d *Database) CuisineTypesDelete(id uuid.UUID) error {
 	const command = `
-		SELECT * FROM CuisineTypes WHERE VendorID=? AND CuisineType=?
+		DELETE FROM CuisineTypes WHERE ID=?
 	`
 
-	CuisineType := &CuisineTypes{}
-	err := d.db.QueryRowx(command, &ID).StructScan(CuisineType)
-	return CuisineType, err
+	_, err := d.db.Exec(command, &id)
+	return err
 }
 
 type Query struct {
@@ -1234,6 +1295,7 @@ func (d *Database) DiscountDelete(id uuid.UUID) error {
 	return err
 }
 
+//	Graph 2: New Reviews generated within a certain month
 type StarRatingSum struct {
 	One   int
 	Two   int
@@ -1268,9 +1330,147 @@ func (d *Database) NewChart() (StarRatingSum, error) {
 	}
 	return StarRatingSum{
 		One:   result[1],
-		Two:   result[1],
-		Three: result[1],
-		Four:  result[1],
-		Five:  result[1],
+		Two:   result[2],
+		Three: result[3],
+		Four:  result[4],
+		Five:  result[5],
 	}, nil
+}
+
+//Graph 5: Top 10 Vendors in a certain Area
+type AreaByRating struct {
+	BusinessName string
+	Location     string
+	TotalRating  int
+}
+
+func (d *Database) PopularVendor() ([]AreaByRating, error) {
+	const command = `
+					SELECT Vendor.Name as 'BusinessName' , AreaName as 'Location',
+					count(distinct(StarRating)) as "TotalRating"
+					FROM Vendor
+					INNER JOIN Areas ON Vendor.ID = Areas.VendorID
+					INNER JOIN Reviews ON Areas.VendorID = Reviews.VendorID
+					GROUP BY Vendor.ID
+					ORDER BY count(StarRating) DESC limit 10
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return []AreaByRating{}, err
+	}
+	defer rows.Close()
+
+	result := make([]AreaByRating, 0)
+
+	for rows.Next() {
+		result = append(result, AreaByRating{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+	return result, rows.Err()
+}
+
+//Graph 4: Top 3 popular Cuisine Types by Area
+type CuisineByArea struct {
+	CuisineType string
+	Location    string
+	TotalRating int
+}
+
+func (d *Database) PopularCuisine() ([]CuisineByArea, error) {
+	const command = `
+SELECT AreaName as 'Location', CuisineType,count(distinct(StarRating)) as 'TotalRating'
+FROM Areas
+inner join CuisineTypes ON Areas.VendorID = CuisineTypes.VendorID
+inner join Reviews ON CuisineTypes.VendorID = Reviews.VendorID
+ group by CuisineType
+  Order by count(distinct(StarRating)) desc limit 4;
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return []CuisineByArea{}, err
+	}
+	defer rows.Close()
+
+	result := make([]CuisineByArea, 0)
+
+	for rows.Next() {
+		result = append(result, CuisineByArea{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+	return result, rows.Err()
+}
+
+//Graph 3: Top 5 Popular Searching Queries in a certain month
+type SearchInMonth struct {
+	QueryText   string
+	Month       time.Time
+	TotalSearch int
+}
+
+func (d *Database) PopularSearch() ([]SearchInMonth, error) {
+	const command = `
+SELECT QueryText, DateRequested AS 'Month', count(QueryText) AS 'TotalSearch'
+FROM Queries
+WHERE QueryText IS NOT NULL
+AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH)
+GROUP BY QueryText; 
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return []SearchInMonth{}, err
+	}
+	defer rows.Close()
+
+	result := make([]SearchInMonth, 0)
+
+	for rows.Next() {
+		result = append(result, SearchInMonth{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+	return result, rows.Err()
+}
+
+//Graph 1: Timeline of Average Rating Increase or Decrease
+type AverageRatingByMonth struct {
+	VendorID      uuid.UUID
+	AverageRating float64
+	Month         string
+	Name          string
+}
+
+func (d *Database) AverageRating() ([]AverageRatingByMonth, error) {
+	const command = `
+SELECT  CAST(AVG(StarRating) as decimal(10,1))  as 'AverageRating', 
+date_format(DatePosted, '%M') as 'Month' , Name
+FROM Reviews
+inner join Vendor on Reviews.VendorID = Vendor.ID 
+group by Vendor.ID
+Order by CAST(AVG(StarRating) as decimal(10,1))  DESC limit 5;
+
+					`
+
+	rows, err := d.db.Queryx(command)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	result := make([]AverageRatingByMonth, 0)
+
+	for rows.Next() {
+		result = append(result, AverageRatingByMonth{})
+		if err := rows.StructScan(&result[len(result)-1]); err != nil {
+			return nil, err
+		}
+	}
+
+	return result, rows.Err()
 }

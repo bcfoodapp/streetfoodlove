@@ -12,8 +12,8 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
-  useNewChartQuery,
   Review,
+  useUploadToS3Mutation,
 } from "../../../api";
 import {
   Container,
@@ -32,29 +32,22 @@ import { DateTime } from "luxon";
 import Buttons from "../Atoms/Button/Buttons";
 import Gallery from "../Organisms/VendorGallery/Gallery";
 import styles from "./vendor.module.css";
-import { s3Prefix, uploadToS3 } from "../../../aws";
+import { s3Prefix } from "../../../aws";
 import { TwitterShareButton, TwitterIcon } from "react-share";
 import VendorStar from "../Molecules/VendorStar/VendorStar";
+
+function averageRating(reviews: Review[]): string {
+  const ratings = reviews
+    .map((review) => review.StarRating)
+    .filter((rating) => rating !== null);
+
+  const sum = ratings.reduce((prev, rating) => (rating ? prev + rating : 0), 0);
+  return (sum / ratings.length).toFixed(1);
+}
 
 /**
  * Displays the vendor page of a vendor, including listed reviews and add review button
  */
-function averageRating(reviews: Review[] | undefined): string | null {
-  if (reviews && reviews.length > 0) {
-    let avgRating = 0;
-
-    for (const review of reviews) {
-      if (review.StarRating) {
-        avgRating += review.StarRating;
-      }
-    }
-
-    return (avgRating / reviews.length).toFixed(1);
-  }
-
-  return null;
-}
-
 export function Vendor(): React.ReactElement {
   const vendorID = useParams().ID as string;
   const { data: vendor } = useVendorQuery(vendorID);
@@ -66,9 +59,8 @@ export function Vendor(): React.ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createPhoto] = useCreatePhotoMutation();
   const [getS3Credentials] = useS3CredentialsMutation();
-  const { data: charStar } = useNewChartQuery();
-
-  console.log("char stars: " + JSON.stringify(charStar));
+  const [discountRewarded, setDiscountRewarded] = useState(false);
+  const [uploadToS3] = useUploadToS3Mutation();
 
   const completedReviewHandler = async ({
     text,
@@ -91,8 +83,14 @@ export function Vendor(): React.ReactElement {
       StarRating: starRating,
       ReplyTo: null,
       VendorFavorite: false,
+      ReceivedDiscount: false,
     };
-    await submitReview(review);
+    const reviewResponse = await submitReview(review);
+    if ("error" in reviewResponse) {
+      return;
+    }
+
+    setDiscountRewarded(reviewResponse.data.DiscountCreated);
 
     let s3Credentials = {} as AWSCredentials;
 
@@ -106,7 +104,11 @@ export function Vendor(): React.ReactElement {
 
     for (const file of files) {
       const photoID = `${uuid()}.${getExtension(file.name)}`;
-      await uploadToS3(s3Credentials, photoID, file);
+      await uploadToS3({
+        credentials: s3Credentials,
+        objectKey: photoID,
+        file,
+      });
       const photo: Photo = {
         ID: photoID,
         DatePosted: DateTime.now(),
@@ -121,12 +123,6 @@ export function Vendor(): React.ReactElement {
     setIsSubmitting(false);
   };
 
-  let averageReviewRating = null as string | null;
-
-  averageReviewRating = averageRating(reviews);
-
-  let countReviews = reviews?.length;
-
   return (
     <>
       <Container textAlign="center">
@@ -137,12 +133,17 @@ export function Vendor(): React.ReactElement {
               <Image
                 src={s3Prefix + vendor.BusinessLogo}
                 alt="logo"
-                style={{ width: 60, height: 60, objectFit: "cover" }}
+                style={{
+                  width: 60,
+                  height: 60,
+                  marginRight: 20,
+                  objectFit: "cover",
+                }}
               />
             ) : null}
-            <h1 className={styles.name}>
-              {vendor?.Name} {averageReviewRating} {countReviews}){" "}
-            </h1>
+            <Header as="h1" className={styles.name}>
+              {vendor?.Name}
+            </Header>
             <VendorStar vendorID={vendorID} />
           </Grid.Row>
           <Grid.Row textAlign="center">
@@ -166,53 +167,36 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
-                Name: {vendor?.Name}
+                <Container>{vendor?.Description}</Container>
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
               <VendorDetailCards heading="contact">
                 {vendor?.Phone}
+                <Container>{vendor?.BusinessHours}</Container>
+                <Container>
+                  <p>{vendor?.BusinessAddress}</p>
+                </Container>
               </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={6}>
-              <VendorDetailCards heading="address">
-                {vendor?.BusinessAddress}
-              </VendorDetailCards>
-            </Grid.Column>
-            <Grid.Column width={6}>
               <VendorDetailCards heading="map">
+                <p>(Last updated {vendor?.LastLocationUpdate.toRelative()})</p>
                 {vendor ? (
                   <iframe
-                    frameBorder="0"
-                    style={{ border: 0, width: "100%", height: "100%" }}
+                    style={{ border: 0, width: "100%", height: "118px" }}
                     src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAYGdHFH-OPCSqQkGrQygGw--zgcQWAv3Y&q=${vendor.Latitude},${vendor.Longitude}`}
                     allowFullScreen
                   />
                 ) : null}
               </VendorDetailCards>
             </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
             <Grid.Column width={6}>
-              <VendorDetailCards heading="business-hours">
-                {vendor?.BusinessHours}
-              </VendorDetailCards>
-            </Grid.Column>
-            <Grid.Column width={6}>
-              <VendorDetailCards heading="website">
-                {vendor?.Website}
-              </VendorDetailCards>
-              <VendorDetailCards heading="social-media-links">
-                {vendor?.SocialMediaLink}
-              </VendorDetailCards>
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={12}>
-              <VendorDetailCards heading="description">
-                {vendor?.Description}
+              <VendorDetailCards heading="website/social media">
+                Website: {vendor?.Website}
+                <Container>Social Media: {vendor?.SocialMediaLink}</Container>
               </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
@@ -221,11 +205,19 @@ export function Vendor(): React.ReactElement {
       <Divider hidden />
       <Container>
         <Header as="h1">Reviews for {vendor?.Name}</Header>
+
+        {reviews && reviews.length > 0 ? (
+          <Header as="h3">
+            {averageRating(reviews)} stars (
+            {reviews.filter((review) => review.StarRating !== null).length}
+            &nbsp;reviews)
+          </Header>
+        ) : null}
+
         {reviews?.length === 0 ? (
           <p>No one has posted a review for this vendor. Yet...</p>
         ) : (
           reviews?.map((review, i) => {
-            // console.log("Reviews: " + JSON.stringify(review, null, 2));
             if (review.ReplyTo === null) {
               return (
                 <Reviews
@@ -250,10 +242,21 @@ export function Vendor(): React.ReactElement {
           </Buttons>
         ) : (
           <div style={{ maxWidth: "700px" }}>
-            <ReviewForm finishedFormHandler={completedReviewHandler} />
+            <ReviewForm
+              finishedFormHandler={completedReviewHandler}
+              discountEnabled={vendor ? vendor.DiscountEnabled : false}
+            />
           </div>
         )}
         {isSubmitting ? <p>Submitting review...</p> : null}
+        {discountRewarded ? (
+          <p>
+            Discount rewarded. Check your profile settings to view your
+            discount.
+          </p>
+        ) : null}
+        <Divider hidden />
+        <Divider hidden />
         <Divider hidden />
       </Container>
     </>

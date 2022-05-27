@@ -72,6 +72,7 @@ export const Reviews: React.FC<Props> = ({ review, reviewID, vendorID }) => {
       StarRating: null,
       ReplyTo: reviewID,
       VendorFavorite: false,
+      ReceivedDiscount: false,
     });
   };
 
@@ -90,6 +91,7 @@ export const Reviews: React.FC<Props> = ({ review, reviewID, vendorID }) => {
       StarRating: review.StarRating,
       ReplyTo: null,
       VendorFavorite: !review.VendorFavorite,
+      ReceivedDiscount: false,
     });
   };
 
@@ -136,6 +138,11 @@ export const Reviews: React.FC<Props> = ({ review, reviewID, vendorID }) => {
             </Grid.Row>
             <Grid.Row>
               <pre>{review.Text}</pre>
+              <p style={{ fontSize: "0.8em" }}>
+                {review.ReceivedDiscount ? (
+                  <a>(Reviewer received a discount)</a>
+                ) : null}
+              </p>
             </Grid.Row>
             <Grid.Row>
               {photos ? (
@@ -182,7 +189,6 @@ export const Reviews: React.FC<Props> = ({ review, reviewID, vendorID }) => {
         ) : null}
       </Container>
       <Container>
-        {" "}
         <CommentCardContainer review={review} vendorID={review.VendorID} />
       </Container>
     </Container>

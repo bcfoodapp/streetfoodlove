@@ -53,6 +53,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.POST("/users/:id/protected", GetToken, a.UserProtectedPost)
 	router.PUT("/users/:id/protected", a.UserProtectedPut)
 	router.POST("/users/:id/s3-credentials", GetToken, a.UserS3CredentialsPost)
+	router.POST("/users/:id/location-role", GetToken, a.UserLocationRolePost)
 
 	router.GET("/reviews", a.Reviews)
 	router.GET("/reviews/:id", a.Review)
@@ -72,6 +73,7 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.GET("/photos/:id", a.Photo)
 	router.PUT("/photos/:id", GetToken, a.PhotoPut)
 
+	router.GET("/guides", a.Guides)
 	router.GET("/guides/:id", a.Guide)
 	router.POST("/guides/:id", GetToken, a.GuidePost)
 
@@ -83,10 +85,14 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.PUT("/stars/:id", GetToken, a.StarPut)
 	router.GET("/stars/count-for-vendor/:vendorID", a.StarsCountForVendor)
 	router.DELETE("/stars/:id", GetToken, a.StarsDelete)
-	router.GET("/areas/", a.Areas)
+
+	router.GET("/areas", a.Areas)
 	router.PUT("/areas/:id", GetToken, a.AreaPut)
-	router.GET("/cuisinetypes/", a.CuisineType)
+	router.DELETE("/areas/:id", GetToken, a.AreaDelete)
+
+	router.GET("/cuisinetypes", a.CuisineTypes)
 	router.PUT("/cuisinetypes/:id", GetToken, a.CuisineTypePut)
+	router.DELETE("/cuisinetypes/:id", GetToken, a.CuisineTypeDelete)
 
 	router.GET("/queries", a.Queries)
 	router.GET("/queries/:id", a.Query)
@@ -101,6 +107,10 @@ func (a *API) AddRoutes(router *gin.Engine) {
 	router.DELETE("/discounts/:id", GetToken, a.DiscountDelete)
 
 	router.GET("/charts/starsumchart", a.NewChart)
+	router.GET("/charts/areabyrating", a.PopularVendor)
+	router.GET("/charts/cuisinebyarea", a.PopularCuisine)
+	router.GET("/charts/searchinmonth", a.PopularSearch)
+	router.GET("/charts/averageratingbymonth", a.AverageRating)
 }
 
 // errorHandler writes any errors to response.
@@ -330,6 +340,16 @@ func (a *API) UserS3CredentialsPost(c *gin.Context) {
 	c.JSON(http.StatusOK, credentials)
 }
 
+func (a *API) UserLocationRolePost(c *gin.Context) {
+	credentials, err := a.Backend.UserLocationRole(c, getTokenFromContext(c))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, credentials)
+}
+
 func (a *API) Reviews(c *gin.Context) {
 	vendorID, err := uuid.Parse(c.Query("vendorID"))
 	if err != nil {
@@ -396,10 +416,13 @@ func (a *API) ReviewPut(c *gin.Context) {
 		return
 	}
 
-	if err := a.Backend.ReviewCreate(getTokenFromContext(c), review); err != nil {
+	response, err := a.Backend.ReviewCreate(getTokenFromContext(c), review)
+	if err != nil {
 		c.Error(err)
 		return
 	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (a *API) ReviewPost(c *gin.Context) {
@@ -585,6 +608,16 @@ func (a *API) PhotoPut(c *gin.Context) {
 		c.Error(err)
 		return
 	}
+}
+
+func (a *API) Guides(c *gin.Context) {
+	guides, err := a.Backend.Guides()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, guides)
 }
 
 func (a *API) Guide(c *gin.Context) {
@@ -797,28 +830,8 @@ func (a *API) StarsDelete(c *gin.Context) {
 	}
 }
 
-func ParseAreaKey(key string) (*database.Areas, error) {
-	const uuidLength = 81
-
-	if len(key) != uuidLength {
-		return nil, fmt.Errorf("key must be length 36 but is of length %v", len(key))
-	}
-
-	vendorID, err := uuid.Parse(key[:uuidLength])
-	if err != nil {
-		return nil, err
-	}
-
-	AreaName := key[uuidLength:]
-
-	return &database.Areas{
-		VendorID: vendorID,
-		AreaName: AreaName,
-	}, nil
-}
-
 func (a *API) AreaPut(c *gin.Context) {
-	key, err := ParseAreaKey(c.Param("id"))
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.Error(err)
 		return
@@ -830,12 +843,12 @@ func (a *API) AreaPut(c *gin.Context) {
 		return
 	}
 
-	if *key != *area {
+	if id != area.ID {
 		c.Error(fmt.Errorf("ID in path does not match body ID"))
 		return
 	}
 
-	if err := a.Backend.Database.AreasCreate(area); err != nil {
+	if err := a.Backend.AreaCreate(getTokenFromContext(c), area); err != nil {
 		c.Error(err)
 		return
 	}
@@ -857,20 +870,17 @@ func (a *API) Areas(c *gin.Context) {
 	c.JSON(http.StatusOK, areas)
 }
 
-func (a *API) CuisineType(c *gin.Context) {
+func (a *API) AreaDelete(c *gin.Context) {
 	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	cuisineType, err := a.Backend.CuisineType(id)
-	if err != nil {
+	if err := a.Backend.AreaDelete(getTokenFromContext(c), id); err != nil {
 		c.Error(err)
 		return
 	}
-
-	c.JSON(http.StatusOK, cuisineType)
 }
 
 func (a *API) CuisineTypePut(c *gin.Context) {
@@ -892,6 +902,35 @@ func (a *API) CuisineTypePut(c *gin.Context) {
 	}
 
 	if err := a.Backend.CuisineTypeCreate(getTokenFromContext(c), cuisineType); err != nil {
+		c.Error(err)
+		return
+	}
+}
+
+func (a *API) CuisineTypes(c *gin.Context) {
+	vendorID, err := uuid.Parse(c.Query("vendorID"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	cuisines, err := a.Backend.CuisineTypeByVendorID(vendorID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, cuisines)
+}
+
+func (a *API) CuisineTypeDelete(c *gin.Context) {
+	id, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := a.Backend.CuisineTypeDelete(getTokenFromContext(c), id); err != nil {
 		c.Error(err)
 		return
 	}
@@ -1081,8 +1120,8 @@ func (a *API) DiscountDelete(c *gin.Context) {
 	}
 }
 
+//Graph 2: New Reviews generated within a certain month
 func (a *API) NewChart(c *gin.Context) {
-
 	chartStars, err := a.Backend.NewChart()
 	if err != nil {
 		c.Error(err)
@@ -1090,4 +1129,47 @@ func (a *API) NewChart(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, chartStars)
+}
+
+//Graph 5: Top 10 Vendors in a certain Area
+func (a *API) PopularVendor(c *gin.Context) {
+	chartArea, err := a.Backend.PopularVendor()
+	if err != nil {
+		c.Error(err)
+		return
+
+	}
+	c.JSON(http.StatusOK, chartArea)
+}
+
+//Graph 4: Top 3 popular Cuisine Types by Area
+func (a *API) PopularCuisine(c *gin.Context) {
+	chartCuisine, err := a.Backend.PopularCuisine()
+	if err != nil {
+		c.Error(err)
+		return
+
+	}
+	c.JSON(http.StatusOK, chartCuisine)
+}
+
+//Graph 3: Top 5 Popular Searching Queries in a certain month
+func (a *API) PopularSearch(c *gin.Context) {
+	chartSearch, err := a.Backend.PopularSearch()
+	if err != nil {
+		c.Error(err)
+		return
+
+	}
+	c.JSON(http.StatusOK, chartSearch)
+}
+
+//Graph 1: Timeline of Average Rating Increase or Decrease
+func (a *API) AverageRating(c *gin.Context) {
+	chartAverageRating, err := a.Backend.AverageRating()
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, chartAverageRating)
 }

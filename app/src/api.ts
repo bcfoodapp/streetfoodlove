@@ -14,6 +14,8 @@ import jwtDecode from "jwt-decode";
 import config from "./configuration.json";
 import { v4 as uuid } from "uuid";
 import { DependencyList, useEffect } from "react";
+import { addressToCoordinates, coordinatesToAddress, uploadToS3 } from "./aws";
+import { LatLngTuple } from "leaflet";
 
 export interface Vendor {
   ID: string;
@@ -25,19 +27,21 @@ export interface Vendor {
   BusinessLogo: string | null;
   Latitude: number;
   Longitude: number;
+  LastLocationUpdate: DateTime;
   Owner: string;
-  // vendorOperationAreas: string[]
   Description: string;
   SocialMediaLink: string;
   DiscountEnabled: boolean;
 }
 
 export interface Areas {
+  ID: string;
   VendorID: string;
   AreaName: string;
 }
 
 export interface CuisineTypes {
+  ID: string;
   VendorID: string;
   CuisineType: string;
 }
@@ -77,6 +81,7 @@ export interface Review {
   // Contains the ID of the parent review, or null if there is no parent.
   ReplyTo: string | null;
   VendorFavorite: boolean;
+  ReceivedDiscount: boolean;
 }
 
 export interface ReviewFilters {
@@ -106,6 +111,7 @@ export interface GeoRectangle {
 
 export interface Guide {
   ID: string;
+  Title: string;
   Guide: string;
   DatePosted: DateTime;
   ArticleAuthor: string;
@@ -159,13 +165,44 @@ export interface Discount {
   VendorID: string;
   Secret: string;
 }
-
+//Graph 2: New Reviews generated within a certain month
 export interface NewChart {
   One: number;
   Two: number;
   Three: number;
   Four: number;
   Five: number;
+}
+
+//Graph 5: Top 10 Vendors in a certain Area
+export interface PopularVendor {
+  TotalRatings: number;
+  BusinessName: string;
+  Location: string;
+}
+//Graph 4: Top 3 popular Cuisine Types by Area
+export interface PopularCuisine {
+  CuisineType: string;
+  TotalRating: number;
+  Location: string;
+}
+//Graph 3: Top 5 Popular Searching Queries in a certain month
+export interface PopularSearch {
+  QueryText: string;
+  Month: DateTime;
+  TotalSearch: number;
+}
+
+//Graph 1: Timeline of Average Rating Increase or Decrease
+export interface AverageRating {
+  AverageRating: number;
+  Name: string;
+  Month: string;
+  VendorID: string;
+}
+
+export interface ReviewCreateResponse {
+  DiscountCreated: boolean;
 }
 
 export const defaultUserPhoto = "b2fe4301-32d5-49a9-aeca-42337801d8d1.svg";
@@ -291,6 +328,12 @@ export const apiSlice = createApi({
     "Recommendation",
     "Discounts",
     "NewChart",
+    "PopularVendor",
+    "PopularCuisine",
+    "PopularSearch",
+    "AverageRating",
+    "Areas",
+    "CuisineTypes",
   ],
   endpoints: (builder) => ({
     version: builder.query<string, void>({
@@ -299,10 +342,19 @@ export const apiSlice = createApi({
     // Gets all vendors.
     vendors: builder.query<Vendor[], void>({
       query: () => `/vendors`,
+      transformResponse: (response: any[]) =>
+        response.map((vendor) => ({
+          ...vendor,
+          LastLocationUpdate: DateTime.fromISO(vendor.LastLocationUpdate),
+        })),
     }),
     // Gets vendor with specified ID.
     vendor: builder.query<Vendor, string>({
       query: (id) => `/vendors/${encode(id)}`,
+      transformResponse: (response: any) => ({
+        ...response,
+        LastLocationUpdate: DateTime.fromISO(response.LastLocationUpdate),
+      }),
     }),
     // Gets all vendors that match the given IDs.
     vendorsMultiple: builder.query<Vendor[], string[]>({
@@ -318,7 +370,11 @@ export const apiSlice = createApi({
             return response;
           }
 
-          vendors.push(response.data as Vendor);
+          const obj = response.data as any;
+          vendors.push({
+            ...obj,
+            LastLocationUpdate: DateTime.fromISO(obj.LastLocationUpdate),
+          });
         }
         return { data: vendors };
       },
@@ -326,6 +382,10 @@ export const apiSlice = createApi({
     // Returns vendor with given owner ID.
     vendorByOwnerID: builder.query<Vendor, string>({
       query: (ownerID) => `/vendors?owner=${encode(ownerID)}`,
+      transformResponse: (response: any) => ({
+        ...response,
+        LastLocationUpdate: DateTime.fromISO(response.LastLocationUpdate),
+      }),
     }),
     createVendor: builder.mutation<undefined, Vendor>({
       query: (vendor) => ({
@@ -409,7 +469,7 @@ export const apiSlice = createApi({
         })),
       providesTags: ["Review"],
     }),
-    createReview: builder.mutation<undefined, Review>({
+    createReview: builder.mutation<ReviewCreateResponse, Review>({
       query: (review) => ({
         url: `/reviews/${encode(review.ID)}`,
         method: PUT,
@@ -465,6 +525,7 @@ export const apiSlice = createApi({
           RefreshToken: null,
           Name: `${user.FirstName} ${user.LastName}`,
           UserPhoto: user.Photo,
+          UserType: user.UserType,
         });
         return { data: undefined };
       },
@@ -474,6 +535,16 @@ export const apiSlice = createApi({
       query: (rectangle) => ({
         url: `/map/view/${rectangle.northWestLat}/${rectangle.northWestLng}/${rectangle.southEastLat}/${rectangle.southEastLng}`,
       }),
+    }),
+    guides: builder.query<Guide[], void>({
+      query: () => ({
+        url: `/guides`,
+      }),
+      transformResponse: (guides: any[]) =>
+        guides.map((guide) => ({
+          ...guide,
+          DatePosted: DateTime.fromISO(guide.DatePosted),
+        })),
     }),
     guide: builder.query<Guide, string>({
       query: (id) => ({
@@ -571,6 +642,7 @@ export const apiSlice = createApi({
           RefreshToken: refreshToken,
           Name: `${user.FirstName} ${user.LastName}`,
           UserPhoto: defaultUserPhoto,
+          UserType: user.UserType,
         });
 
         return { data: null };
@@ -600,6 +672,38 @@ export const apiSlice = createApi({
         url: `/users/${encode(userID)}/s3-credentials`,
         method: POST,
       }),
+    }),
+    uploadToS3: builder.mutation<
+      undefined,
+      { credentials: AWSCredentials; objectKey: string; file: File }
+    >({
+      queryFn: async ({ credentials, objectKey, file }) => {
+        await uploadToS3(credentials, objectKey, file);
+        return { data: undefined };
+      },
+    }),
+    // Returns credentials for using Location Service.
+    locationRole: builder.mutation<AWSCredentials, string>({
+      query: (userID) => ({
+        url: `/users/${encode(userID)}/location-role`,
+        method: POST,
+      }),
+    }),
+    addressToCoordinates: builder.query<
+      LatLngTuple | null,
+      { credentials: AWSCredentials; text: string }
+    >({
+      queryFn: async ({ credentials, text }) => {
+        return { data: await addressToCoordinates(credentials, text) };
+      },
+    }),
+    coordinatesToAddress: builder.query<
+      string | null,
+      { credentials: AWSCredentials; coordinates: LatLngTuple }
+    >({
+      queryFn: async ({ credentials, coordinates }) => {
+        return { data: await coordinatesToAddress(credentials, coordinates) };
+      },
     }),
     // Returns true if star exists
     starExists: builder.query<boolean, Star>({
@@ -817,9 +921,72 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Discounts"],
     }),
+    //Graph 2: New Reviews generated within a certain month
     newChart: builder.query<NewChart, void>({
       query: () => `/charts/starsumchart`,
       providesTags: ["NewChart"],
+    }),
+    //Graph 5: Top 10 Vendors in a certain Area
+    popularVendor: builder.query<PopularVendor[], void>({
+      query: () => `/charts/areabyrating`,
+      providesTags: ["PopularVendor"],
+    }),
+
+    //Graph 4: Top 3 popular Cuisine Types by Area
+    popularCuisine: builder.query<PopularCuisine[], void>({
+      query: () => `/charts/cuisinebyarea`,
+      providesTags: ["PopularCuisine"],
+    }),
+
+    //Graph 3: Top 5 Popular Searching Queries in a certain month
+    popularSearch: builder.query<PopularSearch[], void>({
+      query: () => `/charts/searchinmonth`,
+      providesTags: ["PopularSearch"],
+    }),
+
+    //Graph 1: Timeline of Average Rating Increase or Decrease
+    averageRating: builder.query<AverageRating[], void>({
+      query: () => `/charts/averageratingbymonth`,
+      providesTags: ["AverageRating"],
+    }),
+
+    areasByVendorID: builder.query<Areas[], string>({
+      query: (vendorID) => `/areas?vendorID=${encode(vendorID)}`,
+      providesTags: ["Areas"],
+    }),
+    createArea: builder.mutation<void, Areas>({
+      query: (area) => ({
+        url: `/areas/${encode(area.ID)}`,
+        method: PUT,
+        body: area,
+      }),
+      invalidatesTags: ["Areas"],
+    }),
+    deleteArea: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/areas/${encode(id)}`,
+        method: DELETE,
+      }),
+      invalidatesTags: ["Areas"],
+    }),
+    cuisineTypesByVendorID: builder.query<CuisineTypes[], string>({
+      query: (vendorID) => `/cuisinetypes?vendorID=${encode(vendorID)}`,
+      providesTags: ["CuisineTypes"],
+    }),
+    createCuisineType: builder.mutation<void, CuisineTypes>({
+      query: (cuisine) => ({
+        url: `/cuisinetypes/${encode(cuisine.ID)}`,
+        method: PUT,
+        body: cuisine,
+      }),
+      invalidatesTags: ["CuisineTypes"],
+    }),
+    deleteCuisineType: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/cuisinetypes/${encode(id)}`,
+        method: DELETE,
+      }),
+      invalidatesTags: ["CuisineTypes"],
     }),
   }),
 });
@@ -843,11 +1010,16 @@ export const {
   useGetTokenMutation,
   useSetCredentialsAndGetTokenMutation,
   useMapViewVendorsQuery,
+  useGuidesQuery,
   useGuideQuery,
   useSignInWithGoogleMutation,
   usePhotosByLinkIDQuery,
   useCreatePhotoMutation,
   useS3CredentialsMutation,
+  useUploadToS3Mutation,
+  useLocationRoleMutation,
+  useLazyAddressToCoordinatesQuery,
+  useLazyCoordinatesToAddressQuery,
   useStarExistsQuery,
   useStarsByUserIDQuery,
   useCreateStarMutation,
@@ -864,11 +1036,22 @@ export const {
   useDiscountsBySecretQuery,
   useDeleteDiscountMutation,
   useNewChartQuery,
+  usePopularVendorQuery,
+  usePopularCuisineQuery,
+  usePopularSearchQuery,
+  useAverageRatingQuery,
+  useAreasByVendorIDQuery,
+  useCreateAreaMutation,
+  useDeleteAreaMutation,
+  useCuisineTypesByVendorIDQuery,
+  useCreateCuisineTypeMutation,
+  useDeleteCuisineTypeMutation,
 } = apiSlice;
 
 export interface CredentialsStorageEntry extends CredentialsAndToken {
   Name: string;
   UserPhoto: string;
+  UserType: UserType;
 }
 
 // Sets credentials and name in localStorage.

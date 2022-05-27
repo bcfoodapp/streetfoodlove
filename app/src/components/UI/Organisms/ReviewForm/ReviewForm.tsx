@@ -16,9 +16,10 @@ interface Props {
     starRating: StarRatingInteger;
     files: File[];
   }) => void;
+  discountEnabled: boolean;
 }
 
-export const ReviewForm = (props: Props) => {
+export const ReviewForm = ({ finishedFormHandler, discountEnabled }: Props) => {
   const [textAreaInput, setTextAreaInput] = useState("");
   const [starRating, setStarRating] = useState(null as StarRatingInteger);
   const [files, setFiles] = useState([] as File[]);
@@ -32,7 +33,7 @@ export const ReviewForm = (props: Props) => {
       throw new Error("starRating is null");
     }
 
-    props.finishedFormHandler({
+    finishedFormHandler({
       text: textAreaInput,
       starRating,
       files,
@@ -42,7 +43,15 @@ export const ReviewForm = (props: Props) => {
   return (
     <Container>
       <Container>
-        <Header as="h4">Write a review</Header>
+        <Header as="h4">
+          Write a review{discountEnabled ? " (and receive a discount!)" : null}
+        </Header>
+        {discountEnabled ? (
+          <p>
+            This vendor is offering a discount in exchange for your first
+            review.
+          </p>
+        ) : null}
         <Container>
           <StarRating starRating={starRating} setStarRating={setStarRating} />
         </Container>

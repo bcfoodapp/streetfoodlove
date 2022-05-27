@@ -1,9 +1,12 @@
 .signUpWrapper {
-  width: 50% !important;
-  max-width: 600px !important;
+  width: 100% !important;
+  height: 91vh !important;
+  background-image: url("../../../../public/useraccountpic.jpg");
+  background-size: cover;
+  padding-top: 10px;
 }
 
-.signUpWrapper > h1 {
+.formWrapper > h1 {
   margin-left: auto !important;
   margin-right: auto !important;
   width: 200px !important;
@@ -13,10 +16,11 @@
   margin-left: 37% !important;
   margin-top: 5% !important;
   border: 2px solid rgba(0, 0, 0, 0.25);
-  width: 50% !important;
+  width: 30% !important;
   padding: 10px 0px 20px 10px;
   border-radius: 5px;
   background-color: lightgrey;
+  opacity: 0.98;
 }
 
 .form {
@@ -26,7 +30,6 @@
 .btnContainer {
   width: 100% !important;
   padding-top: 20px !important;
-  /* padding-left: -1.5% !important; */
 }
 
 .signUpWrapper > h1 {

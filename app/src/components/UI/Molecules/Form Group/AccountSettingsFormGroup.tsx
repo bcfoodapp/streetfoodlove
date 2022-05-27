@@ -10,11 +10,12 @@ import {
   useUserProtectedQuery,
   getExtension,
   useS3CredentialsMutation,
+  useUploadToS3Mutation,
 } from "../../../../api";
 import { UserType } from "../../../../api";
 import DragAndDrop from "../../Organisms/DragAndDrop/DragAndDrop";
 import { v4 as uuid } from "uuid";
-import { s3Prefix, uploadToS3 } from "../../../../aws";
+import { s3Prefix } from "../../../../aws";
 
 const AccountSettingsFormGroup: React.FC<{
   disabled: boolean;
@@ -43,6 +44,7 @@ const AccountSettingsFormGroup: React.FC<{
   const [photo, setPhoto] = useState(null as File | null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadToS3] = useUploadToS3Mutation();
 
   useEffect(() => {
     if (userQueryIsSuccess) {
@@ -64,7 +66,11 @@ const AccountSettingsFormGroup: React.FC<{
       }
 
       photoID = `${uuid()}.${getExtension(photo.name)}`;
-      await uploadToS3(s3Response.data, photoID, photo);
+      await uploadToS3({
+        credentials: s3Response.data,
+        objectKey: photoID,
+        file: photo,
+      });
     }
 
     const response = await updateUser({

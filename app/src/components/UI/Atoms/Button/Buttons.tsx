@@ -20,12 +20,14 @@ interface ButtonsProps {
   getLocation?: boolean;
   color?: ButtonProps["color"];
   create?: boolean;
-  clicked?: () => void | ((values: any) => void);
+  clicked?: () => void;
   children: React.ReactNode;
   valid?: boolean;
   dirty?: boolean;
   loading?: boolean;
   type?: string;
+  fluid?: boolean;
+  downloadPdf?: boolean;
 }
 
 export default function Buttons(props: ButtonsProps): React.ReactElement {
@@ -43,6 +45,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
   else if (props.save) name = classes.save;
   else if (props.create) name = classes.create;
   else if (props.getLocation) name = classes.GetLocation;
+  else if (props.downloadPdf) name = classes.DownloadPdf;
   else throw new Error("Invalid Prop");
 
   return (
@@ -54,6 +57,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
           onClick={props.clicked}
           loading={props.loading}
           type={props.type}
+          fluid={props.fluid}
         >
           <span>{props.children}</span>
         </Button>
@@ -64,6 +68,7 @@ export default function Buttons(props: ButtonsProps): React.ReactElement {
           onClick={props.clicked}
           disabled={!props.valid || !props.dirty}
           loading={props.loading}
+          fluid={props.fluid}
         >
           <span>{props.children}</span>
         </Button>

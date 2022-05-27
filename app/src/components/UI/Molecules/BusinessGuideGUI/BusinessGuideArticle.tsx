@@ -1,31 +1,33 @@
-import { Container, Header } from "semantic-ui-react";
+import { Container, Divider, Header, Button } from "semantic-ui-react";
 import styles from "./article.module.css";
 import { useGuideQuery } from "../../../../api";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const BusinessGuideArticle: React.FC = () => {
-  const guideID = useParams().ID as string;
-  const { data: guideInfo } = useGuideQuery(guideID);
+  const id = useParams().ID as string;
+  const { data: guide } = useGuideQuery(id);
 
   return (
     <Container className={styles.wrapper}>
+      <Divider hidden />
       <Header as="h2" className={styles.header}>
-        {" "}
-        Guide{" "}
+        {guide?.Title}
       </Header>
-      <Container className={styles.postInfo}>
-        <Container>
-          <Header as="h3" className={styles.postDate}>
-            Post date:{" " + guideInfo?.DatePosted.toLocaleString()}
-          </Header>
-        </Container>
-        <Container>
-          <Header as="h4" className={styles.author}>
-            Author:{" " + guideInfo?.ArticleAuthor}
-          </Header>
-        </Container>
+      <Divider hidden />
+      <Container text>
+        <Header as="h3" className={styles.postDate}>
+          Post date: {guide?.DatePosted.toLocaleString()}
+          <br />
+          Author: {guide?.ArticleAuthor}
+        </Header>
+        <p style={{ whiteSpace: "pre-wrap" }}>{guide?.Guide}</p>
       </Container>
-      <Container text>{guideInfo?.Guide}</Container>
+      <Container>
+        <Link to={"/article1"}>
+          <Button>Article 1</Button>
+        </Link>
+      </Container>
     </Container>
   );
 };
