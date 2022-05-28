@@ -20,12 +20,11 @@ export default function PopularSearch() {
       setSearchInMonth(temp);
     }
   }, [popularSearch]);
-  console.log(searchInMonth);
 
   return (
     <BarChart
       width={600}
-      height={400}
+      height={380}
       data={searchInMonth}
       layout={"vertical"}
       margin={{ top: 20, right: 30, left: 30, bottom: 30 }}
@@ -39,15 +38,7 @@ export default function PopularSearch() {
       >
         <tspan fontSize="20">Top 5 Searches in the last Month</tspan>
       </text>
-      <XAxis
-        type="number"
-        dataKey="TotalSearch"
-        label={{
-          value: "Searches",
-          position: "insideBottomLeft",
-          textAnchor: "middle",
-        }}
-      />
+      <XAxis type="number" dataKey="TotalSearch" />
 
       <YAxis
         hide
@@ -60,8 +51,7 @@ export default function PopularSearch() {
         }}
       />
       <Tooltip />
-      <Legend verticalAlign="top" />
-
+      <Legend verticalAlign="bottom" />
       <Bar type={"category"} dataKey={"QueryText"} />
       <Bar type={"number"} dataKey={"TotalSearch"} fill="#FF4782" />
     </BarChart>
