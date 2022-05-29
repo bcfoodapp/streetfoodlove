@@ -1347,7 +1347,7 @@ type AreaByRating struct {
 func (d *Database) PopularVendor() ([]AreaByRating, error) {
 	const command = `
 					SELECT Vendor.Name as 'BusinessName' , AreaName as 'Location',
-					count(distinct(StarRating)) as "TotalRating"
+					count(StarRating) as "TotalRating"
 					FROM Vendor
 					INNER JOIN Areas ON Vendor.ID = Areas.VendorID
 					INNER JOIN Reviews ON Areas.VendorID = Reviews.VendorID
@@ -1381,12 +1381,12 @@ type CuisineByArea struct {
 
 func (d *Database) PopularCuisine() ([]CuisineByArea, error) {
 	const command = `
-SELECT AreaName as 'Location', CuisineType,count(distinct(StarRating)) as 'TotalRating'
+SELECT AreaName as 'Location', CuisineType,count(StarRating) as 'TotalRating'
 FROM Areas
 inner join CuisineTypes ON Areas.VendorID = CuisineTypes.VendorID
 inner join Reviews ON CuisineTypes.VendorID = Reviews.VendorID
  group by CuisineType
-  Order by count(distinct(StarRating)) desc limit 4;
+  Order by count(StarRating) desc limit 4;
 					`
 
 	rows, err := d.db.Queryx(command)
