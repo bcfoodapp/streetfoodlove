@@ -52,14 +52,7 @@ export default function AverageRating() {
         <tspan fontSize="20">Average Rating Over Time</tspan>
       </text>
       <CartesianGrid strokeDasharray="3 3" />
-      <XAxis
-        dataKey={"Month"}
-        label={{
-          value: "Month",
-          position: "bottom",
-          textAnchor: "middle",
-        }}
-      />
+      <XAxis dataKey={"Month"} />
       <YAxis
         type={"number"}
         dataKey={"AverageRating"}

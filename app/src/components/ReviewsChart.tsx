@@ -50,7 +50,7 @@ export default function ReviewsChart() {
       /* <CartesianGrid strokeDasharray="3 3" />
       */
       <XAxis dataKey="Stars">
-        <Label value="Ratings" textAnchor="outside" position="center" />
+        <Label value="Date Posted" textAnchor="outside" position="center" />
       </XAxis>
       <YAxis
         label={{
@@ -60,7 +60,7 @@ export default function ReviewsChart() {
           textAnchor: "middle",
         }}
       />
-      <Legend verticalAlign="bottom" />
+      <Legend verticalAlign="top" />
       <Bar dataKey="1-star" fill="#FF6347" />
       <Bar dataKey="2-star" fill="#0000FF" />
       <Bar dataKey="3-star" fill="#FF00FF" />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePopularVendorQuery, PopularVendor } from "../api";
 import { BarChart, Bar, XAxis, YAxis, ZAxis, Tooltip, Legend } from "recharts";
 
@@ -25,7 +25,7 @@ export default function PopularVendor(this: any) {
   let index;
   return (
     <BarChart
-      width={800}
+      width={600}
       height={400}
       data={popularVendor}
       layout={"vertical"}
@@ -37,11 +37,8 @@ export default function PopularVendor(this: any) {
         fill="black"
         textAnchor="left"
         dominantBaseline="left"
-        width={200}
       >
-        <tspan fontSize="20">
-          Top 10 Vendors in Certain Location (by unique review ratings)
-        </tspan>
+        <tspan fontSize="20">Top 10 Vendors in Certain Location</tspan>
       </text>
       <XAxis type="number" />
       <YAxis
