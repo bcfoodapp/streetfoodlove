@@ -1037,7 +1037,7 @@ export const {
   useDeleteDiscountMutation,
   useNewChartQuery,
   usePopularVendorQuery,
- /* usePopularCuisineQuery,*/
+  /* usePopularCuisineQuery,*/
   usePopularSearchQuery,
   useAverageRatingQuery,
   useAreasByVendorIDQuery,
