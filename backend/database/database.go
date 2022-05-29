@@ -1385,7 +1385,7 @@ SELECT AreaName as 'Location', CuisineType,count(StarRating) as 'TotalRating'
 FROM Areas
 inner join CuisineTypes ON Areas.VendorID = CuisineTypes.VendorID
 inner join Reviews ON CuisineTypes.VendorID = Reviews.VendorID
- group by CuisineType
+ group by AreaName
   Order by count(StarRating) desc limit 4;
 					`
 
