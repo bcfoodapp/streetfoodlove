@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNewChartQuery } from "../api";
 import {
   BarChart,
@@ -6,8 +6,8 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
   Legend,
+  Label,
 } from "recharts";
 
 export default function ReviewsChart() {
@@ -31,14 +31,37 @@ export default function ReviewsChart() {
   }, [stars]);
 
   return (
-    <BarChart width={800} height={500} data={starCount}>
+    <BarChart
+      width={800}
+      height={500}
+      data={starCount}
+      barSize={"30"}
+      margin={{ top: 80, right: 30, left: 30, bottom: 5 }}
+    >
+      <text
+        x={500 / 2}
+        y={20}
+        fill="black"
+        textAnchor="left"
+        dominantBaseline="central"
+      >
+        <tspan fontSize="20">New Reviews in the last Month</tspan>
+      </text>
       /* <CartesianGrid strokeDasharray="3 3" />
       */
-      <XAxis dataKey="Stars" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="1-star" fill="#FF6347" width={1} />
+      <XAxis dataKey="Stars">
+        <Label value="Date Posted" textAnchor="outside" position="center" />
+      </XAxis>
+      <YAxis
+        label={{
+          value: "Count of Star Reviews",
+          angle: -90,
+          position: "insideLeft",
+          textAnchor: "middle",
+        }}
+      />
+      <Legend verticalAlign="top" />
+      <Bar dataKey="1-star" fill="#FF6347" />
       <Bar dataKey="2-star" fill="#0000FF" />
       <Bar dataKey="3-star" fill="#FF00FF" />
       <Bar dataKey="4-star" fill="#4B0082" />
