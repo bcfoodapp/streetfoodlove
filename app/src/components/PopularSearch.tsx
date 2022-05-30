@@ -66,7 +66,7 @@ const monthOptions = [
   },
 ];
 
-export default function PopularSearch() {
+export default function PopularSearchComponent() {
   const { data: popularSearch } = usePopularSearchQuery();
   const [searchInMonth, setSearchInMonth] = useState([] as any);
   const [filterMonth, setFilterMonth] = useState<string>("");
