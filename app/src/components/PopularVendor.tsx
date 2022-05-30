@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { usePopularVendorQuery, PopularVendor } from "../api";
 import { BarChart, Bar, XAxis, YAxis, ZAxis, Tooltip, Legend } from "recharts";
 
-export default function PopularVendor(this: any) {
+export default function PopularVendorComponent(this: any) {
   const { data: popularVendor } = usePopularVendorQuery();
   const [vendorByArea, setVendorByArea] = useState([] as any);
   useEffect(() => {
