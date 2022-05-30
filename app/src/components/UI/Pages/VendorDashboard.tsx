@@ -88,7 +88,7 @@ const VendorDashBoard: React.FC = () => {
             </Card.Content>
           </Card>
         </Link>
-        <Link to="">
+        <Link to="/vendor-dashboard/analytics">
           <Card className={styles.card}>
             <Icon name="line graph" size="huge" className={styles.icon} />
             <Card.Content className={styles.content}>
