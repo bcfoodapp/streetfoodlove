@@ -75,7 +75,6 @@ function App(): React.ReactElement {
           <Route path="/chart4" element={<Chart4 />} />
           <Route path="/article-template" element={<ArticleTemplate />} />
           <Route path="/nearby-vendors" element={<NearbyVendors />} />
-          {/* <Route path="/article1" element={<Article1 />} /> */}
           <Route path="/article1" element={<Article1 />} />
           <Route path="/article2" element={<Article2 />} />
           <Route path="/article3" element={<Article3 />} />
