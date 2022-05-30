@@ -75,7 +75,7 @@ const monthOptions = [
   },
 ];
 
-export default function AverageRating() {
+export default function AverageRatingComponent() {
   const { data: averageRating } = useAverageRatingQuery();
   const [averageRatingByMonth, setAverageRatingByMonth] = useState([] as any);
   const [filterMonth, setFilterMonth] = useState<string>("");

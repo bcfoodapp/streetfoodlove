@@ -1,24 +1,24 @@
 import { Grid } from "semantic-ui-react";
-import PopularCuisine from "../../PopularCuisine";
-import PopularSearch from "../../PopularSearch";
-import PopularVendor from "../../PopularVendor";
+import PopularCuisineComponent from "../../PopularCuisine";
+import PopularSearchComponent from "../../PopularSearch";
+import PopularVendorComponent from "../../PopularVendor";
 import ReviewsChart from "../../ReviewsChart";
-import AverageRating from "../../AverageRating";
+import AverageRatingComponent from "../../AverageRating";
 
 const Analytics: React.FC = () => {
   return (
     <Grid>
       <Grid.Row>
         <Grid.Column width={8}>
-          <PopularCuisine />
+          <PopularCuisineComponent />
         </Grid.Column>
         <Grid.Column width={8}>
-          <PopularSearch />
+          <PopularSearchComponent />
         </Grid.Column>
       </Grid.Row>
       <Grid.Row>
         <Grid.Column width={8}>
-          <PopularVendor />
+          <PopularVendorComponent />
         </Grid.Column>
         <Grid.Column width={8}>
           <ReviewsChart />
@@ -26,7 +26,7 @@ const Analytics: React.FC = () => {
       </Grid.Row>
       <Grid.Row>
         <Grid.Column width={8}>
-          <AverageRating />
+          <AverageRatingComponent />
         </Grid.Column>
       </Grid.Row>
     </Grid>

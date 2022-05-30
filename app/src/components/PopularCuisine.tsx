@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { PopularCuisine, usePopularCuisineQuery } from "../api";
 import { Bar, BarChart, Legend, Tooltip, XAxis, YAxis } from "recharts";
-const barColors = ["#FF4782", "#FFA500", "#FF6347"];
-export default function PopularCuisine() {
+
+export default function PopularCuisineComponent() {
   const { data: popularCuisine } = usePopularCuisineQuery();
   const [cuisineByArea, setCuisineByArea] = useState([] as any);
   useEffect(() => {
