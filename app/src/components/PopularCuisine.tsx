@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PopularCuisine, usePopularCuisineQuery } from "../api";
-import { Bar, BarChart, Label, Legend, Tooltip, XAxis, YAxis } from "recharts";
-import { Container } from "semantic-ui-react";
-
+import { Bar, BarChart, Legend, Tooltip, XAxis, YAxis } from "recharts";
 const barColors = ["#FF4782", "#FFA500", "#FF6347"];
 export default function PopularCuisine() {
   const { data: popularCuisine } = usePopularCuisineQuery();
