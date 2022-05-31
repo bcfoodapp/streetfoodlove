@@ -38,7 +38,7 @@ export default function PopularVendorComponent(this: any) {
         textAnchor="left"
         dominantBaseline="left"
       >
-        <tspan fontSize="20">Top 10 Vendors in Certain Location</tspan>
+        <tspan fontSize="20">Popular Vendors in Certain Location</tspan>
       </text>
       <XAxis type="number" />
       <YAxis

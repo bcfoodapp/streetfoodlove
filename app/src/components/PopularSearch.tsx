@@ -129,7 +129,7 @@ export default function PopularSearchComponent() {
           textAnchor="left"
           dominantBaseline="central"
         >
-          <tspan fontSize="20">Top 5 Searches in the last Month</tspan>
+          <tspan fontSize="20">Popular Searches</tspan>
         </text>
         <XAxis type="number" dataKey="TotalSearch" />
 
