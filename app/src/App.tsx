@@ -32,6 +32,7 @@ import Article4 from "./components/UI/Pages/Guides/Article4";
 import Article5 from "./components/UI/Pages/Guides/Article5";
 import Article6 from "./components/UI/Pages/Guides/Article6";
 import Article1Wrapper from "./components/UI/Pages/Guides/Article1";
+import Analytics from "./components/UI/Pages/Analytics";
 
 function App(): React.ReactElement {
   return (
@@ -65,6 +66,7 @@ function App(): React.ReactElement {
             path="/vendor-dashboard/validate-discount/:secret"
             element={<ValidateDiscount />}
           />
+          <Route path="/vendor-dashboard/analytics" element={<Analytics />} />
           <Route path="/edit-vendor-page" element={<EditVendorPage />} />
           <Route path="/guides" element={<BusinessGuides />} />
           <Route path="/guides/:ID" element={<BusinessGuideArticle />} />
@@ -75,7 +77,6 @@ function App(): React.ReactElement {
           <Route path="/chart4" element={<Chart4 />} />
           <Route path="/article-template" element={<ArticleTemplate />} />
           <Route path="/nearby-vendors" element={<NearbyVendors />} />
-          {/* <Route path="/article1" element={<Article1 />} /> */}
           <Route path="/article1" element={<Article1 />} />
           <Route path="/article2" element={<Article2 />} />
           <Route path="/article3" element={<Article3 />} />

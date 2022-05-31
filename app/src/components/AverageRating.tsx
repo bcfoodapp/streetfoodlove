@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAverageRatingQuery, AverageRating } from "../api";
 import {
   LineChart,
@@ -9,12 +9,78 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  Label,
 } from "recharts";
+import { Dropdown } from "semantic-ui-react";
 
-export default function AverageRating() {
+const monthOptions = [
+  {
+    key: "1",
+    text: "January",
+    value: "January",
+  },
+  {
+    key: "2",
+    text: "February",
+    value: "February",
+  },
+  {
+    key: "3",
+    text: "March",
+    value: "March",
+  },
+  {
+    key: "4",
+    text: "April",
+    value: "April",
+  },
+  {
+    key: "5",
+    text: "May",
+    value: "May",
+  },
+  {
+    key: "6",
+    text: "June",
+    value: "June",
+  },
+  {
+    key: "7",
+    text: "July",
+    value: "July",
+  },
+  {
+    key: "8",
+    text: "August",
+    value: "August",
+  },
+  {
+    key: "9",
+    text: "September",
+    value: "September",
+  },
+  {
+    key: "10",
+    text: "October",
+    value: "October",
+  },
+  {
+    key: "11",
+    text: "November",
+    value: "November",
+  },
+  {
+    key: "12",
+    text: "December",
+    value: "December",
+  },
+];
+
+export default function AverageRatingComponent() {
   const { data: averageRating } = useAverageRatingQuery();
   const [averageRatingByMonth, setAverageRatingByMonth] = useState([] as any);
+  const [filterMonth, setFilterMonth] = useState<string>("");
+  const [searchInMonth, setSearchInMonth] = useState([] as any);
+
   useEffect(() => {
     if (averageRating) {
       let temp = [] as AverageRating[];
@@ -33,42 +99,63 @@ export default function AverageRating() {
     }
   }, [averageRating]);
 
+  useEffect(() => {
+    if (averageRating) {
+      let filteredSearch = [] as AverageRating[];
+      for (const obj of averageRating) {
+        if (obj.Month === filterMonth) {
+          filteredSearch.push(obj);
+        }
+      }
+      setSearchInMonth(filteredSearch);
+    }
+  }, [filterMonth]);
+
   console.log(averageRatingByMonth);
 
   return (
-    <LineChart
-      width={800}
-      height={600}
-      data={averageRating}
-      margin={{ top: 50, right: 30, left: 20, bottom: 30 }}
-    >
-      <text
-        x={500 / 2}
-        y={20}
-        fill="black"
-        textAnchor="left"
-        dominantBaseline="central"
-      >
-        <tspan fontSize="20">Average Rating Over Time</tspan>
-      </text>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey={"Month"} />
-      <YAxis
-        type={"number"}
-        dataKey={"AverageRating"}
-        label={{
-          value: "Average Rating",
-          angle: -90,
-          position: "insideLeft",
-          textAnchor: "middle",
-        }}
+    <>
+      <Dropdown
+        placeholder="Select Month"
+        style={{ width: "20%", marginLeft: "40%", marginTop: "20px" }}
+        selection
+        options={monthOptions}
+        onChange={(_, data) => setFilterMonth(data.value as string)}
       />
-      <ZAxis type={"category"} dataKey={"Name"} />
+      <LineChart
+        width={800}
+        height={600}
+        data={searchInMonth}
+        margin={{ top: 50, right: 30, left: 20, bottom: 30 }}
+      >
+        <text
+          x={500 / 2}
+          y={20}
+          fill="black"
+          textAnchor="left"
+          dominantBaseline="central"
+        >
+          <tspan fontSize="20">Average Rating Over Time</tspan>
+        </text>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey={"Month"} />
+        <YAxis
+          type={"number"}
+          dataKey={"AverageRating"}
+          label={{
+            value: "Average Rating",
+            angle: -90,
+            position: "insideLeft",
+            textAnchor: "middle",
+          }}
+        />
+        <ZAxis type={"category"} dataKey={"Name"} />
 
-      <Legend verticalAlign="top" />
-      <Tooltip cursor={{ stroke: "red", strokeWidth: 2 }} />
-      <Line dataKey="AverageRating" stroke="#FF0000" />
-      <Line type="monotone" dataKey="Name" stroke="#FF0000" />
-    </LineChart>
+        <Legend verticalAlign="top" />
+        <Tooltip cursor={{ stroke: "red", strokeWidth: 2 }} />
+        <Line dataKey="AverageRating" stroke="#FF0000" />
+        <Line type="monotone" dataKey="Name" stroke="#FF0000" />
+      </LineChart>
+    </>
   );
 }

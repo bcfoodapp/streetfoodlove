@@ -1,6 +1,5 @@
 import React from "react";
 import { Container } from "semantic-ui-react";
-import HeaderBar from "../Molecules/HeaderBar/HeaderBar";
 import styles from "./accountSelection.module.css";
 import { Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
