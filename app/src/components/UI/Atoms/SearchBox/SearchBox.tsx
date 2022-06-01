@@ -98,7 +98,7 @@ export const SearchBox: React.FC = () => {
       string = string
         .toLowerCase()
         .split(" ")
-        .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+        .map((s) => s.charAt(0).toLowerCase() + s.substring(1))
         .join(" ");
 
       let condition = new RegExp(string);
@@ -106,7 +106,7 @@ export const SearchBox: React.FC = () => {
 
       let filteredResult = vendorsList.filter((element) => {
         //filter all vendors from vendors list who matches regex expression
-        return condition.test(element.Name);
+        return condition.test(element.Name.toLowerCase());
       });
 
       let recentSearchFilteredResult = recentSearchResult.filter((element) => {
