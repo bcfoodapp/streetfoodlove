@@ -95,11 +95,7 @@ export const SearchBox: React.FC = () => {
     }
 
     if (vendorsList) {
-      string = string
-        .toLowerCase()
-        .split(" ")
-        .map((s) => s.charAt(0).toLowerCase() + s.substring(1))
-        .join(" ");
+      string = string.toLowerCase();
 
       let condition = new RegExp(string);
       let resultArray: Vendor[] = [];
