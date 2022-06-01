@@ -122,7 +122,8 @@ export const SearchBox: React.FC = () => {
         if (
           //if the tempobject has no matches in recentsearch result, then push to the result array
           !recentSearchResult.some(
-            (element) => element.Name.toLowerCase() === tempObject.title.toLowerCase()
+            (element) =>
+              element.Name.toLowerCase() === tempObject.title.toLowerCase()
           )
         ) {
           resultArray.push(tempObject);
