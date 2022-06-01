@@ -40,7 +40,7 @@ export default function PopularCuisineComponent() {
           dominantBaseline="left"
           spacing={"50"}
         >
-          <tspan fontSize="20">Top 3 Cuisine Type by Location*</tspan>
+          <tspan fontSize="20">Popular Cuisine Type by Location*</tspan>
         </text>
         <XAxis type={"number"} />
         <YAxis
