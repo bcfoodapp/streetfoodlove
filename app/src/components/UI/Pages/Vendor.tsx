@@ -12,11 +12,8 @@ import {
   useS3CredentialsMutation,
   getExtension,
   AWSCredentials,
-  useNewChartQuery,
   Review,
   useUploadToS3Mutation,
-  useCreateCuisineTypeMutation,
-  useCreateAreaMutation,
 } from "../../../api";
 import {
   Container,
@@ -170,52 +167,36 @@ export function Vendor(): React.ReactElement {
           <Grid.Row>
             <Grid.Column width={6}>
               <VendorDetailCards heading="about-us">
-                Name: {vendor?.Name}
+                <Container>{vendor?.Description}</Container>
               </VendorDetailCards>
             </Grid.Column>
             <Grid.Column width={6}>
               <VendorDetailCards heading="contact">
                 {vendor?.Phone}
+                <Container>{vendor?.BusinessHours}</Container>
+                <Container>
+                  <p>{vendor?.BusinessAddress}</p>
+                </Container>
               </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={6}>
-              <VendorDetailCards heading="address">
-                {vendor?.BusinessAddress}
-              </VendorDetailCards>
-            </Grid.Column>
-            <Grid.Column width={6}>
               <VendorDetailCards heading="map">
+                <p>(Last updated {vendor?.LastLocationUpdate.toRelative()})</p>
                 {vendor ? (
                   <iframe
-                    style={{ border: 0, width: "100%", height: "100%" }}
+                    style={{ border: 0, width: "100%", height: "118px" }}
                     src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyAYGdHFH-OPCSqQkGrQygGw--zgcQWAv3Y&q=${vendor.Latitude},${vendor.Longitude}`}
                     allowFullScreen
                   />
                 ) : null}
               </VendorDetailCards>
             </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
             <Grid.Column width={6}>
-              <VendorDetailCards heading="business-hours">
-                {vendor?.BusinessHours}
-              </VendorDetailCards>
-            </Grid.Column>
-            <Grid.Column width={6}>
-              <VendorDetailCards heading="website">
-                {vendor?.Website}
-              </VendorDetailCards>
-              <VendorDetailCards heading="social-media-links">
-                {vendor?.SocialMediaLink}
-              </VendorDetailCards>
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={12}>
-              <VendorDetailCards heading="description">
-                {vendor?.Description}
+              <VendorDetailCards heading="website/social media">
+                Website: {vendor?.Website}
+                <Container>Social Media: {vendor?.SocialMediaLink}</Container>
               </VendorDetailCards>
             </Grid.Column>
           </Grid.Row>

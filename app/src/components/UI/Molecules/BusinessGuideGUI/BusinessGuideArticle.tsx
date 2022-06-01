@@ -1,7 +1,8 @@
-import { Container, Divider, Header } from "semantic-ui-react";
+import { Container, Divider, Header, Button } from "semantic-ui-react";
 import styles from "./article.module.css";
 import { useGuideQuery } from "../../../../api";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const BusinessGuideArticle: React.FC = () => {
   const id = useParams().ID as string;
@@ -21,6 +22,11 @@ const BusinessGuideArticle: React.FC = () => {
           Author: {guide?.ArticleAuthor}
         </Header>
         <p style={{ whiteSpace: "pre-wrap" }}>{guide?.Guide}</p>
+      </Container>
+      <Container>
+        <Link to={"/article1"}>
+          <Button>Article 1</Button>
+        </Link>
       </Container>
     </Container>
   );

@@ -1,10 +1,14 @@
 import React from "react";
-import { Menu, Dropdown, Image } from "semantic-ui-react";
+import { Dropdown, Image, Menu } from "semantic-ui-react";
 import Buttons from "../../Atoms/Button/Buttons";
 import { SearchBox } from "../../Atoms/SearchBox/SearchBox";
 import styles from "./headerbar.module.css";
 import { Link, useNavigate } from "react-router-dom";
-import { clearLocalStorage, getCredentialsEntry } from "../../../../api";
+import {
+  clearLocalStorage,
+  getCredentialsEntry,
+  UserType,
+} from "../../../../api";
 import { s3Prefix } from "../../../../aws";
 
 /**
@@ -29,16 +33,12 @@ export default function HeaderBar(): React.ReactElement {
     {
       key: "profile",
       text: "Profile Settings",
-      onClick: () => {
-        navigate("/account-profile");
-      },
+      onClick: () => navigate("/account-profile"),
     },
     {
-      key: "page",
-      text: "Vendor Dashboard",
-      onClick: () => {
-        navigate("/vendor-dashboard");
-      },
+      key: "nearby-vendors",
+      text: "Vendors Near You",
+      onClick: () => navigate("/nearby-vendors"),
     },
     { key: "help", text: "Help" },
     {
@@ -50,6 +50,14 @@ export default function HeaderBar(): React.ReactElement {
       },
     },
   ];
+
+  if (storeEntry?.UserType === UserType.Vendor) {
+    options.splice(3, 0, {
+      key: "vendor-dashboard",
+      text: "Vendor Dashboard",
+      onClick: () => navigate("/vendor-dashboard"),
+    });
+  }
 
   return (
     <Menu size="massive" className={styles.menu}>

@@ -15,7 +15,7 @@ interface Props {
     | "description"
     | "business-hours"
     | "social-media-links"
-    | "website"
+    | "website/social media"
     | "cuisine-types"
     | "review-count"
     | "average-review-rating";
@@ -40,8 +40,10 @@ export default function VendorDetailCards(
     headingContent = <h2 className={styles.header}>Business Hours</h2>;
   } else if (props.heading === "social-media-links") {
     headingContent = <h2 className={styles.header}>Social Media Links</h2>;
-  } else if (props.heading === "website") {
-    headingContent = <h2 className={styles.header}>Website</h2>;
+  } else if (props.heading === "website/social media") {
+    headingContent = (
+      <h2 className={styles.header}>Website And Social Media</h2>
+    );
   } else if (props.heading === "cuisine-types") {
     headingContent = <h2 className={styles.header}>Cuisine Types</h2>;
   } else if (props.heading === "review-count") {

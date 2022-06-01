@@ -165,7 +165,7 @@ export interface Discount {
   VendorID: string;
   Secret: string;
 }
-
+//Graph 2: New Reviews generated within a certain month
 export interface NewChart {
   One: number;
   Two: number;
@@ -174,11 +174,31 @@ export interface NewChart {
   Five: number;
 }
 
-//for Popular vendor in neighborhood by rating
+//Graph 5: Top 10 Vendors in a certain Area
 export interface PopularVendor {
+  TotalRatings: number;
+  BusinessName: string;
+  Location: string;
+}
+//Graph 4: Top 3 popular Cuisine Types by Area
+export interface PopularCuisine {
+  CuisineType: string;
   TotalRating: number;
   Location: string;
-  BusinessName: string;
+}
+//Graph 3: Top 5 Popular Searching Queries in a certain month
+export interface PopularSearch {
+  QueryText: string;
+  Month: DateTime;
+  TotalSearch: number;
+}
+
+//Graph 1: Timeline of Average Rating Increase or Decrease
+export interface AverageRating {
+  AverageRating: number;
+  Name: string;
+  Month: string;
+  VendorID: string;
 }
 
 export interface ReviewCreateResponse {
@@ -309,6 +329,9 @@ export const apiSlice = createApi({
     "Discounts",
     "NewChart",
     "PopularVendor",
+    "PopularCuisine",
+    "PopularSearch",
+    "AverageRating",
     "Areas",
     "CuisineTypes",
   ],
@@ -502,6 +525,7 @@ export const apiSlice = createApi({
           RefreshToken: null,
           Name: `${user.FirstName} ${user.LastName}`,
           UserPhoto: user.Photo,
+          UserType: user.UserType,
         });
         return { data: undefined };
       },
@@ -618,6 +642,7 @@ export const apiSlice = createApi({
           RefreshToken: refreshToken,
           Name: `${user.FirstName} ${user.LastName}`,
           UserPhoto: defaultUserPhoto,
+          UserType: user.UserType,
         });
 
         return { data: null };
@@ -896,14 +921,35 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ["Discounts"],
     }),
+    //Graph 2: New Reviews generated within a certain month
     newChart: builder.query<NewChart, void>({
       query: () => `/charts/starsumchart`,
       providesTags: ["NewChart"],
     }),
+    //Graph 5: Top 10 Vendors in a certain Area
     popularVendor: builder.query<PopularVendor[], void>({
       query: () => `/charts/areabyrating`,
       providesTags: ["PopularVendor"],
     }),
+
+    //Graph 4: Top 3 popular Cuisine Types by Area
+    popularCuisine: builder.query<PopularCuisine[], void>({
+      query: () => `/charts/cuisinebyarea`,
+      providesTags: ["PopularCuisine"],
+    }),
+
+    //Graph 3: Top 5 Popular Searching Queries in a certain month
+    popularSearch: builder.query<PopularSearch[], void>({
+      query: () => `/charts/searchinmonth`,
+      providesTags: ["PopularSearch"],
+    }),
+
+    //Graph 1: Timeline of Average Rating Increase or Decrease
+    averageRating: builder.query<AverageRating[], void>({
+      query: () => `/charts/averageratingbymonth`,
+      providesTags: ["AverageRating"],
+    }),
+
     areasByVendorID: builder.query<Areas[], string>({
       query: (vendorID) => `/areas?vendorID=${encode(vendorID)}`,
       providesTags: ["Areas"],
@@ -991,6 +1037,9 @@ export const {
   useDeleteDiscountMutation,
   useNewChartQuery,
   usePopularVendorQuery,
+  usePopularCuisineQuery,
+  usePopularSearchQuery,
+  useAverageRatingQuery,
   useAreasByVendorIDQuery,
   useCreateAreaMutation,
   useDeleteAreaMutation,
@@ -1002,6 +1051,7 @@ export const {
 export interface CredentialsStorageEntry extends CredentialsAndToken {
   Name: string;
   UserPhoto: string;
+  UserType: UserType;
 }
 
 // Sets credentials and name in localStorage.
