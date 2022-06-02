@@ -1,0 +1,1465 @@
+---
+openapi: 3.0.3
+info:
+  title: StreetFoodLove API
+  description: |
+    - Because many objects contain an array of photos, all photos are combined into `/photos`. For example, you want to get all photos on a vendor page, call `/photos?link_id=<vendorID>`.
+    - All dates and times are in the RFC 3339 format.
+    - Password-protected resources require a token in the Bearer scheme. A token is acquired through `/token`.
+    - Functionality for some planned features are not included on this API for now. They will get included on subsequent versions.
+  version: 0.0.1
+servers:
+- url: http://localhost:8080
+- url: https://virtserver.swaggerhub.com/foodapp/FoodApp/0.0.1
+  description: SwaggerHub API Auto Mocking
+paths:
+  /:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+  /areas:
+    get:
+      parameters:
+      - name: vendorID
+        in: query
+        description: Filters by vendor
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Area'
+  /areas/{id}:
+    put:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Area'
+        required: true
+      responses:
+        "200":
+          description: OK
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: The specified resource was not found
+  /charts/starsumchart:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+  /charts/areabyrating:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/inline_response_200_1'
+  /charts/cuisinebyarea:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/inline_response_200_2'
+  /charts/searchinmonth:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/inline_response_200_3'
+  /charts/averageratingbymonth:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/inline_response_200_4'
+  /cuisinetypes:
+    get:
+      parameters:
+      - name: vendorID
+        in: query
+        description: Filters by vendor
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CuisineType'
+  /cuisinetypes/{id}:
+    put:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CuisineType'
+        required: true
+      responses:
+        "200":
+          description: OK
+    delete:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: The specified resource was not found
+  /favorite/{id}:
+    get:
+      summary: Gets a favorite.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+        "404":
+          description: The specified resource was not found
+    put:
+      summary: Creates a favorite.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Favorite'
+        required: true
+      responses:
+        "200":
+          description: OK
+  /discounts:
+    get:
+      parameters:
+      - name: userID
+        in: query
+        description: Filters discounts to those associated with user
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - name: secret
+        in: query
+        description: Returns the discount with given secret
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discount'
+  /discounts/{id}:
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Discount'
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+    delete:
+      summary: Deletes given discount
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+  /guides:
+    get:
+      summary: Gets all guides.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  description: Guide ID
+  /guides/{id}:
+    get:
+      summary: Gets guide.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guide'
+        "404":
+          description: The specified resource was not found
+    put:
+      summary: Creates or updates guide
+      description: All photos should be uploaded to S3 before calling this resource.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Guide'
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /map/view/{northWestLat}/{northWestLng}/{southEastLat}/{southEastLng}:
+    get:
+      summary: Gets vendors located inside a geographical rectangle.
+      parameters:
+      - name: northWestLat
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      - name: northWestLng
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      - name: southEastLat
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      - name: southEastLng
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  description: Vendor ID
+        "404":
+          description: Invalid argument
+  /past-search:
+    get:
+      parameters:
+      - name: userID
+        in: query
+        description: Filters PastSearch to those associated with user
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PastSearch'
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /past-search/{id}:
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PastSearch'
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+    put:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PastSearch'
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /photos:
+    get:
+      summary: Gets all photos associated with given link ID.
+      description: Link ID can be any type of ID, such as Vendor ID or Review ID.
+      parameters:
+      - name: link-id
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+  /photos/{photoID}:
+    put:
+      summary: Add new photo.
+      description: Photo must first be uploaded to S3 bucket.
+      parameters:
+      - name: photoID
+        in: path
+        description: Corresponds with S3 object key
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/PhotoID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Photo'
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: You are not authorized to link this photo with the given resource. For example, you cannot add a photo to a review that you did not write.
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+    delete:
+      summary: Delete photo.
+      description: S3 object should be removed after calling this.
+      parameters:
+      - name: photoID
+        in: path
+        description: Corresponds with S3 object key
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/PhotoID'
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /queries:
+    get:
+      parameters:
+      - name: userID
+        in: query
+        description: Filters by user associated with query
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Query'
+  /queries/{id}:
+    get:
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Query'
+        "404":
+          description: The specified resource was not found
+    put:
+      summary: Creates a query.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authorized to access this resource
+      security:
+      - bearerAuth: []
+  /reviews:
+    get:
+      parameters:
+      - name: vendorID
+        in: query
+        description: Filters by reviews posted to vendor
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - name: afterReview
+        in: query
+        description: Filters by reviews posted after given review
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+  /reviews/{id}:
+    get:
+      summary: Gets review.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+        "404":
+          description: The specified resource was not found
+    put:
+      summary: Creates review.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_6'
+        "401":
+          description: Not authorized to access this resource
+      security:
+      - bearerAuth: []
+    post:
+      summary: Updates review.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_6'
+        "401":
+          description: Not authorized to access this resource
+      security:
+      - bearerAuth: []
+  /stars:
+    get:
+      summary: Gets stars.
+      parameters:
+      - name: userID
+        in: query
+        description: Filters stars by userID
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Star'
+  /stars/{id}:
+    get:
+      summary: Gets star. ID is the composite key of star (UserID + VendorID).
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Star'
+    put:
+      summary: Creates star. ID is the composite key of star (UserID + VendorID).
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Star'
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authorized to access this resource
+      security:
+      - bearerAuth: []
+    delete:
+      summary: Deletes star. ID is the composite key of star (UserID + VendorID).
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /stars/count-for-vendor/{vendorID}:
+    get:
+      summary: Gets number of stars associated with given vendor.
+      parameters:
+      - name: vendorID
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: number
+                format: int64
+  /users/{id}:
+    get:
+      summary: Gets user.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "404":
+          description: The specified resource was not found
+  /users/{id}/protected:
+    get:
+      summary: Gets the password-protected fields for a user.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_7'
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+    put:
+      summary: Creates a user.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/id_protected_body'
+        required: true
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Updates a user.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/id_protected_body_1'
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /users/{id}/password:
+    post:
+      summary: Changes a user's password.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              description: The new password
+        required: true
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /users/{id}/s3-credentials:
+    post:
+      summary: Returns temporary credentials that can be used for write access to the streetfoodlove S3 bucket.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_8'
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /users/{id}/location-role:
+    post:
+      summary: Returns temporary credentials that can be used for access to the Places index.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_8'
+        "401":
+          description: Not authorized to access this resource
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /token:
+    post:
+      summary: Gets a new access token with credentials.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/token_body'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        "401":
+          description: Username or Password was incorrect
+        "404":
+          description: The specified resource was not found
+  /token/google:
+    post:
+      summary: Gets a new access token with refresh token.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/token_google_body'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessToken'
+        "401":
+          description: Google token is invalid
+        "404":
+          description: The specified resource was not found
+  /token/google/refresh:
+    put:
+      summary: Gets a new refresh token with Google OAuth token.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/google_refresh_body'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshToken'
+        "401":
+          description: Google token is invalid
+        "404":
+          description: The specified resource was not found
+  /vendors:
+    get:
+      parameters:
+      - name: owner
+        in: query
+        description: Gets vendor with associated owner.
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        "404":
+          description: The specified resource was not found
+  /vendors/{id}:
+    get:
+      summary: Gets a vendor.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+    put:
+      summary: Create or update vendor.
+      description: The reviews and photos cannot be set here. Use `/reviews/{id}` instead.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vendor'
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+    post:
+      summary: Updates vendor.
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vendor'
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: The specified resource was not found
+      security:
+      - bearerAuth: []
+  /version:
+    get:
+      summary: Gets the API version.
+      description: In production, this returns the Git tag that deployed this release. In local testing, this returns `"dev"`.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas:
+    Area:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        VendorID:
+          $ref: '#/components/schemas/UUID'
+        AreaName:
+          type: string
+    CuisineType:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        VendorID:
+          $ref: '#/components/schemas/UUID'
+        CuisineType:
+          type: string
+    Favorite:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        DatePosted:
+          type: string
+        VendorID:
+          $ref: '#/components/schemas/UUID'
+        UserID:
+          $ref: '#/components/schemas/UUID'
+    Discount:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        UserID:
+          $ref: '#/components/schemas/UUID'
+        VendorID:
+          $ref: '#/components/schemas/UUID'
+        Secret:
+          $ref: '#/components/schemas/UUID'
+    Guide:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        Title:
+          type: string
+        Guide:
+          type: string
+        DatePosted:
+          type: string
+        ArticleAuthor:
+          type: string
+    Query:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        UserID:
+          $ref: '#/components/schemas/UUID'
+        QueryText:
+          type: string
+        DateRequested:
+          type: string
+    Photo:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/PhotoID'
+        DatePosted:
+          type: string
+        Text:
+          type: string
+        LinkID:
+          description: Link ID references either a Vendor or Review.
+    PastSearch:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        UserID:
+          $ref: '#/components/schemas/UUID'
+        CuisineTypes:
+          type: string
+        RelevantSearchWord:
+          type: string
+    PhotoID:
+      type: string
+      description: UUID used for S3 object
+    Review:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        Text:
+          type: string
+        VendorID:
+          type: string
+          description: References the vendor page that this review was posted to
+        UserID:
+          type: string
+        DatePosted:
+          type: string
+        StarRating:
+          maximum: 5
+          minimum: 1
+          type: number
+          format: int32
+          nullable: true
+        ReplyTo:
+          type: string
+          description: Review ID of the parent review
+          nullable: true
+        VendorFavorite:
+          type: boolean
+          description: The vendor has favorited this review
+        ReceivedDiscount:
+          type: boolean
+          description: Indicates if a discount was rewarded for this review
+    AccessToken:
+      type: string
+      description: This token is used to access password-protected resources. It expires 10 minutes after the time of issuing.
+    RefreshToken:
+      type: string
+      description: This token contains the Google ID and is used to get an access token. It has no expiration.
+    Star:
+      type: object
+      properties:
+        UserID:
+          type: string
+        VendorID:
+          type: string
+    User:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        Username:
+          type: string
+        UserType:
+          type: string
+          enum:
+          - customer
+          - vendor
+        Photo:
+          $ref: '#/components/schemas/PhotoID'
+        FirstName:
+          type: string
+        LastName:
+          type: string
+    UserProtected:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - type: object
+        properties:
+          Email:
+            type: string
+          SignUpDate:
+            type: string
+          GoogleID:
+            type: string
+            nullable: true
+          LastReviewSeen:
+            type: string
+            nullable: true
+        description: Protected user fields
+    UUID:
+      type: string
+      description: UUIDv4
+    Vendor:
+      type: object
+      properties:
+        ID:
+          $ref: '#/components/schemas/UUID'
+        Name:
+          type: string
+        BusinessAddress:
+          type: string
+        Website:
+          type: string
+        BusinessHours:
+          type: string
+        Phone:
+          type: string
+        BusinessLogo:
+          $ref: '#/components/schemas/PhotoID'
+        Lattitude:
+          type: number
+        Longitude:
+          type: number
+        LastLocationUpdate:
+          type: string
+          description: When the BusinessHours, Lattitude, and Longitude fields were last updated
+        Description:
+          type: string
+        SocialMediaLink:
+          type: string
+        Owner:
+          $ref: '#/components/schemas/UUID'
+        DiscountEnabled:
+          type: boolean
+    inline_response_200:
+      type: object
+      properties:
+        One:
+          type: number
+          format: int64
+        Two:
+          type: number
+          format: int64
+        Three:
+          type: number
+          format: int64
+        Four:
+          type: number
+          format: int64
+        Five:
+          type: number
+          format: int64
+    inline_response_200_1:
+      type: object
+      properties:
+        BusinessName:
+          type: string
+        Location:
+          type: string
+        TotalRating:
+          type: number
+          format: int64
+    inline_response_200_2:
+      type: object
+      properties:
+        CuisineType:
+          type: string
+        Location:
+          type: string
+        TotalRating:
+          type: number
+          format: int64
+    inline_response_200_3:
+      type: object
+      properties:
+        QueryText:
+          type: string
+        Month:
+          type: string
+        TotalSearch:
+          type: number
+          format: int64
+    inline_response_200_4:
+      type: object
+      properties:
+        VendorID:
+          type: string
+        AverageRating:
+          type: number
+        Month:
+          type: string
+        Name:
+          type: string
+    inline_response_200_5:
+      allOf:
+      - $ref: '#/components/schemas/Review'
+      - type: object
+        properties:
+          UserID:
+            type: string
+            description: The user who posted this review
+    inline_response_200_6:
+      type: object
+      properties:
+        DiscountCreated:
+          type: boolean
+          description: True if discount record was created when the review was created
+    inline_response_200_7:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - $ref: '#/components/schemas/UserProtected'
+    id_protected_body:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - $ref: '#/components/schemas/UserProtected'
+      - type: object
+        properties:
+          Password:
+            type: string
+    id_protected_body_1:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - $ref: '#/components/schemas/UserProtected'
+    inline_response_200_8:
+      type: object
+      properties:
+        AccessKeyId:
+          type: string
+        SecretAccessKey:
+          type: string
+        SessionToken:
+          type: string
+    token_body:
+      type: object
+      properties:
+        Username:
+          type: string
+        Password:
+          type: string
+    token_google_body:
+      type: object
+      properties:
+        RefreshToken:
+          $ref: '#/components/schemas/RefreshToken'
+    google_refresh_body:
+      type: object
+      properties:
+        GoogleToken:
+          type: string
+  responses:
+    NotFound:
+      description: The specified resource was not found
+    Unauthorized:
+      description: Not authorized to access this resource
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/UUID'
+    photoID:
+      name: photoID
+      in: path
+      description: Corresponds with S3 object key
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/PhotoID'
+    reviewID:
+      name: reviewID
+      in: path
+      description: Review ID
+      required: true
+      style: simple
+      explode: false
+      schema:
+        $ref: '#/components/schemas/UUID'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

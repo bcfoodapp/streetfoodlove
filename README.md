@@ -8,13 +8,6 @@
 
 Use an alternate Google account if you want to sign-in with Google! Do not use your main Google account as the app is not guaranteed to be secure.
 
-# Document links
-
-- [API doc](https://app.swaggerhub.com/apis-docs/foodapp/FoodApp/0.0.1)
-- [Software Requirements Specification](https://bellevuec-my.sharepoint.com/:w:/g/personal/m_emura_bellevuecollege_edu/EfH0o_PF3dBOvJSqAym-jgoBQMhWPVSYoVgDfiq8IfQzGg?e=dEtOB3)
-- [Software Design Document](https://bellevuec-my.sharepoint.com/:w:/g/personal/m_emura_bellevuecollege_edu/EaLhLJldsJ9JoaQXX4Ob-lcBbzh-COE8xMeDIyCE-DOaIQ?e=VDRNIS)
-- [Software Testing Document](https://bellevuec-my.sharepoint.com/:x:/g/personal/m_emura_bellevuecollege_edu/EXV5H4hyfCpKl0935jg16JwBYKvP3tiAORWS7G8s41glgw?e=hznLLm)
-
 # StreetFoodApp Dependencies
 - MySQL Community Server 8.0
   - https://dev.mysql.com/downloads/mysql/
