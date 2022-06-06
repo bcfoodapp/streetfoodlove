@@ -95,17 +95,19 @@ export const SearchBox: React.FC = () => {
     }
 
     if (vendorsList) {
+      string = string.toLowerCase();
+
       let condition = new RegExp(string);
       let resultArray: Vendor[] = [];
 
       let filteredResult = vendorsList.filter((element) => {
         //filter all vendors from vendors list who matches regex expression
-        return condition.test(element.Name);
+        return condition.test(element.Name.toLowerCase());
       });
 
       let recentSearchFilteredResult = recentSearchResult.filter((element) => {
         //filter all vendors from recent search who matches regex expr.
-        return condition.test(element.Name);
+        return condition.test(element.Name.toLowerCase());
       });
 
       for (let i = 0; i < filteredResult.length; i++) {
@@ -120,7 +122,8 @@ export const SearchBox: React.FC = () => {
         if (
           //if the tempobject has no matches in recentsearch result, then push to the result array
           !recentSearchResult.some(
-            (element) => element.Name === tempObject.title
+            (element) =>
+              element.Name.toLowerCase() === tempObject.title.toLowerCase()
           )
         ) {
           resultArray.push(tempObject);
