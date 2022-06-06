@@ -1352,7 +1352,7 @@ func (d *Database) PopularVendor() ([]AreaByRating, error) {
 					INNER JOIN Areas ON Vendor.ID = Areas.VendorID
 					INNER JOIN Reviews ON Areas.VendorID = Reviews.VendorID
 					GROUP BY Vendor.ID
-					ORDER BY count(StarRating) DESC limit 10
+					ORDER BY count(StarRating) DESC limit 5
 					`
 
 	rows, err := d.db.Queryx(command)
@@ -1419,7 +1419,7 @@ SELECT QueryText, DateRequested AS 'Month', count(QueryText) AS 'TotalSearch'
 FROM Queries
 WHERE QueryText IS NOT NULL
 AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH)
-GROUP BY QueryText; 
+GROUP BY QueryText limit 5; 
 					`
 
 	rows, err := d.db.Queryx(command)
