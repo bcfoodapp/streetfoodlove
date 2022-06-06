@@ -1419,7 +1419,7 @@ SELECT QueryText, DateRequested AS 'Month', count(QueryText) AS 'TotalSearch'
 FROM Queries
 WHERE QueryText IS NOT NULL
 AND DateRequested >= date_sub(current_date, INTERVAL 1 MONTH)
-GROUP BY QueryText limit 5; 
+GROUP BY QueryText limit 4; 
 					`
 
 	rows, err := d.db.Queryx(command)
